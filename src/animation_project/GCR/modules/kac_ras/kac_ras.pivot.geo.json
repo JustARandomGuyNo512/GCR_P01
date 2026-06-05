@@ -1,0 +1,74 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.kac_ras",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 1,
+				"visible_bounds_height": 1,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "main",
+					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "lower",
+					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "LEFT_ARM",
+					"parent": "root",
+					"pivot": [23.61783, -37.69428, 23.48473],
+					"rotation": [-102.46769, 58.53118, 44.16902]
+				},
+				{
+					"name": "INNER_L",
+					"parent": "LEFT_ARM",
+					"pivot": [23.61783, -85.69428, 23.48473]
+				},
+				{
+					"name": "L_MALE",
+					"parent": "INNER_L",
+					"pivot": [25.61783, -85.69428, 23.48473]
+				},
+				{
+					"name": "L_SLIM",
+					"parent": "INNER_L",
+					"pivot": [23.61783, -85.69428, 23.48473]
+				},
+				{
+					"name": "RAIL_LOWER",
+					"parent": "root",
+					"pivot": [0, -4.9668, 0.92075]
+				},
+				{
+					"name": "RAIL_UPPER",
+					"parent": "root",
+					"pivot": [0, 4.9668, 0.92075]
+				},
+				{
+					"name": "RAIL_LEFT",
+					"parent": "root",
+					"pivot": [4.9668, 0, 0.92075],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "RAIL_RIGHT",
+					"parent": "root",
+					"pivot": [-4.9668, 0, 0.92075],
+					"rotation": [0, 0, 90]
+				}
+			]
+		}
+	]
+}

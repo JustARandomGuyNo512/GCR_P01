@@ -1,0 +1,21 @@
+{
+  "ar_charge_back": {"sounds": ["gcr:ar/ar_charge_back" ]},
+  "m203_close": {"sounds": ["gcr:ar/m203_close" ]},
+  "m203_fire": {"sounds": ["gcr:ar/m203_fire" ]},
+  "m203_open": {"sounds": ["gcr:ar/m203_open" ]},
+  "m203_shell_insert": {"sounds": ["gcr:ar/m203_shell_insert" ]},
+  "m203_shell_out": {"sounds": ["gcr:ar/m203_shell_out" ]},
+  "m4a1_fire": {"sounds": ["gcr:ar/m4a1_fire" ]},
+  "m4a1_fire1": {"sounds": ["gcr:ar/m4a1_fire1" ]},
+  "ar_switch_fire_mode": {"sounds": ["gcr:ar/ar_switch_fire_mode" ]},
+  "ar_arm_wave": {"sounds": ["gcr:ar/ar_arm_wave" ]},
+  "ar_mag_in": {"sounds": ["gcr:ar/ar_mag_in" ]},
+  "ar_mag_out": {"sounds": ["gcr:ar/ar_mag_out" ]},
+  "ar_bolt_lock": {"sounds": ["gcr:ar/ar_bolt_lock" ]},
+  "ar_charge_forward": {"sounds": ["gcr:ar/ar_charge_forward" ]},
+  "ar_shell_in": {"sounds": ["gcr:ar/ar_shell_in" ]},
+  "ar_stuck_remove": {"sounds": ["gcr:ar/ar_stuck_remove" ]},
+
+  "btn": {"sounds": ["gcr:generic/btn" ]},
+  "gun_stuck": {"sounds": ["gcr:generic/gun_stuck" ]}
+}

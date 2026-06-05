@@ -1,0 +1,41 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.m4a1_main",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 1.5,
+				"visible_bounds_offset": [0, 0.25, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "picatinny",
+					"parent": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [1.675, -0.5, -9.5], "size": [3.3, 3.3, 1.9], "uv": [4, 5]},
+						{"origin": [-5.6, 0, -7.6], "size": [11, 4.8, 16], "uv": [-23, -14]},
+						{"origin": [-4.6, -1, -7.6], "size": [9, 1, 16], "uv": [-21, -14]}
+					]
+				},
+				{
+					"name": "m_lok",
+					"parent": "root",
+					"pivot": [0, 1.225, 0],
+					"cubes": [
+						{"origin": [-5.6, 1.225, -7.6], "size": [11, 4.8, 16], "uv": [-23, -14]},
+						{"origin": [-4.6, -0.175, -7.6], "size": [9, 1.4, 16], "uv": [-21, -14]},
+						{"origin": [1.675, 0.725, -9.5], "size": [3.3, 3.3, 1.9], "uv": [4, 5]}
+					]
+				}
+			]
+		}
+	]
+}

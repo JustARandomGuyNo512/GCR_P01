@@ -1,0 +1,29 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"base": {
+			"animation_length": 1,
+			"bones": {
+				"grenade_reloading": {
+					"scale": 0
+				}
+			}
+		},
+		"empty": {
+			"animation_length": 1,
+			"bones": {
+				"raw": {
+					"scale": 0
+				}
+			}
+		},
+		"full": {
+			"animation_length": 1,
+			"bones": {
+				"shell": {
+					"scale": 0
+				}
+			}
+		}
+	}
+}

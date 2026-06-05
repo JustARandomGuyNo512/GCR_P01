@@ -1,0 +1,1 @@
+# This dir and inner files will be mapping to assets/[id]/common and data/[id]/common automatically in development mode

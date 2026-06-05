@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.sheridan.gcr.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "gcr.refmap.json",
+  "mixins": [
+    "IrisShaderCompatMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "GameRendererAccessor",
+    "GameRendererMixin",
+    "ItemInHandRendererMixin",
+    "LightTextureAccessor",
+    "LightTextureMixin",
+    "RenderItemMixin",
+    "RenderSystemAccessor",
+    "VertexBufferAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

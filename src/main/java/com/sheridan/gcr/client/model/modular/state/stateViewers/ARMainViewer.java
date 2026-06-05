@@ -1,0 +1,49 @@
+package com.sheridan.gcr.client.model.modular.state.stateViewers;
+
+import com.sheridan.gcr.client.animation.IAnimated;
+import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
+import com.sheridan.gcr.client.model.modular.state.StateViewer;
+import com.sheridan.gcr.client.model.modular.state.StaticState;
+import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.modularSys.modules.views.ARView;
+
+public class ARMainViewer extends StateViewer<ARView> {
+    public ARMainViewer(ARView stateView) {
+        super(stateView);
+    }
+
+    @Override
+    public void onRegisterStateMapping() {
+        addStateMapping("base", "gcr:m4a1_base", DEFAULT_SCALE, 0);
+        addStateMapping("bolt_locked", "gcr:m4a1_shoot_last", DEFAULT_SCALE, 1);
+        addStateMapping("stuck", "gcr:m4a1_shoot_stuck", DEFAULT_SCALE, 1);
+
+        addStateMappings(
+                StaticState.Builder.empty(IGun.FIRE_MODEL_ID.getDefaultValue()),
+                StaticState.Builder.of(ARSemi.SEMI.getName()).setRotation("safety", 90, 0, 0).build(),
+                StaticState.Builder.of(ARFullAuto.FULL_AUTO.getName()).setRotation("safety", 180, 0, 0).build()
+        );
+
+        addStateMapping(StaticState.Builder.of("chamber_empty").setScale("ammo", 0).build());
+    }
+
+    @Override
+    public void applyState(IAnimated animated, ModuleRenderContext context, ReadOnlyTag states) {
+        ARView view = getStateView();
+        doPose(view.getFireModeId(states), animated, context);
+        if (view.boltLocked(states)) {
+            doPose("bolt_locked", animated, context);
+        } else if (view.stuck(states)) {
+            doPose("stuck", animated, context);
+        } else {
+
+            doPose("base", animated, context);
+            if (view.getAmmoLeft(states) <= 0) {
+                doPose("chamber_empty", animated, context);
+            }
+        }
+    }
+}

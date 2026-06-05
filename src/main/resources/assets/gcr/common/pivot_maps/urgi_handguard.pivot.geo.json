@@ -1,0 +1,43 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.urgi_handguard",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 1,
+				"visible_bounds_height": 1,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "RAIL_GRIP",
+					"parent": "root",
+					"pivot": [0, -3.552, -6.27705]
+				},
+				{
+					"name": "RAIL_UPPER",
+					"parent": "root",
+					"pivot": [0, 5.0111, -10.9463]
+				},
+				{
+					"name": "RAIL_LEFT",
+					"parent": "root",
+					"pivot": [3.2, -0.10025, -12.8852],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "RAIL_RIGHT",
+					"parent": "root",
+					"pivot": [-3.2, -0.10025, -12.8852],
+					"rotation": [0, 0, 90]
+				}
+			]
+		}
+	]
+}
