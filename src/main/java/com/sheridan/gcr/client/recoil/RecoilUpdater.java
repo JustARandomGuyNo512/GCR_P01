@@ -245,7 +245,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         rollDisplacement += rollDisplacementImpulse;
 
         float camImpactScale = 0.007f + aimingFactor * 0.005f;
-        float camRandomScale = 0.002f + aimingFactor * 0.015f;
+        float camRandomScale = 0.0012f + aimingFactor * 0.016f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
@@ -293,7 +293,7 @@ public class RecoilUpdater implements IRecoilUpdater {
     private void applyCamImpulse(float baseImpulse, float randomPitch, float randomYaw, float recoilControlFactor, float aimingProgress) {
 
         float actualShotsToStable = Math.max(1.5f, Math.min(25.0f, data.getRecoilController().stableDuration() * recoilControlFactor));
-        float jumpFactor = Math.clamp(Client.distFromLastJump() * 2f, 0.5f, 1.0f) * aimingProgress;
+        float jumpFactor = Mth.lerp(aimingProgress, 1, Math.clamp(Client.distFromLastJump() * 2f, 0.5f, 1.0f));
         float heatStep = 1.0f / actualShotsToStable;
         this.recoilHeat = Math.min(1.0f, this.recoilHeat + heatStep);
 

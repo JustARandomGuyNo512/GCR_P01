@@ -179,13 +179,13 @@ public class RenderEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void fpsMeter(RenderGuiEvent.Post event) {
-        if (!GCR.IS_DEVELOPMENT) {
-            return;
-        }
-        GuiGraphics guiGraphics = event.getGuiGraphics();
-        guiGraphics.drawString(Minecraft.getInstance().font, "FPS: " + Minecraft.getInstance().getFps(), 10, 10, 0xFFFFFF);
-    }
+//    @SubscribeEvent
+//    public static void fpsMeter(RenderGuiEvent.Post event) {
+//        if (!GCR.IS_DEVELOPMENT) {
+//            return;
+//        }
+//        GuiGraphics guiGraphics = event.getGuiGraphics();
+//        guiGraphics.drawString(Minecraft.getInstance().font, "FPS: " + Minecraft.getInstance().getFps(), 10, 10, 0xFFFFFF);
+//    }
 
 }
