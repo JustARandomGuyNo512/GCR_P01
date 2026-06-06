@@ -1,10 +1,10 @@
 package com.sheridan.gcr.client.recoil;
-//
+
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-//
+
 //import javax.tools.*;
 //import java.io.ByteArrayOutputStream;
 //import java.io.OutputStream;
@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 //import java.util.Collections;
 //import java.util.HashMap;
 //import java.util.Map;
-//
+
 @OnlyIn(Dist.CLIENT)
 public class ClassHotReloader {
 //    private static final Path SOURCE_FILE_PATH = Paths.get("C:\\Users\\tjy13\\IdeaProjects\\GunsCraft_Reforged\\src\\main\\java\\com\\sheridan\\gcr\\client\\recoil\\RecoilUpdater.java");
@@ -161,3 +161,4 @@ public class ClassHotReloader {
 //        }
 //    }
 }
+

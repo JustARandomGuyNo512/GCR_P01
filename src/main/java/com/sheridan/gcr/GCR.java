@@ -86,20 +86,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * TODO:
- * TODO before first alpha release:</br>
- * 1.完成重量、敏捷度对出枪、收枪的影响机制 --OK</br>
- * 2.完成重量、敏捷度在奔跑时对出枪、收枪的影响机制</br>
- * 3.完成重量、敏捷度对开镜速度的影响机制 --OK</br>
- * 4.完成奔跑动画系统</br>
- * 5.完成瞄准状态下玩家移动速度的影响机制 --OK</br>
- * 6.优化设计枪械震动动画反馈效果 --OK</br>
- * 7.完成tooltip展示枪械，配件属性信息</br>
- * 8.完成子弹shooter绑定 --OK</br>
- * 9.完成曳光弹效果优化 --OK</br>
- * 10.完成枪口火焰module id绑定 --非必要设计，已移除</br>
- * */
+
 @Mod(GCR.MODID)
 public class GCR {
 
