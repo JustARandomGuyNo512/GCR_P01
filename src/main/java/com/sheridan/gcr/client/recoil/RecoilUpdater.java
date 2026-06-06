@@ -182,7 +182,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float impulseVal = Client.WEAPON_STATUS.getImpulse();
         float recoilControl = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;
 
-        float stableFactor = (float) (1.0f / Math.pow(stability, 0.75f));
+        float stableFactor = (float) (1.0f / Math.pow(stability, 0.8f));
         float recoilControlFactor = 1.0f / recoilControl;
         float recoilLeverFactor = (float) (1.0f / Math.sqrt(recoilControl));
         float recoilHeatRes = getRecoilHeat();
@@ -245,7 +245,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         rollDisplacement += rollDisplacementImpulse;
 
         float camImpactScale = 0.007f + aimingFactor * 0.005f;
-        float camRandomScale = 0.0012f + aimingFactor * 0.016f;
+        float camRandomScale = 0.00075f + aimingFactor * 0.016f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
