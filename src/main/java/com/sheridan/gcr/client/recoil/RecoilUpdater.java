@@ -178,6 +178,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             return;
         }
         float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
+        System.out.println(playerDynamicFactor);
         float stability = Client.WEAPON_STATUS.getStability() * playerDynamicFactor;
         float impulseVal = Client.WEAPON_STATUS.getImpulse();
         float recoilControl = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;

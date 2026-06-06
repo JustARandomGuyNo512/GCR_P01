@@ -249,13 +249,13 @@ public class WeaponStatus {
         }
         float factor = 1f;
         if (player.isCrouching()) {
-            factor += 0.2f;
+            factor += 0.25f;
         } else if (player.isSprinting()) {
-            factor -= 0.05f;
+            factor -= 0.1f;
         }
         float jumpDist = (System.currentTimeMillis() - lastJump) * 0.001f;
-        if (jumpDist < 1f) {
-            factor = Math.max((factor - (1f - jumpDist) * 0.5f), 0.4f);
+        if (jumpDist < 0.7f) {
+            factor = Math.max((factor - (0.7f - jumpDist) * 0.5f), 0.4f);
         }
         return factor;
     }
