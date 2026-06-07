@@ -129,7 +129,7 @@ public class GCR {
             RL("car_15_handguard"),
             0.26f, 0.03f,
             new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/car_15_handguard_voxel.geo.json")),
-            new IArmHandlerModular.AdditionalPropModifier(0.15f,0.1f,0.12f, 0.05f)
+            new IArmHandlerModular.AdditionalPropModifier(0.1f,0.1f,0.1f, 0.05f)
     ).addTags("handguard");
 
 //    public static final IModular M203 = new M203(
@@ -176,7 +176,7 @@ public class GCR {
                             ))),
             0.25f, 0.02f,
             new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/kac_ras_voxel.geo.json")),
-            new IArmHandlerModular.AdditionalPropModifier(0.12f,0.12f,0.1f, 0.05f),
+            new IArmHandlerModular.AdditionalPropModifier(0.085f,0.07f,0.09f, 0.05f),
             "RAIL_LOWER"
     ).addTags("handguard");
 
@@ -197,14 +197,14 @@ public class GCR {
                     .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 6.3311f, -12.8852f, -38.6771f, 0.3311f, 6.6082f, 6)
                             .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_handguard_voxel.geo.json")),
-            new IArmHandlerModular.AdditionalPropModifier(0.16f,0.12f,0.1f, 0.065f)
+            new IArmHandlerModular.AdditionalPropModifier(0.1f,0.12f,0.1f, 0.065f)
     ).addTags("handguard");
 
     public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
             RL( "kac_forward_grip"),
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/kac_forward_grip.voxel.geo.json")),
             0.06f,
-            new IArmHandlerModular.AdditionalPropModifier(0.2f,0.15f,0.25f, 0.12f))
+            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.25f, 0.12f))
             .addTags("m_lok_rail_fit");
 
     public static final IModular M4A1 = new AR(
@@ -232,7 +232,7 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            29f, 1.6f,
+                            29f, 1.8f,
                             18f, 18f, 0.18f,
                             110.0f, 7.0f, 7.0f, 0.012f),
                     new RecoilController(

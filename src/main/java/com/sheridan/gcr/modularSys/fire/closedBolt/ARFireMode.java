@@ -36,10 +36,10 @@ public abstract class ARFireMode extends FireMode<AR> {
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean clientIntentToFire(Player player, ItemStack stack, AR gun) {
-        SprintingHandler.INSTANCE.exitSprinting(Utils.secondToTick(1.3f));
-        if (SprintingHandler.INSTANCE.getSprintingProgress() != 0) {
-            return false;
-        }
+//        SprintingHandler.INSTANCE.exitSprinting(Utils.secondToTick(1.3f));
+//        if (SprintingHandler.INSTANCE.getSprintingProgress() != 0) {
+//            return false;
+//        }
         if (!GunTaskHandler.INSTANCE.blockShoot()) {//有任务在执行
             boolean stuck = gun.isStuck(stack);
             if (stuck) {

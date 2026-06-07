@@ -156,7 +156,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         recoilBackEMA = 0.1f * gunDisplacement.z + 0.9f * recoilBackEMA;
 
-        updateRecoilHeat((float) timeDist, Client.WEAPON_STATUS.getFireInterval(), recoilControl, 0.8f, 0.08f);
+        updateRecoilHeat((float) timeDist, Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.08f);
         publishRenderState();
     }
 
@@ -182,9 +182,8 @@ public class RecoilUpdater implements IRecoilUpdater {
         float impulseVal = Client.WEAPON_STATUS.getImpulse();
         float recoilControl = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;
 
-        float stableFactor = (float) (1.0f / Math.pow(stability, 0.8f));
+        float stableFactor = 1.0f / stability;
         float recoilControlFactor = 1.0f / recoilControl;
-        float recoilLeverFactor = (float) (1.0f / Math.sqrt(recoilControl));
         float recoilHeatRes = getRecoilHeat();
 
         modelShakeScale = recoilControlFactor * 0.4f + stableFactor * 0.6f;
@@ -197,7 +196,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float aimingFactor = Client.getAimingProgress();
         float aimingFactorSqr = aimingFactor * aimingFactor;
         RecoilImpulse impulse = data.getImpulse();
-        float rotLever = impulse.leverArmY() * recoilLeverFactor
+        float rotLever = impulse.leverArmY() * recoilControlFactor
                 * (Mth.clamp(1 - aimingFactorSqr, 0.1f, 1f));
 
         float impulseZ = impulse.impulseZ() * Math.max(0, impulseVal);
@@ -244,7 +243,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         rollDisplacement += rollDisplacementImpulse;
 
-        float camImpactScale = 0.007f + aimingFactor * 0.005f;
+        float camImpactScale = 0.0085f + aimingFactor * 0.004f;
         float camRandomScale = 0.00075f + aimingFactor * 0.016f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
@@ -260,7 +259,8 @@ public class RecoilUpdater implements IRecoilUpdater {
 
     public void updateRecoilHeat(float deltaTicks, float fireInterval, float controlMod, float recoilControlSpeed, float baseRecoveryRate) {
 
-        float friction = (float) Math.pow(recoilControlSpeed * (1 / controlMod), deltaTicks * 20.0f);
+        float friction = -0.35f * (controlMod - 1) + 0.95f;
+        friction = Math.clamp(friction, 0.25f, 0.97f);
         this.camUpSpeed *= friction;
         this.camRandomSpeedPitch *= friction;
         this.camRandomSpeedYaw *= friction;
