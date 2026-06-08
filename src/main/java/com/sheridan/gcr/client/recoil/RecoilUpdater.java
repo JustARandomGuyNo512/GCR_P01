@@ -156,7 +156,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         recoilBackEMA = 0.1f * gunDisplacement.z + 0.9f * recoilBackEMA;
 
-        updateRecoilHeat((float) timeDist, Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.08f);
+        updateRecoilHeat((float) timeDist, Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.082f);
         publishRenderState();
     }
 
@@ -205,7 +205,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float torqueImpulseX = rotLever * impulseZ * (0.7f + recoilHeatRes * 0.3f);
 
         float dynamicRand = Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
-                (2.8f - aimingFactor * 2.55f) *
+                (2.8f - aimingFactor * 2.65f) *
                 stableFactor;
 
         float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
@@ -243,8 +243,8 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         rollDisplacement += rollDisplacementImpulse;
 
-        float camImpactScale = 0.0085f + aimingFactor * 0.004f;
-        float camRandomScale = 0.00075f + aimingFactor * 0.016f;
+        float camImpactScale = 0.0085f + aimingFactor * 0.005f;
+        float camRandomScale = 0.00075f + aimingFactor * 0.1f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;

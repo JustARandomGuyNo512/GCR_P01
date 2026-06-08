@@ -173,8 +173,8 @@ public class ModuleRenderContext {
             }
             clearStateLockedBones();
         }
-        handleRender(root.model);
         root.initTranslate(poseStack);
+        handleRender(root.model);
         if (root.slots != null) {
             for (Map.Entry<String, List<ModuleRenderNode>> entry : root.slots.entrySet()) {
                 String key = entry.getKey();
