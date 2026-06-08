@@ -19,6 +19,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
 
     // 记录当前相机由于后座力产生的“待回落位移量”
     private float pitchToRecovery = 0f;
+    private float pitchTotal = 0f;
     private float yawToRecovery = 0f;
 
     // 记录上一帧玩家的原始旋转，用来准确捕获这一帧玩家的鼠标输入 (mouseDelta)
@@ -67,6 +68,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
 
 
         pitchToRecovery += recoilPitchDelta;
+        pitchTotal += recoilPitchDelta;
         yawToRecovery += recoilYawDelta;
 
         // 3. 处理玩家的手动压枪抵消 (当玩家鼠标输入与后座力积攒量方向相反时)
@@ -87,11 +89,17 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
             }
         }
 
-        if (pitchToRecovery != 0 && shouldStartRecovery(recoilSpeed.x)) {
+        if ((pitchToRecovery != 0 || pitchTotal != 0) && shouldStartRecovery(recoilSpeed.x)) {
             float recoverySpeed = 0.2f * deltaTicks * 20f;
-            float pitchRecovery = pitchToRecovery * Math.min(recoverySpeed, 1.0f);
-            pitchToRecovery -= pitchRecovery;
-            recoilPitchDelta -= pitchRecovery;
+            recoverySpeed = Math.min(recoverySpeed, 1.0f);
+            float pitchRecovery = pitchToRecovery * recoverySpeed;
+            if (pitchToRecovery != 0) {
+                pitchToRecovery -= pitchRecovery;
+                recoilPitchDelta -= pitchRecovery;
+            }
+            if (pitchTotal != 0) {
+                pitchTotal -= pitchTotal * recoverySpeed;
+            }
         }
 
         if (yawToRecovery != 0 && shouldStartRecovery(recoilSpeed.y)) {
@@ -128,7 +136,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
 
     @Override
     public float getUp() {
-        return pitchToRecovery;
+        return pitchTotal;
     }
 
     public static void _debugReloadInstance(IRecoilCameraHandler recoilCameraHandler) {
