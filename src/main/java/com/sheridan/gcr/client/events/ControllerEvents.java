@@ -101,11 +101,11 @@ public class ControllerEvents {
                 GunTaskHandler.INSTANCE.setTask(task);
             }
         }
-//        if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
-//            //ClassHotReloader.reload();
-//            //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
-//            //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
-//        }
+        if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
+            ClassHotReloader.reload();
+            //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
+            //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
+        }
 
         Map<String, Node> idToNodes = Client.WEAPON_STATUS.getIDToNodes();
         for (Map.Entry<String, Node> entry : idToNodes.entrySet()) {

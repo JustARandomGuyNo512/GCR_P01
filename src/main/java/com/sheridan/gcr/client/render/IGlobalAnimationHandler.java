@@ -7,7 +7,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public interface IHardCodeAnimationHandler {
+public interface IGlobalAnimationHandler {
 
     void applyTransformPre(PoseStack poseStack, IGun gun, float partialTicks, LocalPlayer player);
 

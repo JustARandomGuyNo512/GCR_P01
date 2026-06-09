@@ -54,10 +54,8 @@ public class DrawHolsterHandler {
     // Tick
     // =========================
     public void tick(ItemStack newStack) {
-
-        boolean prevIsGun = isGun(prevStack);
-        boolean currIsGun = isGun(newStack);
-
+        boolean prevIsGun = isGun(prevStack, "prev");
+        boolean currIsGun = isGun(newStack, "curr");
         if (!prevIsGun && currIsGun) {
             handleNonGunToGun(newStack);
         } else if (prevIsGun && !currIsGun) {
@@ -110,7 +108,7 @@ public class DrawHolsterHandler {
                 // 收枪完成 → 切枪
                 currentStack = targetStack;
 
-                if (isGun(targetStack)) {
+                if (isGun(targetStack, "target")) {
                     startDraw(targetStack);
                 } else {
                     state = State.IDLE;
@@ -170,10 +168,9 @@ public class DrawHolsterHandler {
     }
 
 
-    private boolean isGun(ItemStack stack) {
+    private boolean isGun(ItemStack stack, String debugMsg) {
         if (!stack.isEmpty() && stack.getItem() instanceof GunItem gunItem) {
-            String identityID = gunItem.getGun().getIdentityID(stack);
-            return !IGun.NONE.equals(identityID);
+            return true;
         }
         return false;
     }
@@ -197,7 +194,6 @@ public class DrawHolsterHandler {
 
     private float getHolsterDuration(ItemStack stack) {
         float speedFactor = getSpeedFactor();
-        //System.out.println("speedFactor: " + speedFactor);
         return Mth.clamp(4.7f * speedFactor, 4, 8);
     }
 

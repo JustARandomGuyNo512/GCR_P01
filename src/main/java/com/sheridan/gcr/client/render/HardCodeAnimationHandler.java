@@ -14,10 +14,12 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
-
+/**
+ * 对于全局动画的硬编码实现
+ * */
 @OnlyIn(Dist.CLIENT)
-public class HardCodeAnimationHandler implements IHardCodeAnimationHandler{
-    protected static IHardCodeAnimationHandler INSTANCE;
+public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
+    protected static IGlobalAnimationHandler INSTANCE;
     private static final MovingInertialHandler MOVING_INERTIAL_HANDLER = new MovingInertialHandler();
     private static final float PI = (float) Math.PI;
     /** 闲置/呼吸动画的计时器 (跨帧保持状态) */
@@ -33,7 +35,7 @@ public class HardCodeAnimationHandler implements IHardCodeAnimationHandler{
     float bob;
     float walkSwing;
 
-    public static void _debugReloadInstance(IHardCodeAnimationHandler hardCodeAnimationHandler) {
+    public static void _debugReloadInstance(IGlobalAnimationHandler hardCodeAnimationHandler) {
         if (!GCR.IS_DEVELOPMENT) {
             return;
         }
@@ -208,7 +210,7 @@ public class HardCodeAnimationHandler implements IHardCodeAnimationHandler{
         INSTANCE = new HardCodeAnimationHandler();
     }
 
-    public static IHardCodeAnimationHandler getInstance() {
+    public static IGlobalAnimationHandler getInstance() {
         return INSTANCE;
     }
 

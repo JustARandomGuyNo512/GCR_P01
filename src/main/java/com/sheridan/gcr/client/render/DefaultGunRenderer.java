@@ -135,6 +135,7 @@ public class DefaultGunRenderer implements IGunRenderer {
                 newFirstPersonContextInit();
                 frameUpdate(light, overlay, partialTicks);
                 Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+                //System.out.println("bbb");
                 renderFirstPerson(context);
                 lastFPModifyID = modifyId;
                 lastFPIdentityID = identityId;

@@ -9,7 +9,7 @@ import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.client.render.DefaultGunRenderer;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.IGunRenderer;
-import com.sheridan.gcr.client.render.IHardCodeAnimationHandler;
+import com.sheridan.gcr.client.render.IGlobalAnimationHandler;
 import com.sheridan.gcr.events.LivingFireEvent;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
@@ -120,7 +120,7 @@ public class Client {
 
         WEAPON_SCHEDULER.scheduleAtFixedRate(
                 () -> {
-                    IHardCodeAnimationHandler instance = HardCodeAnimationHandler.getInstance();
+                    IGlobalAnimationHandler instance = HardCodeAnimationHandler.getInstance();
                     if (instance != null) {
                         instance.update(0.01f);
                     }

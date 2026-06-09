@@ -249,7 +249,7 @@ public class WeaponStatus {
         }
         float factor = 1f;
         if (player.isCrouching()) {
-            factor += 0.25f;
+            factor += 0.12f;
         } else if (player.isSprinting()) {
             factor -= 0.1f;
         }
