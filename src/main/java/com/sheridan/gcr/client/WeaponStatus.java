@@ -133,7 +133,7 @@ public class WeaponStatus {
             if (fireMode != null) {
                 fireDelay = IFireMode.rpmToDelay(fireMode.modifyRpm(gun.getRpm(itemStack)));
             }
-            String lastModifyID = gun.getModifyID(itemStack);
+            String lastModifyID = gun.getStructureID(itemStack);
             if (!reInitModules && !Objects.equals(lastModifyID, modifyID)) {
                 reInitModules = true;
             }
@@ -249,9 +249,9 @@ public class WeaponStatus {
         }
         float factor = 1f;
         if (player.isCrouching()) {
-            factor += 0.12f;
+            factor += 0.1f;
         } else if (player.isSprinting()) {
-            factor -= 0.1f;
+            factor -= 0.05f;
         }
         float jumpDist = (System.currentTimeMillis() - lastJump) * 0.001f;
         if (jumpDist < 0.7f) {

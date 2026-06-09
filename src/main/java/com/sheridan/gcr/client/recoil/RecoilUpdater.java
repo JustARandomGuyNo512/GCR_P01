@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.recoil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.events.RenderEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -64,7 +65,6 @@ public class RecoilUpdater implements IRecoilUpdater {
     private float recoilHeat = 0f;
     private float recoilBackEMA = 0f;
     private float randomSeed = 0f;
-    private float modelShakeScale = 1f;
 
     /**
      *物理线程在 update 结束时调用，用于发布状态给渲染线程
@@ -186,9 +186,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         float recoilControlFactor = 1.0f / recoilControl;
         float recoilHeatRes = getRecoilHeat();
 
-        modelShakeScale = recoilControlFactor * 0.4f + stableFactor * 0.6f;
-        modelShakeScale = (float) Math.sqrt(modelShakeScale);
-
         float delta = Math.min(Client.distFromLastShoot(), 1.0f) * 22f;
         this.noiseTimerX += delta;
         this.noiseTimerY += delta;
@@ -202,15 +199,15 @@ public class RecoilUpdater implements IRecoilUpdater {
         float impulseZ = impulse.impulseZ() * Math.max(0, impulseVal);
 
         // 基础后坐力矩 (只有这部分受到 PitchStiffness 影响)
-        float torqueImpulseX = rotLever * impulseZ * (0.7f + recoilHeatRes * 0.3f);
+        float torqueImpulseX = rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f);
 
         float dynamicRand = Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
                 (2.8f - aimingFactor * 2.65f) *
                 stableFactor;
-
+        impulseZ *= (float) (0.8f + 0.4f * Math.random());
         float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
-        randPitch *= 1 - 0.6f * aimingFactorSqr;
-        float randPitchCam = randPitch > 0 ? randPitch * 0.6f : randPitch;
+        randPitch *= 1 - 0.3f * aimingFactorSqr;
+        float randPitchCam = randPitch > 0 ? randPitch * 0.7f : randPitch;
         float randYawDir = randomNoiseY(noiseTimerY);
         float randYaw = randYawDir * impulse.randomYaw() * dynamicRand;
 
@@ -243,8 +240,8 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         rollDisplacement += rollDisplacementImpulse;
 
-        float camImpactScale = 0.008f + aimingFactor * 0.007f;
-        float camRandomScale = 0.0008f + aimingFactor * 0.08f;
+        float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
+        float camRandomScale = 0.001f + aimingFactor * 0.07f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
@@ -340,7 +337,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         if (distFromLastShoot < 1f && this.data != null) {
             float scale = 0.5f + recoilHeatRes * 1.1f;
             scale *= 1 - aimingProgress * 0.8f;
-            scale *= modelShakeScale * data.getImpulse().shake();
+            scale *= data.getImpulse().shake();
             float omega = (1 + recoilHeatRes * 1.5f) * 20;
             float rand = (randomSeed + 0.3f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * 0.5f);
@@ -356,7 +353,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         //手臂关节不随摄像机位移，补偿位移
         float up1 = RecoilCameraHandler.getInstance().getUp();
-        double up = up1 * 0.43f * recoilHeatRes * (1 - aimingProgress);
+        double up = up1 * 0.45f * recoilHeatRes * (1 - aimingProgress);
         up = Math.toRadians(up);
         Matrix4f pose = poseStack.last().pose();
         Vector3f translation = pose.getTranslation(new Vector3f());

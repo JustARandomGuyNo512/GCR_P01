@@ -98,9 +98,11 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
 
     //模块改动id
-    String getModifyID(ItemStack itemStack);
+    String getStructureID(ItemStack itemStack);
 
-    void mutateModifyID(ItemStack itemStack, String modifyID, boolean copy);
+    void setStructureID(ItemStack itemStack, String modifyID, boolean copy);
+
+    void calcStructureID(ItemStack itemStack);
 
     int getRpm(ItemStack itemStack);
 

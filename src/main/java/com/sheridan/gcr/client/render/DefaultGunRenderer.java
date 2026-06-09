@@ -96,7 +96,7 @@ public class DefaultGunRenderer implements IGunRenderer {
             return;
         }
         String identityId = gun.getIdentityID(itemStack);
-        String modifyId = gun.getModifyID(itemStack);
+        String modifyId = gun.getStructureID(itemStack);
 
         boolean doUpdateCache = !Objects.equals(modifyId, lastFPModifyID) || !Objects.equals(identityId, lastFPIdentityID);
 

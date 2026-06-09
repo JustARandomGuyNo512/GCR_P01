@@ -135,6 +135,16 @@ public class RenderEvents {
             }
         }
     }
+    //public static float testFov = 70f;
+    @SubscribeEvent
+    public static void handleGunModelFov(ViewportEvent.ComputeFov event) {
+        if (event.usedConfiguredFov()) {
+            return;
+        }
+        if (Client.WEAPON_STATUS.isHoldingGun()) {
+            event.setFOV(62.5f);
+        }
+    }
 
     private static Double baseSensitivity = null;
     @SubscribeEvent

@@ -16,6 +16,7 @@ import org.joml.Vector2f;
 public class RecoilCameraHandler implements IRecoilCameraHandler {
     private static IRecoilCameraHandler INSTANCE;
     private static final float QUARTER_PI = (float) Math.PI / 4;
+    private float scale = 1.22f;
 
     // 记录当前相机由于后座力产生的“待回落位移量”
     private float pitchToRecovery = 0f;
@@ -63,8 +64,8 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
         Vector2f recoilSpeed = (updater != null) ? updater.getCameraSpeed() : new Vector2f(0, 0);
 
         // 2. 处理后座力上升阶段
-        float recoilPitchDelta = recoilSpeed.x;
-        float recoilYawDelta = recoilSpeed.y;
+        float recoilPitchDelta = recoilSpeed.x * scale;
+        float recoilYawDelta = recoilSpeed.y * scale;
 
 
         pitchToRecovery += recoilPitchDelta;

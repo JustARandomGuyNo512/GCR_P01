@@ -39,5 +39,6 @@ public class CommandFactory {
         INSTANCE.registerCommandProvider("ads_pose_limit", AdsPoseLimit::new);
         INSTANCE.registerCommandProvider("exit_ads", ExitAds::new);
         INSTANCE.registerCommandProvider("show_msg", ShowMsgCommand::new);
+        INSTANCE.registerCommandProvider("show_mag_ammo_left", ShowMagAmmoLeftCommand::new);
     }
 }

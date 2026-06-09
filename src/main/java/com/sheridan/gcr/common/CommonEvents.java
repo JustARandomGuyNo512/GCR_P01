@@ -48,7 +48,7 @@ public class CommonEvents {
             if (IGun.NONE.equals(identityID)) {
                 gun.serverInitData(eventTo);
             } else if (dataDate != serverStartTime) {
-                String modifyID = gun.getModifyID(eventTo);
+                //String modifyID = gun.getStructureID(eventTo);
                 ListTag modulesTag = gun.getModulesTag(eventTo);
                 System.out.println(modulesTag);
                 IBuilder builder = new Builder();
@@ -80,7 +80,7 @@ public class CommonEvents {
                     gun.setPropertiesTag(eventTo, properties);
 
                     gun.setDataDate(eventTo, serverStartTime);
-                    gun.mutateModifyID(eventTo, modifyID, false);
+                    gun.calcStructureID(eventTo);
                     gun.notifyDataChanged(eventTo);
                 } catch (Exception e) {
 

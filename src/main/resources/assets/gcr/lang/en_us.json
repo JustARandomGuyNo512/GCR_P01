@@ -89,7 +89,12 @@
   "gcr:prop.base.impulse": "Recoil",
   "gcr:prop.base.aiming_speed": "Ads Speed",
 
-  "gcr.ani.mag_ammo_left": "Huh? How many rounds are left? I don't know...",
+  "gcr.ani.mag_ammo_left_empty": "Empty! Damn it!",
+  "gcr.ani.mag_ammo_left_few": "Almost empty",
+  "gcr.ani.mag_ammo_left_quarter": "About 25% remaining",
+  "gcr.ani.mag_ammo_left_half": "About half remaining",
+  "gcr.ani.mag_ammo_left_three_quarters": "About 75% remaining",
+  "gcr.ani.mag_ammo_left_almost_full": "Almost full",
   "gcr.overlay.stuck": "Jam",
 
   "gcr:m4a1": "M4A1",

@@ -312,17 +312,43 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
-    public String getModifyID(ItemStack itemStack) {
+    public String getStructureID(ItemStack itemStack) {
         CompoundTag compoundTag = checkAndGetRaw(itemStack);
         return compoundTag.getString(MODIFY_ID_KEY);
     }
 
     @Override
-    public void mutateModifyID(ItemStack itemStack, String modifyID, boolean copy) {
+    public void setStructureID(ItemStack itemStack, String modifyID, boolean copy) {
         CompoundTag compoundTag = copy ? checkAndGet(itemStack) : checkAndGetRaw(itemStack);
         compoundTag.putString(MODIFY_ID_KEY, modifyID);
         CustomData.set(DataComponents.CUSTOM_DATA, itemStack, compoundTag);
     }
+
+    // ... existing code ...
+    @Override
+    public void calcStructureID(ItemStack itemStack) {
+        ListTag modulesTag = getModulesTag(itemStack);
+        String s = calcStructureID(modulesTag);
+        setStructureID(itemStack, s, true);
+    }
+
+    protected String calcStructureID(ListTag modulesTag) {
+        if (modulesTag == null || modulesTag.isEmpty()) {
+            return NONE;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < modulesTag.size(); i++) {
+            CompoundTag moduleTag = modulesTag.getCompound(i);
+            String id = moduleTag.getString("id");
+            float z = moduleTag.getFloat("z");
+
+            sb.append(id).append(":").append(String.format("%.4f", z)).append(";");
+        }
+
+        String structureInput = sb.toString();
+        return IDGenerator.genID(structureInput, 16);
+    }
+
 
     @Override
     public int getRpm(ItemStack itemStack) {
@@ -513,7 +539,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     protected CompoundTag getInitialDataTag() {
         CompoundTag dataModel = new CompoundTag();
         dataModel.putString(IDENTITY_ID_KEY, NONE);
-        dataModel.putString(MODIFY_ID_KEY, NONE);
         dataModel.putBoolean(DATA_CHANGED_KEY, false);
 
         IBuilder builder = getBuilderForInit();
@@ -537,6 +562,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         CompoundTag properties = reCalculateProperties(warehouse);
         dataModel.put(PROPERTIES_KEY, properties);
         dataModel.putLong(MODULE_DATE_KEY, Commons.getServerStartTime());
+        calcStructureID(gcrModules);
         return dataModel;
     }
 

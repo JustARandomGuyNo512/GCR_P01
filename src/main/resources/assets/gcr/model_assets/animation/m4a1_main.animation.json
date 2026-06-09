@@ -2176,7 +2176,7 @@
 			},
 			"timeline": {
 				"0.0": "c_left_arm(0.35,3.32,3.8);",
-				"1.43": "show_msg(gcr.ani.mag_ammo_left, 3.5);"
+				"1.43": "show_mag_ammo_left(2.5);"
 			}
 		},
 		"to_semi": {
