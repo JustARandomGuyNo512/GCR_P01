@@ -55,7 +55,7 @@ public class ClientEvents {
             SightPoseHandler.INSTANCE.tick(player);
             Client.getGunRenderer().tick(player);
             HardCodeAnimationHandler.getInstance().clientTick(player);
-            DrawHolsterHandler.get().tick(player.getMainHandItem());
+            DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);
         }
     }
 

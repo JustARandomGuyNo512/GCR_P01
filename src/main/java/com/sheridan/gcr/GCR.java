@@ -222,16 +222,8 @@ public class GCR {
                             "remove_stuck_length", 0.55f
                     )
             ),
-//            new DisplayData()
-//                    .setTranslation(DisplayData.FIRST_PERSON, 3f * 3.125f, -2.5f * 3.125f, -7.5f * 3.125f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
-//                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-//                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-//                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
-//                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-//                    .setTranslation(DisplayData.SPRINTING,  -14, -8, 6, -15.82f, 38.52f, 26.84f, 0.15f, 0.15f, 0.15f)
-//                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.775002f, -7.8125f, -23.4375f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.475f, -7.8125f, -23.237499f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -240,17 +232,17 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            29f, 1.6f,
-                            16f, 16f, 0.25f,
+                            29f, 1.7f,
+                            20, 13, 0.2f,
                             110.0f, 7.0f, 7.0f, 0.012f),
                     new RecoilController(
-                            1100.0f, 135f,
-                            140.0f, 14.2f,
-                            152.0f, 13.8f,
+                            1000.0f, 136f,
+                            160.0f, 14f,
+                            190.0f, 11.5f,
                             800.0f, 15.0f,
                             2.0f, 1.25f,
                             2.3f, 1.8f,
-                            12f)
+                            11f)
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
             .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasTag("barrel")))

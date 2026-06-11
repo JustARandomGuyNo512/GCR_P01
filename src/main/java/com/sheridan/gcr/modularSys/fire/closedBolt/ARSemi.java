@@ -24,6 +24,7 @@ public class ARSemi extends ARFireMode{
             gun.clientShoot(player, stack);
             sendPacket(stuck);
             IFireMode.stopFire();
+            Client.WEAPON_STATUS.setMuzzleFlashRadius((float) (4 + Math.random()));
             Client.getGunRenderer().dispatchAnimationEvent(EventType.SHOOT);
         }
     }

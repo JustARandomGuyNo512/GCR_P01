@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public class DrawHolsterHandler {
         HOLSTERING,
         DRAWING
     }
-
+    private int lastSelected = -1;
     private State state = State.IDLE;
 
     private float equipProgress = 1.0f;
@@ -53,7 +54,7 @@ public class DrawHolsterHandler {
     // =========================
     // Tick
     // =========================
-    public void tick(ItemStack newStack) {
+    public void tick(ItemStack newStack, int selectedSlot) {
         boolean prevIsGun = isGun(prevStack, "prev");
         boolean currIsGun = isGun(newStack, "curr");
         if (!prevIsGun && currIsGun) {
@@ -61,13 +62,15 @@ public class DrawHolsterHandler {
         } else if (prevIsGun && !currIsGun) {
             handleGunToNonGun();
         } else if (prevIsGun && currIsGun) {
-            if (isGunChanged(prevStack, newStack)) {
+            if (lastSelected != selectedSlot) {
+                handleGunToGun(newStack);
+            } else if (isGunChanged(prevStack, newStack)) {
                 handleGunToGun(newStack);
             }
         }
 
         updateProgress();
-
+        lastSelected = selectedSlot;
         prevStack = newStack;
     }
 
@@ -146,6 +149,7 @@ public class DrawHolsterHandler {
         duration = getDrawDuration(stack);
         renderLockedStack = stack;
         equipProgressLast = equipProgress;
+        //Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
     }
 
 
@@ -168,11 +172,9 @@ public class DrawHolsterHandler {
     }
 
 
+
     private boolean isGun(ItemStack stack, String debugMsg) {
-        if (!stack.isEmpty() && stack.getItem() instanceof GunItem gunItem) {
-            return true;
-        }
-        return false;
+        return !stack.isEmpty() && stack.getItem() instanceof GunItem;
     }
 
     public float getEquipProgress() {
@@ -188,7 +190,7 @@ public class DrawHolsterHandler {
     }
 
     private void onHolsterStart(ItemStack stack) {
-        Client.getGunRenderer().dispatchAnimationEvent(EventType.HOLSTER);
+        //Client.getGunRenderer().dispatchAnimationEvent(EventType.HOLSTER);
     }
 
 

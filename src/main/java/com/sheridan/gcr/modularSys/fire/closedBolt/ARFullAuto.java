@@ -25,6 +25,7 @@ public class ARFullAuto extends ARFireMode {
             } else {
                 Client.WEAPON_STATUS.fireCount++;
             }
+            Client.WEAPON_STATUS.setMuzzleFlashRadius((float) (4 + Math.random()));
             Client.getGunRenderer().dispatchAnimationEvent(EventType.SHOOT);
         }
     }

@@ -144,7 +144,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         Vec3 pos = shooter.getEyePosition();
 
         // 子弹速度
-        double speed = 20f;
+        double speed = 25f;
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
 

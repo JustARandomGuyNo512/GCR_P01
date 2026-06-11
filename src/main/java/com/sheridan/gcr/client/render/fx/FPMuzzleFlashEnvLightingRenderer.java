@@ -32,8 +32,8 @@ public class FPMuzzleFlashEnvLightingRenderer {
             shouldDraw = Client.WEAPON_STATUS.isHoldingGun();
             if (shouldDraw) {
                 float dist = Client.distFromLastShoot();
-                if (dist <= 0.06f) {
-                    progress = 0.06f - dist;
+                if (dist <= 0.05f) {
+                    progress = 0.05f - dist;
                 } else {
                     shouldDraw = false;
                 }
@@ -52,7 +52,7 @@ public class FPMuzzleFlashEnvLightingRenderer {
             if (!instance.options.getCameraType().isFirstPerson()) {
                 return;
             }
-            handleEffect(progress * 2.9f);
+            handleEffect(progress * 3f);
             GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT);
         }
 
