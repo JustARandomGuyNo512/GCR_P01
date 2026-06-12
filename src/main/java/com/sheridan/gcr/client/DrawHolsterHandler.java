@@ -149,12 +149,11 @@ public class DrawHolsterHandler {
         duration = getDrawDuration(stack);
         renderLockedStack = stack;
         equipProgressLast = equipProgress;
-        //Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+        Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
     }
 
 
     public void onRenderTick(ItemInHandRenderer renderer) {
-
         if (!(renderer instanceof DualHandItemAccessor accessor)) {
             return;
         }
@@ -190,7 +189,7 @@ public class DrawHolsterHandler {
     }
 
     private void onHolsterStart(ItemStack stack) {
-        //Client.getGunRenderer().dispatchAnimationEvent(EventType.HOLSTER);
+        Client.getGunRenderer().dispatchAnimationEvent(EventType.HOLSTER);
     }
 
 

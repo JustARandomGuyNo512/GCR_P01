@@ -80,7 +80,7 @@ public class CommonEvents {
                     gun.setPropertiesTag(eventTo, properties);
 
                     gun.setDataDate(eventTo, serverStartTime);
-                    gun.calcStructureID(eventTo);
+                    gun.setModifyID(eventTo, gun.getModifyID(eventTo) + 1, false);
                     gun.notifyDataChanged(eventTo);
                 } catch (Exception e) {
 

@@ -288,7 +288,8 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         }
         CompoundTag tag = checkAndGet(itemStack);
         tag.put(MODULES_KEY, nodes);
-        tag.putString(IGun.MODIFY_ID_KEY, IDGenerator.randomId());
+        int anInt = tag.getInt(MODIFY_ID_KEY);
+        tag.putInt(IGun.MODIFY_ID_KEY, anInt + 1);
         CustomData.set(DataComponents.CUSTOM_DATA, itemStack, tag);
     }
 
@@ -312,43 +313,16 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
-    public String getStructureID(ItemStack itemStack) {
+    public int getModifyID(ItemStack itemStack) {
         CompoundTag compoundTag = checkAndGetRaw(itemStack);
-        return compoundTag.getString(MODIFY_ID_KEY);
+        return compoundTag.getInt(MODIFY_ID_KEY);
     }
 
     @Override
-    public void setStructureID(ItemStack itemStack, String modifyID, boolean copy) {
-        CompoundTag compoundTag = copy ? checkAndGet(itemStack) : checkAndGetRaw(itemStack);
-        compoundTag.putString(MODIFY_ID_KEY, modifyID);
-        CustomData.set(DataComponents.CUSTOM_DATA, itemStack, compoundTag);
+    public void setModifyID(ItemStack itemStack, int modifyID, boolean copy) {
+        CompoundTag compoundTag = checkAndGetRaw(itemStack);
+        compoundTag.putInt(MODIFY_ID_KEY, modifyID);
     }
-
-    // ... existing code ...
-    @Override
-    public void calcStructureID(ItemStack itemStack) {
-        ListTag modulesTag = getModulesTag(itemStack);
-        String s = calcStructureID(modulesTag);
-        setStructureID(itemStack, s, true);
-    }
-
-    protected String calcStructureID(ListTag modulesTag) {
-        if (modulesTag == null || modulesTag.isEmpty()) {
-            return NONE;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < modulesTag.size(); i++) {
-            CompoundTag moduleTag = modulesTag.getCompound(i);
-            String id = moduleTag.getString("id");
-            float z = moduleTag.getFloat("z");
-
-            sb.append(id).append(":").append(String.format("%.4f", z)).append(";");
-        }
-
-        String structureInput = sb.toString();
-        return IDGenerator.genID(structureInput, 16);
-    }
-
 
     @Override
     public int getRpm(ItemStack itemStack) {
@@ -539,6 +513,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     protected CompoundTag getInitialDataTag() {
         CompoundTag dataModel = new CompoundTag();
         dataModel.putString(IDENTITY_ID_KEY, NONE);
+        dataModel.putInt(MODIFY_ID_KEY, -1);
         dataModel.putBoolean(DATA_CHANGED_KEY, false);
 
         IBuilder builder = getBuilderForInit();
@@ -562,7 +537,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         CompoundTag properties = reCalculateProperties(warehouse);
         dataModel.put(PROPERTIES_KEY, properties);
         dataModel.putLong(MODULE_DATE_KEY, Commons.getServerStartTime());
-        calcStructureID(gcrModules);
         return dataModel;
     }
 

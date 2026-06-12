@@ -2,8 +2,12 @@ package com.sheridan.gcr.client.recoil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
 
+import com.sheridan.gcr.client.model.modular.IGunModel;
+import com.sheridan.gcr.modularSys.modules.gunProperties.IntProp;
+import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -223,7 +227,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rawShakeRoll = -impulse.shakeRoll() * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 1.05f + RANDOM.nextFloat() * 0.1f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.9f + RANDOM.nextFloat() * 0.1f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
@@ -306,12 +310,12 @@ public class RecoilUpdater implements IRecoilUpdater {
     }
 
     @Override
-    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks) {
+    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
 
     }
 
     @Override
-    public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks) {
+    public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
         // 1. 计算插值 alpha
         float aimingProgress = Client.getAimingProgress();
         aimingProgress *= aimingProgress;
@@ -387,6 +391,7 @@ public class RecoilUpdater implements IRecoilUpdater {
     @Override
     public void setRecoilData(RecoilData data) {
         this.data = data;
+
         this.noiseTimerX = (float) (Math.random() * 200);
         this.noiseTimerY = (float) (Math.random() * 200);
         RANDOM = new SplittableRandom(System.currentTimeMillis() + (long) (Math.random() * 1000_000));

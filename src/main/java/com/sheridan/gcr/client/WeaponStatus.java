@@ -55,7 +55,7 @@ public class WeaponStatus {
     private ModuleRenderNode renderRoot;
     private Object2ObjectOpenHashMap<String, ModuleRenderNode> flatRenderNodeMap = new Object2ObjectOpenHashMap<>();
     private String identityID;
-    private String modifyID;
+    private int modifyID;
     private IFireMode<?> fireMode;
     private int fireDelay;
     public int fireCount;
@@ -133,7 +133,7 @@ public class WeaponStatus {
             if (fireMode != null) {
                 fireDelay = IFireMode.rpmToDelay(fireMode.modifyRpm(gun.getRpm(itemStack)));
             }
-            String lastModifyID = gun.getStructureID(itemStack);
+            int lastModifyID = gun.getModifyID(itemStack);
             if (!reInitModules && !Objects.equals(lastModifyID, modifyID)) {
                 reInitModules = true;
             }

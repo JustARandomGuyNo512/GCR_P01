@@ -10,9 +10,7 @@ import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
-import com.sheridan.gcr.client.model.modular.IAnimationControllerModel;
-import com.sheridan.gcr.client.model.modular.IBulletShellHandler;
-import com.sheridan.gcr.client.model.modular.IBulletShellHandlerModel;
+import com.sheridan.gcr.client.model.modular.*;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.AnimationEventBus;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventRegistry;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
@@ -63,11 +61,12 @@ public class DefaultGunRenderer implements IGunRenderer {
     private List<ModuleRenderNode> models;
     private IBulletShellHandlerModel<?> bulletShellHandlerModel;
     private String bulletShellHandlerNodeID = "";
-    private String lastFPModifyID = "";
+    private int lastFPModifyID = -1;
     private String lastFPIdentityID = "";
     private String lastUsingSightID = "";
     private boolean hideFPRender = false;
     private long lastShootMain = 0;
+
 
     //private static ItemStack lastHeldItem = ItemStack.EMPTY;
     private static final ByteBufferBuilder FP_COMMON_BUFFER = new ByteBufferBuilder(256 * 256);
@@ -89,16 +88,16 @@ public class DefaultGunRenderer implements IGunRenderer {
     private float localCameraYaw;
     private float localCameraPitch;
     private float localCameraRoll;
-
+    private List<EventType> delayedEvents = new ArrayList<>();
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
             return;
         }
         String identityId = gun.getIdentityID(itemStack);
-        String modifyId = gun.getStructureID(itemStack);
+        int modifyId = gun.getModifyID(itemStack);
 
-        boolean doUpdateCache = !Objects.equals(modifyId, lastFPModifyID) || !Objects.equals(identityId, lastFPIdentityID);
+        boolean doUpdateCache = modifyId != lastFPModifyID || !Objects.equals(identityId, lastFPIdentityID);
 
         DisplayData displayData = gun.getDisplayData();
         float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
@@ -108,9 +107,9 @@ public class DefaultGunRenderer implements IGunRenderer {
         RenderSystem.applyModelViewMatrix();
         FP_MODEL_VIEW_MAT.set(RenderSystem.getModelViewMatrix());
         setUpLightDir();
-
+        IGunModel gunModel = (IGunModel) ModuleModelRegister.get(gun);
         HardCodeAnimationHandler.getInstance().applyTransformPre(firstPersonPoseStack, gun, partialTicks, player);
-        RecoilHandler.INSTANCE.applyTransformPre(firstPersonPoseStack, Client.isAiming(), partialTicks);
+        RecoilHandler.INSTANCE.applyTransformPre(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
 
         if (cachedFPContext != null) {
             cachedFPContext.itemStack = itemStack;
@@ -121,7 +120,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         SightPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
         firstPersonPoseStack.last().pose().getTranslation(GUN_LOCAL_POS);
         HardCodeAnimationHandler.getInstance().applyTransformPost(firstPersonPoseStack, gun, partialTicks, player);
-        RecoilHandler.INSTANCE.applyTransformPost(firstPersonPoseStack, Client.isAiming(), partialTicks);
+        RecoilHandler.INSTANCE.applyTransformPost(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
 
         if (cachedFPContext == null || doUpdateCache) {
             if (doUpdateCache) {
@@ -134,7 +133,10 @@ public class DefaultGunRenderer implements IGunRenderer {
                 cachedFPContext = context;
                 newFirstPersonContextInit();
                 frameUpdate(light, overlay, partialTicks);
-                Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+                for (EventType eventType : delayedEvents) {
+                    dispatchAnimationEvent(eventType);
+                }
+                delayedEvents.clear();
                 renderFirstPerson(context);
                 lastFPModifyID = modifyId;
                 lastFPIdentityID = identityId;
@@ -271,7 +273,6 @@ public class DefaultGunRenderer implements IGunRenderer {
         localCameraPitch = 0;
         localCameraYaw = 0;
         localCameraRoll = 0;
-        AnimationHandler.INSTANCE.clearAllAnimation();
     }
 
     private void newFirstPersonContextInit() {
@@ -363,7 +364,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         if (cachedFPContext != null) {
             animationEventBus.dispatch(eventType, cachedFPContext, null);
         } else {
-            System.out.println("cachedFPContext is null");
+            delayedEvents.add(eventType);
         }
     }
 

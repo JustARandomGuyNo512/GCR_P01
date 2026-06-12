@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client.recoil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.sheridan.gcr.client.model.modular.IGunModel;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -30,15 +31,15 @@ public class RecoilHandler {
         }
     }
 
-    public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks) {
+    public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
         if (recoilUpdater != null) {
-            recoilUpdater.applyTransformPost(poseStack, aiming, particleTicks);
+            recoilUpdater.applyTransformPost(poseStack, aiming, particleTicks, model);
         }
     }
 
-    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks) {
+    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
         if (recoilUpdater != null) {
-            recoilUpdater.applyTransformPre(poseStack, aiming, particleTicks);
+            recoilUpdater.applyTransformPre(poseStack, aiming, particleTicks, model);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client.model.modular.modules;
 
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.*;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMainViewer;
@@ -13,10 +14,15 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class TestARMainModel extends ArmHandlerModel<ARView> implements IBulletShellHandlerModel<ARView>, ISightModel, IGunModel {
     private final AssaultRifleBulletShellHandler bulletShellHandler;
+    private final Bone handHoldPivot;
 
     public TestARMainModel(MeshModelData root, BulletShellDisplay display, ARMainViewer viewer) {
         super(root, viewer, GCR.RL("m4a1_main"));
         this.bulletShellHandler = new AssaultRifleBulletShellHandler(this, display);
+        this.handHoldPivot = getBone(DEFAULT_HAND_ROT_PIVOT_NAME);
+        if (handHoldPivot == null) {
+            throw new IllegalStateException("Can't find hand hold pivot bone");
+        }
     }
 
     @Override
@@ -27,5 +33,10 @@ public class TestARMainModel extends ArmHandlerModel<ARView> implements IBulletS
     @Override
     public String getFarthestSightZName(ModuleRenderContext context) {
         return DEFAULT_FARTHEST_SIGHT_Z_NAME;
+    }
+
+    @Override
+    public Bone getHandRotPivot() {
+        return handHoldPivot;
     }
 }
