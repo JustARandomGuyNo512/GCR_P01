@@ -5,8 +5,8 @@ import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
 
+import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.modular.IGunModel;
-import com.sheridan.gcr.modularSys.modules.gunProperties.IntProp;
 import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -41,7 +41,7 @@ public class RecoilUpdater implements IRecoilUpdater {
     private float basePitchVelocity = 0f;
 
     // 2. 随机震动与偏航 (Random Pitch & Yaw) - X存储随机垂直(Pitch)，Y存储随机水平(Yaw)
-    private final Vector2f randomAngularDisplacement = new Vector2f();
+    private final Vector3f randomAngularDisplacement = new Vector3f();
     private final Vector2f randomAngularVelocity = new Vector2f();
 
     // 3. 侧倾 (Roll)
@@ -131,13 +131,15 @@ public class RecoilUpdater implements IRecoilUpdater {
         basePitchDisplacement += basePitchVelocity * dt;
 
         // -- 2.2 随机震动与偏航 (Random Pitch & Yaw)
-        float k_ang_rand = controller.randomStiffness() * aimingRotFactorStiff * recoilControl;
-        float c_ang_rand = controller.randomDamping() * aimingRotFactorDamp * recoilControl;
-        float torqueRandPitch = -k_ang_rand * randomAngularDisplacement.x * 0.75f - c_ang_rand * randomAngularVelocity.x;
-        float torqueRandYaw = -k_ang_rand * randomAngularDisplacement.y - c_ang_rand * randomAngularVelocity.y;
+        float k_ang_rand_pitch = controller.randomStiffnessPitch() * aimingRotFactorStiff * recoilControl;
+        float c_ang_rand_pitch  = controller.randomDampingPitch() * aimingRotFactorDamp * recoilControl;
+        float k_ang_rand_Yaw = controller.randomStiffnessYaw() * aimingRotFactorStiff * recoilControl;
+        float c_ang_rand_Yaw  = controller.randomDampingYaw() * aimingRotFactorDamp * recoilControl;
+        float torqueRandPitch = -k_ang_rand_pitch * randomAngularDisplacement.x - c_ang_rand_pitch * randomAngularVelocity.x;
+        float torqueRandYaw = -k_ang_rand_Yaw * randomAngularDisplacement.y - c_ang_rand_Yaw * randomAngularVelocity.y;
 
         randomAngularVelocity.add(torqueRandPitch * dt, torqueRandYaw * dt);
-        randomAngularDisplacement.add(randomAngularVelocity.x * dt, randomAngularVelocity.y * dt);
+        randomAngularDisplacement.add(randomAngularVelocity.x * dt, randomAngularVelocity.y * dt, 0);
 
         // -- 2.3 侧倾 (Roll)
         float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
@@ -160,7 +162,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         recoilBackEMA = 0.1f * gunDisplacement.z + 0.9f * recoilBackEMA;
 
-        updateRecoilHeat((float) timeDist, Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.082f);
+        updateRecoilHeat(Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.082f);
         publishRenderState();
     }
 
@@ -203,16 +205,14 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         float impulseZ = impulse.impulseZ() * Math.max(0, impulseVal);
 
-        float torqueImpulseX = rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f);
+        float torqueImpulseX = (float) (rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f) * (0.9f + 0.2f * Math.random()));
 
-        float dynamicRand = Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
-                (2.8f - aimingFactor * 2.65f) *
-                stableFactor;
+        float dynamicRand = (float) (Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
+                        (2.8f - aimingFactor * 2.65f) *
+                        stableFactor * Math.pow(impulseVal, 0.66f));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
         float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
-        if (randPitch > 0) {
-            randPitch *= 0.55f;
-        }
+
         randPitch *= 1 - 0.3f * aimingFactorSqr;
         float randPitchCam = randPitch > 0 ? randPitch * 0.7f : randPitch;
         float randYawDir = randomNoiseY(noiseTimerY);
@@ -233,7 +233,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
         }
 
-        float adsShakeFactor = 1 - aimingFactor * (0.5f + RANDOM.nextFloat() * 0.5f);
+        float adsShakeFactor = 1 - aimingFactor * (0.9f + RANDOM.nextFloat() * 0.08f);
 
         float rollVelocityImpulse = rawShakeRoll * shakeFactor * adsShakeFactor;
         float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
@@ -248,7 +248,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         rollDisplacement += rollDisplacementImpulse;
 
         float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
-        float camRandomScale = 0.001f + aimingFactor * 0.07f;
+        float camRandomScale = 0.001f + aimingFactor * 0.05f;
         float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
@@ -261,7 +261,7 @@ public class RecoilUpdater implements IRecoilUpdater {
     }
 
 
-    public void updateRecoilHeat(float deltaTicks, float fireInterval, float controlMod, float recoilControlSpeed, float baseRecoveryRate) {
+    public void updateRecoilHeat(float fireInterval, float controlMod, float recoilControlSpeed, float baseRecoveryRate) {
 
         float friction = -0.35f * (controlMod - 1) + 0.95f;
         friction = Math.clamp(friction, 0.25f, 0.97f);
@@ -323,7 +323,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         double timeSinceLastUpdate = (double) (now - lastPhysicsUpdateTime);
         float alpha = (float) Math.max(0.0, Math.min(1.0, timeSinceLastUpdate / PHYSICS_TICK_NANOS));
         float recoilHeatRes = getRecoilHeat();
-        // 2. 安全地获取并插值状态
         Vector3f lerpGunDisplacement = new Vector3f();
         Vector3f lerpGunAngular = new Vector3f();
 
@@ -346,21 +345,24 @@ public class RecoilUpdater implements IRecoilUpdater {
             scale *= 1 - aimingProgress * 0.8f;
             scale *= data.getImpulse().shake();
             float omega = (1 + recoilHeatRes * 1.5f) * 21;
-            float rand = (randomSeed + 0.3f) * recoilHeatRes;
+            float rand = (randomSeed * 0.6f + 0.4f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * 0.5f);
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, rand * halfPI * 0.67f);
             shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, halfPI);
         }
 
+        Bone handRotPivot = model.getHandRotPivot();
+
+        poseStack.translate(0, 0, handRotPivot.z);
         poseStack.mulPose(new Quaternionf().rotateXYZ(
                 -(float) Math.toRadians(lerpGunAngular.x),
                 (float) Math.toRadians(lerpGunAngular.y),
                 (float) Math.toRadians(lerpGunAngular.z)
         ));
-
+        poseStack.translate(0, 0, -handRotPivot.z);
         //手臂关节不随摄像机位移，补偿位移
         float up1 = RecoilCameraHandler.getInstance().getUp();
-        double up = up1 * 0.35f * (1 - aimingProgress);
+        double up = up1 * 0.25f * (1 - aimingProgress);
         up = Math.toRadians(up);
         Matrix4f pose = poseStack.last().pose();
         Vector3f translation = pose.getTranslation(new Vector3f());
@@ -374,7 +376,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY,
+                lerpGunDisplacement.y + yDist + shakeY * 0.25f - zBack * (0.1f - aimingProgress * 0.09f),
                 zBack + zDist);
     }
 
@@ -394,12 +396,11 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         this.noiseTimerX = (float) (Math.random() * 200);
         this.noiseTimerY = (float) (Math.random() * 200);
-        RANDOM = new SplittableRandom(System.currentTimeMillis() + (long) (Math.random() * 1000_000));
 
         // 切换武器时重置状态
         this.basePitchDisplacement = 0f;
         this.basePitchVelocity = 0f;
-        this.randomAngularDisplacement.set(0f, 0f);
+        this.randomAngularDisplacement.set(0f, 0f, 0f);
         this.randomAngularVelocity.set(0f, 0f);
         this.rollDisplacement = 0f;
         this.rollVelocity = 0f;

@@ -18,7 +18,7 @@ import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ClassHotReloader {
-    private static final Path SOURCE_FILE_PATH = Paths.get("C:\\Users\\a6666\\Desktop\\GCR_P01\\src\\main\\java\\com\\sheridan\\gcr\\client\\recoil\\RecoilUpdater.java");
+    private static final Path SOURCE_FILE_PATH = Paths.get("C:\\Users\\tjy13\\IdeaProjects\\GunsCraft_Reforged\\src\\main\\java\\com\\sheridan\\gcr\\client\\recoil\\RecoilUpdater.java");
     private static final String FULL_CLASS_NAME = "com.sheridan.gcr.client.recoil.RecoilUpdater";
 
     public static void reload() {

@@ -137,7 +137,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
 
     @Override
     public float getUp() {
-        return pitchTotal;
+        return pitchToRecovery;
     }
 
     public static void _debugReloadInstance(IRecoilCameraHandler recoilCameraHandler) {
