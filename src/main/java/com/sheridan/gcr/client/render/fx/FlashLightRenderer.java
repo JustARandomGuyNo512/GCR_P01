@@ -122,10 +122,9 @@ public class FlashLightRenderer {
 
                     Vector3f dir = new Vector3f(FlashLightRenderer.direction);
                     float fovScene = Minecraft.getInstance().options.fov().get();
-                    float fovRef = 63f;
                     float scale = (float) (
                             Math.tan(Math.toRadians(fovScene * 0.5)) /
-                                    Math.tan(Math.toRadians(fovRef * 0.5))
+                                    Math.tan(Math.toRadians(35f))
                     );
                     dir.x *= scale;
                     dir.y *= scale;
