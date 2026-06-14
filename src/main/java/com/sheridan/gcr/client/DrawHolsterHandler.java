@@ -58,14 +58,14 @@ public class DrawHolsterHandler {
             handleNonGunToGun(newStack);
         } else if (prevIsGun && !currIsGun) {
             handleGunToNonGun();
-        } else if (prevIsGun && currIsGun) {
+        } else if (prevIsGun) {
             if (lastSelected != selectedSlot) {
                 handleGunToGun(newStack);
             } else if (isGunChanged(prevStack, newStack)) {
                 handleGunToGun(newStack);
             }
         } else {
-            if (!currIsGun && equipProgress > 0f && state != State.HOLSTERING) {
+            if (equipProgress > 0f && state != State.HOLSTERING) {
                 startHolster(prevStack, ItemStack.EMPTY);
             }
         }
@@ -173,18 +173,26 @@ public class DrawHolsterHandler {
      * ✅ 新增：用于判断渲染锁定的物品在本质上是否发生了改变
      */
     private boolean isRenderLockedStackChanged(ItemStack oldStack, ItemStack newStack) {
-        if (oldStack == newStack) return false;
-        if (oldStack.isEmpty() != newStack.isEmpty()) return true;
-        if (oldStack.isEmpty()) return false; // 都是 Empty
+        if (oldStack == newStack) {
+            return false;
+        }
+        if (oldStack.isEmpty() != newStack.isEmpty()) {
+            return true;
+        }
+        if (oldStack.isEmpty()) {
+            return false; // 都是 Empty
+        }
 
         // 如果物品类型变了（比如枪A换成了枪B，或者枪换成了空气/方块）
-        if (oldStack.getItem() != newStack.getItem()) return true;
+        if (oldStack.getItem() != newStack.getItem()) {
+            return true;
+        }
 
         // 如果都是枪，且内部的 Gun 实例变了（安全校验）
         if (oldStack.getItem() instanceof GunItem && newStack.getItem() instanceof GunItem) {
             IGun oldGun = ((GunItem) oldStack.getItem()).getGun();
             IGun newGun = ((GunItem) newStack.getItem()).getGun();
-            if (oldGun != newGun) return true;
+            return oldGun != newGun;
         }
 
         return false;
