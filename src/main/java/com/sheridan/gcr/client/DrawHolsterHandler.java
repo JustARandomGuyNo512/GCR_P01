@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client;
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.mixinUtils.DualHandItemAccessor;
@@ -10,7 +11,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 
 import java.util.Objects;
 
@@ -31,20 +31,16 @@ public class DrawHolsterHandler {
     private int lastSelected = -1;
     private State state = State.IDLE;
 
-    private float equipProgress = 1.0f;
-
-    private float equipProgressLast = 1.0f;
+    private float equipProgress = 0;
+    private float equipProgressLast = 0;
 
     private ItemStack prevStack = ItemStack.EMPTY;
-
-    // 当前正在渲染/操作的枪
     private ItemStack currentStack = ItemStack.EMPTY;
-
-    // 目标枪（holster结束后切换）
     private ItemStack targetStack = ItemStack.EMPTY;
 
-    // render锁
     private ItemStack renderLockedStack = ItemStack.EMPTY;
+    // ✅ 新增：用于在渲染线程记录上一帧的锁定物品
+    private ItemStack lastRenderLockedStack = ItemStack.EMPTY;
 
     private float timer = 0f;
     private float duration = 1f;
@@ -57,6 +53,7 @@ public class DrawHolsterHandler {
     public void tick(ItemStack newStack, int selectedSlot) {
         boolean prevIsGun = isGun(prevStack, "prev");
         boolean currIsGun = isGun(newStack, "curr");
+
         if (!prevIsGun && currIsGun) {
             handleNonGunToGun(newStack);
         } else if (prevIsGun && !currIsGun) {
@@ -66,6 +63,10 @@ public class DrawHolsterHandler {
                 handleGunToGun(newStack);
             } else if (isGunChanged(prevStack, newStack)) {
                 handleGunToGun(newStack);
+            }
+        } else {
+            if (!currIsGun && equipProgress > 0f && state != State.HOLSTERING) {
+                startHolster(prevStack, ItemStack.EMPTY);
             }
         }
 
@@ -89,37 +90,31 @@ public class DrawHolsterHandler {
     }
 
     private void updateProgress() {
-
         if (state == State.IDLE) {
             equipProgressLast = equipProgress;
             return;
         }
 
-        // ✅ 先保存上一帧
         equipProgressLast = equipProgress;
-
         timer += 1f;
         float t = timer / duration;
 
         if (state == State.HOLSTERING) {
-
             equipProgress = 1f - t;
 
             if (equipProgress <= 0f) {
                 equipProgress = 0f;
-
-                // 收枪完成 → 切枪
                 currentStack = targetStack;
 
                 if (isGun(targetStack, "target")) {
                     startDraw(targetStack);
                 } else {
                     state = State.IDLE;
+                    renderLockedStack = ItemStack.EMPTY;
                 }
             }
 
         } else if (state == State.DRAWING) {
-
             equipProgress = t;
 
             if (equipProgress >= 1f) {
@@ -133,10 +128,12 @@ public class DrawHolsterHandler {
         state = State.HOLSTERING;
         timer = 0f;
         equipProgressLast = equipProgress;
-        duration = getHolsterDuration(from);
+        duration = isGun(from, "from") ? getHolsterDuration(from) : 4.0f;
         renderLockedStack = from;
         targetStack = to;
-        onHolsterStart(from);
+        if (isGun(from, "from")) {
+            onHolsterStart(from);
+        }
     }
 
     public State getState() {
@@ -152,28 +149,53 @@ public class DrawHolsterHandler {
         Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
     }
 
-
+    // =========================
+    // Render Tick
+    // =========================
     public void onRenderTick(ItemInHandRenderer renderer) {
+        // ✅ 核心实现：检查 renderLockedStack 是否发生改变
+        if (isRenderLockedStackChanged(lastRenderLockedStack, renderLockedStack)) {
+            AnimationHandler.INSTANCE.clearAllAnimation();
+            // 更新记录，防止在同一帧/满足相同条件时重复触发
+            lastRenderLockedStack = renderLockedStack;
+        }
+
         if (!(renderer instanceof DualHandItemAccessor accessor)) {
             return;
         }
-        if (equipProgress > 0f && equipProgress < 1f) {
-            if (state == State.HOLSTERING) {
-                accessor.setMainHandItem(renderLockedStack);
-            } else if (state == State.DRAWING) {
-                accessor.setMainHandItem(renderLockedStack);
-            }
+        // 只有当锁定的渲染物品是枪，且在切换周期内，才劫持渲染
+        if (equipProgress > 0f && equipProgress < 1f && isGun(renderLockedStack, "render")) {
+            accessor.setMainHandItem(renderLockedStack);
         }
+    }
+
+    /**
+     * ✅ 新增：用于判断渲染锁定的物品在本质上是否发生了改变
+     */
+    private boolean isRenderLockedStackChanged(ItemStack oldStack, ItemStack newStack) {
+        if (oldStack == newStack) return false;
+        if (oldStack.isEmpty() != newStack.isEmpty()) return true;
+        if (oldStack.isEmpty()) return false; // 都是 Empty
+
+        // 如果物品类型变了（比如枪A换成了枪B，或者枪换成了空气/方块）
+        if (oldStack.getItem() != newStack.getItem()) return true;
+
+        // 如果都是枪，且内部的 Gun 实例变了（安全校验）
+        if (oldStack.getItem() instanceof GunItem && newStack.getItem() instanceof GunItem) {
+            IGun oldGun = ((GunItem) oldStack.getItem()).getGun();
+            IGun newGun = ((GunItem) newStack.getItem()).getGun();
+            if (oldGun != newGun) return true;
+        }
+
+        return false;
     }
 
     public ItemStack getRenderLockedStack() {
         return renderLockedStack;
     }
 
-
-
     private boolean isGun(ItemStack stack, String debugMsg) {
-        return !stack.isEmpty() && stack.getItem() instanceof GunItem;
+        return stack != null && !stack.isEmpty() && stack.getItem() instanceof GunItem;
     }
 
     public float getEquipProgress() {
@@ -181,7 +203,7 @@ public class DrawHolsterHandler {
     }
 
     public float getEquipProgress(float partialTicks) {
-        return equipProgressLast + (equipProgress - equipProgressLast) * partialTicks;
+        return Mth.lerp(partialTicks, equipProgressLast, equipProgress);
     }
 
     public boolean isBusy() {
@@ -191,7 +213,6 @@ public class DrawHolsterHandler {
     private void onHolsterStart(ItemStack stack) {
         Client.getGunRenderer().dispatchAnimationEvent(EventType.HOLSTER);
     }
-
 
     private float getHolsterDuration(ItemStack stack) {
         float speedFactor = getSpeedFactor();
@@ -218,12 +239,7 @@ public class DrawHolsterHandler {
         } else {
             IGun prevGun = ((GunItem) prevStack.getItem()).getGun();
             IGun newGun = ((GunItem) newStack.getItem()).getGun();
-            if (prevGun != newGun) {
-                return true;
-            }
-            String prevID = prevGun.getIdentityID(prevStack);
-            String newID = newGun.getIdentityID(newStack);
-            return !Objects.equals(prevID, newID);
+            return prevGun != newGun;
         }
     }
 }

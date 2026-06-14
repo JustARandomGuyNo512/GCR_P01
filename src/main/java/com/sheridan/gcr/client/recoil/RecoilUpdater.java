@@ -341,7 +341,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeX = 0;
         float shakeY = 0;
         if (distFromLastShoot < 1f && this.data != null) {
-            float scale = 0.5f + recoilHeatRes * 1.1f;
+            float scale = 0.8f + recoilHeatRes * 0.8f;
             scale *= 1 - aimingProgress * 0.8f;
             scale *= data.getImpulse().shake();
             float omega = (1 + recoilHeatRes * 1.5f) * 21;

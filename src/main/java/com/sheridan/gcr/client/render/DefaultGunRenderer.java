@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.animation.AnimationHandler;
+import com.sheridan.gcr.client.animation.AnimationInstance;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
@@ -37,6 +38,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -88,7 +90,9 @@ public class DefaultGunRenderer implements IGunRenderer {
     private float localCameraYaw;
     private float localCameraPitch;
     private float localCameraRoll;
-    private List<EventType> delayedEvents = new ArrayList<>();
+    private final List<EventType> delayedEvents = new ArrayList<>();
+//    private int lastSelectedSlot;
+//    private IGun lastGun;
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
@@ -96,7 +100,12 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         String identityId = gun.getIdentityID(itemStack);
         int modifyId = gun.getModifyID(itemStack);
-
+        Inventory inventory = player.getInventory();
+//        boolean slotChanged = inventory.selected != lastSelectedSlot;
+//        boolean gunChanged = gun != lastGun;
+//        boolean clearAnimation = slotChanged || gunChanged;
+//        lastGun = gun;
+//        lastSelectedSlot = inventory.selected;
         boolean doUpdateCache = modifyId != lastFPModifyID || !Objects.equals(identityId, lastFPIdentityID);
 
         DisplayData displayData = gun.getDisplayData();

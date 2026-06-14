@@ -232,18 +232,18 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            29f, 1.71f,
-                            20, 16.5f, 0.2f,
-                            115.0f, 2f, 2f, 0.014f),
+                            29f, 1.72f,
+                            21, 17f, 0.2f,
+                            115.0f, 2.7f, 2.5f, 0.014f),
                     new RecoilController(
                             1000.0f, 135f,
                             160.0f, 13f,
-                            170.0f, 11f,
-                            180.0f, 12f,
+                            175.0f, 11f,
+                            190.0f, 12f,
                             820.0f, 15.0f,
                             2.0f, 1.25f,
                             2.3f, 1.8f,
-                            11f)
+                            10f)
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
             .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasTag("barrel")))
