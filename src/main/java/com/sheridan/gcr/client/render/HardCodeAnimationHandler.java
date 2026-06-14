@@ -62,6 +62,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     @Override
     public void applyTransformPost(PoseStack poseStack, IGun gun, float partialTicks, LocalPlayer player) {
         float scale = 1 - Client.getAimingProgress();
+        //System.out.println(SprintingHandler.INSTANCE.getSprintingProgress());
         //calcSprinting(partialTicks, gun);
         finalApplyPost(poseStack, scale, scale);
     }

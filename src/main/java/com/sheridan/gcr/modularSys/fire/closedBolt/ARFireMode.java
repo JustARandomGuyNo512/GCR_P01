@@ -35,11 +35,11 @@ public abstract class ARFireMode extends FireMode<AR> {
     boolean removeStuckTaskSent = false;
     @OnlyIn(Dist.CLIENT)
     @Override
-    public boolean clientIntentToFire(Player player, ItemStack stack, AR gun) {
-//        SprintingHandler.INSTANCE.exitSprinting(Utils.secondToTick(1.3f));
-//        if (SprintingHandler.INSTANCE.getSprintingProgress() != 0) {
-//            return false;
-//        }
+    public FireControl clientIntentToFire(Player player, ItemStack stack, AR gun) {
+        SprintingHandler.INSTANCE.exitSprinting(Utils.secondToTick(1.3f));
+        if (SprintingHandler.INSTANCE.getSprintingProgress() != 0) {
+            return FireControl.CANCEL_FIRE;
+        }
         if (!GunTaskHandler.INSTANCE.blockShoot()) {//有任务在执行
             boolean stuck = gun.isStuck(stack);
             if (stuck) {
@@ -50,13 +50,13 @@ public abstract class ARFireMode extends FireMode<AR> {
                     }
                     removeStuckTaskSent = true;
                 }
-                return false;
+                return FireControl.EXIT_FIRE_STATE;
             }
             removeStuckTaskSent = false;
             int ammoLeft = gun.getGunAmmoLeft(stack);
-            return ammoLeft > 0;
+            return ammoLeft > 0 ? FireControl.ALLOW_FIRE : FireControl.EXIT_FIRE_STATE;
         }
-        return false;
+        return FireControl.EXIT_FIRE_STATE;
     }
 
     @Override

@@ -14,6 +14,12 @@ public interface IFireMode<T extends IGun> {
         return 60000 / rpm / 5;
     }
 
+    enum FireControl {
+        CANCEL_FIRE,
+        EXIT_FIRE_STATE,
+        ALLOW_FIRE
+    }
+
     /**
      * 根据枪械的基础RPM，计算并返回此模式下的最终RPM。
      * @param baseRpm 从枪械模块（枪管等）计算出的基础射速
@@ -22,7 +28,7 @@ public interface IFireMode<T extends IGun> {
     int modifyRpm(int baseRpm);
 
     @OnlyIn(Dist.CLIENT)
-    boolean clientIntentToFire(Player player, ItemStack stack, T gun);
+    FireControl clientIntentToFire(Player player, ItemStack stack, T gun);
 
     @OnlyIn(Dist.CLIENT)
     void triggerClientShoot(Player player, ItemStack stack, T gun);

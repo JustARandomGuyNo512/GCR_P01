@@ -143,14 +143,21 @@ public class Client {
                 return 0;
             }
             IFireMode fireMode = gun.getFireMode(stack);
-            if (fireMode != null && fireMode.clientIntentToFire(player, stack, gun)) {
+            if (fireMode == null) {
+                IFireMode.stopFire();
+                return 0;
+            }
+            IFireMode.FireControl fireControl = fireMode.clientIntentToFire(player, stack, gun);
+            if (fireControl == IFireMode.FireControl.ALLOW_FIRE) {
                 int delay = WEAPON_STATUS.getFireDelayTick();
                 try {
                     fireMode.triggerClientShoot(player, stack, gun);
                 } catch (Exception ignored) {}
                 return delay;
             }  else {
-                IFireMode.stopFire();
+                if (fireControl == IFireMode.FireControl.EXIT_FIRE_STATE) {
+                    IFireMode.stopFire();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

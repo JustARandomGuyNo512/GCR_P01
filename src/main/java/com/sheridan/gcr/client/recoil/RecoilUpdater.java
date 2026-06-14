@@ -209,7 +209,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         float dynamicRand = (float) (Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
                         (2.8f - aimingFactor * 2.65f) *
-                        stableFactor * Math.pow(impulseVal, 0.66f));
+                        stableFactor * Math.sqrt(impulseVal));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
         float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
 
