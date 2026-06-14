@@ -228,18 +228,18 @@ public class GCR {
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
                     .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.SPRINTING, -16, -10, 4, -14.323945f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
                             29f, 1.72f,
-                            21, 17f, 0.2f,
+                            20, 16f, 0.2f,
                             115.0f, 2.7f, 2.5f, 0.014f),
                     new RecoilController(
                             1000.0f, 135f,
                             160.0f, 13f,
+                            160.0f, 10f,
                             170.0f, 11f,
-                            180.0f, 12f,
                             820.0f, 15.0f,
                             2.0f, 1.25f,
                             2.3f, 1.8f,

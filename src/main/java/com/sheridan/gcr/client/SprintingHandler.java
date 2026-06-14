@@ -39,13 +39,12 @@ public class SprintingHandler implements ISprintingHandler{
                 float weightFactor = (float) Math.exp(-weight * 0.25f);
                 float agility = Client.WEAPON_STATUS.getAgility() * 0.16f;
 
-                exitSpeed = 0.06f + (weightFactor + agility) * 0.1f * (gun.isPistol() ? 1.25f : 1f);
+                exitSpeed = 0.05f + (weightFactor + agility) * 0.1f * (gun.isPistol() ? 1.25f : 1f);
 
-                exitSpeed = Math.min(exitSpeed, 0.4f);
-                float enterSpeed = Mth.clamp(exitSpeed * 1.2f, 0.2f, 0.4f);
+                exitSpeed = Mth.clamp(exitSpeed, 0.05f, 0.25f);
                 if (inSprinting) {
                     lastSprintingProgress = sprintingProgress;
-                    sprintingProgress = Math.min(1, sprintingProgress + enterSpeed);
+                    sprintingProgress = Math.min(1, sprintingProgress + exitSpeed);
                 } else {
                     lastSprintingProgress = sprintingProgress;
                     sprintingProgress = Math.max(0, sprintingProgress - exitSpeed);

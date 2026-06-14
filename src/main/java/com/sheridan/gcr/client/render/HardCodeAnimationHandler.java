@@ -62,7 +62,6 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     @Override
     public void applyTransformPost(PoseStack poseStack, IGun gun, float partialTicks, LocalPlayer player) {
         float scale = 1 - Client.getAimingProgress();
-        //System.out.println(SprintingHandler.INSTANCE.getSprintingProgress());
         calcSprinting(partialTicks, gun);
         finalApplyPost(poseStack, scale, scale);
     }
@@ -110,17 +109,16 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(partialTicks);
         if (sprintingProgress != 0) {
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
-            float easeOut = 1f - (1f - sprintingProgress) * (1f - sprintingProgress);
             float easeIn = sprintingProgress * sprintingProgress;
 
             float[] sprintingTranslate = displayData.getSprintingTranslate();
 
-            float tx = Mth.lerp(sprintingProgress, 0, sprintingTranslate[0]);
-            float ty = Mth.lerp(sprintingProgress, 0, sprintingTranslate[1]);
-            float tz = Mth.lerp(sprintingProgress, 0, sprintingTranslate[2]);
+            float tx = Mth.lerp(smooth, 0, sprintingTranslate[0]);
+            float ty = Mth.lerp(easeIn, 0, sprintingTranslate[1]);
+            float tz = Mth.lerp(easeIn, 0, sprintingTranslate[2]);
 
-            float rx = Mth.lerp(sprintingProgress, 0, sprintingTranslate[3]);
-            float ry = Mth.lerp(sprintingProgress, 0, sprintingTranslate[4]);
+            float rx = Mth.lerp(smooth, 0, sprintingTranslate[3]);
+            float ry = Mth.lerp(easeIn, 0, sprintingTranslate[4]);
             float rz = Mth.lerp(sprintingProgress, 0, sprintingTranslate[5]);
 
             txPost += tx;
