@@ -10,6 +10,7 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -27,6 +28,8 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
 
     private long lastUpdate;
     private float globalScale = 1f;
+    private float idleScale = 1f;
+    private float moveInertialScale = 1f;
 
     private float rxPre, ryPre, rzPre, txPre, tyPre, tzPre;
     private float rxPost, ryPost, rzPost, txPost, tyPost, tzPost;
@@ -62,7 +65,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     @Override
     public void applyTransformPost(PoseStack poseStack, IGun gun, float partialTicks, LocalPlayer player) {
         float scale = 1 - Client.getAimingProgress();
-        calcSprinting(partialTicks, gun);
+        calcSprinting(partialTicks, gun, player);
         finalApplyPost(poseStack, scale, scale);
     }
 
@@ -100,12 +103,13 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
             finalApplyPost(poseStack, aimingProgress, 0);
         }
     }
-
-    private void calcSprinting(float partialTicks, IGun gun) {
+    float sprintingStartSwing = -114514f;
+    private void calcSprinting(float partialTicks, IGun gun, Player player) {
         DisplayData displayData = gun.getDisplayData();
         if (displayData == null) {
             return;
         }
+        boolean sprinting = SprintingHandler.INSTANCE.isSprinting();
         float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(partialTicks);
         if (sprintingProgress != 0) {
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
@@ -128,12 +132,33 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
             ryPost += ry;
             rzPost += rz;
 
+            walkSwing = Math.min(player.walkDist - player.walkDistO, 0.25F);
+            walkDist = -(player.walkDist + walkSwing * partialTicks) * PI;
+            if (sprintingStartSwing == -114514f) {
+                sprintingStartSwing = walkDist + PI;
+            }
+            walkDist -= sprintingStartSwing;
+            bob = Mth.lerp(partialTicks, player.oBob, player.bob) * sprintingProgress * 3f;
 
+
+            float sin = Mth.sin(walkDist) * bob;
+            float cos = Mth.cos(walkDist) * bob;
+
+            rxPost -= Math.abs(cos) * 0.5f;
+            rxPost += Mth.sin(walkDist * 2f) * 0.15f * bob;
+            ryPost -= sin * 0.5f;
+
+            tyPost -= Math.abs(Mth.cos(walkDist - PI * 0.035F * Math.max(bob, 1.0F)) * bob);
+            tyPost += 0.3f * bob;
+            txPost += sin * 1.25f;
+
+        } else {
+            sprintingStartSwing = -114514f;
         }
     }
 
     private void calcMoveInertial() {
-        float f = globalScale * globalScale;
+        float f = moveInertialScale * moveInertialScale;
         tyPre -= MOVING_INERTIAL_HANDLER.getYOffset() * f * 0.5f;
         rzPost -= MOVING_INERTIAL_HANDLER.getXOffset() * (0.35f + f * 0.55f);
     }
@@ -143,11 +168,11 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         float f = 1 - Client.getAimingProgress() * 0.75f;
         float sin = Mth.sin(idle);
         float cos = Mth.cos(idle * 0.5f);
-        rxPre += Mth.sin(idleProgress * 0.75f) * 0.005f * globalScale * f;
-        ryPost += cos * 0.008f * globalScale * f;
-        txPre -= cos * 0.005f * globalScale * f;
-        tyPre += sin * 0.01f * globalScale * f;
-        tzPre += sin * 0.0015f * globalScale * f;
+        rxPre += Mth.sin(idleProgress * 0.75f) * 0.005f * idleScale * f;
+        ryPost += cos * 0.009f * idleScale * f;
+        txPre -= cos * 0.005f * idleScale * f;
+        tyPre += sin * 0.011f * idleScale * f;
+        tzPre += sin * 0.0015f * idleScale * f;
     }
 
     public void calcMoveBob(float partialTicks, LocalPlayer player) {
@@ -203,6 +228,10 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
                 globalScale *= 1.2f;
             }
         }
+        moveInertialScale = globalScale;
+        idleScale = globalScale;
+        float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(particleTicks);
+        globalScale *= (1 - sprintingProgress);
     }
 
     static {

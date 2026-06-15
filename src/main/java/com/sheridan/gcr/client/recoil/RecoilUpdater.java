@@ -346,7 +346,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             scale *= data.getImpulse().shake();
             float omega = (1 + recoilHeatRes * 1.5f) * 21;
             float rand = (randomSeed * 0.6f + 0.4f) * recoilHeatRes;
-            float halfPI =  (float) (Math.PI * 0.5f);
+            float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, rand * halfPI * 0.67f);
             shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, halfPI);
         }
@@ -376,7 +376,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.25f - zBack * (0.1f - aimingProgress * 0.09f),
+                lerpGunDisplacement.y + yDist + shakeY * 0.25f - zBack * (0.1f - aimingProgress * 0.08f),
                 zBack + zDist);
     }
 
