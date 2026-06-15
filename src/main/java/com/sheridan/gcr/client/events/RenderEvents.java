@@ -12,6 +12,7 @@ import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.IrisExtendRT;
+import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyScreen;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.builder.Node;
@@ -55,6 +56,9 @@ public class RenderEvents {
         if (event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             if (Client.WEAPON_STATUS.isHoldingGun()) {
                 event.setCanceled(true);
+                if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
+                    return;
+                }
                 if (Client.WEAPON_STATUS.getAimingProgress() <= 0.1f) {
                     GuiGraphics guiGraphics = event.getGuiGraphics();
                     RenderSystem.enableBlend();
@@ -133,16 +137,6 @@ public class RenderEvents {
                 finalStageDelayedRenderTask.run();
                 finalStageDelayedRenderTask = null;
             }
-        }
-    }
-    public static float fov = 70f;
-    @SubscribeEvent
-    public static void handleGunModelFov(ViewportEvent.ComputeFov event) {
-        if (event.usedConfiguredFov()) {
-            return;
-        }
-        if (Client.WEAPON_STATUS.isHoldingGun()) {
-            event.setFOV(fov);
         }
     }
 

@@ -12,7 +12,7 @@ public class GuiEvents {
     @SubscribeEvent
     public static void onRenderInventoryTab(RenderGuiLayerEvent.Pre event) {
         ResourceLocation id = event.getName();
-        if (id.equals(VanillaGuiLayers.HOTBAR) || id.equals(VanillaGuiLayers.EXPERIENCE_BAR) ||
+        if (id.equals(VanillaGuiLayers.HOTBAR) || id.equals(VanillaGuiLayers.EXPERIENCE_BAR) || id.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) ||
                 id.equals(VanillaGuiLayers.PLAYER_HEALTH) || id.equals(VanillaGuiLayers.FOOD_LEVEL)) {
             Minecraft minecraft = Minecraft.getInstance();
             if (minecraft.screen instanceof GunModifyScreen) {
