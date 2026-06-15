@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SprintingHandler implements ISprintingHandler{
-    public static SprintingHandler INSTANCE = new SprintingHandler();
+    public static ISprintingHandler INSTANCE = new SprintingHandler();
     private float sprintingProgress;
     private float lastSprintingProgress;
     private float exitSpeed;
@@ -20,7 +20,7 @@ public class SprintingHandler implements ISprintingHandler{
 
     public static void _debugReloadInstance(ISprintingHandler sprintingHandler) {
         if (!GCR.IS_DEVELOPMENT) return;
-        INSTANCE = (SprintingHandler)sprintingHandler;
+        INSTANCE = sprintingHandler;
     }
 
     public void tick(LocalPlayer player) {

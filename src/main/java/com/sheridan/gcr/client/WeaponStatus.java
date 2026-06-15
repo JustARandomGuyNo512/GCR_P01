@@ -108,12 +108,12 @@ public class WeaponStatus {
 
 
     public void onTickEnd(@NotNull Player localPlayer) {
-        if (!Client.RIGHT_BUTTON_PRESSED.get()) {
-            aimingProgressLast = aimingProgress;
-            float exitSpeed = Math.max(0.3f, aimingSpeed);
-            aimingProgress = Math.max(0, aimingProgress - exitSpeed * cantedAdsDecSpeedFactor);
-            isAiming = false;
-        }
+//        if (!Client.RIGHT_BUTTON_PRESSED.get()) {
+//            //aimingProgressLast = aimingProgress;
+//            float exitSpeed = Math.max(0.3f, aimingSpeed);
+//            aimingProgress = Math.max(0, aimingProgress - exitSpeed * cantedAdsDecSpeedFactor);
+//            isAiming = false;
+//        }
     }
 
     public void onTickStart(@NotNull Player localPlayer) {
@@ -147,8 +147,9 @@ public class WeaponStatus {
                 RecoilHandler.INSTANCE.getRecoilUpdater().setRecoilData(recoilData);
             }
             checkSight();
-            normalTick(localPlayer, gun, itemStack);
+            handleInteractiveModules();
         }
+        handleAds(localPlayer);
     }
 
     private void checkSight() {
@@ -168,43 +169,45 @@ public class WeaponStatus {
         }
     }
 
-    private void normalTick(@NotNull Player localPlayer, IGun gun, ItemStack itemStack) {
+    private void handleAds(Player localPlayer) {
+        aimingProgressLast = aimingProgress;
         if (Client.RIGHT_BUTTON_PRESSED.get()) {
-            aimingProgressLast = aimingProgress;
-            //if (aimingProgress < 1) {
+            if (aimingProgress < 1) {
                 aimingProgress = Math.min(1, aimingProgress + aimingSpeed * cantedAdsIncSpeedFactor);
-
-                float sprinting = 1 - SprintingHandler.INSTANCE.getSprintingProgress();
-                float r1 = 1.001f - aimingProgress;
-                float r2 = 1.001f - sprinting;
-                aimingProgress = (aimingProgress * r1 + sprinting * r2) / (r1 + r2);
-            //}
+            }
+            float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress();
+            float sprinting = 1 - sprintingProgress * sprintingProgress;
+            float r1 = 1.001f - aimingProgress;
+            float r2 = 1.001f - sprinting;
+            aimingProgress = (aimingProgress * r1 + sprinting * r2) / (r1 + r2);
             isAiming = true;
         } else {
+            float exitSpeed = Math.max(0.3f, aimingSpeed);
+            aimingProgress = Math.max(0, aimingProgress - exitSpeed * cantedAdsDecSpeedFactor);
             isAiming = false;
         }
-        if (aimingProgress > 0) {
-            AttributeInstance attr = localPlayer.getAttribute(Attributes.MOVEMENT_SPEED);
-            if (attr != null) {
-                if (isAiming) {
-                    if (attr.getModifier(SPEED_ID) == null) {
-                        double speedBonus = calcAdsSpeedModifier();
-                        if (speedBonus != 0) {
-                            attr.addTransientModifier(
-                                    new AttributeModifier(
-                                            SPEED_ID,
-                                            speedBonus,
-                                            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
-                                    )
-                            );
-                        }
+        if (localPlayer == null) {
+            return;
+        }
+        AttributeInstance attr = localPlayer.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (attr != null) {
+            if (isAiming) {
+                if (attr.getModifier(SPEED_ID) == null) {
+                    double speedBonus = calcAdsSpeedModifier();
+                    if (speedBonus != 0) {
+                        attr.addTransientModifier(
+                                new AttributeModifier(
+                                        SPEED_ID,
+                                        speedBonus,
+                                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                                )
+                        );
                     }
-                } else if (aimingProgress < 0.5f) {
-                    attr.removeModifier(SPEED_ID);
                 }
+            } else if (aimingProgress < 0.5f) {
+                attr.removeModifier(SPEED_ID);
             }
         }
-        handleInteractiveModules();
     }
 
     public float calcAdsSpeedModifier() {

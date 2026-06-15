@@ -275,7 +275,7 @@ public class GCR {
 
     public static final IModular PEQ_15 = new PEQ15(
             RL( "peq_15"),
-            0.22f, 15, 60, 17,
+            0.22f, 13, 60, 12,
             Direction.UPPER,
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/peq_15_voxel.geo.json"))
     ).addTags("on_rail", "all_rail_direction", "m_lok_rail_fit");

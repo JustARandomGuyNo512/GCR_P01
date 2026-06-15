@@ -25,6 +25,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     private static final float PI = (float) Math.PI;
     /** 闲置/呼吸动画的计时器 (跨帧保持状态) */
     private float idleProgress = 0;
+    private float aimingProgress = 0;
 
     private long lastUpdate;
     private float globalScale = 1f;
@@ -64,7 +65,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
 
     @Override
     public void applyTransformPost(PoseStack poseStack, IGun gun, float partialTicks, LocalPlayer player) {
-        float scale = 1 - Client.getAimingProgress();
+        float scale = 1 - aimingProgress;
         calcSprinting(partialTicks, gun, player);
         finalApplyPost(poseStack, scale, scale);
     }
@@ -73,7 +74,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         if (rScale < 1e-5 && tScale < 1e-5) {
             return;
         }
-        float f = 1 - Client.getAimingProgress() * 0.3f;
+        float f = 1 - aimingProgress * 0.3f;
         f *= rScale;
         if (tScale > 1e-5) {
             poseStack.translate(txPost * tScale, tyPost * tScale, tzPost * tScale);
@@ -88,7 +89,6 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     }
 
     private void finalApplyPre(PoseStack poseStack) {
-        float aimingProgress = Client.getAimingProgress();
         float f = 1 - aimingProgress * 0.65f;
         float f2 = 1 - aimingProgress * 0.35f;
         poseStack.translate(txPre * f, tyPre * f, tzPre * f);
@@ -110,6 +110,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
             return;
         }
         float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(partialTicks);
+
         if (sprintingProgress != 0) {
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
             float easeIn = sprintingProgress * sprintingProgress;
@@ -164,7 +165,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
 
     private void calcIdle() {
         float idle = idleProgress * 1.5f;
-        float f = 1 - Client.getAimingProgress() * 0.75f;
+        float f = 1 - aimingProgress * 0.75f;
         float sin = Mth.sin(idle);
         float cos = Mth.cos(idle * 0.5f);
         rxPre += Mth.sin(idleProgress * 0.75f) * 0.005f * idleScale * f;
@@ -210,6 +211,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     }
 
     public void updateOnRenderTick(float particleTicks) {
+        aimingProgress = Client.getAimingProgress(particleTicks);
         long now = System.nanoTime();
         if (lastUpdate == 0) {
             lastUpdate = now - 1_000_000;

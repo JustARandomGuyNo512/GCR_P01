@@ -124,7 +124,7 @@ public class FlashLightRenderer {
                     float fovScene = Minecraft.getInstance().options.fov().get();
                     float scale = (float) (
                             Math.tan(Math.toRadians(fovScene * 0.5)) /
-                                    Math.tan(Math.toRadians(33.5f))
+                                    Math.tan(Math.toRadians(32.5f))
                     );
                     dir.x *= scale;
                     dir.y *= scale;
