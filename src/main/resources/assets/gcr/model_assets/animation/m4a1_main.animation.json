@@ -1143,23 +1143,21 @@
 						}
 					},
 					"position": {
-						"0.93": [0, 0, 0],
-						"1.0": [1, 0, -1],
 						"1.43": {
-							"pre": [2, 0, -1],
-							"post": [2, 0, -1],
+							"pre": [0, 0, 0],
+							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
 						"1.51": {
-							"post": [2.79367, 0.55973, -1.37191],
+							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
 						"1.57": {
-							"post": [2.35433, 0.18311, -1.5374],
+							"post": [0.47022, 0.02073, -0.34418],
 							"lerp_mode": "catmullrom"
 						},
 						"1.66": {
-							"post": [1.82725, -1.03424, -1.41151],
+							"post": [0.54925, -0.22876, -0.99542],
 							"lerp_mode": "catmullrom"
 						},
 						"1.79": {
@@ -1371,15 +1369,15 @@
 							"lerp_mode": "catmullrom"
 						},
 						"0.2583": {
-							"post": [0.99619, 0.08716, 0],
+							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
 						"0.6667": {
-							"post": [0.99619, -0.08716, 0],
+							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
 						"0.7917": {
-							"post": [2.03316, -0.73389, 1.02731],
+							"post": [1.06625, -0.58396, 1.23373],
 							"lerp_mode": "catmullrom"
 						},
 						"0.85": {
@@ -2176,7 +2174,7 @@
 			},
 			"timeline": {
 				"0.0": "c_left_arm(0.35,3.32,3.8);",
-				"1.43": "show_mag_ammo_left(2.5);"
+				"1.43": "show_msg(gcr.ani.mag_ammo_left, 3.5);"
 			}
 		},
 		"to_semi": {
@@ -3430,6 +3428,7 @@
 			},
 			"timeline": {
 				"0.0": "c_left_arm(0.37,2.07,2.48);",
+				"0.85": "ads_pose_limit(camera, 0.2, 0.2);",
 				"0.9": "ads_pose_limit(global, 0.2, 0.1);",
 				"1.0": "mask_mag_ammo;"
 			}
@@ -3975,6 +3974,7 @@
 			},
 			"timeline": {
 				"0.0": "c_left_arm(0.36,3,3.36);",
+				"0.85": "ads_pose_limit(camera, 0.2, 0.2);",
 				"0.9": "ads_pose_limit(global, 0.2, 0.1);",
 				"1.0": "mask_mag_ammo;"
 			}
@@ -4467,6 +4467,7 @@
 			},
 			"timeline": {
 				"0.0": "c_left_arm(0.36,2.65,2.99);",
+				"0.85": "ads_pose_limit(camera, 0.2, 0.2);",
 				"0.9": "ads_pose_limit(global, 0.2, 0.1);",
 				"1.0": "mask_mag_ammo;"
 			}
@@ -4896,9 +4897,6 @@
 					"effect": "ar_arm_wave"
 				}
 			}
-		},
-		"animation": {
-			"loop": true
 		}
 	}
 }

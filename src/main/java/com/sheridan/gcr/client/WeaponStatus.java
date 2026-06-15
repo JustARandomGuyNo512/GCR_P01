@@ -174,10 +174,10 @@ public class WeaponStatus {
             //if (aimingProgress < 1) {
                 aimingProgress = Math.min(1, aimingProgress + aimingSpeed * cantedAdsIncSpeedFactor);
 
-//                float sprinting = 1 - SprintingHandler.INSTANCE.getSprintingProgress();
-//                float r1 = 1.001f - aimingProgress;
-//                float r2 = 1.001f - sprinting;
-//                aimingProgress = (aimingProgress * r1 + sprinting * r2) / (r1 + r2);
+                float sprinting = 1 - SprintingHandler.INSTANCE.getSprintingProgress();
+                float r1 = 1.001f - aimingProgress;
+                float r2 = 1.001f - sprinting;
+                aimingProgress = (aimingProgress * r1 + sprinting * r2) / (r1 + r2);
             //}
             isAiming = true;
         } else {

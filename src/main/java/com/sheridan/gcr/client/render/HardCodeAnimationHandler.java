@@ -109,7 +109,6 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         if (displayData == null) {
             return;
         }
-        boolean sprinting = SprintingHandler.INSTANCE.isSprinting();
         float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(partialTicks);
         if (sprintingProgress != 0) {
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
