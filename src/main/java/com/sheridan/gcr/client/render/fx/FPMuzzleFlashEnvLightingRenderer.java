@@ -12,6 +12,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.*;
 
 import static org.lwjgl.opengl.GL11C.GL_ONE;
@@ -23,7 +24,7 @@ public class FPMuzzleFlashEnvLightingRenderer {
     public static float progress = 0;
 
     static {
-        Stage.HIGH.addTask(new Task((partialTicks) -> onRender()).forever());
+        Stage.HIGH.addTask(new Task((event) -> onRender()).forever());
     }
 
     @SubscribeEvent

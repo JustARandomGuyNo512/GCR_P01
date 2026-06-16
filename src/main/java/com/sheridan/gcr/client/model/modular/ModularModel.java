@@ -156,4 +156,12 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             }
         }
     }
+
+    public Bone getOrThrow(String boneName) {
+        Bone bone = getBone(boneName);
+        if (bone == null) {
+            throw new RuntimeException("can't find bone: " + boneName);
+        }
+        return bone;
+    }
 }

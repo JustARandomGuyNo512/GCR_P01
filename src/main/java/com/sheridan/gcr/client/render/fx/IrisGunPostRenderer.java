@@ -27,7 +27,7 @@ import static org.lwjgl.opengl.GL11C.GL_SRC_ALPHA;
 @OnlyIn(Dist.CLIENT)
 public class IrisGunPostRenderer {
     static {
-        Stage.LOWEST.addTask(new Task((p) -> IrisGunPostRenderer.onRender()).forever());
+        Stage.LOWEST.addTask(new Task((event) -> IrisGunPostRenderer.onRender()).forever());
     }
 
     static boolean shouldRender = false;

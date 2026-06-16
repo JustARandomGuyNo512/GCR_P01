@@ -110,6 +110,7 @@ public class SightPoseHandler {
         return currentPos;
     }
 
+    @Deprecated
     public float getCurrentFov(float adsProgress) {
         return Mth.lerp(adsProgress, fromFovModifier, toFovModifier);
     }
@@ -164,7 +165,6 @@ public class SightPoseHandler {
                     Mth.lerp(aimingProgress, fpTrans[5], rot[2]));
 
             poseStack.mulPose(rotQuat);
-
             poseStack.translate(
                     Mth.lerp(aimingProgress, fpTrans[0], pos[0]),
                     Mth.lerp(aimingProgress * aimingProgress, fpTrans[1], pos[1]),

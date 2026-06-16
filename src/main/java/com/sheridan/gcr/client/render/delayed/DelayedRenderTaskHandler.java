@@ -12,12 +12,11 @@ public class DelayedRenderTaskHandler {
     @SubscribeEvent
     public static void onRenderLevelLast(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            float realtimeDeltaTicks = event.getPartialTick().getRealtimeDeltaTicks();
-            Stage.HIGHEST.handleTasks(realtimeDeltaTicks);
-            Stage.HIGH.handleTasks(realtimeDeltaTicks);
-            Stage.NORMAL.handleTasks(realtimeDeltaTicks);
-            Stage.LOW.handleTasks(realtimeDeltaTicks);
-            Stage.LOWEST.handleTasks(realtimeDeltaTicks);
+            Stage.HIGHEST.handleTasks(event);
+            Stage.HIGH.handleTasks(event);
+            Stage.NORMAL.handleTasks(event);
+            Stage.LOW.handleTasks(event);
+            Stage.LOWEST.handleTasks(event);
         }
     }
 

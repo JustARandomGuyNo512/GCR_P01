@@ -1,7 +1,9 @@
 package com.sheridan.gcr.client.model.modular;
 
+import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.fx.LaserEffectRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.vehicle.Minecart;
@@ -24,6 +26,11 @@ public class LaserSighRenderer {
         //TODO:
         // 1.render long laser ray(if blocked, render short ray)
         // 2.addWorldLaserEffect
+        Bone laserPoseBone = laserSightModel.getLaserPoseBone();
+        LaserEffectRenderer.recordEffectCall(
+                context.currentRenderNode().id,
+                laserPoseBone.renderStatus.pose,
+                context);
     }
 
     public void renderGeneric(ModuleRenderContext context) {

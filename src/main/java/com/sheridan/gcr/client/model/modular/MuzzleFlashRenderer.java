@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -90,7 +91,7 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                         } else {
                             final Matrix4f modelViewMat = Client.getGunRenderer().firstPersonModelViewMat();
                             Stage.LOW.addTask(
-                                    new Task((partialTicks) -> deferredRender(modelViewMat, entry, bonePose, startTime)));
+                                    new Task((RenderLevelStageEvent event) -> deferredRender(modelViewMat, entry, bonePose, startTime)));
                         }
                         Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
                     }

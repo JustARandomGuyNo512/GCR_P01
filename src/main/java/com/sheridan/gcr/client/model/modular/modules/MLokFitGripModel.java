@@ -18,14 +18,8 @@ public class MLokFitGripModel extends ArmHandlerModel<IStateView> {
 
     public MLokFitGripModel(MeshModelData root) {
         super(root, IStateViewer.EMPTY, GCR.RL(""));
-        mLokBone = getBone("M_LOK");
-        main = getBone("MAIN");
-        if (mLokBone == null) {
-            throw new RuntimeException("Can't find M_LOK bone");
-        }
-        if (main == null) {
-            throw new RuntimeException("Can't find MAIN bone");
-        }
+        mLokBone = getOrThrow("M_LOK");
+        main = getOrThrow("MAIN");
     }
 
     @Override

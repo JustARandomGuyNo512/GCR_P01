@@ -3,6 +3,8 @@ package com.sheridan.gcr.client.model.modular.modules;
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.IFlashLightHandlerModel;
+import com.sheridan.gcr.client.model.modular.ILaserSightModel;
+import com.sheridan.gcr.client.model.modular.LaserSighRenderer;
 import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.FlashLightStatesViewer;
@@ -14,22 +16,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.awt.*;
+
 @OnlyIn(Dist.CLIENT)
-public class PEQ15Model extends ModularModel implements IFlashLightHandlerModel, IStateViewerModel<IFlashLightView> {
+public class PEQ15Model extends ModularModel implements IFlashLightHandlerModel, IStateViewerModel<IFlashLightView>, ILaserSightModel {
     private final FlashLightStatesViewer viewer;
     private final Bone mLokBone;
     private final Bone main;
+    private final Bone laserSource;
+    private final LaserSighRenderer renderer;
     public PEQ15Model(MeshModelData root, ResourceLocation name, FlashLightStatesViewer viewer) {
         super(root, name);
         this.viewer = viewer;
-        mLokBone = getBone("M_LOK");
-        main = getBone("MAIN");
-        if (mLokBone == null) {
-            throw new RuntimeException("Can't find M_LOK bone");
-        }
-        if (main == null) {
-            throw new RuntimeException("Can't find MAIN bone");
-        }
+        mLokBone = getOrThrow("M_LOK");
+        main = getOrThrow("MAIN");
+        laserSource = getOrThrow("LASER");
+        renderer = new LaserSighRenderer(this, Color.GREEN.getRGB());
     }
 
     @Override
@@ -65,4 +67,13 @@ public class PEQ15Model extends ModularModel implements IFlashLightHandlerModel,
         return viewer;
     }
 
+    @Override
+    public Bone getLaserPoseBone() {
+        return laserSource;
+    }
+
+    @Override
+    public LaserSighRenderer getRenderer() {
+        return renderer;
+    }
 }

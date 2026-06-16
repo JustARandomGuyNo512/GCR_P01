@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render.delayed;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +21,10 @@ public enum Stage {
         this.tasks = tasks;
     }
 
-    void handleTasks(float partialTicks) {
+    void handleTasks(RenderLevelStageEvent event) {
         for (int i = 0; i < tasks.size(); ) {
             Task task = tasks.get(i);
-            task.run(partialTicks);
+            task.run(event);
             if (task.isDone()) {
                 tasks.remove(i);
             } else {

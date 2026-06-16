@@ -19,10 +19,7 @@ public class TestARMainModel extends ArmHandlerModel<ARView> implements IBulletS
     public TestARMainModel(MeshModelData root, BulletShellDisplay display, ARMainViewer viewer) {
         super(root, viewer, GCR.RL("m4a1_main"));
         this.bulletShellHandler = new AssaultRifleBulletShellHandler(this, display);
-        this.handHoldPivot = getBone(DEFAULT_HAND_ROT_PIVOT_NAME);
-        if (handHoldPivot == null) {
-            throw new IllegalStateException("Can't find hand hold pivot bone");
-        }
+        this.handHoldPivot = getOrThrow(DEFAULT_HAND_ROT_PIVOT_NAME);
     }
 
     @Override
