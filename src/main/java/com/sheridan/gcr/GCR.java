@@ -223,7 +223,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.275f, -7.8125f, -23.237499f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.275f, -7.8125f, -23.2375f, 0, 0, 0, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -549,7 +549,7 @@ public class GCR {
             NeoForge.EVENT_BUS.register(DelayedRenderTaskHandler.class);
             NeoForge.EVENT_BUS.register(IrisGunPostRenderer.class);
             NeoForge.EVENT_BUS.register(GunEffectManager.class);
-            LaserEffectRenderer.init();
+            NeoForge.EVENT_BUS.register(LaserEffectRenderer.class);
             Client.onClientSetup(event);
 
             Collection<DeferredHolder<Item, ? extends Item>> entries = ITEMS.getEntries();

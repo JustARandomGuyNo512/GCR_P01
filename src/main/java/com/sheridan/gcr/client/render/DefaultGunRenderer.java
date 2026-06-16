@@ -91,8 +91,7 @@ public class DefaultGunRenderer implements IGunRenderer {
     private float localCameraPitch;
     private float localCameraRoll;
     private final List<EventType> delayedEvents = new ArrayList<>();
-//    private int lastSelectedSlot;
-//    private IGun lastGun;
+
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
@@ -100,14 +99,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         String identityId = gun.getIdentityID(itemStack);
         int modifyId = gun.getModifyID(itemStack);
-        Inventory inventory = player.getInventory();
-//        boolean slotChanged = inventory.selected != lastSelectedSlot;
-//        boolean gunChanged = gun != lastGun;
-//        boolean clearAnimation = slotChanged || gunChanged;
-//        lastGun = gun;
-//        lastSelectedSlot = inventory.selected;
         boolean doUpdateCache = modifyId != lastFPModifyID || !Objects.equals(identityId, lastFPIdentityID);
-
         DisplayData displayData = gun.getDisplayData();
         float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         firstPersonPoseStack.setIdentity();

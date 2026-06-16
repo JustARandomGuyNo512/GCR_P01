@@ -82,7 +82,7 @@ public class FlashLightRenderer {
         }
     }
 
-    public static void renderFlashLight(float partialTicks) {
+    public static void renderFlashLight(RenderLevelStageEvent event) {
         if (doEffect && !failedLoadingFlashLightShader) {
             Player player = Minecraft.getInstance().player;
             if (player == null) {
@@ -147,7 +147,7 @@ public class FlashLightRenderer {
                         pass.getEffect().safeGetUniform("Mode").set(1);
                         pass.getEffect().safeGetUniform("TexelSize").set(1.0f / lastWidth, 1.0f / lastHeight);
                     }
-
+                    float partialTicks = event.getPartialTick().getRealtimeDeltaTicks();
                     flashlight.process(partialTicks, (p) -> {
                         if (Minecraft.useShaderTransparency()) {
                             for(int i = 0; i < p.auxAssets.size(); ++i) {

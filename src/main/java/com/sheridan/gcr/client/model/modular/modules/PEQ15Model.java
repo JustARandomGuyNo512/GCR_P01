@@ -57,6 +57,16 @@ public class PEQ15Model extends ModularModel implements IFlashLightHandlerModel,
     }
 
     @Override
+    public void render(ModuleRenderContext context) {
+        super.render(context);
+        if (context.isFirstPerson()) {
+            renderer.renderFirstPerson(context);
+        } else if (context.isThirdPerson()) {
+            renderer.renderGeneric(context);
+        }
+    }
+
+    @Override
     public Bone getLightDirPoseBone() {
         return getRootBone();
     }

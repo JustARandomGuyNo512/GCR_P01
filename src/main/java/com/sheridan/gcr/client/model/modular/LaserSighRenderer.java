@@ -22,12 +22,13 @@ public class LaserSighRenderer {
     }
 
 
-    public void renderFirstPerson(FirstPersonRenderContext context) {
+    public void renderFirstPerson(ModuleRenderContext context) {
         //TODO:
         // 1.render long laser ray(if blocked, render short ray)
-        // 2.addWorldLaserEffect
+        // 2.addWorldLaserEffect(if blocked, return)
         Bone laserPoseBone = laserSightModel.getLaserPoseBone();
         LaserEffectRenderer.recordEffectCall(
+                color,
                 context.currentRenderNode().id,
                 laserPoseBone.renderStatus.pose,
                 context);
@@ -35,9 +36,5 @@ public class LaserSighRenderer {
 
     public void renderGeneric(ModuleRenderContext context) {
         //TODO: render short ray
-    }
-
-    private void addWorldLaserEffect() {
-
     }
 }
