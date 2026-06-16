@@ -1,7 +1,6 @@
 package com.sheridan.gcr.client;
 
 import com.sheridan.gcr.Client;
-import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import net.minecraft.client.player.LocalPlayer;
@@ -10,18 +9,13 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class SprintingHandler implements ISprintingHandler{
-    public static ISprintingHandler INSTANCE = new SprintingHandler();
+public class SprintingHandler{
+    public static SprintingHandler INSTANCE = new SprintingHandler();
     private float sprintingProgress;
     private float lastSprintingProgress;
     private float exitSpeed;
     private boolean inSprinting;
     private int sprintingCoolDown;
-
-    public static void _debugReloadInstance(ISprintingHandler sprintingHandler) {
-        if (!GCR.IS_DEVELOPMENT) return;
-        INSTANCE = sprintingHandler;
-    }
 
     public void tick(LocalPlayer player) {
         if (player != null) {
