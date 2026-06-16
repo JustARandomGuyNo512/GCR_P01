@@ -227,7 +227,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rawShakeRoll = -impulse.shakeRoll() * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.9f + RANDOM.nextFloat() * 0.1f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.85f + RANDOM.nextFloat() * 0.1f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
