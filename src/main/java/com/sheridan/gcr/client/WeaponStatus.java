@@ -53,7 +53,8 @@ public class WeaponStatus {
     public boolean isAiming;
     private Node root;
     private ModuleRenderNode renderRoot;
-    private Object2ObjectOpenHashMap<String, ModuleRenderNode> flatRenderNodeMap = new Object2ObjectOpenHashMap<>();
+
+    private final Object2ObjectOpenHashMap<String, ModuleRenderNode> flatRenderNodeMap = new Object2ObjectOpenHashMap<>();
     private String identityID;
     private int modifyID;
     private IFireMode<?> fireMode;
@@ -89,6 +90,18 @@ public class WeaponStatus {
 
     public WeaponStatus() {
 
+    }
+
+    public ModuleRenderNode getRenderRoot() {
+        return renderRoot;
+    }
+
+    public Object2ObjectOpenHashMap<String, ModuleRenderNode> getFlatRenderNodeMap() {
+        return flatRenderNodeMap;
+    }
+
+    public Object2ObjectOpenHashMap<String, IModularModel> getIDToModels() {
+        return IDToModels;
     }
 
     public float getAimingProgress() {
