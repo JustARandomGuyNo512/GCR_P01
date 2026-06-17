@@ -181,9 +181,9 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         bob = Mth.lerp(partialTicks, player.oBob, player.bob) * globalScale;
 
         txPre += bob * Mth.sin(walkDist) * 0.07f;
-        tyPre -= bob * (0.62f - Math.abs(Mth.cos(walkDist - PI * 0.1f))) * 0.35f;
+        tyPre -= bob * (0.5f - Math.abs(Mth.cos(walkDist - PI * 0.1f))) * 0.35f;
         tzPost += bob * Math.abs(Mth.sin(walkDist - PI * 0.013F)) * 0.014f + bob * 0.18f;
-        rxPost += (Math.abs(Mth.cos(walkDist - PI * 0.02F * bob)) - Mth.clamp(- walkDist * bob, 0, 0.4f)) * bob * 0.175f;
+        rxPost += (Math.abs(Mth.cos(walkDist - PI * 0.02F * bob)) - Mth.clamp(- walkDist * bob, 0, 0.3f)) * bob * 0.175f;
 
         rzPost -= Mth.clamp(Mth.sin(walkDist * 2f) * 1.1f, -1f, 1f) * bob * 0.06f;
     }

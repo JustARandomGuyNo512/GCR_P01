@@ -576,6 +576,7 @@ public class GCR {
             RenderSystem.recordRenderCall(ScopeViewShadingShader::init);
             RenderSystem.recordRenderCall(IrisGunPostShader::init);
             RenderSystem.recordRenderCall(DepthCopyShader::init);
+            RenderSystem.recordRenderCall(LaserGlowShader::init);
         }
 
         @SubscribeEvent

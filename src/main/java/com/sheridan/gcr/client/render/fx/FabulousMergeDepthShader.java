@@ -41,7 +41,7 @@ public class FabulousMergeDepthShader {
     public static void init() {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
 
-        ResourceLocation vshPath = GCR.RL("shaders/core/muzzle_flash.vsh"); // 复用你的全屏 VSH
+        ResourceLocation vshPath = GCR.RL("shaders/core/muzzle_flash_env.vsh"); // 复用你的全屏 VSH
         ResourceLocation fshPath = GCR.RL("shaders/core/fabulous_merge_depth.fsh");
 
         String vshSource = load(manager, vshPath);
