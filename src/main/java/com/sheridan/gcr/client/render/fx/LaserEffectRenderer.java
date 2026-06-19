@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.minecraft.client.Camera;
@@ -46,7 +47,7 @@ public class LaserEffectRenderer {
     private static String lastIdentityID = "";
     private static boolean structureChanged = false;
 
-    public static void recordEffectCall(int color, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
+    public static void recordEffectCall(int color, boolean firstPerson, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
         if (!structureChanged) {
             int modifyID = context.gun.getModifyID(context.itemStack);
             String identityID = context.gun.getIdentityID(context.itemStack);
@@ -58,9 +59,12 @@ public class LaserEffectRenderer {
         }
 
         Matrix4f poseMatrix = laserSourcePose.pose();
-        Vector3f localPos = poseMatrix.transformPosition(new Vector3f(0, 0, 0));
+        Vector3f localPos = poseMatrix.getTranslation(new Vector3f());
+        if (firstPerson) {
+            localPos.add(0, 0, - Client.getGunRenderer().getGunLocalPos().z);
+        }
         Vector3f localDir = poseMatrix.transformDirection(new Vector3f(0, 0, -1)).normalize();
-        localPos.mul(0.1f);
+        localPos.mul(0.25f);
 
         activeNodes.compute(currentNodeId, (id, state) -> {
             if (state == null) {
@@ -193,7 +197,6 @@ public class LaserEffectRenderer {
         GL20.glUniformMatrix4fv(LaserGlowShader.projMatLoc, false, matBuffer);
 
         PoseStack poseStack = new PoseStack();
-        poseStack.pushPose();
         poseStack.mulPose(modelViewMat);
         for (NodeState node : activeNodes.values()) {
             if (node.lastHitPos != null) {
@@ -201,9 +204,10 @@ public class LaserEffectRenderer {
                 double renderY = node.lastHitPos.y - camPos.y;
                 double renderZ = node.lastHitPos.z - camPos.z;
 
+                poseStack.pushPose();
                 poseStack.translate(renderX, renderY, renderZ);
 
-                float scale = 1F;
+                float scale = 0.05F;
                 poseStack.scale(scale, scale, scale);
                 Matrix4f modelViewMatrix = poseStack.last().pose();
                 modelViewMatrix.get(matBuffer);
@@ -212,6 +216,7 @@ public class LaserEffectRenderer {
                 GL20.glUniform4f(LaserGlowShader.glowColorLoc, 0.0f, 0.7f, 1.0f, 1.0f);
 
                 GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, LaserGlowShader.vertexCount);
+                poseStack.popPose();
             }
             node.recorded = false;
         }
@@ -232,7 +237,6 @@ public class LaserEffectRenderer {
         if (dotDir < 0.99f) {
             return false;
         }
-
         Vector3f offset = new Vector3f(n2.localPos).sub(n1.localPos);
         float distance = offset.length();
         if (distance < 0.01f) {
@@ -249,8 +253,8 @@ public class LaserEffectRenderer {
         Vector3f localPos = new Vector3f();
         Vector3f localDir = new Vector3f();
         Vec3 lastHitPos = null;
-        Direction hitDirection = null; // 新增字段：用于记录命中的面方向
-        boolean recorded = false; // 代替原来的时间戳戳标记
+        Direction hitDirection = null;
+        boolean recorded = false;
 
         NodeState(String id) {
             this.id = id;

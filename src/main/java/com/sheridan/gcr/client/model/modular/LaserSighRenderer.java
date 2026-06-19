@@ -29,6 +29,7 @@ public class LaserSighRenderer {
         Bone laserPoseBone = laserSightModel.getLaserPoseBone();
         LaserEffectRenderer.recordEffectCall(
                 color,
+                true,
                 context.currentRenderNode().id,
                 laserPoseBone.renderStatus.pose,
                 context);

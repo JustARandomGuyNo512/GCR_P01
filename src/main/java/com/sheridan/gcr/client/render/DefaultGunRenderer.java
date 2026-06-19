@@ -69,8 +69,6 @@ public class DefaultGunRenderer implements IGunRenderer {
     private boolean hideFPRender = false;
     private long lastShootMain = 0;
 
-
-    //private static ItemStack lastHeldItem = ItemStack.EMPTY;
     private static final ByteBufferBuilder FP_COMMON_BUFFER = new ByteBufferBuilder(256 * 256);
     private static final SequencedMap<RenderType, ByteBufferBuilder> FP_IMMEDIATE_BUFFERS = new Object2ObjectLinkedOpenHashMap<>();
     private static final MultiBufferSource.BufferSource FP_BUFFER_SOURCE = MultiBufferSource
@@ -80,8 +78,6 @@ public class DefaultGunRenderer implements IGunRenderer {
     private static final MultiBufferSource.BufferSource GUN_MODIFY_BUFFER_SOURCE = MultiBufferSource.immediate(GUN_MODIFY_BUFFER);
 
     private static Runnable sightPoseUpdateTask = null;
-
-    //private static final SightPoseHandler SIGHT_POSE_HANDLER = new SightPoseHandler();
 
     private static final Vector3f TMP_LIGHT0 = new Vector3f();
     private static final Vector3f TMP_LIGHT1 = new Vector3f();
