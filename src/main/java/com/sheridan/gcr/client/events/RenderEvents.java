@@ -19,6 +19,7 @@ import com.sheridan.gcr.modularSys.builder.Node;
 import com.sheridan.gcr.modularSys.modules.IScope;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.nbt.CompoundTag;
@@ -140,11 +141,21 @@ public class RenderEvents {
         }
     }
 
+    public static double currentFov = 70;
+    @SubscribeEvent
+    public static void onGetFov(ViewportEvent.ComputeFov event) {
+        if (event.usedConfiguredFov()) {
+            currentFov = event.getFOV();
+        }
+    }
+
     private static Double baseSensitivity = null;
     @SubscribeEvent
     public static void handleScope(ComputeFovModifierEvent event) {
         WeaponStatus status = Client.WEAPON_STATUS;
         Minecraft mc = Minecraft.getInstance();
+
+
         if (status.isHoldingGun() && status.isAiming()) {
             Node activeSight = status.getActiveSight();
 
@@ -174,12 +185,14 @@ public class RenderEvents {
                     mc.options.sensitivity().set(baseSensitivity);
                     baseSensitivity = null;
                 }
+                event.setNewFovModifier(1);
             }
         } else {
             if (baseSensitivity != null) {
                 mc.options.sensitivity().set(baseSensitivity);
                 baseSensitivity = null;
             }
+            event.setNewFovModifier(1);
         }
     }
 

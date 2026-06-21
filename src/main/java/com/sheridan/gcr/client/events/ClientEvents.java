@@ -9,13 +9,12 @@ import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.Shaders;
-import com.sheridan.gcr.client.render.SightPoseHandler;
+import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.events.LivingFireEvent;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -52,7 +51,7 @@ public class ClientEvents {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             Client.WEAPON_STATUS.onTickEnd(player);
-            SightPoseHandler.INSTANCE.tick(player);
+            GunPoseHandler.INSTANCE.tick(player);
             Client.getGunRenderer().tick(player);
             HardCodeAnimationHandler.getInstance().clientTick(player);
             DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);

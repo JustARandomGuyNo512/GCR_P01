@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.render.fx;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
 import com.sheridan.gcr.client.render.fx.post.PostChain;
@@ -121,10 +122,10 @@ public class FlashLightRenderer {
                     }
 
                     Vector3f dir = new Vector3f(FlashLightRenderer.direction);
-                    float fovScene = Minecraft.getInstance().options.fov().get();
+                    float fovScene = (float) RenderEvents.currentFov;
                     float scale = (float) (
                             Math.tan(Math.toRadians(fovScene * 0.5)) /
-                                    Math.tan(Math.toRadians(32.5f))
+                                    Math.tan(Math.toRadians(35))
                     );
                     dir.x *= scale;
                     dir.y *= scale;

@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
-public class SightPoseHandler {
-    public static final SightPoseHandler INSTANCE = new SightPoseHandler();
+public class GunPoseHandler {
+    public static final GunPoseHandler INSTANCE = new GunPoseHandler();
 
     private final float D_TAN_35 = (float) (1.0 / Math.tan(Math.toRadians(35)));
     private final float[] fromPos = new float[] {0, 0, 0};
@@ -47,7 +47,7 @@ public class SightPoseHandler {
     private float toFovModifier = 70;
     private float fromFovModifier = 70;
 
-    public SightPoseHandler() {}
+    public GunPoseHandler() {}
 
     public void switchToPos(float x, float y, float z, float rx, float ry, float rz) {
         fromPos[0] = currentPos[0];
@@ -155,9 +155,6 @@ public class SightPoseHandler {
             float[] fpTrans = displayData.getFirstPersonTranslate();
             float[] pos = getCurrentPos(switchProgress);
             float[] rot = getCurrentRot(switchProgress);
-            //float currentFov = getCurrentFov(switchProgress);
-            float k = 1;//(float) (Math.tan(Math.toRadians(currentFov / 2f)) * D_TAN_35);
-            //k = Mth.lerp(aimingProgress * aimingProgress, 1, k);
 
             rotQuat.rotateXYZ(
                     Mth.lerp(aimingProgress, fpTrans[3], rot[0]),
@@ -170,16 +167,7 @@ public class SightPoseHandler {
                     Mth.lerp(aimingProgress * aimingProgress, fpTrans[1], pos[1]),
                     Mth.lerp(aimingProgress, fpTrans[2], pos[2]));
 
-            if (!Float.isNaN(scopeRearLensZ)) {
-                float rawPos = scopeRearLensZ;
-                float zoomedPos = k * scopeRearLensZ;
-                float dist = Math.abs(rawPos - zoomedPos);
-                poseStack.translate(0, 0, dist);
-            }
-
             poseStack.scale(fpTrans[6], fpTrans[7], fpTrans[8]);
-
-            poseStack.scale(1, 1, k);
 
             rotQuat.x = 0;
             rotQuat.y = 0;

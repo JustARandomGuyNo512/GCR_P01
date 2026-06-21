@@ -6,9 +6,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.delayed.Stage;
+import com.sheridan.gcr.client.render.delayed.Task;
+import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -26,6 +31,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -47,24 +53,31 @@ public class LaserEffectRenderer {
     private static String lastIdentityID = "";
     private static boolean structureChanged = false;
 
-    public static void recordEffectCall(int color, boolean firstPerson, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
+    static {
+        Stage.HIGH.addTask(new Task(LaserEffectRenderer::renderEffect).forever());
+    }
+
+    public static void recordEffectCall(int color, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
         if (!structureChanged) {
             int modifyID = context.gun.getModifyID(context.itemStack);
             String identityID = context.gun.getIdentityID(context.itemStack);
             if (modifyID != lastModifyID || !Objects.equals(identityID, lastIdentityID)) {
                 lastModifyID = modifyID;
                 lastIdentityID = identityID;
-                structureChanged = true; // 标记结构改变，通知渲染端重新计算共线
+                structureChanged = true;
             }
         }
+        float fovScene = (float) RenderEvents.currentFov;
+        float scale = (float) (
+                Math.tan(Math.toRadians(fovScene * 0.5)) /
+                        Math.tan(Math.toRadians(35))
+        );
 
         Matrix4f poseMatrix = laserSourcePose.pose();
         Vector3f localPos = poseMatrix.getTranslation(new Vector3f());
-        if (firstPerson) {
-            localPos.add(0, 0, - Client.getGunRenderer().getGunLocalPos().z);
-        }
         Vector3f localDir = poseMatrix.transformDirection(new Vector3f(0, 0, -1)).normalize();
-        localPos.mul(0.25f);
+        localDir.mul(scale, scale, 1);
+        localPos.mul(0.25f * scale, 0.25f * scale, 0.25f);
 
         activeNodes.compute(currentNodeId, (id, state) -> {
             if (state == null) {
@@ -77,22 +90,32 @@ public class LaserEffectRenderer {
         });
     }
 
+    private static Matrix4f calculateCleanProjectionMatrix() {
+        Minecraft mc = Minecraft.getInstance();
+        Matrix4f cleanProj = new Matrix4f();
+        if (mc.level == null || mc.player == null) {
+            return cleanProj.set(RenderSystem.getProjectionMatrix());
+        }
+        cleanProj.identity();
+        float fovRadians = (float)(RenderEvents.currentFov * (Math.PI / 180.0));
+        float aspectRatio = (float)mc.getWindow().getWidth() / (float)mc.getWindow().getHeight();
+        float nearPlane = 0.05F;
+        float farPlane = mc.gameRenderer.getDepthFar();
+        cleanProj.perspective(fovRadians, aspectRatio, nearPlane, farPlane);
+        return cleanProj;
+    }
+
     static Matrix4f modelViewMat = new Matrix4f();
     static Matrix4f projectionMat = new Matrix4f();
     @SubscribeEvent
     public static void saveMatrix(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             modelViewMat.set(RenderSystem.getModelViewMatrix());
-            projectionMat.set(RenderSystem.getProjectionMatrix());
+            projectionMat.set(calculateCleanProjectionMatrix());
         }
     }
 
-    @SubscribeEvent
     public static void renderEffect(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            return;
-        }
-
         activeNodes.values().removeIf(state -> !state.recorded);
 
         if (activeNodes.isEmpty()) {
@@ -138,7 +161,6 @@ public class LaserEffectRenderer {
                 NodeState masterNode = activeNodes.get(masterId);
                 if (masterNode != null) {
                     node.lastHitPos = masterNode.lastHitPos;
-                    node.hitDirection = masterNode.hitDirection;
                     continue;
                 }
             }
@@ -152,12 +174,6 @@ public class LaserEffectRenderer {
 
             HitResult blockHit = mc.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player));
             Vec3 finalHitPos = blockHit.getLocation();
-
-            // 提取方块命中方向
-            Direction blockDirection = null;
-            if (blockHit.getType() == HitResult.Type.BLOCK && blockHit instanceof BlockHitResult blockHitResult) {
-                blockDirection = blockHitResult.getDirection();
-            }
 
             Vec3 entityEnd = blockHit.getType() != HitResult.Type.MISS ? finalHitPos : end;
             double closestDistSq = start.distanceToSqr(entityEnd);
@@ -178,14 +194,20 @@ public class LaserEffectRenderer {
                 }
             }
 
-            node.lastHitPos = finalHitPos;
-            node.hitDirection = hitEntity ? null : blockDirection;
+            if (hitEntity) {
+                node.lastHitPos = finalHitPos;
+            } else {
+                if (blockHit.getType() == HitResult.Type.MISS) {
+                    node.lastHitPos = null;
+                } else {
+                    node.lastHitPos = finalHitPos;
+                }
+            }
         }
 
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(false);
 
         GL20.glUseProgram(LaserGlowShader.programId);
@@ -221,7 +243,7 @@ public class LaserEffectRenderer {
             node.recorded = false;
         }
 
-
+        
         GL30.glBindVertexArray(0);
         GL20.glUseProgram(0);
         GL11.glDepthMask(true);
@@ -253,7 +275,6 @@ public class LaserEffectRenderer {
         Vector3f localPos = new Vector3f();
         Vector3f localDir = new Vector3f();
         Vec3 lastHitPos = null;
-        Direction hitDirection = null;
         boolean recorded = false;
 
         NodeState(String id) {

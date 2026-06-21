@@ -6,8 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.DrawHolsterHandler;
-import com.sheridan.gcr.client.animation.AnimationHandler;
-import com.sheridan.gcr.client.animation.AnimationInstance;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
@@ -38,7 +36,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -114,7 +111,7 @@ public class DefaultGunRenderer implements IGunRenderer {
 
         firstPersonPoseStack.mulPose(new Quaternionf().rotateXYZ(localCameraPitch, localCameraYaw, localCameraRoll));
 
-        SightPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
+        GunPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
         firstPersonPoseStack.last().pose().getTranslation(GUN_LOCAL_POS);
         HardCodeAnimationHandler.getInstance().applyTransformPost(firstPersonPoseStack, gun, partialTicks, player);
         RecoilHandler.INSTANCE.applyTransformPost(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
@@ -150,7 +147,7 @@ public class DefaultGunRenderer implements IGunRenderer {
     private void frameUpdate(int light, int overlay, float partialTicks) {
         String usingSightID = cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack);
         if (!Objects.equals(lastUsingSightID, usingSightID)) {
-            SightPoseHandler.INSTANCE.calculateSightPose(
+            GunPoseHandler.INSTANCE.calculateSightPose(
                     cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack),
                     cachedFPContext, () -> renderFirstPerson(cachedFPContext));
         }
@@ -224,7 +221,7 @@ public class DefaultGunRenderer implements IGunRenderer {
 
     @Override
     public float getSightPoseDistance() {
-        return SightPoseHandler.INSTANCE.getPosZ();
+        return GunPoseHandler.INSTANCE.getPosZ();
     }
 
     @Override
@@ -304,7 +301,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
 
         cachedFPContext.onContextInit();
-        SightPoseHandler.INSTANCE
+        GunPoseHandler.INSTANCE
                 .calculateSightPose(
                         cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack),
                         cachedFPContext, () -> renderFirstPerson(cachedFPContext));

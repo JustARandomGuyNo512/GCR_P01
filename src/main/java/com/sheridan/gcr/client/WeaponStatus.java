@@ -9,7 +9,7 @@ import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
-import com.sheridan.gcr.client.render.SightPoseHandler;
+import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.ModuleHandler;
@@ -337,7 +337,7 @@ public class WeaponStatus {
     }
 
     public float getLerpAdsZCompensation(float partialTicks) {
-        float switchProgress = SightPoseHandler.INSTANCE.getSwitchProgress(partialTicks);
+        float switchProgress = GunPoseHandler.INSTANCE.getSwitchProgress(partialTicks);
         return Mth.lerp(switchProgress, lastAdsZCompensation, adsZCompensation);
     }
 
