@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.LaserEffectRenderer;
 import com.sheridan.gcr.compat.IrisCompat;
+import com.sheridan.gcr.items.DisplayData;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -25,9 +26,6 @@ import java.nio.FloatBuffer;
 public class LaserSighRenderer {
     private final int color;
     private final ILaserSightModel laserSightModel;
-
-    // 复用 FloatBuffer 避免每帧频繁分配内存
-    private static final FloatBuffer MATRIX_BUFFER = BufferUtils.createFloatBuffer(16);
 
     public LaserSighRenderer(ILaserSightModel laserSightModel, int color) {
         this.laserSightModel = laserSightModel;
@@ -58,7 +56,7 @@ public class LaserSighRenderer {
                 if (Float.isNaN(hitLength)) {
                     return;
                 }
-                float length = (float) ((hitLength + 1) / 0.625f + Math.random() * (hitLength * 0.3f + 5f));
+                float length = (float) ((hitLength + 1) / DisplayData.FIRST_PERSON_SCALE + Math.random() * (hitLength * 0.3f + 5f));
                 LaserModel.INSTANCE.renderFirstPerson(poseStack, vertexConsumer, color, length);
             } else {
                 LaserModel.INSTANCE.renderThirdPerson(poseStack, vertexConsumer, color);
