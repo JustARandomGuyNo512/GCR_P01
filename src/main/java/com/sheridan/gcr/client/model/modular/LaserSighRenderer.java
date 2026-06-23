@@ -54,7 +54,11 @@ public class LaserSighRenderer {
             poseStack.last().pose().set(laserPoseBone.renderStatus.pose.pose());
             VertexConsumer vertexConsumer = context.getBuffer(RenderType.energySwirl(LaserModel.LASER_TEXTURE, 0, 0));
             if (firstPerson) {
-                float length = 32f;
+                float hitLength = LaserEffectRenderer.getHitLength(context.currentRenderNode().id);
+                if (Float.isNaN(hitLength)) {
+                    return;
+                }
+                float length = (float) ((hitLength + 1) / 0.625f + Math.random() * (hitLength * 0.3f + 5f));
                 LaserModel.INSTANCE.renderFirstPerson(poseStack, vertexConsumer, color, length);
             } else {
                 LaserModel.INSTANCE.renderThirdPerson(poseStack, vertexConsumer, color);

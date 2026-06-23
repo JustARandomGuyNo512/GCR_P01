@@ -2,26 +2,13 @@ package com.sheridan.gcr.client.render.fx;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import com.sheridan.gcr.Client;
-import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
-import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,7 +18,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -44,9 +30,7 @@ import java.util.*;
 @OnlyIn(Dist.CLIENT)
 public class LaserEffectRenderer {
 
-
     private static final Map<String, NodeState> activeNodes = new HashMap<>();
-
     private static final Map<String, String> slaveToMasterCache = new HashMap<>();
 
     private static int lastModifyID = -1;
@@ -55,6 +39,15 @@ public class LaserEffectRenderer {
 
     static {
         Stage.HIGH.addTask(new Task(LaserEffectRenderer::renderEffect).forever());
+    }
+
+    /**
+     * 新增：通过 currentNodeId 查询射线命中长度的方法
+     * 如果找不到节点，默认返回 Float.NaN
+     */
+    public static float getHitLength(String currentNodeId) {
+        NodeState state = activeNodes.get(currentNodeId);
+        return state != null ? state.hitLength : Float.NaN;
     }
 
     public static void recordEffectCall(int color, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
@@ -67,6 +60,7 @@ public class LaserEffectRenderer {
                 structureChanged = true;
             }
         }
+
         float fovScene = (float) RenderEvents.currentFov;
         float scale = (float) (
                 Math.tan(Math.toRadians(fovScene * 0.5)) /
@@ -108,6 +102,7 @@ public class LaserEffectRenderer {
 
     static Matrix4f modelViewMat = new Matrix4f();
     static Matrix4f projectionMat = new Matrix4f();
+
     @SubscribeEvent
     public static void saveMatrix(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
@@ -156,12 +151,14 @@ public class LaserEffectRenderer {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         Vec3 camPos = camera.getPosition();
         Quaternionf cameraRotation = camera.rotation();
+
         for (NodeState node : nodes) {
             if (slaveToMasterCache.containsKey(node.id)) {
                 String masterId = slaveToMasterCache.get(node.id);
                 NodeState masterNode = activeNodes.get(masterId);
                 if (masterNode != null) {
                     node.lastHitPos = masterNode.lastHitPos;
+                    node.hitLength = masterNode.hitLength; // 共享 Master 的命中长度
                     continue;
                 }
             }
@@ -195,17 +192,20 @@ public class LaserEffectRenderer {
                 }
             }
 
-            if (hitEntity) {
+            if (hitEntity || blockHit.getType() != HitResult.Type.MISS) {
                 node.lastHitPos = finalHitPos;
-            } else {
-                if (blockHit.getType() == HitResult.Type.MISS) {
-                    node.lastHitPos = null;
+                float distance = (float) start.distanceTo(finalHitPos);
+
+                if (distance < 0.75F) {
+                    node.hitLength = Float.NaN;
                 } else {
-                    node.lastHitPos = finalHitPos;
+                    node.hitLength = distance;
                 }
+            } else {
+                node.lastHitPos = null;
+                node.hitLength = 64.0F;
             }
         }
-
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -214,7 +214,6 @@ public class LaserEffectRenderer {
         GL20.glUseProgram(LaserGlowShader.programId);
         GL30.glBindVertexArray(LaserGlowShader.vaoId);
 
-
         float[] matBuffer = new float[16];
         projectionMat.get(matBuffer);
         GL20.glUniformMatrix4fv(LaserGlowShader.projMatLoc, false, matBuffer);
@@ -222,7 +221,8 @@ public class LaserEffectRenderer {
         PoseStack poseStack = new PoseStack();
         poseStack.mulPose(modelViewMat);
         for (NodeState node : activeNodes.values()) {
-            if (node.lastHitPos != null) {
+            // 条件变更为：有命中坐标，且命中长度不能为 NaN (即长度必须 >= 1.5 block)
+            if (node.lastHitPos != null && !Float.isNaN(node.hitLength)) {
                 double renderX = node.lastHitPos.x - camPos.x;
                 double renderY = node.lastHitPos.y - camPos.y;
                 double renderZ = node.lastHitPos.z - camPos.z;
@@ -257,17 +257,12 @@ public class LaserEffectRenderer {
             node.recorded = false;
         }
 
-        
         GL30.glBindVertexArray(0);
         GL20.glUseProgram(0);
         GL11.glDepthMask(true);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
     }
 
-    /**
-     * 判断两个节点是否在一条射线上
-     */
     private static boolean isCollinear(NodeState n1, NodeState n2) {
         float dotDir = n1.localDir.dot(n2.localDir);
         if (dotDir < 0.99f) {
@@ -291,6 +286,8 @@ public class LaserEffectRenderer {
         Vec3 lastHitPos = null;
         public int color;
         boolean recorded = false;
+        // 新增：用于记录当前的命中长度
+        float hitLength = Float.NaN;
 
         NodeState(String id) {
             this.id = id;
