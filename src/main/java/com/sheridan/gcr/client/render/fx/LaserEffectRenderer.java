@@ -86,6 +86,7 @@ public class LaserEffectRenderer {
             state.localPos = localPos;
             state.localDir = localDir;
             state.recorded = true;
+            state.color = color;
             return state;
         });
     }
@@ -235,7 +236,20 @@ public class LaserEffectRenderer {
                 modelViewMatrix.get(matBuffer);
                 GL20.glUniformMatrix4fv(LaserGlowShader.modelViewMatLoc, false, matBuffer);
 
-                GL20.glUniform4f(LaserGlowShader.glowColorLoc, 0.0f, 0.7f, 1.0f, 1.0f);
+                int color = node.color;
+
+                int a = (color >> 24) & 0xFF;
+                int r = (color >> 16) & 0xFF;
+                int g = (color >> 8) & 0xFF;
+                int b = color & 0xFF;
+                if (a == 0) a = 255;
+
+                float rF = r / 255.0f;
+                float gF = g / 255.0f;
+                float bF = b / 255.0f;
+                float aF = a / 255.0f;
+
+                GL20.glUniform4f(LaserGlowShader.glowColorLoc, rF, gF, bF, aF);
 
                 GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, LaserGlowShader.vertexCount);
                 poseStack.popPose();
@@ -275,6 +289,7 @@ public class LaserEffectRenderer {
         Vector3f localPos = new Vector3f();
         Vector3f localDir = new Vector3f();
         Vec3 lastHitPos = null;
+        public int color;
         boolean recorded = false;
 
         NodeState(String id) {

@@ -17,4 +17,6 @@ public interface IMuzzleFlashRenderer {
     MuzzleEntry getByName(String name);
 
     void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId);
+
+    void afterAllRendered(ModuleRenderContext context);
 }

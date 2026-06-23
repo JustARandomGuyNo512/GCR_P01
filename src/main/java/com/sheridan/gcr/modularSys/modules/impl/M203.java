@@ -1,17 +1,19 @@
 package com.sheridan.gcr.modularSys.modules.impl;
 
 import com.sheridan.gcr.modularSys.Direction;
-import com.sheridan.gcr.modularSys.modules.IAmmoSource;
-import com.sheridan.gcr.modularSys.modules.IArmHandlerModular;
-import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
-import com.sheridan.gcr.modularSys.modules.IVoxelHandlerModule;
+import com.sheridan.gcr.modularSys.modules.*;
+import com.sheridan.gcr.modularSys.modules.states.Str;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
-public class M203 extends SubWeapon implements IAmmoSource, IVoxelHandlerModule, IArmHandlerModular {
+public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular {
+    public static final String CHAMBER_EMPTY = "empty";
+    public static final String CHAMBER_LOADED = "loaded";
+    public static final String CHAMBER_FIRED = "fired";
+    public static final Str CHAMBER_STATUS = new Str("chamber_status", CHAMBER_EMPTY);
     private final IVoxelHandler voxelHandler;
     private final AdditionalPropModifier modifier;
 
@@ -20,28 +22,6 @@ public class M203 extends SubWeapon implements IAmmoSource, IVoxelHandlerModule,
         this.voxelHandler = voxelHandler;
         this.modifier = modifier;
     }
-
-    @Override
-    public void setAmmoLeft(int ammoLeft, CompoundTag states) {
-        ammoLeft = Mth.clamp(ammoLeft, 0, getMaxCapacity());
-        AMMO_LEFT.set(ammoLeft, states);
-    }
-
-    @Override
-    public int getAmmoLeft(CompoundTag states) {
-        return AMMO_LEFT.get(states);
-    }
-
-    @Override
-    public int getMaxCapacity() {
-        return 1;
-    }
-
-    @Override
-    public int getPriority() {
-        return IAmmoSourceView.NONE_PRIORITY;
-    }
-
 
     @Override
     public IVoxelHandler getHandler() {
@@ -56,5 +36,15 @@ public class M203 extends SubWeapon implements IAmmoSource, IVoxelHandlerModule,
     @Override
     public @Nullable AdditionalPropModifier getModifier() {
         return modifier;
+    }
+
+    @Override
+    public void onInitStates(CompoundTag states, String nodeId, String moduleId) {
+
+    }
+
+    @Override
+    public void onUpdate(StatesUpdateContext context) {
+
     }
 }

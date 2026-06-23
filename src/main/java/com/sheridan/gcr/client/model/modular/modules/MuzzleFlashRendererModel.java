@@ -27,6 +27,12 @@ public class MuzzleFlashRendererModel extends ModularModel implements IMuzzleFla
     }
 
     @Override
+    public void afterAllRendered(ModuleRenderContext context) {
+        super.afterAllRendered(context);
+        muzzleFlashRenderer.afterAllRendered(context);
+    }
+
+    @Override
     public IMuzzleFlashRenderer getRenderer() {
         return muzzleFlashRenderer;
     }

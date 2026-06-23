@@ -28,8 +28,8 @@ import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
-    public static final int FP_MUZZLE_POSE = 11000;
     public static final int STENCIL_DEFERRED_RENDER_TASK = 10000;
+    public static final int VANILLA_DEFERRED_RENDER_TASK = 10001;
     private final Map<String, MuzzleEntry> entryMap = new HashMap<>();
     private final List<MuzzleEntry> entries = new ArrayList<>();
 
@@ -98,16 +98,35 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                 } else {
                     if (firstPerson) {
                         Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
+                        PoseStack.Pose copy = bonePose.copy();
+
+                        context.setLocalStorage(VANILLA_DEFERRED_RENDER_TASK, (Runnable) () -> entry.getMuzzleFlash().render(
+                                copy,
+                                context.bufferSource,
+                                entry.getScale(),
+                                startTime,
+                                true,
+                                LightTexture.FULL_BRIGHT));
+                    } else {
+                        entry.getMuzzleFlash().render(
+                                bonePose,
+                                context.bufferSource,
+                                entry.getScale(),
+                                startTime,
+                                false,
+                                LightTexture.FULL_BRIGHT);
                     }
-                    entry.getMuzzleFlash().render(
-                            bonePose,
-                            context.bufferSource,
-                            entry.getScale(),
-                            startTime,
-                            firstPerson,
-                            LightTexture.FULL_BRIGHT);
+
                 }
             }
+        }
+    }
+
+    @Override
+    public void afterAllRendered(ModuleRenderContext context) {
+        Object localStorage = context.getLocalStorage(VANILLA_DEFERRED_RENDER_TASK);
+        if (localStorage instanceof Runnable runnable) {
+            runnable.run();
         }
     }
 

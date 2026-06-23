@@ -1,11 +1,16 @@
 package com.sheridan.gcr.client.model.modular;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.Bone;
+import com.sheridan.gcr.client.model.fx.LaserModel;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.LaserEffectRenderer;
 import com.sheridan.gcr.compat.IrisCompat;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -36,48 +41,25 @@ public class LaserSighRenderer {
                 context.currentRenderNode().id,
                 laserPoseBone.renderStatus.pose,
                 context);
-        renderRay(true, laserPoseBone, context.partialTicks);
+        renderRay(true, laserPoseBone, context);
     }
 
     public void renderGeneric(ModuleRenderContext context) {
-        renderRay(false, laserSightModel.getLaserPoseBone(), context.partialTicks);
+        renderRay(false, laserSightModel.getLaserPoseBone(), context);
     }
 
-    public void renderRay(boolean firstPerson, Bone laserPoseBone, float partialTicks) {
+    public void renderRay(boolean firstPerson, Bone laserPoseBone, ModuleRenderContext context) {
         if (!IrisCompat.isRenderingShadowPass()) {
-            boolean isIrisShaderInUse = Client.isIrisShaderInUse;
-
-
-            final float length = firstPerson ? 64f : 5f;
-            drawRay(laserPoseBone, length, partialTicks);
-//            if (isIrisShaderInUse) {
-//
-//                Matrix4f modelViewMatrix = new Matrix4f(RenderSystem.getModelViewMatrix());
-//                Matrix4f projectionMatrix = new Matrix4f(RenderSystem.getProjectionMatrix());
-//
-//                Stage.HIGH.addTask(new Task(event -> {
-//                    RenderSystem.getModelViewStack().pushMatrix();
-//                    RenderSystem.getProjectionMatrix().set(projectionMatrix);
-//                    RenderSystem.backupProjectionMatrix();
-//                    RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.DISTANCE_TO_ORIGIN);
-//
-//
-//                    RenderSystem.getModelViewMatrix().set(modelViewMatrix);
-//
-//
-//                    drawRay(laserPoseBone, length, partialTicks);
-//
-//                    RenderSystem.getModelViewStack().popMatrix();
-//                    RenderSystem.restoreProjectionMatrix();
-//                }));
-//            } else {
-//
-//                drawRay(laserPoseBone, length, partialTicks);
-//            }
+            PoseStack poseStack = new PoseStack();
+            poseStack.last().pose().set(laserPoseBone.renderStatus.pose.pose());
+            VertexConsumer vertexConsumer = context.getBuffer(RenderType.energySwirl(LaserModel.LASER_TEXTURE, 0, 0));
+            if (firstPerson) {
+                float length = 32f;
+                LaserModel.INSTANCE.renderFirstPerson(poseStack, vertexConsumer, color, length);
+            } else {
+                LaserModel.INSTANCE.renderThirdPerson(poseStack, vertexConsumer, color);
+            }
         }
     }
 
-    public void drawRay(Bone laserPoseBone, float length, float partialTicks) {
-
-    }
 }
