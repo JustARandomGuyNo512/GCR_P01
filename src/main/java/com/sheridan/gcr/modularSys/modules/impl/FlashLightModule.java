@@ -52,7 +52,7 @@ public class FlashLightModule extends AttachmentModule implements IInteractiveMo
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void onKeyPressed(int keyCode, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
+    public void onKeyPressed(int keyCode, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
         if (keyCode == KeyBinds.TURN_FLASHLIGHT.getKey().getValue() && KeyBinds.TURN_FLASHLIGHT.isDown()) {
             CompoundTag nodeStatesTag = gun.getNodeStatesTag(itemStack, thisNodeId);
             if (nodeStatesTag == null) {

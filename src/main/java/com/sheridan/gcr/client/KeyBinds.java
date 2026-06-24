@@ -28,7 +28,7 @@ public class KeyBinds {
 
     public static final KeyMapping DEBUG_HOT_RELOAD_CLASS = new KeyMapping("key.gcr.debug_hot_reload_class", 96, "keys.categories.gcr");
 
-    public static final KeyMapping DEBUG_FREE = new KeyMapping("key.gcr.debug_free", 73, "keys.categories.gcr");
+    public static final KeyMapping CHECK_SUB_WEAPON = new KeyMapping("key.gcr.check_sub_weapon", 73, "keys.categories.gcr");
 
     public static void register(RegisterKeyMappingsEvent event) {
         event.register(SWITCH_FIRE_MODE);
@@ -36,14 +36,14 @@ public class KeyBinds {
         event.register(OPEN_GUN_MODIFY_SCREEN);
         event.register(CHECK_MAG);
         event.register(SWITCH_EFFECTIVE_SIGHT);
-        //event.register(USE_GRENADE_LAUNCHER);
+        event.register(USE_GRENADE_LAUNCHER);
+        event.register(CHECK_SUB_WEAPON);
         event.register(TURN_FLASHLIGHT);
 
         if (GCR.IS_DEVELOPMENT) {
             event.register(OPEN_DISPLAY_ADJUST_SCREEN);
             event.register(REMOVE_STUCK);
             event.register(DEBUG_HOT_RELOAD_CLASS);
-            event.register(DEBUG_FREE);
         }
     }
 }

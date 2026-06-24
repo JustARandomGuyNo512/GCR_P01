@@ -5,6 +5,7 @@ import com.sheridan.gcr.client.model.bulletShell.BulletShellModel;
 import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
 import com.sheridan.gcr.client.model.modular.*;
 import com.sheridan.gcr.client.model.modular.animation.controllers.ARMainController;
+import com.sheridan.gcr.client.model.modular.animation.controllers.M203Controller;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationController;
 import com.sheridan.gcr.client.model.modular.modules.*;
 import com.sheridan.gcr.client.model.modular.state.IStateViewer;
@@ -12,6 +13,7 @@ import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMagViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMainViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.FlashLightStatesViewer;
+import com.sheridan.gcr.client.model.modular.state.stateViewers.TestM203Viewer;
 import com.sheridan.gcr.client.model.playerArm.BufferedPlayerArmModel;
 import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
@@ -19,6 +21,7 @@ import com.sheridan.gcr.client.render.fx.muzzleFlash.CommonMuzzleFlashes;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.modules.views.IFlashLightView;
+import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -37,6 +40,7 @@ public class ClientTestingResources {
                 Map.ofEntries(
                         Map.entry("check_mag", "check_mag"), Map.entry("reload_grenade", "reload_grenade"),
                         Map.entry("reload_grenade.G", "reload_grenade.g"), Map.entry("to_semi", "to_semi"),
+                        Map.entry("check_grenade.G", "check_grenade.g"),Map.entry("check_grenade", "check_grenade"),
                         Map.entry("to_auto", "to_auto"), Map.entry("shoot_last", "m4a1_shoot_last"),
                         Map.entry("mag_reload", "m4a1_mag_reload"), Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
                         Map.entry("mag_reload_charge", "m4a1_mag_reload_charge"), Map.entry("chamber_reload", "m4a1_chamber_reload"),
@@ -63,7 +67,10 @@ public class ClientTestingResources {
         // M203 状态动画
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/m203.states.json",
-                Map.of("full", "m203_full", "empty", "m203_empty")
+                Map.of("full", "m203_full",
+                        "empty", "m203_empty",
+                        "base", "m203_base",
+                        "fired", "m203_fired")
         );
 
         // ==================== 2. 模型注册与自定义 Lambda 逻辑 ====================
@@ -78,7 +85,6 @@ public class ClientTestingResources {
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
                     ), viewer);
 
-                    // 将原本零散在 regModels 里的控制器生命周期在这里闭环处理
                     IAnimationController<?> controller = new ARMainController();
                     model.bindController(controller);
                     model.callInitAnimation();
@@ -88,18 +94,26 @@ public class ClientTestingResources {
                 }
         );
 
+        // 如果需要取消 M203 的延迟编译，将 immediateCompile 设为 false 即可
+        ModelRegistrationManager.registerModel(
+                GCR.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
+                meshData -> {
+                    TestM203Model testM203Model = new TestM203Model(meshData, new TestM203Viewer((IM203View) GCR.M203));
+                    IAnimationController<?> controller = new M203Controller();
+                    testM203Model.bindController(controller);
+                    testM203Model.callInitAnimation();
+                    testM203Model.callInitTrack();
+                    testM203Model.callInitEventSubscriptions();
+                    return testM203Model;
+                }
+        );
+
         ModelRegistrationManager.registerModel(
                 GCR.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
                 meshData -> new TestARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R))
         );
 
-        // 如果需要取消 M203 的延迟编译，将 immediateCompile 设为 false 即可
-        /*
-        ModelRegistrationManager.registerModel(
-                GCR.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", false,
-                meshData -> new TestM203Model(meshData, new TestM203Viewer((IAmmoSourceView) GCR.M203))
-        );
-        */
+
 
         // 常规单行注册
         ModelRegistrationManager.registerModel(GCR.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d -> new BarrelModel(d, 2f, CommonMuzzleFlashes.COMMON));

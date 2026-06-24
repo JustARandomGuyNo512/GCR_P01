@@ -58,6 +58,8 @@
   "key.gcr.open_gun_modify_screen": "枪械改装界面",
   "key.gcr.switch_effective_sight": "切换使用的瞄准器",
   "key.gcr.turn_flashlight": "使用战术电筒",
+  "key.gcr.check_sub_weapon": "检查子武器",
+  "key.gcr.use_grenade_launcher": "使用榴弹发射器",
 
   "validate.result.common": "[$level] $msg",
   "validate.result.unique": "模块:$name只能安装一个",

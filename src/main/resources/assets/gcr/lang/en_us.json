@@ -58,6 +58,8 @@
   "key.gcr.open_gun_modify_screen": "Open weapon modification screen",
   "key.gcr.switch_effective_sight": "Switch active sight",
   "key.gcr.turn_flashlight": "Toggle tactical flashlight",
+  "key.gcr.check_sub_weapon": "Check Secondary Weapon",
+  "key.gcr.use_grenade_launcher": "Use grenade launcher",
 
   "validate.result.common": "[$level] $msg",
   "validate.result.unique": "Only one [$name] can be installed in this gun.",

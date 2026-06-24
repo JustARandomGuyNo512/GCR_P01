@@ -132,10 +132,11 @@ public class GCR {
             new IArmHandlerModular.AdditionalPropModifier(0.1f,0.1f,0.1f, 0.05f)
     ).addTags("handguard");
 
-//    public static final IModular M203 = new M203(
-//            RL( "m203"),
-//            new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")))
-//            .addTags("under_barrel", "sub_weapon");
+    public static final IModular M203 = new M203(
+            RL( "m203"), 1.36f,
+            new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f))
+            .addTags("under_barrel", "sub_weapon");
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(
             RL( "a2_carry_handle"),
@@ -304,8 +305,8 @@ public class GCR {
             ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
             ITEMS.register(KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(KAC_FORWARD_GRIP));
-//    public static final DeferredItem<Item> M203_ITEM =
-//            ITEMS.register("m203", () -> new ModuleItem<>(M203));
+    public static final DeferredItem<Item> M203_ITEM =
+            ITEMS.register("m203", () -> new ModuleItem<>(M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
             ITEMS.register(URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(URGI_BARREL));
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
@@ -345,7 +346,7 @@ public class GCR {
                                 output.accept(MUZZLE_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
-                                //output.accept(M203_ITEM.get());
+                                output.accept(M203_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());

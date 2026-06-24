@@ -58,6 +58,11 @@ public class ARMainController extends AnimationController<TestARMainModel> {
             getTrack("main").play(anim(name).coverState());
         });
 
+        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
+            String name = context.getParam("animation_name");
+            getTrack("main").play(anim(name).coverState());
+        });
+
         subscribe(EventType.CHECK_MAG, 0, (context) -> {
             if (isTrackClear("main")) {
                 getTrack("check").play(anim("check_mag").coverState());
@@ -74,6 +79,14 @@ public class ARMainController extends AnimationController<TestARMainModel> {
                 }
             }
         });
+
+        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
+            if (isTrackClear("main")) {
+                String animationName = context.getParam("animation_name");
+                getTrack("check").play(anim(animationName));
+            }
+        });
+
 
         subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
             String name = context.getParam("name");
@@ -118,7 +131,8 @@ public class ARMainController extends AnimationController<TestARMainModel> {
     public void initAnimation(TestARMainModel model) {
         registerAnimations(
                 "check_mag", "gcr:check_mag",
-                "grenade", "gcr:reload_grenade",
+                "reload_grenade", "gcr:reload_grenade",
+                "check_grenade", "gcr:check_grenade",
                 ARFullAuto.FULL_AUTO.getName(), "gcr:to_auto",
                 ARSemi.SEMI.getName(), "gcr:to_semi",
                 "mag_reload", "gcr:m4a1_mag_reload",

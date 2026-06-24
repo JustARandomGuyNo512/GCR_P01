@@ -6,28 +6,32 @@ import com.sheridan.gcr.client.model.modular.state.StateViewer;
 import com.sheridan.gcr.client.model.modular.state.StaticState;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
+import com.sheridan.gcr.modularSys.modules.views.IM203View;
 
-public class TestM203Viewer extends StateViewer<IAmmoSourceView> {
-    public TestM203Viewer(IAmmoSourceView view) {
+public class TestM203Viewer extends StateViewer<IM203View> {
+    public TestM203Viewer(IM203View view) {
         super(view);
     }
 
     @Override
     public void onRegisterStateMapping() {
-        addStateMapping(StaticState.Builder.of("base").setScale("grenade_reloading", 0).build());
-        addStateMapping(StaticState.Builder.of("full").setScale("shell", 0).build());
-        addStateMapping(StaticState.Builder.of("empty").setScale("raw", 0).build());
-
+        addStateMapping("base", "gcr:m203_base", DEFAULT_SCALE, 0);
+        addStateMapping("full", "gcr:m203_full", DEFAULT_SCALE, 0);
+        addStateMapping("empty", "gcr:m203_empty", DEFAULT_SCALE, 0);
+        addStateMapping("fired", "gcr:m203_fired", DEFAULT_SCALE, 0);
     }
 
     @Override
     public void applyState(IAnimated animated, ModuleRenderContext context, ReadOnlyTag states) {
-        IAmmoSourceView stateView = getStateView();
+        IM203View stateView = getStateView();
         doPose("base", animated, context);
-        if (stateView.getAmmoLeft(states) <= 0) {
-            doPose("empty", animated, context);
-        } else {
+        String chamberStatus = stateView.getChamberStatus(states);
+        if (IM203View.CHAMBER_LOADED.equals(chamberStatus)) {
             doPose("full", animated, context);
+        } else if (IM203View.CHAMBER_EMPTY.equals(chamberStatus)) {
+            doPose("empty", animated, context);
+        } else if (IM203View.CHAMBER_FIRED.equals(chamberStatus)) {
+            doPose("fired", animated, context);
         }
     }
 }

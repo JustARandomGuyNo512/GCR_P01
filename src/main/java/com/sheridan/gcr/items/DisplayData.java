@@ -10,7 +10,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 
 public class DisplayData implements IJsonSync {
-    public static final float FIRST_PERSON_SCALE = 0.5f;
+    public static final float FIRST_PERSON_SCALE = 0.625f;
     public static final int FIRST_PERSON = 0;
     public static final int THIRD_PERSON = 1;
     public static final int GROUND = 2;
@@ -140,6 +140,9 @@ public class DisplayData implements IJsonSync {
 
     public DisplayData setTranslation(int index, float x, float y, float z, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ) {
         if (index >= 0 && index < displayData.length) {
+            scaleX = index == FIRST_PERSON ? FIRST_PERSON_SCALE : scaleX;
+            scaleY = index == FIRST_PERSON ? FIRST_PERSON_SCALE : scaleY;
+            scaleZ = index == FIRST_PERSON ? FIRST_PERSON_SCALE : scaleZ;
             displayData[index][0] = x / 16f;
             displayData[index][1] = y / 16f;
             displayData[index][2] = z / 16f;

@@ -57,19 +57,19 @@ public class RenderEvents {
         if (event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             if (Client.WEAPON_STATUS.isHoldingGun()) {
                 event.setCanceled(true);
-                if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
-                    return;
-                }
-                if (Client.WEAPON_STATUS.getAimingProgress() <= 0.1f) {
-                    GuiGraphics guiGraphics = event.getGuiGraphics();
-                    RenderSystem.enableBlend();
-                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    int centerX = (int) ((guiGraphics.guiWidth() - 1) / 2f);
-                    int centerY = (int) ((guiGraphics.guiHeight() - 1) / 2f);
-                    guiGraphics.blit(CROSSHAIR_TEXTURE, centerX, centerY, 0, 0, 2, 2, 2, 2);
-                    RenderSystem.defaultBlendFunc();
-                    RenderSystem.disableBlend();
-                }
+//                if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
+//                    return;
+//                }
+//                if (Client.WEAPON_STATUS.getAimingProgress() <= 0.1f) {
+//                    GuiGraphics guiGraphics = event.getGuiGraphics();
+//                    RenderSystem.enableBlend();
+//                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+//                    int centerX = (int) ((guiGraphics.guiWidth() - 1) / 2f);
+//                    int centerY = (int) ((guiGraphics.guiHeight() - 1) / 2f);
+//                    guiGraphics.blit(CROSSHAIR_TEXTURE, centerX, centerY, 0, 0, 2, 2, 2, 2);
+//                    RenderSystem.defaultBlendFunc();
+//                    RenderSystem.disableBlend();
+//                }
             }
         }
     }

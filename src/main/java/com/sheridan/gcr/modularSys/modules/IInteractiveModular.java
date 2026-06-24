@@ -8,7 +8,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public interface IInteractiveModular {
     @OnlyIn(Dist.CLIENT)
-    default void onKeyPressed(int keyCode, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {}
+    default void onKeyPressed(int keyCode, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {}
 
     @OnlyIn(Dist.CLIENT)
     default void onMousePressed(int button, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {}

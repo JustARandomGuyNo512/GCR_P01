@@ -113,7 +113,7 @@ public class ControllerEvents {
             Node node = entry.getValue();
             Unit unit = node.getUnit();
             if (unit.getModule() instanceof IInteractiveModular iInteractiveModular) {
-                iInteractiveModular.onKeyPressed(event.getKey(), id, unit, gunModule, itemStack);
+                iInteractiveModular.onKeyPressed(event.getKey(), event.getAction(), id, unit, gunModule, itemStack);
             }
         }
     }
