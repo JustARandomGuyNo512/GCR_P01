@@ -11,6 +11,7 @@ import org.joml.Vector2f;
 public interface IRecoilUpdater {
     void update(double timeDist);
     void onShoot(Player player);
+    void applyImpulse(float impulseZ, float pitch, float yaw,  float shakePitch, float shakeYaw, float shakeRoll);
     void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model);
     void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model);
     float getGunKickPitch();

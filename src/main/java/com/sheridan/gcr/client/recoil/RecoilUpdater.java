@@ -22,10 +22,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @OnlyIn(Dist.CLIENT)
 public class RecoilUpdater implements IRecoilUpdater {
-    private static SplittableRandom RANDOM = new SplittableRandom(System.currentTimeMillis());
+    private static final SplittableRandom RANDOM = new SplittableRandom(System.currentTimeMillis());
     private static final SmoothNoise1D noise1DX = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
     private static final SmoothNoise1D noise1DY = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
-
+    private long lastShoot = 0;
     // 持有当前武器的参数引用
     private RecoilData data;
     private float noiseTimerX = (float) (50 + Math.random() * 100);
@@ -184,6 +184,98 @@ public class RecoilUpdater implements IRecoilUpdater {
             return;
         }
 
+//        float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
+//        float stability = Client.WEAPON_STATUS.getStability() * playerDynamicFactor;
+//        float impulseVal = Client.WEAPON_STATUS.getImpulse();
+//        float recoilControl = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;
+//
+//        float stableFactor = 1.0f / stability;
+//        float recoilControlFactor = 1.0f / recoilControl;
+//        float recoilHeatRes = getRecoilHeat();
+//
+//        float delta = Math.min(Client.distFromLastShoot(), 1.0f) * 22f;
+//        this.noiseTimerX += delta;
+//        this.noiseTimerY += delta;
+//
+//        float aimingFactor = Client.getAimingProgress();
+//        float aimingFactorSqr = aimingFactor * aimingFactor;
+//        RecoilImpulse impulse = data.getImpulse();
+//        float rotLever = impulse.leverArmY() * recoilControlFactor
+//                * (Mth.clamp(1 - aimingFactorSqr, 0.1f, 1f));
+//
+//        float impulseZ = impulse.impulseZ() * Math.max(0, impulseVal);
+//
+//        float torqueImpulseX = (float) (rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f) * (0.9f + 0.2f * Math.random()));
+//
+//        float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
+//                        (2.8f - aimingFactor * 2.65f) *
+//                        stableFactor * Math.sqrt(impulseVal));
+//        impulseZ *= (float) (0.8f + 0.4f * Math.random());
+//        float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
+//
+//        randPitch *= 1 - 0.3f * aimingFactorSqr;
+//        float randPitchCam = randPitch > 0 ? randPitch * 0.7f : randPitch;
+//        float randYawDir = randomNoiseY(noiseTimerY);
+//        float randYaw = randYawDir * impulse.randomYaw() * dynamicRand;
+//
+//        // 随机震动
+//        float shakePitch = (RANDOM.nextBoolean() ? 1 : -1) * impulse.shakePitch();
+//        float shakeYaw = (RANDOM.nextBoolean() ? 1 : -1) * impulse.shakeYaw();
+//
+//
+//        float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(gunDisplacement.z));
+//        float rawShakeRoll = -impulse.shakeRoll() * (1 + shakeRollRandomSize);
+//
+//
+//        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.85f + RANDOM.nextFloat() * 0.15f);
+//
+//        if (Client.isAiming()) {
+//            shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
+//        }
+//
+//        float adsShakeFactor = 1 - aimingFactor * (0.9f + RANDOM.nextFloat() * 0.08f);
+//
+//        float rollVelocityImpulse = rawShakeRoll * shakeFactor * adsShakeFactor;
+//        float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
+//        float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.03f;
+//
+//        gunVelocity.add(0, 0, impulseZ);
+//
+//        basePitchVelocity += torqueImpulseX;
+//        randomAngularVelocity.add(randPitch + shakePitch, randYaw + shakeYaw);
+//        rollVelocity += rollVelocityImpulse;
+//
+//        rollDisplacement += rollDisplacementImpulse;
+//
+//        float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
+//        float camRandomScale = 0.001f + aimingFactor * 0.05f;
+//        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
+//        float camImpactRandomYaw = randYaw * camRandomScale;
+//        float camImpactRandomPitch = randPitchCam * camRandomScale;
+//
+//        float shakeDir = randYawDir > 0 ? 2e-4f : -2e-4f;
+//        this.camShake = shakeDir * impulse.shakeRoll();
+//
+//        applyCamImpulse(camImpact, camImpactRandomPitch, camImpactRandomYaw, recoilControlFactor, aimingFactor);
+//        randomSeed = RANDOM.nextFloat();
+
+        RecoilImpulse impulse = data.getImpulse();
+        applyImpulse(
+                impulse.impulseZ(),
+                impulse.randomPitch(),
+                impulse.randomYaw(),
+                impulse.shakePitch(),
+                impulse.shakeYaw(),
+                impulse.shakeRoll()
+        );
+    }
+
+    @Override
+    public void applyImpulse(float impulseZ, float pitch, float yaw, float shakePitch, float shakeYaw, float shakeRoll) {
+        if (data == null) {
+            return;
+        }
+
         float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
         float stability = Client.WEAPON_STATUS.getStability() * playerDynamicFactor;
         float impulseVal = Client.WEAPON_STATUS.getImpulse();
@@ -193,7 +285,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float recoilControlFactor = 1.0f / recoilControl;
         float recoilHeatRes = getRecoilHeat();
 
-        float delta = Math.min(Client.distFromLastShoot(), 1.0f) * 22f;
+        float delta = Math.min(distFromLastShoot(), 1.0f) * 22f;
         this.noiseTimerX += delta;
         this.noiseTimerY += delta;
 
@@ -203,31 +295,33 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rotLever = impulse.leverArmY() * recoilControlFactor
                 * (Mth.clamp(1 - aimingFactorSqr, 0.1f, 1f));
 
-        float impulseZ = impulse.impulseZ() * Math.max(0, impulseVal);
+         impulseZ *= Math.max(0, impulseVal);
 
         float torqueImpulseX = (float) (rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f) * (0.9f + 0.2f * Math.random()));
 
-        float dynamicRand = (float) (Mth.lerp(recoilHeatRes, data.getImpulse().randomStart(), 1f) *
-                        (2.8f - aimingFactor * 2.65f) *
-                        stableFactor * Math.sqrt(impulseVal));
+        float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
+                (2.8f - aimingFactor * 2.65f) *
+                stableFactor * Math.sqrt(impulseVal));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
-        float randPitch = randomNoiseX(noiseTimerX) * impulse.randomPitch() * dynamicRand;
+        float randPitch = randomNoiseX(noiseTimerX) * pitch * dynamicRand;
 
         randPitch *= 1 - 0.3f * aimingFactorSqr;
+
         float randPitchCam = randPitch > 0 ? randPitch * 0.7f : randPitch;
+
         float randYawDir = randomNoiseY(noiseTimerY);
-        float randYaw = randYawDir * impulse.randomYaw() * dynamicRand;
+        float randYaw = randYawDir * yaw * dynamicRand;
 
         // 随机震动
-        float shakePitch = (RANDOM.nextBoolean() ? 1 : -1) * impulse.shakePitch();
-        float shakeYaw = (RANDOM.nextBoolean() ? 1 : -1) * impulse.shakeYaw();
+        shakePitch *= (RANDOM.nextBoolean() ? 1 : -1);
+        shakeYaw *= (RANDOM.nextBoolean() ? 1 : -1);
 
 
         float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(gunDisplacement.z));
-        float rawShakeRoll = -impulse.shakeRoll() * (1 + shakeRollRandomSize);
+        float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.85f + RANDOM.nextFloat() * 0.15f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.8f + RANDOM.nextFloat() * 0.2f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
@@ -254,10 +348,11 @@ public class RecoilUpdater implements IRecoilUpdater {
         float camImpactRandomPitch = randPitchCam * camRandomScale;
 
         float shakeDir = randYawDir > 0 ? 2e-4f : -2e-4f;
-        this.camShake = shakeDir * impulse.shakeRoll();
+        this.camShake = shakeDir * shakeRoll;
 
         applyCamImpulse(camImpact, camImpactRandomPitch, camImpactRandomYaw, recoilControlFactor, aimingFactor);
         randomSeed = RANDOM.nextFloat();
+        lastShoot = System.currentTimeMillis();
     }
 
 
@@ -292,6 +387,10 @@ public class RecoilUpdater implements IRecoilUpdater {
                 this.recoilHeat = 0.0f;
             }
         }
+    }
+
+    private float distFromLastShoot() {
+        return (System.currentTimeMillis() - lastShoot) * 0.001f;
     }
 
     private void applyCamImpulse(float baseImpulse, float randomPitch, float randomYaw, float recoilControlFactor, float aimingProgress) {
