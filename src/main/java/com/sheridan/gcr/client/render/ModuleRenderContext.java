@@ -132,26 +132,6 @@ public class ModuleRenderContext {
         return bufferSource.getBuffer(renderType);
     }
 
-//    /**
-//     * 从缓存获取或创建buffer，在renderType的canConsolidateConsecutiveGeometry()返回false时使用此方法
-//     * 可以降低renderType乱序调用时来的额外endBatch操作
-//     * */
-//    public VertexConsumer getOrCreateBuffer(RenderType renderType) {
-//        if (renderType.canConsolidateConsecutiveGeometry()) {
-//            return bufferSource.getBuffer(renderType);
-//        }
-//        if (this.bufferCache == null) {
-//            this.bufferCache = new Object2ObjectOpenHashMap<>(16);
-//        }
-//        VertexConsumer vc = this.bufferCache.get(renderType);
-//        if (vc != null) {
-//            return vc;
-//        }
-//        vc = bufferSource.getBuffer(renderType);
-//        this.bufferCache.put(renderType, vc);
-//        return vc;
-//    }
-
     public void clearBufferCache() {
         if (bufferCache != null) {
             this.bufferCache.clear();

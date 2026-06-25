@@ -7,6 +7,7 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationContro
 import com.sheridan.gcr.client.model.modular.animation.eventSys.Track;
 import com.sheridan.gcr.client.model.modular.state.IStateViewer;
 import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
+import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.modules.views.IStateView;
 import net.minecraft.resources.ResourceLocation;
@@ -113,12 +114,27 @@ public class AnimatedModel<T extends IStateView> extends ModularModel implements
         callThirdPersonAnimation(this, context);
     }
 
+    @Override
+    public void applyCustomFirstPersonAnimation(FirstPersonRenderContext firstPersonRenderContext) {
+        callCustomFirstPersonAnimation(this, firstPersonRenderContext);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E extends IModularModel> void callCustomFirstPersonAnimation(E model, FirstPersonRenderContext context) {
+        if(controller != null) {
+            controller.onUsingContext(context);
+            IAnimationController<E> typed = (IAnimationController<E>) controller;
+            typed.customFirstPersonAnimation(model, context);
+            controller.onUsingContext(null);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private <E extends IModularModel> void callThirdPersonAnimation(E model, ModuleRenderContext context) {
         if(controller != null) {
             controller.onUsingContext(context);
             IAnimationController<E> typed = (IAnimationController<E>) controller;
-            typed.thirdPersonAnimation(model, context);
+            typed.customThirdPersonAnimation(model, context);
             controller.onUsingContext(null);
         }
     }

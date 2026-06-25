@@ -70,7 +70,8 @@ public class ClientTestingResources {
                 Map.of("full", "m203_full",
                         "empty", "m203_empty",
                         "base", "m203_base",
-                        "fired", "m203_fired")
+                        "fired", "m203_fired",
+                        "prepare", "m203_prepare")
         );
 
         // ==================== 2. 模型注册与自定义 Lambda 逻辑 ====================

@@ -108,6 +108,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
             }
             if (root.model instanceof IAnimationControllerModel model) {
                 model.applyFirstPersonAnimation(this);
+                model.applyCustomFirstPersonAnimation(this);
             }
             if (viewer != null) {
                 viewer.applyState(root.model, this, currentRenderNode.getStates());

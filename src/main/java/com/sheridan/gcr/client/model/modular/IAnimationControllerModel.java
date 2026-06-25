@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client.model.modular;
 
 import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationController;
+import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -23,4 +24,6 @@ public interface IAnimationControllerModel {
     void applyFirstPersonAnimation(ModuleRenderContext context);
 
     void applyThirdPersonAnimation(ModuleRenderContext context);
+
+    void applyCustomFirstPersonAnimation(FirstPersonRenderContext firstPersonRenderContext);
 }

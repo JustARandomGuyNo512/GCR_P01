@@ -1,15 +1,20 @@
 package com.sheridan.gcr.client.model.modular.animation.controllers;
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.animation.AnimationDef;
+import com.sheridan.gcr.client.animation.AnimationInstance;
+import com.sheridan.gcr.client.animation.KeyframeAnimator;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.modules.TestM203Model;
+import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class M203Controller extends AnimationController<TestM203Model> {
+    private AnimationDef prepare;
     @Override
     public void firstPersonSubscriptions(TestM203Model model) {
         subscribe(EventType.CHECK_SUB_WEAPON, 0, (ctx) -> {
@@ -27,8 +32,15 @@ public class M203Controller extends AnimationController<TestM203Model> {
     public void initAnimation(TestM203Model model) {
         registerAnimations(
                 "check", "gcr:check_grenade.g",
-                "reload", "gcr:reload_grenade.g"
+                "reload", "gcr:reload_grenade.g",
+                "prepare", "gcr:m203_prepare"
         );
+        prepare = anim("prepare").animation;
+    }
+
+    @Override
+    public void customFirstPersonAnimation(TestM203Model model, FirstPersonRenderContext context) {
+
     }
 
     @Override
@@ -39,11 +51,6 @@ public class M203Controller extends AnimationController<TestM203Model> {
                 getTrack("check").clear();
             }
         });
-    }
-
-    @Override
-    public void thirdPersonAnimation(TestM203Model model, ModuleRenderContext context) {
-
     }
 
     @Override

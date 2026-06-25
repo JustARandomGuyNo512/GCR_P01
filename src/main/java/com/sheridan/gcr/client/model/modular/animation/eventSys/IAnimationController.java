@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.model.modular.animation.eventSys;
 
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.model.modular.IModularModel;
+import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -14,7 +15,9 @@ public interface IAnimationController<T extends IModularModel> {
 
     void firstPersonSubscriptions(T model);
 
-    void thirdPersonAnimation(T model, ModuleRenderContext context);
+    default void customThirdPersonAnimation(T model, ModuleRenderContext context) {}
+
+    default void customFirstPersonAnimation(T model, FirstPersonRenderContext context) {}
 
     void initAnimation(T model);
 
