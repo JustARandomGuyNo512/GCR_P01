@@ -1,6 +1,8 @@
 package com.sheridan.gcr.modularSys.modules.impl;
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.GunEffect;
+import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.recoil.IRecoilUpdater;
@@ -99,11 +101,11 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         if (keyCode == KeyBinds.USE_GRENADE_LAUNCHER.getKey().getValue()) {
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
             String chamberStatus = getChamberStatus(states);
-            if (!CHAMBER_LOADED.equals(chamberStatus)) {
-                handleReload();
-            } else {
-                clientShoot();
-            }
+            //if (!CHAMBER_LOADED.equals(chamberStatus)) {
+            //    handleReload();
+            //} else {
+                clientShoot(thisNodeId);
+            //}
         } else if (keyCode == KeyBinds.CHECK_SUB_WEAPON.getKey().getValue()) {
             if (!Client.isAiming()) {
                 CheckingTask task = new CheckingTask(itemStack, gun, CheckingTask.CHECK_SUB_WEAPON, Map.of(
@@ -124,7 +126,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void clientShoot() {
+    protected void clientShoot(String nodeId) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -133,6 +135,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         recoilUpdater.applyImpulse(-impulseZ, impulsePitch, impulseYaw, 0,0, impulseRoll);
         SoundEvent soundEvent = ModSounds.M203_FIRE.get();
         ModSounds.sound(1, 1, player, soundEvent);
+        GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, nodeId, System.currentTimeMillis());
     }
 
     @Override
