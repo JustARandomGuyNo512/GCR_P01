@@ -29,7 +29,6 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     public static final int STENCIL_DEFERRED_RENDER_TASK = 10000;
-    public static final int VANILLA_DEFERRED_RENDER_TASK = 10001;
     private final Map<String, MuzzleEntry> entryMap = new HashMap<>();
     private final List<MuzzleEntry> entries = new ArrayList<>();
 
@@ -64,74 +63,69 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     }
 
     protected void renderEffect(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId,  GunEffect effectListener, boolean firstPerson) {
-//        for (MuzzleEntry entry : entries) {
-//            if (!entry.enabled) {
-//
-//                continue;
-//            }
-//
-//            String bindSlotName = entry.getBindSlotName();
-//            ModuleRenderNode node = context.currentRenderNode();
-//
-//            if (!node.hasChild(bindSlotName)) {
-//
-//                PoseStack.Pose bonePose = model.getBonePose(entry.getBoneName());
-//                if (bonePose == null) {
-//                    continue;
-//                }
-//
-//                long startTime = GunEffectManager.getEffectTimestamp(
-//                        context.entity.getId(),
-//                        effectListener,
-//                        effectModuleId
-//                );
-//
-//                if (startTime == -1) {
-//                    return;
-//                }
-//                boolean shouldRender = entry.getMuzzleFlash().shouldRender(startTime, firstPerson);
-//                if (!shouldRender) {
-//                    return;
-//                }
-//                if (Client.isIrisShaderInUse && firstPerson) {
-//                    if (context.removeLocalStorage(ScopeModel.SCOPE_VIEW_RENDERING)) {
-//                        context.setLocalStorage(STENCIL_DEFERRED_RENDER_TASK,
-//                                (Runnable) () -> stencilDeferredRender(entry, bonePose, startTime));
-//                    } else {
-//                        final Matrix4f modelViewMat = Client.getGunRenderer().firstPersonModelViewMat();
-//                        Stage.LOW.addTask(
-//                                new Task((RenderLevelStageEvent event) -> deferredRender(modelViewMat, entry, bonePose, startTime)));
-//                    }
-//                    Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-//                } else {
-//
-////                    if (firstPerson) {
-////                        Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-////                        PoseStack.Pose copy = bonePose.copy();
-////                        System.out.println("1");
-////                        context.setLocalStorage(VANILLA_DEFERRED_RENDER_TASK, (Runnable) () -> entry.getMuzzleFlash().render(
-////                                copy,
-////                                context.bufferSource,
-////                                entry.getScale(),
-////                                startTime,
-////                                true,
-////                                LightTexture.FULL_BRIGHT)
-////                        );
-////                    } else {
-//                    //System.out.println(context.currentRenderNode().id + " " + context.currentRenderNode().model.getClass().getSimpleName());
+        for (MuzzleEntry entry : entries) {
+            if (!entry.enabled) {
+                continue;
+            }
+
+            String bindSlotName = entry.getBindSlotName();
+            ModuleRenderNode node = context.currentRenderNode();
+
+            if (!node.hasChild(bindSlotName)) {
+
+                PoseStack.Pose bonePose = model.getBonePose(entry.getBoneName());
+                if (bonePose == null) {
+                    continue;
+                }
+
+                long startTime = GunEffectManager.getEffectTimestamp(
+                        context.entity.getId(),
+                        effectListener,
+                        effectModuleId
+                );
+
+                if (startTime == -1) {
+                    return;
+                }
+                if (Client.isIrisShaderInUse && firstPerson) {
+                    if (context.removeLocalStorage(ScopeModel.SCOPE_VIEW_RENDERING)) {
+                        context.setLocalStorage(STENCIL_DEFERRED_RENDER_TASK,
+                                (Runnable) () -> stencilDeferredRender(entry, bonePose, startTime));
+                    } else {
+                        final Matrix4f modelViewMat = Client.getGunRenderer().firstPersonModelViewMat();
+                        Stage.LOW.addTask(
+                                new Task((RenderLevelStageEvent event) -> deferredRender(modelViewMat, entry, bonePose, startTime)));
+                    }
+                    Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
+                } else {
+
+//                    if (firstPerson) {
 //                        Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-//                        entry.getMuzzleFlash().render(
-//                                bonePose,
+//                        PoseStack.Pose copy = bonePose.copy();
+//                        System.out.println("1");
+//                        context.setLocalStorage(VANILLA_DEFERRED_RENDER_TASK, (Runnable) () -> entry.getMuzzleFlash().render(
+//                                copy,
 //                                context.bufferSource,
 //                                entry.getScale(),
 //                                startTime,
-//                                firstPerson,
-//                                LightTexture.FULL_BRIGHT);
-//                    //}
-//
-//                }
-//            }
-//        }
+//                                true,
+//                                LightTexture.FULL_BRIGHT)
+//                        );
+//                    } else {
+                    //System.out.println(context.currentRenderNode().id + " " + context.currentRenderNode().model.getClass().getSimpleName());
+                        Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
+                        entry.getMuzzleFlash().render(
+                                bonePose,
+                                context.bufferSource,
+                                entry.getScale(),
+                                startTime,
+                                firstPerson,
+                                LightTexture.FULL_BRIGHT);
+                    //}
+
+                }
+            }
+        }
     }
 
     @Override

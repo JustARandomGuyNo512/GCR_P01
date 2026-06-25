@@ -23,7 +23,6 @@ public class MuzzleFlash {
     private boolean randomRotate;
     private float rotation;
     private int rotateSeed;
-    private FastMuzzleSmoke muzzleSmoke = CommonMuzzleSmokeEffects.COMMON;
     public String name;
     public int length;
 
@@ -57,55 +56,24 @@ public class MuzzleFlash {
         this.rotation = 0;
     }
 
-    public MuzzleFlash resetMuzzleSmoke(FastMuzzleSmoke muzzleSmoke) {
-        this.muzzleSmoke = muzzleSmoke;
-        return this;
-    }
-
-    public MuzzleFlash noMuzzleSmoke() {
-        this.muzzleSmoke = null;
-        return this;
-    }
-
-    public boolean hasMuzzleSmoke() {
-        return muzzleSmoke != null;
-    }
-
-    public FastMuzzleSmoke getMuzzleSmoke() {
-        return muzzleSmoke;
-    }
-
-    public boolean shouldRender(long startTime, boolean isFirstPerson) {
-        long timeDis = System.currentTimeMillis() - startTime;
-        boolean muzzleFlashNotEnded = timeDis <= length;
-        boolean handleSmokeEffect = isFirstPerson && muzzleSmoke != null;
-        return muzzleFlashNotEnded || handleSmokeEffect;
-    }
-
     public void render(PoseStack.Pose pose, MultiBufferSource bufferSource, float scale, long startTime, boolean isFirstPerson, int light) {
         if (!textures.isEmpty()) {
             long timeDis = System.currentTimeMillis() - startTime;
             boolean muzzleFlashNotEnded = timeDis <= length;
-            boolean handleSmokeEffect = isFirstPerson && muzzleSmoke != null;
-            if (muzzleFlashNotEnded || handleSmokeEffect) {
+            if (muzzleFlashNotEnded) {
                 PoseStack.Pose renderPose = pose.copy();
                 renderPose.pose().scale(scale, scale, scale);
-                if (handleSmokeEffect) {
-                    MuzzleSmokeRenderer.INSTANCE.renderOrPushEffect(muzzleSmoke, renderPose, startTime, light);
-                }
-                if (muzzleFlashNotEnded) {
-                    int texNum = textures.size();
-                    int texIndex = texNum > 1 ? RANDOM.nextInt(texNum) : 0;
-                    MuzzleFlashTexture muzzleFlashTexture = textures.get(texIndex);
-                    if (randomRotate) {
-                        int seed = Math.max(0, RANDOM.nextInt(6)) % rotateSeed;
-                        if (seed != 0) {
-                            renderPose.pose().rotate(new Quaternionf().rotateXYZ(0,0,seed * rotation));
-                        }
+                int texNum = textures.size();
+                int texIndex = texNum > 1 ? RANDOM.nextInt(texNum) : 0;
+                MuzzleFlashTexture muzzleFlashTexture = textures.get(texIndex);
+                if (randomRotate) {
+                    int seed = Math.max(0, RANDOM.nextInt(6)) % rotateSeed;
+                    if (seed != 0) {
+                        renderPose.pose().rotate(new Quaternionf().rotateXYZ(0,0,seed * rotation));
                     }
-                    int index = RANDOM.nextInt(muzzleFlashTexture.getCount());
-                    muzzleFlashTexture.render(index, renderPose, bufferSource, isFirstPerson);
                 }
+                int index = RANDOM.nextInt(muzzleFlashTexture.getCount());
+                muzzleFlashTexture.render(index, renderPose, bufferSource, isFirstPerson);
             }
         }
     }

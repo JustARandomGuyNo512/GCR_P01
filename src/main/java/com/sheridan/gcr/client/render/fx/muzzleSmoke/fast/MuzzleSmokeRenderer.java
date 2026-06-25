@@ -23,7 +23,7 @@ public class MuzzleSmokeRenderer {
     /**
      * Only call this method on render thread!!!
      * */
-    public void renderOrPushEffect(FastMuzzleSmoke effect, PoseStack.Pose pose, long lastShoot, int light)  {
+    public void pushEffect(FastMuzzleSmoke effect, PoseStack.Pose pose, long lastShoot, int light)  {
         if (effect == null) {
             return;
         }
@@ -38,6 +38,9 @@ public class MuzzleSmokeRenderer {
             }
             tempLastShoot = lastShoot;
         }
+    }
+
+    public void render() {
         if (!tasks.isEmpty()) {
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(DELAYED_TASK_BUFFER);
             tasks.removeIf((task) -> task.handleRender(bufferSource));
