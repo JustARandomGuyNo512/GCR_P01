@@ -6,6 +6,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.DrawHolsterHandler;
+import com.sheridan.gcr.client.GunEffect;
+import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
@@ -322,7 +324,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         context.startRender();
         if (context.renderMode) {
-            handleBulletShell(context.getNodeStates(bulletShellHandlerNodeID));
+            handleBulletShell(context);
         }
         FP_BUFFER_SOURCE.endBatch();
         for (ModuleRenderNode node : models) {
@@ -335,11 +337,12 @@ public class DefaultGunRenderer implements IGunRenderer {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends IStateView> void handleBulletShell(ReadOnlyTag states) {
-        if (bulletShellHandlerModel != null && lastShootMain != Client.lastShootMain()) {
+    private <T extends IStateView> void handleBulletShell(FirstPersonRenderContext context) {
+        long effectTimestamp = GunEffectManager.getEffectTimestamp(context.entity.getId(), GunEffect.SHOOT, context.root.id);
+        if (bulletShellHandlerModel != null && lastShootMain != effectTimestamp) {
             IStateView view = bulletShellHandlerModel.getView();
             IBulletShellHandler<T> bulletShellHandler = (IBulletShellHandler<T>) bulletShellHandlerModel.getBulletShellHandler();
-            boolean b = bulletShellHandler.shouldThrowBulletShell((T) view, states);
+            boolean b = bulletShellHandler.shouldThrowBulletShell((T) view, context.getNodeStates(bulletShellHandlerNodeID));
             ReadOnlyTag.clear();
             if (!b) {
                 return;
@@ -350,8 +353,8 @@ public class DefaultGunRenderer implements IGunRenderer {
                     bulletShellDisplay,
                     bulletShellHandler.getModel(),
                     offsetPose,
-                    Client.lastShootMain());
-            lastShootMain = Client.lastShootMain();
+                    effectTimestamp);
+            lastShootMain = effectTimestamp;
         }
     }
 

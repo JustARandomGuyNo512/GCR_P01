@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.model.modular.modules;
 
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.GunEffect;
+import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.IMuzzleFlashRenderer;
 import com.sheridan.gcr.client.model.modular.IMuzzleFlashRendererModel;
