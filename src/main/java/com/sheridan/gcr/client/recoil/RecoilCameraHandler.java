@@ -128,7 +128,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
     public void onBobbingView(PoseStack poseStack, float partialTicks, IGun gun) {
         IRecoilUpdater updater = RecoilHandler.INSTANCE.getRecoilUpdater();
         if (updater != null) {
-            float timeDis = Client.distFromLastShoot();
+            float timeDis = updater.distFromLastShoot();
             float currentShake = updater.getCamShakeZ();
             float rotZ = (float) Utils.dampedOscillation(timeDis, currentShake, 40, 0.25f, QUARTER_PI);
             poseStack.mulPose(Axis.ZP.rotation(rotZ));

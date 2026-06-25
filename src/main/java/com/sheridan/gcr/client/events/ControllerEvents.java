@@ -33,7 +33,7 @@ public class ControllerEvents {
     public static boolean debug_i = false;
     @SubscribeEvent
     public static void onKeyBoardEvent(InputEvent.Key event) {
-        if (event.getAction() == 1) {
+        //if (event.getAction() == 1) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) {
                 return;
@@ -49,62 +49,64 @@ public class ControllerEvents {
                 }
                 handleGunFunctionalInput(gunModule, itemStack, event);
             }
-        }
+        //}
     }
 
     private static void handleGunFunctionalInput(IGun gunModule, ItemStack itemStack, InputEvent.Key event) {
         if (DrawHolsterHandler.get().getEquipProgress() < 1) {
             return;
         }
-        if (KeyBinds.CHECK_MAG.isDown() && !SprintingHandler.INSTANCE.isSprinting()) {
-            IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.CHECKING, Map.of("type", CheckingTask.CHECK_MAG));
-            if (task != null) {
-                GunTaskHandler.INSTANCE.setTask(task);
+        if (event.getAction() == 1) {
+            if (KeyBinds.CHECK_MAG.isDown() && !SprintingHandler.INSTANCE.isSprinting()) {
+                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.CHECKING, Map.of("type", CheckingTask.CHECK_MAG));
+                if (task != null) {
+                    GunTaskHandler.INSTANCE.setTask(task);
+                }
             }
-        }
-        if (KeyBinds.CHECK_CHAMBER.isDown()) {
-            IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.CHECKING, Map.of("type", CheckingTask.CHECK_CHAMBER));
-            if (task != null) {
-                GunTaskHandler.INSTANCE.setTask(task);
+            if (KeyBinds.CHECK_CHAMBER.isDown()) {
+                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.CHECKING, Map.of("type", CheckingTask.CHECK_CHAMBER));
+                if (task != null) {
+                    GunTaskHandler.INSTANCE.setTask(task);
+                }
             }
-        }
-        if (KeyBinds.SWITCH_FIRE_MODE.isDown()) {
-            IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.SWITCH_FIRE_MODE, Map.of());
-            if (task != null) {
-                GunTaskHandler.INSTANCE.setTask(task);
+            if (KeyBinds.SWITCH_FIRE_MODE.isDown()) {
+                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.SWITCH_FIRE_MODE, Map.of());
+                if (task != null) {
+                    GunTaskHandler.INSTANCE.setTask(task);
+                }
             }
-        }
-        if (KeyBinds.RELOAD.isDown()) {
-            if (gunModule.isStuck(itemStack)) {
+            if (KeyBinds.RELOAD.isDown()) {
+                if (gunModule.isStuck(itemStack)) {
+                    IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
+                    if (task != null) {
+                        GunTaskHandler.INSTANCE.setTask(task);
+                    }
+                    return;
+                }
+                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.RELOAD, Map.of());
+                if (task != null) {
+                    GunTaskHandler.INSTANCE.setTask(task);
+                }
+            }
+            if (KeyBinds.SWITCH_EFFECTIVE_SIGHT.isDown()) {
+                if (gunModule instanceof ISlottedGun) {
+                    IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.SWITCH_USING_SIGHT, Map.of());
+                    if (task != null) {
+                        task.start();
+                    }
+                }
+            }
+            if (KeyBinds.REMOVE_STUCK.isDown()) {
                 IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                 if (task != null) {
                     GunTaskHandler.INSTANCE.setTask(task);
                 }
-                return;
             }
-            IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.RELOAD, Map.of());
-            if (task != null) {
-                GunTaskHandler.INSTANCE.setTask(task);
+            if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
+                ClassHotReloader.reload();
+                //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
+                //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
             }
-        }
-        if (KeyBinds.SWITCH_EFFECTIVE_SIGHT.isDown()) {
-            if (gunModule instanceof ISlottedGun) {
-                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.SWITCH_USING_SIGHT, Map.of());
-                if (task != null) {
-                    task.start();
-                }
-            }
-        }
-        if (KeyBinds.REMOVE_STUCK.isDown()) {
-            IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
-            if (task != null) {
-                GunTaskHandler.INSTANCE.setTask(task);
-            }
-        }
-        if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
-            ClassHotReloader.reload();
-            //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
-            //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
         }
 
         Map<String, Node> idToNodes = Client.WEAPON_STATUS.getIDToNodes();

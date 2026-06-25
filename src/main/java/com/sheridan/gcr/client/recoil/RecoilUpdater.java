@@ -389,7 +389,8 @@ public class RecoilUpdater implements IRecoilUpdater {
         }
     }
 
-    private float distFromLastShoot() {
+    @Override
+    public float distFromLastShoot() {
         return (System.currentTimeMillis() - lastShoot) * 0.001f;
     }
 

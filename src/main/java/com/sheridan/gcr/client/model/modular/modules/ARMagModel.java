@@ -11,10 +11,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class TestARMagModel extends ModularModel implements IStateViewerModel<IAmmoSourceView> {
+public class ARMagModel extends ModularModel implements IStateViewerModel<IAmmoSourceView> {
     protected ARMagViewer viewer;
 
-    public TestARMagModel(MeshModelData root, ResourceLocation name, ARMagViewer viewer) {
+    public ARMagModel(MeshModelData root, ResourceLocation name, ARMagViewer viewer) {
         super(root, name);
         this.viewer = viewer;
     }

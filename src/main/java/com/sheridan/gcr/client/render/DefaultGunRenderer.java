@@ -45,6 +45,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -381,7 +382,7 @@ public class DefaultGunRenderer implements IGunRenderer {
     }
 
     @Override
-    public void dispatchAnimationEvent(EventType eventType, Map<String, String> params) {
+    public void dispatchAnimationEvent(EventType eventType, @Nullable Map<String, String> params) {
         if (cachedFPContext != null) {
             animationEventBus.dispatch(eventType, cachedFPContext, params);
         }

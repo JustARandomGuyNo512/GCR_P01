@@ -1,5 +1,6 @@
 package com.sheridan.gcr.client.model.modular;
 
+import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -16,7 +17,7 @@ public interface IMuzzleFlashRenderer {
     @Nullable
     MuzzleEntry getByName(String name);
 
-    void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId);
+    void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId);
 
     void afterAllRendered(ModuleRenderContext context);
 }

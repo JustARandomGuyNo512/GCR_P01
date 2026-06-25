@@ -6,16 +6,26 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.task.GunTask;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Map;
+
 
 public class CheckingTask extends GunTask<IGun> {
     public static final String CHECK_MAG = "check_mag";
     public static final String CHECK_CHAMBER = "check_chamber";
+    public static final String CHECK_SUB_WEAPON = "check_sub_weapon";
 
     private final String type;
+    private Map<String, String> params;
 
     public CheckingTask(ItemStack itemStack, IGun gun, String type) {
         super(itemStack, gun, 1);
         this.type = type;
+    }
+
+    public CheckingTask(ItemStack itemStack, IGun gun, String type, Map<String, String> params) {
+        super(itemStack, gun, 1);
+        this.type = type;
+        this.params = params;
     }
 
     @Override
@@ -27,10 +37,12 @@ public class CheckingTask extends GunTask<IGun> {
         if (CHECK_MAG.equals(type)) {
             boolean hasMagAttachment = gun.hasMagAttachment(gun.rootNodeTag(itemStack));
             if (hasMagAttachment) {
-                Client.getGunRenderer().dispatchAnimationEvent(EventType.CHECK_MAG);
+                Client.getGunRenderer().dispatchAnimationEvent(EventType.CHECK_MAG, params);
             }
         } else if (CHECK_CHAMBER.equals(type)) {
-            Client.getGunRenderer().dispatchAnimationEvent(EventType.CHECK_CHAMBER);
+            Client.getGunRenderer().dispatchAnimationEvent(EventType.CHECK_CHAMBER, params);
+        } else if (CHECK_SUB_WEAPON.equals(type)) {
+            Client.getGunRenderer().dispatchAnimationEvent(EventType.CHECK_SUB_WEAPON, params);
         }
     }
 

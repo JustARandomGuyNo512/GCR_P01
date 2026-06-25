@@ -7,6 +7,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Triple;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class AnimationEventBus {
 
     }
 
-    public void dispatch(EventType type, ModuleRenderContext context, Map<String, String> params) {
+    public void dispatch(EventType type, ModuleRenderContext context, @Nullable Map<String, String> params) {
         List<Triple<EventRegistry, ModuleRenderNode, IAnimationController<?>>> triples = events.get(type);
         if (triples != null) {
             Callback.EventContext eventContext = new Callback.EventContext(type, context);

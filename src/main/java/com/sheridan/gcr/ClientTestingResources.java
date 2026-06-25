@@ -81,7 +81,7 @@ public class ClientTestingResources {
                 GCR.M4A1, "model_assets/gltf/m4a1_main.gltf", "model_assets/gltf/m4a1_main.png", true,
                 meshData -> {
                     ARMainViewer viewer = new ARMainViewer((AR) GCR.M4A1);
-                    TestARMainModel model = new TestARMainModel(meshData, new BulletShellDisplay(
+                    ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "BULLET_SHELL", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
                     ), viewer);
@@ -99,7 +99,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCR.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
                 meshData -> {
-                    TestM203Model testM203Model = new TestM203Model(meshData, new TestM203Viewer((IM203View) GCR.M203));
+                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCR.M203));
                     IAnimationController<?> controller = new M203Controller();
                     testM203Model.bindController(controller);
                     testM203Model.callInitAnimation();
@@ -111,7 +111,7 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(
                 GCR.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
-                meshData -> new TestARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R))
+                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R))
         );
 
 
@@ -143,7 +143,7 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(
                 GCR.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
-                d -> new PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCR.PEQ_15)));
+                d -> new SightModel.PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCR.PEQ_15)));
 
 
         BufferedPlayerArmModel.init();

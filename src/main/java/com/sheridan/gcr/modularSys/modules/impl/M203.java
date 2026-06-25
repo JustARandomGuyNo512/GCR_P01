@@ -1,29 +1,56 @@
 package com.sheridan.gcr.modularSys.modules.impl;
 
+import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.KeyBinds;
+import com.sheridan.gcr.client.SprintingHandler;
+import com.sheridan.gcr.client.recoil.IRecoilUpdater;
+import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.modularSys.Direction;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
-import com.sheridan.gcr.modularSys.modules.states.Str;
-import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
+import com.sheridan.gcr.modularSys.task.GunTaskHandler;
+import com.sheridan.gcr.modularSys.task.other.CheckingTask;
+import com.sheridan.gcr.sound.ModSounds;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IM203View {
     private final IVoxelHandler voxelHandler;
     private final AdditionalPropModifier modifier;
 
-    public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier) {
+
+    protected float reloadLengthInSeconds;
+
+    protected float impulseZ;
+    protected float impulsePitch;
+    protected float impulseYaw;
+    protected float impulseRoll;
+
+    public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
+                float reloadLengthInSeconds, float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll) {
         super(id, true, weight, Direction.NONE);
         this.voxelHandler = voxelHandler;
         this.modifier = modifier;
+        this.reloadLengthInSeconds = reloadLengthInSeconds;
+        this.impulseZ = impulseZ;
+        this.impulsePitch = impulsePitch;
+        this.impulseYaw = impulseYaw;
+        this.impulseRoll = impulseRoll;
     }
 
     @Override
@@ -47,35 +74,73 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     }
 
     @Override
-    public void onUpdate(StatesUpdateContext context) {
-
-    }
+    public void onUpdate(StatesUpdateContext context) {}
 
     @Override
     public String getChamberStatus(CompoundTag states) {
         return CHAMBER_STATUS.get(states);
     }
 
+
+    @OnlyIn(Dist.CLIENT)
+    private boolean shouldNotHandleShoot() {
+        return SprintingHandler.INSTANCE.isSprinting() ||
+                GunTaskHandler.INSTANCE.hasTask();
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public void onKeyPressed(int keyCode, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
         super.onKeyPressed(keyCode, action, thisNodeId, unit, gun, itemStack);
-        if (keyCode == KeyBinds.USE_GRENADE_LAUNCHER.getKey().getValue() && KeyBinds.USE_GRENADE_LAUNCHER.isDown()) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (shouldNotHandleShoot() || action != 1 || player == null) {
+            return;
+        }
+        if (keyCode == KeyBinds.USE_GRENADE_LAUNCHER.getKey().getValue()) {
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
             String chamberStatus = getChamberStatus(states);
-            if (action == 1) {
-                if (!CHAMBER_LOADED.equals(chamberStatus)) {
-                    //TODO: 重新装填
-
-                } else {
-                    //TODO: 进入准备射击模式
-                }
-            } else if (action == 0) {
-                //TODO: 如果准备好射击，则开火，否则退出准备射击模式
+            if (!CHAMBER_LOADED.equals(chamberStatus)) {
+                handleReload();
+            } else {
+                clientShoot();
             }
-        } else if (keyCode == KeyBinds.CHECK_SUB_WEAPON.getKey().getValue() && KeyBinds.CHECK_SUB_WEAPON.isDown()) {
-            //TODO: 发送弹膛检查动画
+        } else if (keyCode == KeyBinds.CHECK_SUB_WEAPON.getKey().getValue()) {
+            if (!Client.isAiming()) {
+                CheckingTask task = new CheckingTask(itemStack, gun, CheckingTask.CHECK_SUB_WEAPON, Map.of(
+                        "animation_name", "check_grenade"
+                ));
+                GunTaskHandler.INSTANCE.setTask(task);
+            }
         }
     }
 
+    protected void serverShoot() {
+
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void handleReload() {
+
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void clientShoot() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        IRecoilUpdater recoilUpdater = RecoilHandler.INSTANCE.getRecoilUpdater();
+        recoilUpdater.applyImpulse(-impulseZ, impulsePitch, impulseYaw, 0,0, impulseRoll);
+        SoundEvent soundEvent = ModSounds.M203_FIRE.get();
+        ModSounds.sound(1, 1, player, soundEvent);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        AdditionalPropModifier modifier = getModifier();
+        if (modifier != null) {
+            modifier.appendHoverText(tooltipComponents);
+        }
+    }
 }

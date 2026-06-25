@@ -9,4 +9,5 @@ public interface IM203View extends IStateView{
     String CHAMBER_FIRED = "fired";
     Str CHAMBER_STATUS = new Str("chamber_status", CHAMBER_EMPTY);
     String getChamberStatus(CompoundTag states);
+
 }

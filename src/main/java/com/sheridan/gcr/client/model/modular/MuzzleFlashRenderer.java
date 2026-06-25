@@ -33,6 +33,7 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     private final Map<String, MuzzleEntry> entryMap = new HashMap<>();
     private final List<MuzzleEntry> entries = new ArrayList<>();
 
+
     public MuzzleFlashRenderer(MuzzleEntry ... entries) {
         this.entries.addAll(List.of(entries));
         for (MuzzleEntry entry : entries) {
@@ -51,7 +52,7 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     }
 
     @Override
-    public void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId) {
+    public void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId) {
         if (IrisCompat.isRenderingShadowPass()) {
             return;
         }
@@ -59,10 +60,10 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
             return;
         }
         boolean firstPerson = context.isFirstPerson();
-        renderEffect(context, model, effectModuleId, firstPerson);
+        renderEffect(context, model, effectModuleId, effectListener, firstPerson);
     }
 
-    protected void renderEffect(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId, boolean firstPerson) {
+    protected void renderEffect(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId,  GunEffect effectListener, boolean firstPerson) {
         for (MuzzleEntry entry : entries) {
             if (!entry.enabled) {
                 continue;
@@ -77,7 +78,7 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
 
                 long startTime = GunEffectManager.getEffectTimestamp(
                         context.entity.getId(),
-                        GunEffect.SHOOT,
+                        effectListener,
                         effectModuleId
                 );
                 if (startTime == -1) {

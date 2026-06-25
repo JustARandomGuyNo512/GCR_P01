@@ -9,7 +9,7 @@ import com.sheridan.gcr.client.animation.KeyframeAnimator;
 import com.sheridan.gcr.client.animation.SingleAnimationSequence;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
-import com.sheridan.gcr.client.model.modular.modules.TestARMainModel;
+import com.sheridan.gcr.client.model.modular.modules.ARMainModel;
 import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
@@ -19,7 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ARMainController extends AnimationController<TestARMainModel> {
+public class ARMainController extends AnimationController<ARMainModel> {
     private SingleAnimationSequence shoot;
     private SingleAnimationSequence shootLast;
     private SingleAnimationSequence shootStuck;
@@ -28,7 +28,7 @@ public class ARMainController extends AnimationController<TestARMainModel> {
 
 
     @Override
-    public void firstPersonSubscriptions(TestARMainModel model) {
+    public void firstPersonSubscriptions(ARMainModel model) {
         ARView view = model.getView();
 
         shoot = new SingleAnimationSequence(anim("shoot").coverState());
@@ -116,7 +116,7 @@ public class ARMainController extends AnimationController<TestARMainModel> {
     }
 
     @Override
-    public void customThirdPersonAnimation(TestARMainModel model, ModuleRenderContext context) {
+    public void customThirdPersonAnimation(ARMainModel model, ModuleRenderContext context) {
         long startTime = GunEffectManager.getEffectTimestamp(
                 context.entity.getId(),
                 GunEffect.SHOOT,
@@ -128,7 +128,7 @@ public class ARMainController extends AnimationController<TestARMainModel> {
     }
 
     @Override
-    public void initAnimation(TestARMainModel model) {
+    public void initAnimation(ARMainModel model) {
         registerAnimations(
                 "check_mag", "gcr:check_mag",
                 "reload_grenade", "gcr:reload_grenade",
@@ -153,7 +153,7 @@ public class ARMainController extends AnimationController<TestARMainModel> {
     }
 
     @Override
-    public void initTrack(TestARMainModel moduleModel) {
+    public void initTrack(ARMainModel moduleModel) {
         defineTrack("main").addOnPlayed(instance -> getTrack("check").clear());
         defineTrack("shoot").addOnPlayed(instance -> getTrack("check").clear());
 
@@ -168,7 +168,7 @@ public class ARMainController extends AnimationController<TestARMainModel> {
 
     @Override
     public boolean assertCompatible(IModularModel model) {
-        return model instanceof TestARMainModel;
+        return model instanceof ARMainModel;
     }
 
 

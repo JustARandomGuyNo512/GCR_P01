@@ -20,6 +20,7 @@ public interface IRecoilUpdater {
     RecoilData getRecoilData();
     float getRecoilHeat();
     float getCamShakeZ();
+    float distFromLastShoot();
 
     Vector2f getCameraSpeed();
 }

@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client.model.modular.modules;
 
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.IMuzzleFlashRenderer;
 import com.sheridan.gcr.client.model.modular.IMuzzleFlashRendererModel;
@@ -23,7 +24,7 @@ public class MuzzleFlashRendererModel extends ModularModel implements IMuzzleFla
     }
 
     protected void renderMuzzleFlash(ModuleRenderContext context) {
-        muzzleFlashRenderer.render(context, this, context.root.id);
+        muzzleFlashRenderer.render(context, this, GunEffect.SHOOT, context.root.id);
     }
 
     @Override

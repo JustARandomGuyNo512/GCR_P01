@@ -135,7 +135,8 @@ public class GCR {
     public static final IModular M203 = new M203(
             RL( "m203"), 1.36f,
             new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
-            new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f))
+            new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
+            3.3f, 50f, 15f, 30f, 140f)
             .addTags("under_barrel", "sub_weapon");
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(

@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -26,7 +27,7 @@ public interface IGunRenderer {
 
     void dispatchAnimationEvent(EventType eventType, String ... params);
 
-    void dispatchAnimationEvent(EventType eventType, Map<String, String> params);
+    void dispatchAnimationEvent(EventType eventType, @Nullable Map<String, String> params);
 
     void tick(LocalPlayer player);
 
