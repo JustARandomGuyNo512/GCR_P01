@@ -8,29 +8,27 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
-import com.sheridan.gcr.client.render.delayed.Stage;
-import com.sheridan.gcr.client.render.delayed.Task;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
-    public static final int STENCIL_DEFERRED_RENDER_TASK = 10000;
+    public static final int DEFERRED_RENDER_TASK = 10000;
     private final Map<String, MuzzleEntry> entryMap = new HashMap<>();
     private final List<MuzzleEntry> entries = new ArrayList<>();
+    protected boolean firstPersonRecorded = false;
+    private static List<Triple<MuzzleEntry, PoseStack.Pose, Long>> renderQueue = new ArrayList<>();
 
 
     public MuzzleFlashRenderer(MuzzleEntry ... entries) {
@@ -51,91 +49,70 @@ public class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     }
 
     @Override
-    public void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId) {
+    public void onRender(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId) {
+        recordOrRender(context, model, effectListener, effectModuleId);
+    }
+
+
+    public void recordOrRender(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId) {
         if (IrisCompat.isRenderingShadowPass()) {
             return;
         }
         if (context.entity == null) {
             return;
         }
-        boolean firstPerson = context.isFirstPerson();
-        renderEffect(context, model, effectModuleId, effectListener, firstPerson);
-    }
-
-    protected void renderEffect(ModuleRenderContext context, IMuzzleFlashRendererModel model, String effectModuleId,  GunEffect effectListener, boolean firstPerson) {
         for (MuzzleEntry entry : entries) {
             if (!entry.enabled) {
                 continue;
             }
-
             String bindSlotName = entry.getBindSlotName();
             ModuleRenderNode node = context.currentRenderNode();
-
-            if (!node.hasChild(bindSlotName)) {
-
-                PoseStack.Pose bonePose = model.getBonePose(entry.getBoneName());
-                if (bonePose == null) {
-                    continue;
-                }
-
-                long startTime = GunEffectManager.getEffectTimestamp(
-                        context.entity.getId(),
-                        effectListener,
-                        effectModuleId
-                );
-
-                if (startTime == -1) {
-                    return;
-                }
-                if (Client.isIrisShaderInUse && firstPerson) {
-                    if (context.removeLocalStorage(ScopeModel.SCOPE_VIEW_RENDERING)) {
-                        context.setLocalStorage(STENCIL_DEFERRED_RENDER_TASK,
-                                (Runnable) () -> stencilDeferredRender(entry, bonePose, startTime));
-                    } else {
-                        final Matrix4f modelViewMat = Client.getGunRenderer().firstPersonModelViewMat();
-                        Stage.LOW.addTask(
-                                new Task((RenderLevelStageEvent event) -> deferredRender(modelViewMat, entry, bonePose, startTime)));
-                    }
-                    Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-                } else {
-
-//                    if (firstPerson) {
-//                        Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-//                        PoseStack.Pose copy = bonePose.copy();
-//                        System.out.println("1");
-//                        context.setLocalStorage(VANILLA_DEFERRED_RENDER_TASK, (Runnable) () -> entry.getMuzzleFlash().render(
-//                                copy,
-//                                context.bufferSource,
-//                                entry.getScale(),
-//                                startTime,
-//                                true,
-//                                LightTexture.FULL_BRIGHT)
-//                        );
-//                    } else {
-                    //System.out.println(context.currentRenderNode().id + " " + context.currentRenderNode().model.getClass().getSimpleName());
-                        Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-                        entry.getMuzzleFlash().render(
-                                bonePose,
-                                context.bufferSource,
-                                entry.getScale(),
-                                startTime,
-                                firstPerson,
-                                LightTexture.FULL_BRIGHT);
-                    //}
-
-                }
+            if (node.hasChild(bindSlotName)) {
+                continue;
+            }
+            PoseStack.Pose bonePose = model.getBonePose(entry.getBoneName());
+            if (bonePose == null) {
+                continue;
+            }
+            long startTime = GunEffectManager.getEffectTimestamp(
+                    context.entity.getId(),
+                    effectListener,
+                    effectModuleId
+            );
+            if (startTime == -1) {
+                return;
+            }
+            if (context.isFirstPerson()) {
+                renderQueue.add(Triple.of(entry, bonePose, startTime));
+            } else if (context.isThirdPerson()) {
+                entry.getMuzzleFlash().render(bonePose, context.bufferSource, entry.getScale(), startTime, false, LightTexture.FULL_BRIGHT);
             }
         }
     }
 
+
+    public static void renderAllFirstPerson(MultiBufferSource.BufferSource bufferSource) {
+        for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : renderQueue) {
+            MuzzleEntry entry = pair.getLeft();
+            PoseStack.Pose bonePose = pair.getMiddle();
+            long startTime = pair.getRight();
+            Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
+            entry.getMuzzleFlash().render(
+                    bonePose,
+                    bufferSource,
+                    entry.getScale(),
+                    startTime,
+                    true,
+                    LightTexture.FULL_BRIGHT);
+            FastMuzzleSmoke muzzleSmoke = entry.getMuzzleSmoke();
+            muzzleSmoke.render(startTime, bonePose, bufferSource, (int) (Math.random() * 1000), LightTexture.FULL_BRIGHT);
+        }
+        renderQueue.clear();
+    }
+
     @Override
     public void afterAllRendered(ModuleRenderContext context) {
-//        Object localStorage = context.getLocalStorage(VANILLA_DEFERRED_RENDER_TASK);
-//        if (localStorage instanceof Runnable runnable) {
-//            runnable.run();
-//            System.out.println("render");
-//        }
-//        context.removeLocalStorage(VANILLA_DEFERRED_RENDER_TASK);
+
     }
 
     protected void stencilDeferredRender(MuzzleEntry entry, PoseStack.Pose bonePose, long startTime) {

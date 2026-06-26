@@ -331,6 +331,7 @@ public class DefaultGunRenderer implements IGunRenderer {
             context.setCurrentRenderNode(node);
             node.model.afterAllRendered(context);
         }
+
         FP_BUFFER_SOURCE.endBatch();
         context.clearLocalStorage();
         context.clearBufferCache();

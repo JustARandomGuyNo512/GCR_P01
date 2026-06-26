@@ -160,46 +160,29 @@ public class BulletEntity extends Entity {
                     world.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
                 }
 
-                // 2. 处理粒子效果（生成垂直于面的速度）
                 Vec3 normal = Vec3.atLowerCornerOf(direction.getNormal());
-                // 粒子初速度：沿法线方向飞出
-                double speed = 0.15;
+
+                double speed = 2.5f;
                 double vx = normal.x * speed;
                 double vy = normal.y * speed;
                 double vz = normal.z * speed;
 
-                // 创建对应方块的碎片粒子数据
                 BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
                 Vec3 hitLocation = hit.getLocation();
 
-                // 循环生成若干个带速度的方向粒子
                 for (int i = 0; i < 8; i++) {
-                    // 添加轻微的随机散射，让粒子效果更自然
-                    double rx = vx + (world.random.nextDouble() - 0.5) * 0.05;
-                    double ry = vy + (world.random.nextDouble() - 0.5) * 0.05;
-                    double rz = vz + (world.random.nextDouble() - 0.5) * 0.05;
+                    double rx = vx + (world.random.nextDouble() - 0.5) * 0.25;
+                    double ry = vy + (world.random.nextDouble() - 0.5) * 0.25;
+                    double rz = vz + (world.random.nextDouble() - 0.5) * 0.25;
 
                     serverWorld.sendParticles(
                             particleData,
                             hitLocation.x, hitLocation.y, hitLocation.z,
-                            0, // 数量设为0，以便让后面的 speed 参数代表速度矢量的坐标
+                            0,
                             rx, ry, rz,
-                            1.0 // 速度缩放系数
+                            2
                     );
                 }
-
-//                // 3. 新增：添加自定义弹孔粒子（如果不是透明方块）
-//                if (!(block instanceof TransparentBlock)) {
-//                    // 建议将方向信息通过速度参数（dx, dy, dz）传给客户端，用来旋转弹孔贴图
-//                    // 数量设为 0 时，rx, ry, rz 会直接作为参数传递给客户端粒子的构造器
-//                    serverWorld.sendParticles(
-//                            ModParticles.BULLET_HOLE.get(), // 替换为你实际的粒子注册 DeferredHolder
-//                            hitLocation.x, hitLocation.y, hitLocation.z,
-//                            0,
-//                            direction.get3DDataValue(), 0, 0, // 把平面的朝向索引存在第一个参数里
-//                            1.0
-//                    );
-//                }
             }
         }
         discard();

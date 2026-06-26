@@ -17,7 +17,7 @@ public interface IMuzzleFlashRenderer {
     @Nullable
     MuzzleEntry getByName(String name);
 
-    void render(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId);
+    void onRender(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId);
 
     void afterAllRendered(ModuleRenderContext context);
 }

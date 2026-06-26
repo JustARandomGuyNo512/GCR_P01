@@ -28,6 +28,8 @@ public class MuzzleEntry {
         this.smokeScale = smokeScale;
     }
 
+
+
     public String getName() {
         return name;
     }
@@ -47,6 +49,14 @@ public class MuzzleEntry {
 
     public MuzzleFlash getMuzzleFlash() {
         return muzzleFlash;
+    }
+
+    public FastMuzzleSmoke getMuzzleSmoke() {
+        return muzzleSmoke;
+    }
+
+    public float getSmokeScale() {
+        return smokeScale;
     }
 }
 

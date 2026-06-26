@@ -2,7 +2,6 @@ package com.sheridan.gcr.client.model.modular.modules;
 
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.GunEffect;
-import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.*;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.TestM203Viewer;
@@ -26,7 +25,7 @@ public class M203Model extends ArmHandlerModel<IM203View> implements IMuzzleFlas
     @Override
     public void render(ModuleRenderContext context) {
         super.render(context);
-        renderer.render(context, this, GunEffect.SHOOT, context.currentRenderNode().id);
+        renderer.onRender(context, this, GunEffect.SHOOT, context.currentRenderNode().id);
     }
 
     @Override

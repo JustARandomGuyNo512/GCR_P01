@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -173,7 +172,7 @@ public class ScopeModel extends AbstractScopeModel{
                 clearAndDisableStencil();
 
                 final Matrix4f modelViewMat = RenderSystem.getModelViewMatrix();
-                Runnable muzzleFlash = context.getLocalStorage(MuzzleFlashRenderer.STENCIL_DEFERRED_RENDER_TASK, Runnable.class);
+                Runnable muzzleFlash = context.getLocalStorage(MuzzleFlashRenderer.DEFERRED_RENDER_TASK, Runnable.class);
                 Stage.LOW.addTask(
                         new Task((event) -> shaderDeferredRender(modelViewMat, rearLensPose, muzzleFlash)));
 
