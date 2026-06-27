@@ -11,7 +11,6 @@ import com.sheridan.gcr.client.render.ModuleRenderNode;
 import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.MuzzleFlash;
-import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
@@ -33,11 +32,11 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     private final Map<String, MuzzleEntry> entryMap = new HashMap<>();
     private final List<MuzzleEntry> entries = new ArrayList<>();
 
-    private static final List<Triple<MuzzleEntry, PoseStack.Pose, Long>> renderQueue = new ArrayList<>();
-    private static final Map<String, SmokeTasks> muzzleSmokes = new HashMap<>();
+    public static final List<Triple<MuzzleEntry, PoseStack.Pose, Long>> MUZZLE_FLASH_QUEUE = new ArrayList<>();
+    public static final Map<String, SmokeTasks> MUZZLE_SMOKE_TASKS = new HashMap<>();
     public static final int MAX_SMOKE_EFFECT_TASKS = 5;
 
-    private static class SmokeTasks{
+    public static class SmokeTasks{
         public long lastCall;
         public Deque<MuzzleSmokeTask> queue;
 
@@ -100,15 +99,15 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
             }
             if (context.isFirstPerson()) {
                 MuzzleFlash muzzleFlash = entry.getMuzzleFlash();
-                if (System.currentTimeMillis() - startTime > muzzleFlash.length) {
-                    renderQueue.add(Triple.of(entry, bonePose, startTime));
+                if (System.currentTimeMillis() - startTime <= muzzleFlash.length) {
+                    MUZZLE_FLASH_QUEUE.add(Triple.of(entry, bonePose, startTime));
                 }
                 String id = context.currentRenderNode().id + entry.getName();
-                SmokeTasks tasks = muzzleSmokes.get(id);
+                SmokeTasks tasks = MUZZLE_SMOKE_TASKS.get(id);
                 if (tasks == null) {
                     tasks = new SmokeTasks(startTime);
                     tasks.queue.add(new MuzzleSmokeTask(bonePose.copy(), startTime, entry.getMuzzleSmoke(), context.light));
-                    muzzleSmokes.put(id, tasks);
+                    MUZZLE_SMOKE_TASKS.put(id, tasks);
                 } else {
                     if (tasks.lastCall != startTime) {
                         if (tasks.queue.size() > MAX_SMOKE_EFFECT_TASKS) {
@@ -131,27 +130,20 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
 
 
     public static void renderAllFirstPerson(MultiBufferSource bufferSource) {
-        for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : renderQueue) {
+        for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : MUZZLE_FLASH_QUEUE) {
             MuzzleEntry entry = pair.getLeft();
             PoseStack.Pose bonePose = pair.getMiddle();
             long startTime = pair.getRight();
             Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-            entry.getMuzzleFlash().render(
-                    bonePose,
-                    bufferSource,
-                    entry.getScale(),
-                    startTime,
-                    true,
-                    LightTexture.FULL_BRIGHT);
-            FastMuzzleSmoke muzzleSmoke = entry.getMuzzleSmoke();
-            muzzleSmoke.render(startTime, bonePose, bufferSource, (int) (Math.random() * 1000), LightTexture.FULL_BRIGHT);
+            entry.getMuzzleFlash()
+                    .render(bonePose, bufferSource, entry.getScale(), startTime, true, LightTexture.FULL_BRIGHT);
         }
-        renderQueue.clear();
-        if (muzzleSmokes.isEmpty()) {
+        MUZZLE_FLASH_QUEUE.clear();
+        if (MUZZLE_SMOKE_TASKS.isEmpty()) {
             return;
         }
         Set<String> idToRemove = null;
-        for (Map.Entry<String, SmokeTasks> entry : muzzleSmokes.entrySet()) {
+        for (Map.Entry<String, SmokeTasks> entry : MUZZLE_SMOKE_TASKS.entrySet()) {
             String key = entry.getKey();
             SmokeTasks tasks = entry.getValue();
             if (!tasks.queue.isEmpty()) {
@@ -166,7 +158,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         }
         if (idToRemove != null) {
             for (String id : idToRemove) {
-                muzzleSmokes.remove(id);
+                MUZZLE_SMOKE_TASKS.remove(id);
             }
         }
     }
