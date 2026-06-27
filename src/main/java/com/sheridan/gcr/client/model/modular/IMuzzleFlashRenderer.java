@@ -19,5 +19,5 @@ public interface IMuzzleFlashRenderer {
 
     void onRender(ModuleRenderContext context, IMuzzleFlashRendererModel model, GunEffect effectListener, String effectModuleId);
 
-    void afterAllRendered(ModuleRenderContext context);
+    void onAfterAllRendered(ModuleRenderContext context);
 }

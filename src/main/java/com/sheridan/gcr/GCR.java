@@ -17,7 +17,6 @@ import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
 import com.sheridan.gcr.client.render.entity.BulletRenderer;
 import com.sheridan.gcr.client.render.events.GuiEvents;
 import com.sheridan.gcr.client.render.fx.*;
-import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeRenderer;
 import com.sheridan.gcr.client.screen.containers.ModContainers;
 import com.sheridan.gcr.common.CommonEvents;
 import com.sheridan.gcr.common.Commons;
@@ -543,8 +542,6 @@ public class GCR {
             NeoForge.EVENT_BUS.register(RenderEvents.class);
             NeoForge.EVENT_BUS.register(TestEvents.class);
             NeoForge.EVENT_BUS.register(ControllerEvents.class);
-            NeoForge.EVENT_BUS.register(MuzzleSmokeRenderer.class);
-            NeoForge.EVENT_BUS.register(MuzzleSmokeRenderer.class);
             NeoForge.EVENT_BUS.register(FPMuzzleFlashEnvLightingRenderer.class);
             NeoForge.EVENT_BUS.register(FabulousDepthTextureHandler.class);
             NeoForge.EVENT_BUS.register(FlashLightRenderer.class);

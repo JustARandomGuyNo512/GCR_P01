@@ -31,7 +31,7 @@ public class M203Model extends ArmHandlerModel<IM203View> implements IMuzzleFlas
     @Override
     public void afterAllRendered(ModuleRenderContext context) {
         super.afterAllRendered(context);
-        renderer.afterAllRendered(context);
+        renderer.onAfterAllRendered(context);
     }
 
     @Override

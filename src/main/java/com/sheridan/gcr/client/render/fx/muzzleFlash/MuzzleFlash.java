@@ -2,9 +2,6 @@ package com.sheridan.gcr.client.render.fx.muzzleFlash;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.CommonMuzzleSmokeEffects;
-import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
-import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

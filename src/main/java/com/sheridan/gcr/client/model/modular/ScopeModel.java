@@ -21,6 +21,7 @@ import com.sheridan.gcr.client.render.fx.DepthCopyShader;
 import com.sheridan.gcr.client.render.fx.ScopeViewShadingShader;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -80,6 +81,7 @@ public class ScopeModel extends AbstractScopeModel{
                         GL30.GL_NEAREST
                 );
                 main.bindWrite(true);
+                context.setLocalStorage(MuzzleFlashRenderer.RENDER_CANCELED, 1);
             }
 
             if (!Client.isIrisShaderInUse) {
@@ -172,9 +174,8 @@ public class ScopeModel extends AbstractScopeModel{
                 clearAndDisableStencil();
 
                 final Matrix4f modelViewMat = RenderSystem.getModelViewMatrix();
-                Runnable muzzleFlash = context.getLocalStorage(MuzzleFlashRenderer.DEFERRED_RENDER_TASK, Runnable.class);
                 Stage.LOW.addTask(
-                        new Task((event) -> shaderDeferredRender(modelViewMat, rearLensPose, muzzleFlash)));
+                        new Task((event) -> shaderDeferredRender(modelViewMat, rearLensPose)));
 
             } else {
                 if (rearLensPose == null) {
@@ -240,7 +241,7 @@ public class ScopeModel extends AbstractScopeModel{
         GL11.glStencilMask(0x00);
     }
 
-    public void shaderDeferredRender(Matrix4f modelViewMat, PoseStack.Pose rearLensPose, Runnable muzzleFlash) {
+    public void shaderDeferredRender(Matrix4f modelViewMat, PoseStack.Pose rearLensPose) {
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(Client.FIRST_PERSON_PROJECTION_MAT, VertexSorting.DISTANCE_TO_ORIGIN);
         RenderSystem.getModelViewStack().pushMatrix();
@@ -251,9 +252,9 @@ public class ScopeModel extends AbstractScopeModel{
         GL11.glStencilFunc(GL11.GL_NOTEQUAL, 1, 0xFF);
         GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 
-        if (muzzleFlash != null) {
-            muzzleFlash.run();
-        }
+        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MuzzleFlashRenderer.renderAllFirstPerson(bufferSource);
+        bufferSource.endBatch();
 
         renderCrosshairShading(rearLensPose);
         RenderSystem.getModelViewStack().popMatrix();
