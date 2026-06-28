@@ -95,10 +95,13 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     public void onKeyPressed(int keyCode, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
         super.onKeyPressed(keyCode, action, thisNodeId, unit, gun, itemStack);
         LocalPlayer player = Minecraft.getInstance().player;
-        if (shouldNotHandleShoot() || action != 1 || player == null) {
+        if (player == null || action != 1) {
             return;
         }
         if (keyCode == KeyBinds.USE_GRENADE_LAUNCHER.getKey().getValue()) {
+            if (shouldNotHandleShoot()) {
+                return;
+            }
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
             String chamberStatus = getChamberStatus(states);
             //if (!CHAMBER_LOADED.equals(chamberStatus)) {

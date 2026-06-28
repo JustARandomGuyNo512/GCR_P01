@@ -8,6 +8,8 @@ import com.sheridan.gcr.client.animation.AnimationRegister;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
+import com.sheridan.gcr.modularSys.task.IGunTask;
+import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import com.sheridan.gcr.network.c2s.RemoveStuckPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class ARRemoveStuckTask extends RemoveStuckTask<AR>{
     public String animationName;
@@ -40,6 +43,14 @@ public class ARRemoveStuckTask extends RemoveStuckTask<AR>{
         if (animationDef != null) {
             this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.1f), sendPacketDelay);
         }
+    }
+
+    @Override
+    public boolean equals(IGunTask<?> other) {
+        if (!(other instanceof ARRemoveStuckTask otherTask) || !Objects.equals(otherTask.animationName, this.animationName)) {
+            return false;
+        }
+        return super.equals(other);
     }
 
     @Override

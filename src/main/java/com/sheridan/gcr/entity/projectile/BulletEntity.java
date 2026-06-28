@@ -17,6 +17,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -93,7 +95,6 @@ public class BulletEntity extends Entity {
         Vec3 velocity = getDeltaMovement();
         Vec3 end = start.add(velocity);
 
-        // ✨ 修改：自定义 ClipContext，忽略树叶方块
         BlockHitResult blockHit = level().clip(new ClipContext(
                 start, end,
                 ClipContext.Block.COLLIDER,
@@ -205,9 +206,12 @@ public class BulletEntity extends Entity {
     private void onHitEntity(EntityHitResult hit) {
         Entity target = hit.getEntity();
         target.invulnerableTime = 0;
+        DamageSource damageSource = this.shooter == null ?
+                damageSources().generic() :
+                damageSources().mobProjectile(this, this.shooter);
         target.hurt(
-                damageSources().generic(),
-                6f
+                damageSource,
+                (float) (6f * (0.9f + 0.2f * Math.random()))
         );
         discard();
     }

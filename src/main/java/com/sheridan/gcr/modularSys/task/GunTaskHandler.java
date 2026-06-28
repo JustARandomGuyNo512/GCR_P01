@@ -37,9 +37,7 @@ public class GunTaskHandler {
             return;
         }
         if (this.task != null) {
-            String currID = this.task.getGun().getIdentityID(this.task.getStack());
-            String newID = task.getGun().getIdentityID(task.getStack());
-            if (!Objects.equals(currID, newID)) {
+            if (!this.task.equals(task)) {
                 cancelTask();
                 this.task = task;
                 task.start();

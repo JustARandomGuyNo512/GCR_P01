@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.GunTask;
+import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunReloadPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +20,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Map;
+import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ARReloadTask extends GunTask<AR> {
@@ -49,6 +51,14 @@ public class ARReloadTask extends GunTask<AR> {
         if (animationDef != null) {
             this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.1f), sendPacketDelay);
         }
+    }
+
+    @Override
+    public boolean equals(IGunTask<?> other) {
+        if (!(other instanceof ARReloadTask otherTask) || !Objects.equals(otherTask.animationName, this.animationName)) {
+            return false;
+        }
+        return super.equals(other);
     }
 
     @Override

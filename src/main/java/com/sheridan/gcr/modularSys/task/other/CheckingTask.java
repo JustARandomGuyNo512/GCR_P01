@@ -4,9 +4,12 @@ import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.task.GunTask;
+import com.sheridan.gcr.modularSys.task.IGunTask;
+import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 public class CheckingTask extends GunTask<IGun> {
@@ -18,14 +21,22 @@ public class CheckingTask extends GunTask<IGun> {
     private Map<String, String> params;
 
     public CheckingTask(ItemStack itemStack, IGun gun, String type) {
-        super(itemStack, gun, 1);
+        super(itemStack, gun, 20);
         this.type = type;
     }
 
     public CheckingTask(ItemStack itemStack, IGun gun, String type, Map<String, String> params) {
-        super(itemStack, gun, 1);
+        super(itemStack, gun, 20);
         this.type = type;
         this.params = params;
+    }
+
+    @Override
+    public boolean equals(IGunTask<?> other) {
+        if (!(other instanceof CheckingTask otherTask) || !Objects.equals(otherTask.params, this.params)) {
+            return false;
+        }
+        return super.equals(other);
     }
 
     @Override
