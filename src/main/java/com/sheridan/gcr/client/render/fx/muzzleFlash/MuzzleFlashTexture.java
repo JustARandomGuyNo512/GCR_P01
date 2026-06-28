@@ -35,9 +35,9 @@ public class MuzzleFlashTexture {
             VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
             if (!isFirstPerson) {
                 draw(pose, 0, 0, 0, 0, vertexConsumer, index);
+                draw(pose, 2, 1.5707963267948966f,  0,  -0.5f,  vertexConsumer, index);
+                draw(pose, 1, 1.5707963267948966f, -1.5707963267948966f,   -0.5f,  vertexConsumer, index);
             }
-            draw(pose, 2, 1.5707963267948966f,  0,  -0.5f,  vertexConsumer, index);
-            draw(pose, 1, 1.5707963267948966f, -1.5707963267948966f,   -0.5f,  vertexConsumer, index);
             if (isFirstPerson) {
                 draw(pose, 0, 0, 0, 0, vertexConsumer, index);
             }

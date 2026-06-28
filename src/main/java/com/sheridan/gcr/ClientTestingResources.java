@@ -100,7 +100,13 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCR.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
                 meshData -> {
-                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCR.M203));
+                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCR.M203), new MuzzleFlashRenderer(
+                            new MuzzleEntry("no1", "MUZZLE_FLASH", "",
+                                    3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
+                                    1.8f, CommonMuzzleSmokeEffects.COMMON,
+                                    1.5f)
+                            )
+                    );
                     IAnimationController<?> controller = new M203Controller();
                     testM203Model.bindController(controller);
                     testM203Model.callInitAnimation();

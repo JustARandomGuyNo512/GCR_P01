@@ -15,14 +15,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class M203Model extends ArmHandlerModel<IM203View> implements IMuzzleFlashRendererModel {
     private final MuzzleFlashRenderer renderer;
-    public M203Model(MeshModelData root, TestM203Viewer viewer) {
+    public M203Model(MeshModelData root, TestM203Viewer viewer, MuzzleFlashRenderer muzzleFlashRenderer) {
         super(root, viewer, GCR.RL(""));
-        this.renderer = new MuzzleFlashRenderer(
-                new MuzzleEntry("no1", "MUZZLE_FLASH", "",
-                        2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
-                        1.3f, CommonMuzzleSmokeEffects.COMMON,
-                1.5f)
-        );
+        this.renderer = muzzleFlashRenderer;
     }
 
     @Override
