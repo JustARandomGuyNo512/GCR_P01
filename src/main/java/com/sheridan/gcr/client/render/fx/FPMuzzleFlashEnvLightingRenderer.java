@@ -85,7 +85,7 @@ public class FPMuzzleFlashEnvLightingRenderer {
         GL20.glUniform1f(MuzzleFlashEnvShader.flashIntensityLoc, intensity);
         GL20.glUniform1f(MuzzleFlashEnvShader.minDepthLoc, Client.isIrisShaderInUse ? 0.15f : 0f);
         GL20.glUniform1f(MuzzleFlashEnvShader.maxDepthLoc, 12f);
-        GL20.glUniform1f(MuzzleFlashEnvShader.lightRadiusLoc, Mth.clamp(muzzleFlashIntensity * 3.9f, 0, 12f));
+        GL20.glUniform1f(MuzzleFlashEnvShader.lightRadiusLoc, Mth.clamp((muzzleFlashIntensity - 0.5f) * 4.7f, 0, 12f));
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraNFLoc, 0.1f * cameraFar);
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraN_FLoc, 0.05f + cameraFar);
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraNFDistLoc, cameraFar - 0.05f);

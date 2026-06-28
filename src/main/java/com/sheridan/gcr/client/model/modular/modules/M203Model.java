@@ -21,7 +21,7 @@ public class M203Model extends ArmHandlerModel<IM203View> implements IMuzzleFlas
                 new MuzzleEntry("no1", "MUZZLE_FLASH", "",
                         2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
                         1.3f, CommonMuzzleSmokeEffects.COMMON,
-                1.8f)
+                1.5f)
         );
     }
 
