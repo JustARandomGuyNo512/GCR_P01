@@ -37,6 +37,7 @@ import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ScopeModel extends AbstractScopeModel{
+    public static final int DEFERRED_TASK_PUSHED = 9800;
     public static final int SCOPE_VIEW_RENDERING = 9799;
     private static final Vector3f DIRECTION = new Vector3f();
     private static final int CROSSHAIR_POSE = 9796;
@@ -173,9 +174,13 @@ public class ScopeModel extends AbstractScopeModel{
                 copyStencil();
                 clearAndDisableStencil();
 
-                final Matrix4f modelViewMat = RenderSystem.getModelViewMatrix();
-                Stage.LOW.addTask(
-                        new Task((event) -> shaderDeferredRender(modelViewMat, rearLensPose)));
+                //延迟任务只记录一次!
+                if (context.getLocalStorage(DEFERRED_TASK_PUSHED) == null) {
+                    final Matrix4f modelViewMat = RenderSystem.getModelViewMatrix();
+                    Stage.LOW.addTask(
+                            new Task((event) -> shaderDeferredRender(modelViewMat, rearLensPose)));
+                    context.setLocalStorage(DEFERRED_TASK_PUSHED, 1);
+                }
 
             } else {
                 if (rearLensPose == null) {

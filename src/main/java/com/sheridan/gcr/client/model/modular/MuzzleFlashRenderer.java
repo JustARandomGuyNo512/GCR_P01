@@ -11,6 +11,7 @@ import com.sheridan.gcr.client.render.ModuleRenderNode;
 import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.MuzzleFlash;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -35,6 +37,32 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     public static final List<Triple<MuzzleEntry, PoseStack.Pose, Long>> MUZZLE_FLASH_QUEUE = new ArrayList<>();
     public static final Map<String, SmokeTasks> MUZZLE_SMOKE_TASKS = new HashMap<>();
     public static final int MAX_SMOKE_EFFECT_TASKS = 5;
+    private static final Vector3f DISTANCE_SORTING = new Vector3f();
+    private static final List<RenderEntry> UNIFIED_RENDER_QUEUE = new ArrayList<>();
+    // 对象池，避免每帧 new RenderEntry
+    private static final ArrayDeque<RenderEntry> ENTRY_POOL = new ArrayDeque<>();
+
+    private static final class RenderEntry {
+        float z;
+        byte type; // 0 = smoke, 1 = flash
+        MuzzleSmokeTask smokeTask;
+        MuzzleEntry muzzleEntry;
+        PoseStack.Pose bonePose;
+        long startTime;
+
+        void setSmoke(float z, MuzzleSmokeTask task) {
+            this.z = z; this.type = 0; this.smokeTask = task;
+        }
+        void setFlash(float z, MuzzleEntry entry, PoseStack.Pose pose, long time) {
+            this.z = z; this.type = 1; this.muzzleEntry = entry; this.bonePose = pose; this.startTime = time;
+        }
+    }
+
+
+    private static RenderEntry acquireEntry() {
+        RenderEntry e = ENTRY_POOL.poll();
+        return e != null ? e : new RenderEntry();
+    }
 
     public static class SmokeTasks{
         public long lastCall;
@@ -101,66 +129,96 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                 MuzzleFlash muzzleFlash = entry.getMuzzleFlash();
                 if (System.currentTimeMillis() - startTime <= muzzleFlash.length) {
                     MUZZLE_FLASH_QUEUE.add(Triple.of(entry, bonePose, startTime));
+                    Client.WEAPON_STATUS.setMuzzleFlashConfig(bonePose, entry.flashLightIntensity * (0.95f + 0.1f * Client.WEAPON_STATUS.shootRandomSeed));
                 }
-                String id = context.currentRenderNode().id + entry.getName();
-                SmokeTasks tasks = MUZZLE_SMOKE_TASKS.get(id);
-                if (tasks == null) {
-                    tasks = new SmokeTasks(startTime);
-                    tasks.queue.add(new MuzzleSmokeTask(bonePose.copy(), startTime, entry.getMuzzleSmoke(), context.light));
-                    MUZZLE_SMOKE_TASKS.put(id, tasks);
-                } else {
-                    if (tasks.lastCall != startTime) {
-                        if (tasks.queue.size() > MAX_SMOKE_EFFECT_TASKS) {
-                            tasks.queue.pollLast();
+                FastMuzzleSmoke muzzleSmoke = entry.getMuzzleSmoke();
+                if (muzzleSmoke != null) {
+                    String id = context.currentRenderNode().id + entry.getName();
+                    SmokeTasks tasks = MUZZLE_SMOKE_TASKS.get(id);
+                    if (tasks == null) {
+                        tasks = new SmokeTasks(startTime);
+                        tasks.queue.add(new MuzzleSmokeTask(bonePose.copy(), startTime, muzzleSmoke, context.light, entry.getSmokeScale()));
+                        MUZZLE_SMOKE_TASKS.put(id, tasks);
+                    } else {
+                        if (tasks.lastCall != startTime) {
+                            if (tasks.queue.size() > MAX_SMOKE_EFFECT_TASKS) {
+                                tasks.queue.pollLast();
+                            }
+                            if (tasks.queue.size() < MAX_SMOKE_EFFECT_TASKS) {
+                                PoseStack.Pose renderPose = bonePose.copy();
+                                renderPose.pose().translate(0, 0, -0.015f);
+                                tasks.queue.offerFirst(new MuzzleSmokeTask(renderPose, startTime, muzzleSmoke, context.light, entry.getSmokeScale()));
+                            }
+                            tasks.lastCall = startTime;
                         }
-                        if (tasks.queue.size() < MAX_SMOKE_EFFECT_TASKS) {
-                            PoseStack.Pose renderPose = bonePose.copy();
-                            renderPose.pose().translate(0, 0, -0.015f);
-                            tasks.queue.offerFirst(new MuzzleSmokeTask(renderPose, startTime, entry.getMuzzleSmoke(), context.light));
-                        }
-                        tasks.lastCall = startTime;
                     }
                 }
-
             } else if (context.isThirdPerson()) {
                 entry.getMuzzleFlash().render(bonePose, context.bufferSource, entry.getScale(), startTime, false, LightTexture.FULL_BRIGHT);
             }
         }
     }
 
-
     public static void renderAllFirstPerson(MultiBufferSource bufferSource) {
-        for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : MUZZLE_FLASH_QUEUE) {
-            MuzzleEntry entry = pair.getLeft();
-            PoseStack.Pose bonePose = pair.getMiddle();
-            long startTime = pair.getRight();
-            Client.WEAPON_STATUS.setMuzzleFlashPos(bonePose);
-            entry.getMuzzleFlash()
-                    .render(bonePose, bufferSource, entry.getScale(), startTime, true, LightTexture.FULL_BRIGHT);
-        }
-        MUZZLE_FLASH_QUEUE.clear();
-        if (MUZZLE_SMOKE_TASKS.isEmpty()) {
-            return;
-        }
-        Set<String> idToRemove = null;
-        for (Map.Entry<String, SmokeTasks> entry : MUZZLE_SMOKE_TASKS.entrySet()) {
-            String key = entry.getKey();
-            SmokeTasks tasks = entry.getValue();
-            if (!tasks.queue.isEmpty()) {
-                tasks.queue.removeIf((task) -> task.handleRender(bufferSource));
-            }
-            if (tasks.queue.isEmpty()) {
-                if (idToRemove == null) {
-                    idToRemove = new HashSet<>();
+        // ── 1. 收集 Smoke ────────────────────────────────────────────────
+        if (!MUZZLE_SMOKE_TASKS.isEmpty()) {
+            // 直接用 entrySet 迭代器删除，省掉 idToRemove Set 分配
+            Iterator<Map.Entry<String, SmokeTasks>> mapIt = MUZZLE_SMOKE_TASKS.entrySet().iterator();
+            while (mapIt.hasNext()) {
+                SmokeTasks tasks = mapIt.next().getValue();
+
+                Iterator<MuzzleSmokeTask> it = tasks.queue.iterator();
+                while (it.hasNext()) {
+                    MuzzleSmokeTask task = it.next();
+                    if (task.isFinished()) {
+                        it.remove();
+                        continue;
+                    }
+                    float z = -task.pose.pose().getTranslation(DISTANCE_SORTING).z;
+                    RenderEntry re = acquireEntry();
+                    re.setSmoke(z, task);
+                    UNIFIED_RENDER_QUEUE.add(re);
                 }
-                idToRemove.add(key);
+
+                if (tasks.queue.isEmpty()) {
+                    mapIt.remove();
+                }
             }
         }
-        if (idToRemove != null) {
-            for (String id : idToRemove) {
-                MUZZLE_SMOKE_TASKS.remove(id);
-            }
+
+        // ── 2. 收集 Flash ────────────────────────────────────────────────
+        for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : MUZZLE_FLASH_QUEUE) {
+            PoseStack.Pose bonePose = pair.getMiddle();
+            float z = -bonePose.pose().getTranslation(DISTANCE_SORTING).z;
+            RenderEntry re = acquireEntry();
+            re.setFlash(z, pair.getLeft(), bonePose, pair.getRight());
+            UNIFIED_RENDER_QUEUE.add(re);
         }
+
+        // ── 3. 排序 ──────────────────────────────────────────────────────
+        if (UNIFIED_RENDER_QUEUE.size() > 1) {
+            UNIFIED_RENDER_QUEUE.sort((a, b) -> Float.compare(b.z, a.z));
+        }
+
+        // ── 4. 渲染 ──────────────────────────────────────────────────────
+        for (RenderEntry re : UNIFIED_RENDER_QUEUE) {
+            if (re.type == 0) {
+                re.smokeTask.handleRender(bufferSource);
+            } else {
+                re.muzzleEntry.getMuzzleFlash()
+                        .render(re.bonePose, bufferSource, re.muzzleEntry.getScale(),
+                                re.startTime, true, LightTexture.FULL_BRIGHT);
+            }
+            // 归还对象池
+            re.smokeTask = null;
+            re.muzzleEntry = null;
+            re.bonePose = null;
+            ENTRY_POOL.offer(re);
+        }
+
+        // ── 5. 清理 ──────────────────────────────────────────────────────
+        UNIFIED_RENDER_QUEUE.clear();
+        MUZZLE_FLASH_QUEUE.clear();
     }
 
     @Override
@@ -177,6 +235,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         } else {
             renderAllFirstPerson(context.bufferSource);
         }
+        context.setLocalStorage(RENDER_CANCELED, 1);
     }
 
     private void deferredRender(Matrix4f modelViewMat) {

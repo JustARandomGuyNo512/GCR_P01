@@ -16,8 +16,12 @@ public class MuzzleEntry {
     private final FastMuzzleSmoke muzzleSmoke;
     private final float smokeScale;
     public boolean enabled;
+    public float flashLightIntensity;
 
-    public MuzzleEntry(String name, String boneName, @Nullable String bindSlotName, float scale, MuzzleFlash muzzleFlash, float smokeScale, FastMuzzleSmoke muzzleSmoke) {
+    public MuzzleEntry(String name, String boneName, @Nullable String bindSlotName,
+                       float scale, MuzzleFlash muzzleFlash,
+                       float smokeScale, FastMuzzleSmoke muzzleSmoke,
+                       float flashLightIntensity) {
         this.name = name;
         this.boneName = boneName;
         this.bindSlotName = bindSlotName;
@@ -26,6 +30,7 @@ public class MuzzleEntry {
         this.enabled = true;
         this.muzzleSmoke = muzzleSmoke;
         this.smokeScale = smokeScale;
+        this.flashLightIntensity = flashLightIntensity;
     }
 
 

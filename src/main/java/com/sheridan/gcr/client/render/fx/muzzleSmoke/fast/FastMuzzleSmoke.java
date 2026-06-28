@@ -44,9 +44,7 @@ public class FastMuzzleSmoke {
     public void render(long lastShoot, PoseStack.Pose pose, MultiBufferSource bufferSource, int randomSeed, int light) {
         long timeDist = System.currentTimeMillis() - lastShoot;
         if (timeDist < length) {
-
             VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderTypes.getMuzzleFlash(texture));
-                    //bufferSource.getBuffer(RenderTypes.getMuzzleFlashNotWriteDepth(texture));
             float progress = (float) timeDist / length;
             float size = Mth.lerp(progress, this.size, this.spread) * (0.833333333333333333f + randomSeed % 50 / 300f);
             float alpha = Mth.lerp(progress, alphas.x, alphas.y);

@@ -335,6 +335,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         FP_BUFFER_SOURCE.endBatch();
         context.clearLocalStorage();
         context.clearBufferCache();
+
     }
 
     @SuppressWarnings("unchecked")

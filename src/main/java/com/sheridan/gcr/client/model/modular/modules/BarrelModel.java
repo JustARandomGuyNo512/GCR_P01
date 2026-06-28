@@ -12,9 +12,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class BarrelModel extends MuzzleFlashRendererModel {
 
-    public BarrelModel(MeshModelData root, float muzzleFlashScale, MuzzleFlash muzzleFlash, float smokeScale, FastMuzzleSmoke muzzleSmoke) {
+    public BarrelModel(MeshModelData root, float muzzleFlashScale, MuzzleFlash muzzleFlash, float smokeScale, FastMuzzleSmoke muzzleSmoke, float flashLightIntensity) {
         super(root, new MuzzleFlashRenderer(
-                new MuzzleEntry("no1", "MUZZLE_FLASH", "MUZZLE", muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke)
+                new MuzzleEntry("no1", "MUZZLE_FLASH", "MUZZLE", muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity)
         ));
     }
 

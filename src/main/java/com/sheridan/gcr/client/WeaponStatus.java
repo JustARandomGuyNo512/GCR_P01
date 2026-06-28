@@ -88,6 +88,8 @@ public class WeaponStatus {
     private IArmHandlerModular leftArmHold;
     private IArmHandlerModular rightArmHold;
 
+    public float shootRandomSeed;
+
     public WeaponStatus() {
 
     }
@@ -152,6 +154,8 @@ public class WeaponStatus {
             }
             modifyID = lastModifyID;
             if (reInitModules) {
+                muzzleFlashRadius = 0;
+                muzzleFlashIntensity = 0;
                 onModuleTreeChange();
                 leftArmHold = gun.getLeftArmHolding(itemStack);
                 rightArmHold = gun.getRightArmHolding(itemStack);
@@ -280,6 +284,9 @@ public class WeaponStatus {
         return impulse;
     }
 
+    public void onShoot() {
+        this.shootRandomSeed = (float) Math.random();
+    }
 
     private void handleInteractiveModules() {
         for (Pair<IInteractiveModular, Node> pair : interactiveModules) {
@@ -345,6 +352,8 @@ public class WeaponStatus {
         isAiming = false;
         activeSight = null;
         identityID = null;
+        muzzleFlashRadius = 0;
+        muzzleFlashIntensity = 0;
     }
 
     public IFireMode<?> getPrevFireMode() {
@@ -363,7 +372,15 @@ public class WeaponStatus {
         return itemStack;
     }
 
-    public void setMuzzleFlashPos(PoseStack.Pose pose) {
+    public void setMuzzleFlashConfig(PoseStack.Pose pose, float muzzleFlashIntensity) {
+        if (muzzleFlashIntensity > this.muzzleFlashIntensity) {
+            this.muzzleFlashIntensity = muzzleFlashIntensity;
+            this.muzzleFlashRadius = this.muzzleFlashIntensity * 2;
+            setMuzzleFlashPos(pose);
+        }
+    }
+
+    private void setMuzzleFlashPos(PoseStack.Pose pose) {
         PoseStack.Pose copy = pose.copy();
         copy.pose().translate(0,0.0625f,-0.0625f);
         Vector3f translation = copy.pose().getTranslation(new Vector3f());
@@ -379,16 +396,25 @@ public class WeaponStatus {
         return muzzleFlashPos;
     }
 
-    public void setMuzzleFlashIntensity(float muzzleFlashIntensity) {
-        this.muzzleFlashIntensity = muzzleFlashIntensity;
-    }
+//    public void setMuzzleFlashIntensity(float muzzleFlashIntensity) {
+//        if (muzzleFlashIntensity > this.muzzleFlashIntensity) {
+//            this.muzzleFlashIntensity = muzzleFlashIntensity;
+//        }
+//    }
 
     public boolean isUsingScope() {
         return activeSight != null && ModuleModelRegister.get(activeSight.getModule()) instanceof IScopeModel;
     }
 
-    public void setMuzzleFlashRadius(float muzzleFlashRadius) {
-        this.muzzleFlashRadius = muzzleFlashRadius;
+//    public void setMuzzleFlashRadius(float muzzleFlashRadius) {
+//        if (muzzleFlashRadius > this.muzzleFlashRadius) {
+//            this.muzzleFlashRadius = muzzleFlashRadius;
+//        }
+//    }
+
+    public void clearMuzzleFlashModelEffect() {
+        muzzleFlashRadius = 0;
+        muzzleFlashIntensity = 0;
     }
 
     public float getMuzzleFlashIntensity() {

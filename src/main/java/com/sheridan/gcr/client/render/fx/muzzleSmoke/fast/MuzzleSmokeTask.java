@@ -12,24 +12,28 @@ public class MuzzleSmokeTask {
     public FastMuzzleSmoke effect;
     private final int randomSeed;
     private final int light;
+    private final float scale;
 
-    public MuzzleSmokeTask(PoseStack.Pose pose, long lastShoot, FastMuzzleSmoke effect, int light)  {
+    public MuzzleSmokeTask(PoseStack.Pose pose, long lastShoot, FastMuzzleSmoke effect, int light, float scale)  {
         this.pose = pose;
         this.lastShoot = lastShoot;
         this.effect = effect;
         this.randomSeed = (int) (Math.random() * 1000);
         this.light = light;
+        this.scale = scale;
     }
 
     public boolean handleRender(MultiBufferSource bufferSource) {
         boolean finished = isFinished();
         if (!finished) {
-            effect.render(lastShoot, pose.copy(), bufferSource, randomSeed, light);
+            PoseStack.Pose copy = pose.copy();
+            copy.pose().scale(scale, scale, 1);
+            effect.render(lastShoot, copy, bufferSource, randomSeed, light);
         }
         return finished;
     }
 
-    private boolean isFinished() {
+    public boolean isFinished() {
         return System.currentTimeMillis() - lastShoot > effect.length;
     }
 }

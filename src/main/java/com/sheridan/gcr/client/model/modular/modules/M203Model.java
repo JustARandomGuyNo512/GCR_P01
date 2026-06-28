@@ -18,7 +18,10 @@ public class M203Model extends ArmHandlerModel<IM203View> implements IMuzzleFlas
     public M203Model(MeshModelData root, TestM203Viewer viewer) {
         super(root, viewer, GCR.RL(""));
         this.renderer = new MuzzleFlashRenderer(
-                new MuzzleEntry("no1", "MUZZLE_FLASH", "", 3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON)
+                new MuzzleEntry("no1", "MUZZLE_FLASH", "",
+                        2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
+                        1.3f, CommonMuzzleSmokeEffects.COMMON,
+                1.8f)
         );
     }
 

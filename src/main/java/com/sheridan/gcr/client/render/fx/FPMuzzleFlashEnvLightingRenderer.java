@@ -8,6 +8,7 @@ import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -63,7 +64,10 @@ public class FPMuzzleFlashEnvLightingRenderer {
         if (intensity <= 0 || !MuzzleFlashEnvShader.isOK()) {
             return;
         }
-
+        float muzzleFlashIntensity = Client.WEAPON_STATUS.getMuzzleFlashIntensity();
+        if (muzzleFlashIntensity <= 0.5f) {
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         RenderSystem.enableBlend();
@@ -81,7 +85,7 @@ public class FPMuzzleFlashEnvLightingRenderer {
         GL20.glUniform1f(MuzzleFlashEnvShader.flashIntensityLoc, intensity);
         GL20.glUniform1f(MuzzleFlashEnvShader.minDepthLoc, Client.isIrisShaderInUse ? 0.15f : 0f);
         GL20.glUniform1f(MuzzleFlashEnvShader.maxDepthLoc, 12f);
-        GL20.glUniform1f(MuzzleFlashEnvShader.lightRadiusLoc, 9.5f);
+        GL20.glUniform1f(MuzzleFlashEnvShader.lightRadiusLoc, Mth.clamp(muzzleFlashIntensity * 3.9f, 0, 12f));
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraNFLoc, 0.1f * cameraFar);
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraN_FLoc, 0.05f + cameraFar);
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraNFDistLoc, cameraFar - 0.05f);

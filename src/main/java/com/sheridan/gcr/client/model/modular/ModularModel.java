@@ -65,7 +65,6 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             if (progress < 0.1f) {
                 progress = progress >= 0.05f ? 0 : (0.05f - progress) * 20f;
                 float r = Client.WEAPON_STATUS.getMuzzleFlashRadius();
-
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
                 GL20.glUniform1f(muzzleFlashRadius, r);
@@ -74,6 +73,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 }
             } else {
                 GL20.glUniform1f(muzzleFlashIntensity, 0);
+                Client.WEAPON_STATUS.clearMuzzleFlashModelEffect();
             }
         }
 

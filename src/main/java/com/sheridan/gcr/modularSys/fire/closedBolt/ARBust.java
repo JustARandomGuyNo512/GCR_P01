@@ -32,7 +32,7 @@ public class ARBust extends ARFireMode{
                     IFireMode.stopFire();
                 }
             }
-            Client.WEAPON_STATUS.setMuzzleFlashRadius((float) (4 + Math.random()));
+            Client.WEAPON_STATUS.onShoot();
             Client.getGunRenderer().dispatchAnimationEvent(EventType.SHOOT);
         }
     }
