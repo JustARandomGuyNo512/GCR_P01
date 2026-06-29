@@ -14,6 +14,7 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.other.CheckingTask;
+import com.sheridan.gcr.network.c2s.SubWeaponFirePacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -119,7 +120,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         }
     }
 
-    protected void serverShoot() {
+    public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack) {
 
     }
 
