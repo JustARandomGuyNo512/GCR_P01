@@ -7,6 +7,8 @@ import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.recoil.IRecoilUpdater;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
+import com.sheridan.gcr.entity.ModEntities;
+import com.sheridan.gcr.entity.projectile.GrenadeEntity;
 import com.sheridan.gcr.modularSys.Direction;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.*;
@@ -15,22 +17,28 @@ import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.other.CheckingTask;
 import com.sheridan.gcr.network.c2s.SubWeaponFirePacket;
+import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IM203View {
     private final IVoxelHandler voxelHandler;
@@ -43,9 +51,15 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     protected float impulsePitch;
     protected float impulseYaw;
     protected float impulseRoll;
+    protected float spread;
+    protected float velocity;
+    protected float explodeRadius;
+    protected int safeTicks;
+
 
     public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
-                float reloadLengthInSeconds, float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll) {
+                float reloadLengthInSeconds, float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll,
+                float spread, float velocity, float explodeRadius, int safeTicks) {
         super(id, true, weight, Direction.NONE);
         this.voxelHandler = voxelHandler;
         this.modifier = modifier;
@@ -54,6 +68,10 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         this.impulsePitch = impulsePitch;
         this.impulseYaw = impulseYaw;
         this.impulseRoll = impulseRoll;
+        this.spread = spread;
+        this.velocity = velocity;
+        this.explodeRadius = explodeRadius;
+        this.safeTicks = safeTicks;
     }
 
     @Override
@@ -108,7 +126,8 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
             //if (!CHAMBER_LOADED.equals(chamberStatus)) {
             //    handleReload();
             //} else {
-                clientShoot(thisNodeId);
+            String identityID = gun.getIdentityID(itemStack);
+            clientShoot(thisNodeId, identityID);
             //}
         } else if (keyCode == KeyBinds.CHECK_SUB_WEAPON.getKey().getValue()) {
             if (!Client.isAiming()) {
@@ -120,8 +139,31 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         }
     }
 
-    public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack) {
+    public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack, ServerPlayer player) {
+        float yaw = player.getYRot();
+        float pitch = player.getXRot();
 
+        pitch += packet.gunKickPitch;
+        yaw += packet.gunKickYaw;
+
+        Level level = player.level();
+
+        GrenadeEntity grenade = new GrenadeEntity(ModEntities.GRENADE.get(), level);
+        grenade.shootFromRotation(player, pitch, yaw, 0.0F, velocity, spread, explodeRadius, safeTicks);
+        level.addFreshEntity(grenade);
+        int latency = player.connection.latency();
+        ModSounds.sound(3F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M203_FIRE.get());
+        // 广播开火事件
+        BroadcastLivingFirePacket firePacket = new BroadcastLivingFirePacket(
+                player.getId(),
+                packet.nodeId,
+                packet.gunId,
+                latency
+        );
+        PacketDistributor.sendToPlayersTrackingEntity(
+                player,
+                firePacket
+        );
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -130,7 +172,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void clientShoot(String nodeId) {
+    protected void clientShoot(String nodeId, String gunId) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -141,6 +183,9 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         ModSounds.sound(1, 1, player, soundEvent);
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, nodeId, System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.currentTimeMillis();
+        float gunKickPitch = recoilUpdater.getGunKickPitch();
+        float gunKickYaw = recoilUpdater.getGunKickYaw();
+        PacketDistributor.sendToServer(new SubWeaponFirePacket(gunId, nodeId, gunKickPitch, gunKickYaw));
     }
 
     @Override

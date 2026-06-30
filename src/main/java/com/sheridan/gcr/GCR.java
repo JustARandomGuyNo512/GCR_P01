@@ -15,6 +15,7 @@ import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilImpulse;
 import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
 import com.sheridan.gcr.client.render.entity.BulletRenderer;
+import com.sheridan.gcr.client.render.entity.M433Renderer;
 import com.sheridan.gcr.client.render.events.GuiEvents;
 import com.sheridan.gcr.client.render.fx.*;
 import com.sheridan.gcr.client.screen.containers.ModContainers;
@@ -135,7 +136,8 @@ public class GCR {
             RL( "m203"), 1.36f,
             new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
-            3.3f, 50f, 15f, 30f, 140f)
+            3.3f, 50f, 15f, 30f, 140f,
+            0.4f, 4f, 5, 5)
             .addTags("under_barrel", "sub_weapon");
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(
@@ -528,6 +530,14 @@ public class GCR {
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
                     )
             );
+            registrar.playBidirectional(
+                    SubWeaponFirePacket.TYPE,
+                    SubWeaponFirePacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
         }
     }
 
@@ -596,6 +606,7 @@ public class GCR {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.BULLET.get(), BulletRenderer::new);
+            event.registerEntityRenderer(ModEntities.GRENADE.get(), M433Renderer::new);
         }
     }
 }

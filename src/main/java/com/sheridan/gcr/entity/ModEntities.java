@@ -2,6 +2,7 @@ package com.sheridan.gcr.entity;
 
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.entity.projectile.BulletEntity;
+import com.sheridan.gcr.entity.projectile.GrenadeEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -18,5 +19,13 @@ public class ModEntities {
                             .updateInterval(1)
                             .sized(0, 0)
                             .build("bullet")
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<GrenadeEntity>> GRENADE =
+            ENTITIES.register("grenade", () ->
+                    EntityType.Builder
+                            .of(GrenadeEntity::new, MobCategory.MISC)
+                            .updateInterval(1)
+                            .build("grenade")
             );
 }
