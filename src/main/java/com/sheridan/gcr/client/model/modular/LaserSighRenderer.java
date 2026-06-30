@@ -56,7 +56,7 @@ public class LaserSighRenderer {
                 if (Float.isNaN(hitLength)) {
                     return;
                 }
-                float length = (float) ((hitLength + 1) / DisplayData.FIRST_PERSON_SCALE + Math.random() * (hitLength * 0.3f + 5f));
+                float length = (float) ((hitLength + 1) / DisplayData.FIRST_PERSON_SCALE + Math.random() * (hitLength * 0.3f + 4f));
                 LaserModel.INSTANCE.renderFirstPerson(poseStack, vertexConsumer, color, length);
             } else {
                 LaserModel.INSTANCE.renderThirdPerson(poseStack, vertexConsumer, color);

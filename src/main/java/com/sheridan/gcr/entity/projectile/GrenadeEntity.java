@@ -9,15 +9,21 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.phys.BlockHitResult;
@@ -77,7 +83,7 @@ public class GrenadeEntity extends Entity{
         }
         Vec3 deltaMovement = this.getDeltaMovement();
 
-        if (this.level().isClientSide && this.tickCount >= safeTicks) {
+        if (this.level().isClientSide && this.tickCount > safeTicks) {
             SimpleParticleType type = this.isInWater() ? ParticleTypes.BUBBLE : ParticleTypes.CRIT;
             for(int i = 0; i < 4; ++i) {
                 this.level().addParticle(type,
@@ -101,7 +107,8 @@ public class GrenadeEntity extends Entity{
                 }
             }
             if (this.tickCount <= safeTicks || bounced <= 3) {
-                if( this.tickCount > safeTicks && getHitDeg(deltaMovement, hitResult.getDirection()) < 65) {
+                System.out.println(getHitDeg(deltaMovement, hitResult.getDirection()));
+                if( this.tickCount > safeTicks && getHitDeg(deltaMovement, hitResult.getDirection()) < 77) {
                     explode();
                     return;
                 }
@@ -169,18 +176,70 @@ public class GrenadeEntity extends Entity{
 
     public void explode() {
         if (!this.level().isClientSide) {
-            this.level().explode(this, this.getX(), this.getY() + 0.0625f, this.getZ(), explodeRadius, false, Level.ExplosionInteraction.NONE);
+            this.level().explode(this, Explosion.getDefaultDamageSource(this.level(), this), null,this.getX(), this.getY() + 0.0625f, this.getZ(), explodeRadius, false, Level.ExplosionInteraction.NONE, false,  ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
+            //TODO:增加自定义炫酷爆炸效果
+            spawnCustomExplosionEffect((ServerLevel) this.level(), this.getX(), this.getY() + 0.0625, this.getZ());
             this.discard();
         }
+    }
+
+    /*
+    * By Claude
+    * */
+    private void spawnCustomExplosionEffect(ServerLevel level, double x, double y, double z) {
+
+        // 1. 中心闪光（瞬间亮光感）
+        level.sendParticles(ParticleTypes.FLASH, x, y, z, 1, 0, 0, 0, 0);
+
+        // 2. 冲击波环：在地面附近水平扩散一圈烟雾粒子，模拟榴弹冲击波
+        int ringPoints = 36;
+        double ringRadius = explodeRadius * 1.5;
+        for (int i = 0; i < ringPoints; i++) {
+            double angle = (2 * Math.PI / ringPoints) * i;
+            double dx = Math.cos(angle) * ringRadius;
+            double dz = Math.sin(angle) * ringRadius;
+            level.sendParticles(ParticleTypes.POOF,
+                    x + dx, y + 0.1, z + dz,
+                    1, 0.05, 0.02, 0.05, 0.02);
+            level.sendParticles(ParticleTypes.CLOUD,
+                    x + dx * 0.6, y + 0.2, z + dz * 0.6,
+                    1, 0.1, 0.05, 0.1, 0.01);
+        }
+
+        // 3. 中心火球残留 + 黑烟柱（向上喷涌）
+        for (int i = 0; i < 25; i++) {
+            double offsetX = (level.random.nextDouble() - 0.5) * explodeRadius;
+            double offsetZ = (level.random.nextDouble() - 0.5) * explodeRadius;
+            double riseSpeed = 0.05 + level.random.nextDouble() * 0.1;
+            level.sendParticles(ParticleTypes.LARGE_SMOKE,
+                    x + offsetX, y + 0.2, z + offsetZ,
+                    1, 0.02, riseSpeed, 0.02, 0.0);
+        }
+
+        // 4. 飞溅火星/碎片（模拟弹片）
+        for (int i = 0; i < 15; i++) {
+            double vx = (level.random.nextDouble() - 0.5) * 0.6;
+            double vy = level.random.nextDouble() * 0.4 + 0.1;
+            double vz = (level.random.nextDouble() - 0.5) * 0.6;
+            level.sendParticles(ParticleTypes.LAVA,
+                    x, y + 0.1, z,
+                    1, vx, vy, vz, 0.3);
+        }
+
+        // 5. 余烬火花（短暂逗留的小火花，持续burning感）
+        level.sendParticles(ParticleTypes.CRIT,
+                x, y + 0.2, z,
+                40, explodeRadius * 0.5, 0.3, explodeRadius * 0.5, 0.4);
     }
 
     private void onHitEntity(Entity entity) {
         entity.invulnerableTime = 0;
         float length = (float) this.getDeltaMovement().length();
         if (length > 0.5f) {
-//            ProjectileDamage damageSource = (ProjectileDamage) DamageTypes.getDamageSource(this.level(), DamageTypes.GENERIC_PROJECTILE, this, this.shooter);
-//            damageSource.shooter = this.shooter;
-//            entity.hurt(damageSource, length * 2f);
+            DamageSource damageSource = this.shooter == null ?
+                    damageSources().generic() :
+                    damageSources().mobProjectile(this, this.shooter);
+            entity.hurt(damageSource, length * 2f);
         }
         explode();
     }
