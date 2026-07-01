@@ -2,6 +2,7 @@ package com.sheridan.gcr.entity.projectile;
 
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
+import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -20,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -32,6 +34,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.function.Predicate;
 
 public class GrenadeEntity extends Entity{
@@ -185,6 +188,7 @@ public class GrenadeEntity extends Entity{
             //TODO:增加自定义炫酷爆炸效果
             spawnCustomExplosionEffect((ServerLevel) this.level(), this.getX(), this.getY() + 0.0625, this.getZ(), hitDir);
             this.discard();
+
         }
     }
 
@@ -193,18 +197,29 @@ public class GrenadeEntity extends Entity{
             FlashOption flashOptions = new FlashOption(
                     explodeRadius * (0.3f + level.random.nextFloat() * 0.1f)
             );
-
+            Color color = new Color(255, 250, 200);
+            int rgb = color.getRGB();
+            Color color2 = new Color(255, 75, 25);
+            int rgb2 = color2.getRGB();
             level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
             FragmentOption fragmentOptions = new FragmentOption(
                     explodeRadius,
-                    256,
+                    (int) (explodeRadius * 40),
                     6f,
-                    1f,
-                    0.9803921568627451f,
-                    0.7843137254901961f
+                    rgb
             );
 
             level.sendParticles(serverPlayer, fragmentOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+
+            SparkOption sparkOptions = new SparkOption(
+                    explodeRadius * 0.5f,
+                    (int) (explodeRadius * 10),
+                    4f,
+                    rgb,
+                    rgb2
+            );
+
+            level.sendParticles(serverPlayer, sparkOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
 
         }
 //        for (int i = 0; i < 10; i++) {

@@ -19,6 +19,7 @@ import com.sheridan.gcr.client.render.fx.*;
 import com.sheridan.gcr.client.render.fx.particles.ModParticles;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashParticle;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentParticle;
+import com.sheridan.gcr.client.render.fx.particles.explosion.SparkParticle;
 import com.sheridan.gcr.client.screen.containers.ModContainers;
 import com.sheridan.gcr.common.CommonEvents;
 import com.sheridan.gcr.common.Commons;
@@ -593,6 +594,7 @@ public class GCR {
         public static void registerParticles(RegisterParticleProvidersEvent event) {
             event.registerSpriteSet(ModParticles.FLASH.get(), FlashParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FRAGMENT.get(), FragmentParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.SPARK.get(), SparkParticle.Provider::new);
         }
 
         @SubscribeEvent // on the mod event bus only on the physical client

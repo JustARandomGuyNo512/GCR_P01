@@ -10,23 +10,19 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 public class FragmentOption implements ParticleOptions {
     // 配置项
     public final float radius;
     public final int count;
     public final float speed;
-    public final float r;
-    public final float g;
-    public final float b;
-    public FragmentOption(float radius, int count, float speed, float r, float g, float b) {
+    public final int color;
+
+    public FragmentOption(float radius, int count, float speed, int color) {
         this.radius = radius;
         this.count = count;
         this.speed = speed;
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        this.color = color;
     }
 
     @Override
@@ -39,9 +35,7 @@ public class FragmentOption implements ParticleOptions {
             Codec.FLOAT.fieldOf("radius").forGetter(o -> o.radius),
             Codec.INT.fieldOf("count").forGetter(o -> o.count),
             Codec.FLOAT.fieldOf("speed").forGetter(o -> o.speed),
-            Codec.FLOAT.fieldOf("r").forGetter(o -> o.r),
-            Codec.FLOAT.fieldOf("g").forGetter(o -> o.g),
-            Codec.FLOAT.fieldOf("b").forGetter(o -> o.b)
+            Codec.INT.fieldOf("color").forGetter(o -> o.color)
     ).apply(inst, FragmentOption::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FragmentOption> STREAM_CODEC =
@@ -49,8 +43,8 @@ public class FragmentOption implements ParticleOptions {
                     ByteBufCodecs.FLOAT, o -> o.radius,
                     ByteBufCodecs.INT, o -> o.count,
                     ByteBufCodecs.FLOAT, o -> o.speed,
-                    ByteBufCodecs.VECTOR3F, o -> new Vector3f(o.r, o.g, o.b),
-                    (r, c, s, col) -> new FragmentOption(r, c, s, col.x, col.y, col.z)
+                    ByteBufCodecs.INT, o -> o.color,
+                    FragmentOption::new
             );
 
 }

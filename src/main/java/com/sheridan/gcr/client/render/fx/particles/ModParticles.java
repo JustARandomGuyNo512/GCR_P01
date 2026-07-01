@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
+import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -29,7 +30,7 @@ public class ModParticles {
             });
 
     public static final DeferredHolder<ParticleType<?>, ParticleType<FragmentOption>> FRAGMENT =
-            PARTICLE_TYPES.register("fragment", () -> new ParticleType<FragmentOption>(false) {
+            PARTICLE_TYPES.register("fragment", () -> new ParticleType<>(false) {
                 @Override
                 public @NotNull MapCodec<FragmentOption> codec() {
                     return FragmentOption.CODEC;
@@ -38,6 +39,19 @@ public class ModParticles {
                 @Override
                 public @NotNull StreamCodec<? super RegistryFriendlyByteBuf, FragmentOption> streamCodec() {
                     return FragmentOption.STREAM_CODEC;
+                }
+            });
+
+    public static final DeferredHolder<ParticleType<?>, ParticleType<SparkOption>> SPARK =
+            PARTICLE_TYPES.register("spark", () -> new ParticleType<>(false) {
+                @Override
+                public @NotNull MapCodec<SparkOption> codec() {
+                    return SparkOption.CODEC;
+                }
+
+                @Override
+                public @NotNull StreamCodec<? super RegistryFriendlyByteBuf, SparkOption> streamCodec() {
+                    return SparkOption.STREAM_CODEC;
                 }
             });
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -17,12 +18,11 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class FragmentParticle extends TextureSheetParticle {
 
-    // ================== 静态全局向量池 ==================
-    private static final int POOL_SIZE = 1024; // 必须是2的幂
-    private static final int POOL_MASK = POOL_SIZE - 1;
-    private static final float[] DIR_X = new float[POOL_SIZE];
-    private static final float[] DIR_Y = new float[POOL_SIZE];
-    private static final float[] DIR_Z = new float[POOL_SIZE];
+    public static final int POOL_SIZE = 1024; // 必须是2的幂
+    public static final int POOL_MASK = POOL_SIZE - 1;
+    public static final float[] DIR_X = new float[POOL_SIZE];
+    public static final float[] DIR_Y = new float[POOL_SIZE];
+    public static final float[] DIR_Z = new float[POOL_SIZE];
 
     static {
         float goldenRatio = (1.0F + Mth.sqrt(5.0F)) / 2.0F;
@@ -41,7 +41,7 @@ public class FragmentParticle extends TextureSheetParticle {
     private final float radius;
     private final float speed;
     private final float irregularity;
-
+    private final int color;
     private final int baseSeed;
 
     protected FragmentParticle(ClientLevel level, double x, double y, double z, FragmentOption options, SpriteSet sprites) {
@@ -50,20 +50,16 @@ public class FragmentParticle extends TextureSheetParticle {
         this.radius = options.radius;
         this.speed = options.speed;
 
-        this.irregularity = 0.12F;
+        this.irregularity = 0.3F;
 
         this.lifetime = 4;
         this.gravity = 0.0F;
         this.hasPhysics = false;
 
-        this.rCol = options.r;
-        this.gCol = options.g;
-        this.bCol = options.b;
-
         // 仅记录一个基于位置的初始种子
         Random rand = new Random((long) (x * y * z * 1000));
         this.baseSeed = rand.nextInt();
-
+        this.color = options.color;
         this.setSpriteFromAge(sprites);
     }
 
@@ -90,7 +86,7 @@ public class FragmentParticle extends TextureSheetParticle {
             return;
         }
 
-        net.minecraft.world.phys.Vec3 cameraPos = camera.getPosition();
+        Vec3 cameraPos = camera.getPosition();
         float renderX = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float renderY = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float renderZ = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
@@ -113,14 +109,13 @@ public class FragmentParticle extends TextureSheetParticle {
         float easeOut = 1.0F - f * f * f;
 
         for (int i = 0; i < this.count; i++) {
-            // ================== 核心修复：基于 XorShift 的无状态随机映射 ==================
-            // 根据当前子粒子索引 i 混合基础种子，生成一个局部伪随机种子
+
             int seed = this.baseSeed + i;
             seed ^= seed << 13;
             seed ^= seed >>> 17;
             seed ^= seed << 5;
 
-            // 1. 彻底打碎斐波那契的线性顺序，直接利用哈希值低位寻址
+
             int dirIdx = seed & POOL_MASK;
             float dirX = DIR_X[dirIdx];
             float dirY = DIR_Y[dirIdx];
@@ -132,20 +127,19 @@ public class FragmentParticle extends TextureSheetParticle {
             float pY = renderY + dirY * currentExpand;
             float pZ = renderZ + dirZ * currentExpand;
 
-            float pSize = 0.25F * (1.0F - ageProgress * 0.5F);
+            float pSize = 0.25F * (1.0F - ageProgress);
 
-            // 写入顶点
             vertexPos.set(1.0F, -1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
-            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u1, v1).setColor(this.color).setLight(packedLight);
 
             vertexPos.set(1.0F, 1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
-            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u1, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u1, v0).setColor(this.color).setLight(packedLight);
 
             vertexPos.set(-1.0F, 1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
-            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u0, v0).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u0, v0).setColor(this.color).setLight(packedLight);
 
             vertexPos.set(-1.0F, -1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
-            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
+            buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u0, v1).setColor(this.color).setLight(packedLight);
         }
     }
 
