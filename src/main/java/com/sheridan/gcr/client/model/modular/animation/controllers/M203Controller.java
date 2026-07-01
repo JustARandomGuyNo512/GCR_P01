@@ -10,9 +10,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class M203Controller extends AnimationController<M203Model> {
-    private AnimationDef prepare;
     @Override
     public void firstPersonSubscriptions(M203Model model) {
+        super.firstPersonSubscriptions(model);
         subscribe(EventType.CHECK_SUB_WEAPON, 0, (ctx) -> {
             if (isTrackClear("main")) {
                 getTrack("check").play(anim("check"));
@@ -22,6 +22,8 @@ public class M203Controller extends AnimationController<M203Model> {
         subscribe(EventType.RELOAD_SUB_WEAPON, 0, (ctx) -> {
             getTrack("main").play(anim("reload"));
         });
+
+        subscribe(EventType.SHOOT, 0, (ctx) -> getTrack("check").clear());
     }
 
     @Override
@@ -31,7 +33,6 @@ public class M203Controller extends AnimationController<M203Model> {
                 "reload", "gcr:reload_grenade.g",
                 "prepare", "gcr:m203_prepare"
         );
-        prepare = anim("prepare").animation;
     }
 
 

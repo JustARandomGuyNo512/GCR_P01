@@ -53,7 +53,7 @@ public class ControllerEvents {
     }
 
     private static void handleGunFunctionalInput(IGun gunModule, ItemStack itemStack, InputEvent.Key event) {
-        if (DrawHolsterHandler.get().getEquipProgress() < 1) {
+        if (DrawHolsterHandler.get().getEquipProgress() < 1 || Minecraft.getInstance().screen != null) {
             return;
         }
         if (event.getAction() == 1) {

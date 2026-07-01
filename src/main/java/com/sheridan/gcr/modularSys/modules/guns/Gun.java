@@ -6,6 +6,7 @@ import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.KeyBinds;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.common.Commons;
@@ -112,6 +113,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         ModSounds.sound(3.5F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M4A1_FIRE.get());
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, rootNodeId(itemStack), System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.currentTimeMillis();
+        Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
     }
 
     @Override

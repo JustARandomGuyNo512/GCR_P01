@@ -5,6 +5,7 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.recoil.IRecoilUpdater;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.entity.ModEntities;
@@ -166,7 +167,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
 
     @OnlyIn(Dist.CLIENT)
     protected void handleReload() {
-
+        Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -184,6 +185,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         float gunKickPitch = recoilUpdater.getGunKickPitch();
         float gunKickYaw = recoilUpdater.getGunKickYaw();
         PacketDistributor.sendToServer(new SubWeaponFirePacket(gunId, nodeId, gunKickPitch, gunKickYaw));
+        Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
     }
 
     @Override

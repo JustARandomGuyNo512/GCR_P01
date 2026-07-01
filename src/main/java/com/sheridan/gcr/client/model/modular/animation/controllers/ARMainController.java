@@ -29,6 +29,7 @@ public class ARMainController extends AnimationController<ARMainModel> {
 
     @Override
     public void firstPersonSubscriptions(ARMainModel model) {
+        super.firstPersonSubscriptions(model);
         ARView view = model.getView();
 
         shoot = new SingleAnimationSequence(anim("shoot").coverState());

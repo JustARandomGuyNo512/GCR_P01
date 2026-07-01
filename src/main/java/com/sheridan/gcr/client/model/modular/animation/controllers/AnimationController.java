@@ -1,11 +1,9 @@
 package com.sheridan.gcr.client.model.modular.animation.controllers;
 
-import com.sheridan.gcr.client.animation.AnimationDef;
-import com.sheridan.gcr.client.animation.AnimationInstance;
-import com.sheridan.gcr.client.animation.AnimationRegister;
-import com.sheridan.gcr.client.animation.KeyframeAnimator;
+import com.sheridan.gcr.client.animation.*;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.*;
+import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -22,6 +20,17 @@ public abstract class AnimationController<T extends IModularModel> implements IA
     protected final Map<String, AnimationDef> animationPool = new HashMap<>();
     protected final List<EventRegistry> eventRegistries = new ArrayList<>();
     private ModuleRenderContext tempContext = null;
+
+    @Override
+    public void firstPersonSubscriptions(T model) {
+        subscribe(EventType.CLEAR_TRACK, 0, (context) -> {
+            String name = context.getParam("name");
+            Track<T> track = getTrack(name);
+            if (track != null) {
+                track.clear();
+            }
+        });
+    }
 
     @Override
     public AnimationDef registerAnimation(String simpleName, ResourceLocation path) {
