@@ -1,7 +1,6 @@
 package com.sheridan.gcr.client.render.fx.particles.explosion;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -19,13 +18,12 @@ import java.util.Random;
 public class FragmentParticle extends TextureSheetParticle {
 
     // ================== 静态全局向量池 ==================
-    private static final int POOL_SIZE = 1024; // 必须是2的幂，方便位运算取模
+    private static final int POOL_SIZE = 1024; // 必须是2的幂
     private static final int POOL_MASK = POOL_SIZE - 1;
     private static final float[] DIR_X = new float[POOL_SIZE];
     private static final float[] DIR_Y = new float[POOL_SIZE];
     private static final float[] DIR_Z = new float[POOL_SIZE];
 
-    // 类加载时预计算斐波那契均匀球面分布
     static {
         float goldenRatio = (1.0F + Mth.sqrt(5.0F)) / 2.0F;
         float angleIncrement = (float) Math.PI * 2.0F * goldenRatio;
@@ -42,10 +40,9 @@ public class FragmentParticle extends TextureSheetParticle {
     private final int count;
     private final float radius;
     private final float speed;
+    private final float irregularity;
 
-    // 替代实例数组的变量：只存基础随机种子、起始索引和步长
-    private final int startIndex;
-    private final int stride;
+    private final int baseSeed;
 
     protected FragmentParticle(ClientLevel level, double x, double y, double z, FragmentOption options, SpriteSet sprites) {
         super(level, x, y, z);
@@ -53,7 +50,9 @@ public class FragmentParticle extends TextureSheetParticle {
         this.radius = options.radius;
         this.speed = options.speed;
 
-        this.lifetime = 3;
+        this.irregularity = 0.12F;
+
+        this.lifetime = 4;
         this.gravity = 0.0F;
         this.hasPhysics = false;
 
@@ -61,11 +60,9 @@ public class FragmentParticle extends TextureSheetParticle {
         this.gCol = options.g;
         this.bCol = options.b;
 
-        // 生成这个粒子的唯一特征
+        // 仅记录一个基于位置的初始种子
         Random rand = new Random((long) (x * y * z * 1000));
-        this.startIndex = rand.nextInt(POOL_SIZE);
-        // 保证步长是奇数，与 1024 互质，这样遍历池子时绝不会短循环重复，能均匀且乱序地抓取向量
-        this.stride = rand.nextInt(200) * 2 + 1;
+        this.baseSeed = rand.nextInt();
 
         this.setSpriteFromAge(sprites);
     }
@@ -89,7 +86,9 @@ public class FragmentParticle extends TextureSheetParticle {
     public void render(@NotNull VertexConsumer buffer, @NotNull Camera camera, float partialTicks) {
         float ageProgress = ((float)this.age + partialTicks) / (float)this.lifetime;
         this.alpha = 1.0F - ageProgress;
-        if (this.alpha <= 0.0F) return;
+        if (this.alpha <= 0.0F){
+            return;
+        }
 
         net.minecraft.world.phys.Vec3 cameraPos = camera.getPosition();
         float renderX = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
@@ -114,13 +113,20 @@ public class FragmentParticle extends TextureSheetParticle {
         float easeOut = 1.0F - f * f * f;
 
         for (int i = 0; i < this.count; i++) {
-            int dirIdx = (this.startIndex + i * this.stride) & POOL_MASK;
+            // ================== 核心修复：基于 XorShift 的无状态随机映射 ==================
+            // 根据当前子粒子索引 i 混合基础种子，生成一个局部伪随机种子
+            int seed = this.baseSeed + i;
+            seed ^= seed << 13;
+            seed ^= seed >>> 17;
+            seed ^= seed << 5;
+
+            // 1. 彻底打碎斐波那契的线性顺序，直接利用哈希值低位寻址
+            int dirIdx = seed & POOL_MASK;
             float dirX = DIR_X[dirIdx];
             float dirY = DIR_Y[dirIdx];
             float dirZ = DIR_Z[dirIdx];
 
-            float maxRadiusForThisParticle = this.radius * this.speed;
-            float currentExpand = maxRadiusForThisParticle * easeOut;
+            float currentExpand = getCurrentExpand(seed, easeOut);
 
             float pX = renderX + dirX * currentExpand;
             float pY = renderY + dirY * currentExpand;
@@ -128,7 +134,7 @@ public class FragmentParticle extends TextureSheetParticle {
 
             float pSize = 0.25F * (1.0F - ageProgress * 0.5F);
 
-            // 4. 写入顶点
+            // 写入顶点
             vertexPos.set(1.0F, -1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
             buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u1, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
 
@@ -141,6 +147,20 @@ public class FragmentParticle extends TextureSheetParticle {
             vertexPos.set(-1.0F, -1.0F, 0.0F).rotate(quaternion).mul(pSize).add(pX, pY, pZ);
             buffer.addVertex(vertexPos.x(), vertexPos.y(), vertexPos.z()).setUv(u0, v1).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(packedLight);
         }
+    }
+
+    private float getCurrentExpand(int seed, float easeOut) {
+        float noise = ((seed >>> 7) & 0x7FFFFFFF) / (float) Integer.MAX_VALUE;
+
+        float mul;
+        if (noise < this.irregularity) {
+            mul = 0.2F + noise * 1.8F * this.irregularity;
+        } else {
+            mul = 0.8F + noise * 0.4F;
+        }
+
+        float maxRadiusForThisParticle = this.radius * this.speed * mul;
+        return maxRadiusForThisParticle * easeOut;
     }
 
     public static class Provider implements ParticleProvider<FragmentOption> {

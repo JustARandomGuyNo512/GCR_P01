@@ -196,9 +196,9 @@ public class GrenadeEntity extends Entity{
 
             level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
             FragmentOption fragmentOptions = new FragmentOption(
-                    explodeRadius * 0.5f,
+                    explodeRadius,
                     256,
-                    2f,
+                    6f,
                     1f,
                     0.9803921568627451f,
                     0.7843137254901961f
