@@ -54,7 +54,6 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     protected float spread;
     protected float velocity;
     protected float explodeRadius;
-    protected int safeTicks;
 
 
     public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
@@ -71,7 +70,6 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         this.spread = spread;
         this.velocity = velocity;
         this.explodeRadius = explodeRadius;
-        this.safeTicks = safeTicks;
     }
 
     @Override
@@ -149,7 +147,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         Level level = player.level();
 
         GrenadeEntity grenade = new GrenadeEntity(ModEntities.GRENADE.get(), level);
-        grenade.shootFromRotation(player, pitch, yaw, 0.0F, velocity, spread, explodeRadius, safeTicks);
+        grenade.shootFromRotation(player, pitch, yaw, 0.0F, velocity, spread, explodeRadius);
         level.addFreshEntity(grenade);
         int latency = player.connection.latency();
         ModSounds.sound(3F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M203_FIRE.get());

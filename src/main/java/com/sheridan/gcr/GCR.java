@@ -8,8 +8,6 @@ import com.sheridan.gcr.client.events.ClientEvents;
 import com.sheridan.gcr.client.events.ControllerEvents;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.events.TestEvents;
-import com.sheridan.gcr.client.particles.ModParticles;
-import com.sheridan.gcr.client.particles.impl.BulletHoleParticle;
 import com.sheridan.gcr.client.recoil.RecoilController;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilImpulse;
@@ -18,6 +16,9 @@ import com.sheridan.gcr.client.render.entity.BulletRenderer;
 import com.sheridan.gcr.client.render.entity.M433Renderer;
 import com.sheridan.gcr.client.render.events.GuiEvents;
 import com.sheridan.gcr.client.render.fx.*;
+import com.sheridan.gcr.client.render.fx.particles.ModParticles;
+import com.sheridan.gcr.client.render.fx.particles.explosion.FlashParticle;
+import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentParticle;
 import com.sheridan.gcr.client.screen.containers.ModContainers;
 import com.sheridan.gcr.common.CommonEvents;
 import com.sheridan.gcr.common.Commons;
@@ -137,7 +138,7 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
             3.3f, 60f, 20f, 40f, 140f,
-            0.4f, 4f, 4, 4)
+            0.4f, 4f, 4, 3)
             .addTags("under_barrel", "sub_weapon");
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(
@@ -378,7 +379,7 @@ public class GCR {
         ModData.register(modEventBus);
         ModComponents.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
-        ModParticles.register(modEventBus);
+        ModParticles.PARTICLE_TYPES.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(CommonEvents.class);
@@ -590,7 +591,8 @@ public class GCR {
 
         @SubscribeEvent
         public static void registerParticles(RegisterParticleProvidersEvent event) {
-            event.registerSpriteSet(ModParticles.BULLET_HOLE.get(), BulletHoleParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.FLASH.get(), FlashParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.FRAGMENT.get(), FragmentParticle.Provider::new);
         }
 
         @SubscribeEvent // on the mod event bus only on the physical client
