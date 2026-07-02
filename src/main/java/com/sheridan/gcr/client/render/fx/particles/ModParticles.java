@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render.fx.particles;
 
 import com.mojang.serialization.MapCodec;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.render.fx.particles.ember.EmberOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
@@ -54,4 +55,24 @@ public class ModParticles {
                     return SparkOption.STREAM_CODEC;
                 }
             });
+
+    public static final DeferredHolder<ParticleType<?>, ParticleType<EmberOption>> HEAT_SMOKE = registerEmber("heat_smoke");
+
+
+    private static DeferredHolder<ParticleType<?>, ParticleType<EmberOption>> registerEmber(String name) {
+        return PARTICLE_TYPES.register(name, () -> new ParticleType<>(false) {
+            private final MapCodec<EmberOption> codec = EmberOption.createCodec((ParticleType<EmberOption>) this);
+            private final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, EmberOption> streamCodec = EmberOption.createStreamCodec((ParticleType<EmberOption>) this);
+
+            @Override
+            public @NotNull MapCodec<EmberOption> codec() {
+                return this.codec;
+            }
+
+            @Override
+            public @NotNull StreamCodec<? super net.minecraft.network.RegistryFriendlyByteBuf, EmberOption> streamCodec() {
+                return this.streamCodec;
+            }
+        });
+    }
 }

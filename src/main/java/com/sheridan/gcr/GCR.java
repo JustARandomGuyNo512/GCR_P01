@@ -17,6 +17,7 @@ import com.sheridan.gcr.client.render.entity.M433Renderer;
 import com.sheridan.gcr.client.render.events.GuiEvents;
 import com.sheridan.gcr.client.render.fx.*;
 import com.sheridan.gcr.client.render.fx.particles.ModParticles;
+import com.sheridan.gcr.client.render.fx.particles.ember.EmberParticle;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashParticle;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentParticle;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkParticle;
@@ -595,6 +596,7 @@ public class GCR {
             event.registerSpriteSet(ModParticles.FLASH.get(), FlashParticle.Provider::new);
             event.registerSpriteSet(ModParticles.FRAGMENT.get(), FragmentParticle.Provider::new);
             event.registerSpriteSet(ModParticles.SPARK.get(), SparkParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.HEAT_SMOKE.get(), EmberParticle.Provider::new);
         }
 
         @SubscribeEvent // on the mod event bus only on the physical client

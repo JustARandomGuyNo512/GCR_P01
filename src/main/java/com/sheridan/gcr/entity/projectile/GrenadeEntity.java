@@ -1,5 +1,7 @@
 package com.sheridan.gcr.entity.projectile;
 
+import com.sheridan.gcr.client.render.fx.particles.ModParticles;
+import com.sheridan.gcr.client.render.fx.particles.ember.EmberOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
@@ -101,7 +103,7 @@ public class GrenadeEntity extends Entity{
     public void tick() {
         super.tick();
         if (this.tickCount >= 220) {
-            explode(Direction.UP);
+            explode(Direction.UP, new Vec3(getX(), getY(), getZ()));
         }
         Vec3 deltaMovement = this.getDeltaMovement();
 
@@ -124,13 +126,13 @@ public class GrenadeEntity extends Entity{
                 Vec3 hitPos = hitResult.getLocation();
                 EntityHitResult entityhitresult = this.findHitEntity(prevPos, hitPos);
                 if (entityhitresult != null && entityhitresult.getEntity() != this.shooter) {
-                    onHitEntity(entityhitresult.getEntity());
+                    onHitEntity(entityhitresult.getEntity(), entityhitresult.getLocation());
                     return;
                 }
             }
             if (bounced < 3) {
                 if(getHitDeg(deltaMovement, hitResult.getDirection()) < 80) {
-                    explode(hitResult.getDirection());
+                    explode(hitResult.getDirection(), hitResult.getLocation());
                     return;
                 }
                 switch (hitResult.getDirection()) {
@@ -145,13 +147,13 @@ public class GrenadeEntity extends Entity{
                 }
                 bounced ++;
             } else {
-                explode(hitResult.getDirection());
+                explode(hitResult.getDirection(), hitResult.getLocation());
             }
         } else {
             if (!this.level().isClientSide) {
                 EntityHitResult entityhitresult = this.findHitEntity(prevPos, nextPos);
                 if (entityhitresult != null && entityhitresult.getEntity() != this.shooter) {
-                    onHitEntity(entityhitresult.getEntity());
+                    onHitEntity(entityhitresult.getEntity(), entityhitresult.getLocation());
                     return;
                 }
             }
@@ -161,7 +163,7 @@ public class GrenadeEntity extends Entity{
         float f = this.isInWater() ? 0.88f : 0.99f;
         this.setDeltaMovement(deltaMovement.add(0, -0.04f, 0).scale(f));
         if (bounced >= 3 && this.getDeltaMovement().length() <= 0.1f) {
-            explode(Direction.UP);
+            explode(Direction.UP, new Vec3(getX(), getY(), getZ()));
             return;
         }
         double horizontalDistance = deltaMovement.horizontalDistance();
@@ -182,11 +184,11 @@ public class GrenadeEntity extends Entity{
         this.explodeRadius = pCompound.getFloat("radius");
     }
 
-    public void explode(Direction hitDir) {
+    public void explode(Direction hitDir, Vec3 location) {
         if (!this.level().isClientSide) {
-            this.level().explode(this, Explosion.getDefaultDamageSource(this.level(), this), null,this.getX(), this.getY() + 0.0625f, this.getZ(), explodeRadius, false, Level.ExplosionInteraction.NONE, false,  ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
+            this.level().explode(this, Explosion.getDefaultDamageSource(this.level(), this), null,location.x, location.y, location.z, explodeRadius, false, Level.ExplosionInteraction.NONE, false,  ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
             //TODO:增加自定义炫酷爆炸效果
-            spawnCustomExplosionEffect((ServerLevel) this.level(), this.getX(), this.getY() + 0.0625, this.getZ(), hitDir);
+            spawnCustomExplosionEffect((ServerLevel) this.level(), location.x, location.y, location.z, hitDir);
             this.discard();
 
         }
@@ -195,7 +197,7 @@ public class GrenadeEntity extends Entity{
     private void spawnCustomExplosionEffect(ServerLevel level, double x, double y, double z, Direction hitDir) {
         if (this.shooter instanceof ServerPlayer serverPlayer) {
             FlashOption flashOptions = new FlashOption(
-                    explodeRadius * (0.3f + level.random.nextFloat() * 0.1f)
+                    explodeRadius * (0.5f + level.random.nextFloat() * 0.1f)
             );
             Color color = new Color(255, 250, 200);
             int rgb = color.getRGB();
@@ -204,7 +206,7 @@ public class GrenadeEntity extends Entity{
             level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
             FragmentOption fragmentOptions = new FragmentOption(
                     explodeRadius,
-                    (int) (explodeRadius * 40),
+                    (int) (explodeRadius * 50),
                     6f,
                     rgb
             );
@@ -221,25 +223,22 @@ public class GrenadeEntity extends Entity{
 
             level.sendParticles(serverPlayer, sparkOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
 
+            int heatSmokeCount = (int) Mth.clamp(explodeRadius, 1, 10);
+            float smokeScale = Mth.clamp(explodeRadius, 1, 5);
+            for (int i = 0; i < heatSmokeCount; i ++) {
+                EmberOption emberOptions = new EmberOption(
+                        ModParticles.HEAT_SMOKE.get(),
+                        8,
+                        EmberOption.EasingType.SQR,
+                        15,
+                        smokeScale
+                );
+                float randomX = (level().random.nextFloat() - 0.5f) * explodeRadius;
+                float randomZ = (level().random.nextFloat() - 0.2f) * explodeRadius * 0.75f;
+                float randomY = (level().random.nextFloat() - 0.5f) * explodeRadius;
+                level.sendParticles(serverPlayer, emberOptions, true, x + randomX, y + randomZ, z + randomY, 1, 0, 0, 0, 0.0);
+            }
         }
-//        for (int i = 0; i < 10; i++) {
-//            double vx = (level.random.nextDouble() - 0.5) * 0.6;
-//            double vy = level.random.nextDouble() * 0.5 + 0.1;
-//            double vz = (level.random.nextDouble() - 0.5) * 0.6;
-//            level.sendParticles(ParticleTypes.LAVA,
-//                    x, y + 0.1, z,
-//                    1, vx, vy, vz, 0.5);
-//        }
-//
-//        for (int i = 0; i < 60; i++) {
-//            double vx = (level.random.nextDouble() - 0.5) * explodeRadius * 0.65;
-//            double vy = (level.random.nextDouble() - 0.3) * explodeRadius * 0.65;
-//            double vz = (level.random.nextDouble() - 0.5) * explodeRadius * 0.65;
-//            level.sendParticles(ParticleTypes.LARGE_SMOKE,
-//                    x, y + 0.1, z,
-//                    1, vx, vy, vz, 0.002);
-//        }
-
 
         level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE,
                 SoundSource.PLAYERS, 1.2f, 0.9f);
@@ -247,7 +246,7 @@ public class GrenadeEntity extends Entity{
                 SoundSource.PLAYERS, 0.3f, 1.6f);
     }
 
-    private void onHitEntity(Entity entity) {
+    private void onHitEntity(Entity entity, Vec3 location) {
         entity.invulnerableTime = 0;
         float length = (float) this.getDeltaMovement().length();
         if (length > 0.5f) {
@@ -256,7 +255,7 @@ public class GrenadeEntity extends Entity{
                     damageSources().mobProjectile(this, this.shooter);
             entity.hurt(damageSource, length * 2f);
         }
-        explode(Direction.UP);
+        explode(Direction.UP, location);
     }
 
 
