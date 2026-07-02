@@ -257,7 +257,7 @@ public class GCR {
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasTag("rear_grip")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasTag("stock")))
             .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasTag("mag")))
-            .addSlot(new Rail("SCOPE", Direction.UPPER, 9f, -1.802f, -14.4f)
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10.8f, -1.802f, -14.4f)
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
             .setDefaultModuleInitHandler(workspace -> {
                 Unit root = workspace.getRootUnit();

@@ -1,0 +1,58 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.daniel_defense_ris_ii",
+				"texture_width": 192,
+				"texture_height": 192,
+				"visible_bounds_width": 1,
+				"visible_bounds_height": 1,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "main",
+					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "lower",
+					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "RAIL_LEFT",
+					"parent": "root",
+					"pivot": [4.9668, 0, -8.37775],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "RAIL_RIGHT",
+					"parent": "root",
+					"pivot": [-4.9668, 0, -8.37775],
+					"rotation": [0, 0, 90]
+				},
+				{
+					"name": "RAIL_LOWER",
+					"parent": "root",
+					"pivot": [0, -4.4082, 0.92075]
+				},
+				{
+					"name": "RAIL_UPPER",
+					"parent": "root",
+					"pivot": [0, 4.9668, 2.698]
+				},
+				{
+					"name": "RAIL_UPPER_FRONT",
+					"parent": "root",
+					"pivot": [0, 4.9668, -27.70915]
+				}
+			]
+		}
+	]
+}
