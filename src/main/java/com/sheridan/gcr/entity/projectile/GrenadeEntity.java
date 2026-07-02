@@ -239,9 +239,7 @@ public class GrenadeEntity extends Entity{
         }
 
         level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE,
-                SoundSource.PLAYERS, 1.2f, 0.9f);
-        level.playSound(null, x, y, z, SoundEvents.ANVIL_LAND,
-                SoundSource.PLAYERS, 0.3f, 1.6f);
+                SoundSource.PLAYERS, 4f, 0.9f);
     }
 
     private void onHitEntity(Entity entity, Vec3 location) {

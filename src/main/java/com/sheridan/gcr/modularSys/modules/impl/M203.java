@@ -107,7 +107,8 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
 
     @OnlyIn(Dist.CLIENT)
     private boolean shouldNotHandleShoot() {
-        return SprintingHandler.INSTANCE.isSprinting() ||
+        SprintingHandler.INSTANCE.exitSprinting(20);
+        return SprintingHandler.INSTANCE.getSprintingProgress() != 0 ||
                 GunTaskHandler.INSTANCE.hasTask();
     }
 
@@ -132,9 +133,6 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
             return;
         }
         if (keyCode == KeyBinds.USE_GRENADE_LAUNCHER.getKey().getValue()) {
-            if (shouldNotHandleShoot()) {
-                return;
-            }
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
             if (states == null) {
                 return;
@@ -143,6 +141,9 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
             if (!CHAMBER_LOADED.equals(chamberStatus)) {
                 handleClientReload(itemStack, gun, thisNodeId, gun.getIdentityID(itemStack));
             } else {
+                if (shouldNotHandleShoot()) {
+                    return;
+                }
                 String identityID = gun.getIdentityID(itemStack);
                 clientShoot(thisNodeId, identityID, states, itemStack);
             }
@@ -186,6 +187,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
 
     @OnlyIn(Dist.CLIENT)
     protected void handleClientReload(ItemStack itemStack, IGun gun,String nodeId, String gunId) {
+        SprintingHandler.INSTANCE.exitSprinting(20);
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
         M203ReloadTask m203ReloadTask = new M203ReloadTask(itemStack, gun, reloadLength, reloadSendPacketDelay, nodeId, gunId);
         GunTaskHandler.INSTANCE.setTask(m203ReloadTask);
