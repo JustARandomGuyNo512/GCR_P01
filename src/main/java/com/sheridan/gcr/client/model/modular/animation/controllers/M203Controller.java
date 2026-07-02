@@ -20,7 +20,7 @@ public class M203Controller extends AnimationController<M203Model> {
         });
 
         subscribe(EventType.RELOAD_SUB_WEAPON, 0, (ctx) -> {
-            getTrack("main").play(anim("reload"));
+            getTrack("main").play(anim("reload").coverStateExclude("shell"));
         });
 
         subscribe(EventType.SHOOT, 0, (ctx) -> getTrack("check").clear());
@@ -29,8 +29,8 @@ public class M203Controller extends AnimationController<M203Model> {
     @Override
     public void initAnimation(M203Model model) {
         registerAnimations(
-                "check", "gcr:check_grenade.g",
-                "reload", "gcr:reload_grenade.g",
+                "check", "gcr:check_grenade_m203.g",
+                "reload", "gcr:reload_grenade_m203.g",
                 "prepare", "gcr:m203_prepare"
         );
     }

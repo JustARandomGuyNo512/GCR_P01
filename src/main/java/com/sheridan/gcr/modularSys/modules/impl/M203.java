@@ -17,7 +17,9 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.other.CheckingTask;
+import com.sheridan.gcr.modularSys.task.reload.M203ReloadTask;
 import com.sheridan.gcr.network.c2s.SubWeaponFirePacket;
+import com.sheridan.gcr.network.c2s.SubWeaponReloadPacket;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
@@ -31,7 +33,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -39,14 +40,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IM203View {
     private final IVoxelHandler voxelHandler;
     private final AdditionalPropModifier modifier;
 
 
-    protected float reloadLengthInSeconds;
+    protected int reloadLength;
+    protected int reloadSendPacketDelay;
 
     protected float impulseZ;
     protected float impulsePitch;
@@ -58,12 +59,14 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
 
 
     public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
-                float reloadLengthInSeconds, float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll,
-                float spread, float velocity, float explodeRadius, int safeTicks) {
+                float reloadLengthInSeconds, float reloadSendPacketDelayInSeconds,
+                float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll,
+                float spread, float velocity, float explodeRadius) {
         super(id, true, weight, Direction.NONE);
         this.voxelHandler = voxelHandler;
         this.modifier = modifier;
-        this.reloadLengthInSeconds = reloadLengthInSeconds;
+        this.reloadLength = (int) (reloadLengthInSeconds * 20);
+        this.reloadSendPacketDelay = (int) (reloadSendPacketDelayInSeconds * 20);
         this.impulseZ = impulseZ;
         this.impulsePitch = impulsePitch;
         this.impulseYaw = impulseYaw;
@@ -108,6 +111,18 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
                 GunTaskHandler.INSTANCE.hasTask();
     }
 
+    @Override
+    public void serverReload(SubWeaponReloadPacket packet, ItemStack itemStack, ServerPlayer player, IGun gun, SubWeapon subWeapon) {
+        CompoundTag nodeStatesTag = gun.getNodeStatesTag(itemStack, packet.nodeId);
+        if (nodeStatesTag == null) {
+            return;
+        }
+        if (subWeapon instanceof M203) {
+            CHAMBER_STATUS.set(CHAMBER_LOADED, nodeStatesTag);
+            gun.notifyDataChanged(itemStack);
+        }
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public void onKeyPressed(int keyCode, int action, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
@@ -121,13 +136,16 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
                 return;
             }
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
+            if (states == null) {
+                return;
+            }
             String chamberStatus = getChamberStatus(states);
-            //if (!CHAMBER_LOADED.equals(chamberStatus)) {
-            //    handleReload();
-            //} else {
-            String identityID = gun.getIdentityID(itemStack);
-            clientShoot(thisNodeId, identityID);
-            //}
+            if (!CHAMBER_LOADED.equals(chamberStatus)) {
+                handleClientReload(itemStack, gun, thisNodeId, gun.getIdentityID(itemStack));
+            } else {
+                String identityID = gun.getIdentityID(itemStack);
+                clientShoot(thisNodeId, identityID, states, itemStack);
+            }
         } else if (keyCode == KeyBinds.CHECK_SUB_WEAPON.getKey().getValue()) {
             if (!Client.isAiming()) {
                 CheckingTask task = new CheckingTask(itemStack, gun, CheckingTask.CHECK_SUB_WEAPON, Map.of(
@@ -138,7 +156,8 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         }
     }
 
-    public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack, ServerPlayer player) {
+    @Override
+    public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack, ServerPlayer player, IGun gun, SubWeapon subWeapon) {
         float yaw = player.getYRot();
         float pitch = player.getXRot();
 
@@ -166,12 +185,16 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void handleReload() {
+    protected void handleClientReload(ItemStack itemStack, IGun gun,String nodeId, String gunId) {
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
+        M203ReloadTask m203ReloadTask = new M203ReloadTask(itemStack, gun, reloadLength, reloadSendPacketDelay, nodeId, gunId);
+        GunTaskHandler.INSTANCE.setTask(m203ReloadTask);
     }
 
+
+
     @OnlyIn(Dist.CLIENT)
-    protected void clientShoot(String nodeId, String gunId) {
+    protected void clientShoot(String nodeId, String gunId, CompoundTag states, ItemStack itemStack) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
             return;
@@ -186,7 +209,9 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         float gunKickYaw = recoilUpdater.getGunKickYaw();
         PacketDistributor.sendToServer(new SubWeaponFirePacket(gunId, nodeId, gunKickPitch, gunKickYaw));
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
+        CHAMBER_STATUS.set(CHAMBER_FIRED, states);
     }
+
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {

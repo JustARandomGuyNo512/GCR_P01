@@ -39,16 +39,26 @@ public class ClientTestingResources {
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/m4a1_main.animation.json",
                 Map.ofEntries(
-                        Map.entry("check_mag", "check_mag"), Map.entry("reload_grenade", "reload_grenade"),
-                        Map.entry("reload_grenade.G", "reload_grenade.g"), Map.entry("to_semi", "to_semi"),
-                        Map.entry("check_grenade.G", "check_grenade.g"),Map.entry("check_grenade", "check_grenade"),
-                        Map.entry("to_auto", "to_auto"), Map.entry("shoot_last", "m4a1_shoot_last"),
-                        Map.entry("mag_reload", "m4a1_mag_reload"), Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
-                        Map.entry("mag_reload_charge", "m4a1_mag_reload_charge"), Map.entry("chamber_reload", "m4a1_chamber_reload"),
-                        Map.entry("chamber_reload_empty", "m4a1_chamber_reload_empty"), Map.entry("base", "m4a1_base"),
-                        Map.entry("shoot", "m4a1_shoot"), Map.entry("shoot_stuck", "m4a1_shoot_stuck"),
-                        Map.entry("remove_stuck", "m4a1_remove_stuck"), Map.entry("remove_stuck_empty", "m4a1_remove_stuck_empty"),
-                        Map.entry("check_chamber", "m4a1_check_chamber"), Map.entry("check_chamber_simple", "m4a1_check_chamber_simple")
+                        Map.entry("check_mag", "check_mag"),
+                        Map.entry("reload_grenade", "reload_grenade_m203"),
+                        Map.entry("reload_grenade.G", "reload_grenade_m203.g"),
+                        Map.entry("to_semi", "to_semi"),
+                        Map.entry("check_grenade.G", "check_grenade_m203.g"),
+                        Map.entry("check_grenade", "check_grenade_m203"),
+                        Map.entry("to_auto", "to_auto"),
+                        Map.entry("shoot_last", "m4a1_shoot_last"),
+                        Map.entry("mag_reload", "m4a1_mag_reload"),
+                        Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "m4a1_mag_reload_charge"),
+                        Map.entry("chamber_reload", "m4a1_chamber_reload"),
+                        Map.entry("chamber_reload_empty", "m4a1_chamber_reload_empty"),
+                        Map.entry("base", "m4a1_base"),
+                        Map.entry("shoot", "m4a1_shoot"),
+                        Map.entry("shoot_stuck", "m4a1_shoot_stuck"),
+                        Map.entry("remove_stuck", "m4a1_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "m4a1_remove_stuck_empty"),
+                        Map.entry("check_chamber", "m4a1_check_chamber"),
+                        Map.entry("check_chamber_simple", "m4a1_check_chamber_simple")
                 )
         );
         // 弹匣状态动画

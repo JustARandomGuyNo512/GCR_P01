@@ -103,7 +103,7 @@ public class ControllerEvents {
                 }
             }
             if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
-                ClassHotReloader.reload();
+                //ClassHotReloader.reload();
                 //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
                 //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
             }

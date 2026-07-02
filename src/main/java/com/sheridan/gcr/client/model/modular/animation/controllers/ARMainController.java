@@ -132,8 +132,8 @@ public class ARMainController extends AnimationController<ARMainModel> {
     public void initAnimation(ARMainModel model) {
         registerAnimations(
                 "check_mag", "gcr:check_mag",
-                "reload_grenade", "gcr:reload_grenade",
-                "check_grenade", "gcr:check_grenade",
+                "reload_grenade", "gcr:reload_grenade_m203",
+                "check_grenade", "gcr:check_grenade_m203",
                 ARFullAuto.FULL_AUTO.getName(), "gcr:to_auto",
                 ARSemi.SEMI.getName(), "gcr:to_semi",
                 "mag_reload", "gcr:m4a1_mag_reload",

@@ -20,48 +20,40 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class SubWeaponFirePacket implements CustomPacketPayload, IPacket<SubWeaponFirePacket> {
-    public static final ResourceLocation ID = GCR.RL("sub_weapon_fire");
-    public static final Type<SubWeaponFirePacket> TYPE = new Type<>(ID);
-    public static final Codec<SubWeaponFirePacket> STREAM_CODEC = new Codec<> (
-            SubWeaponFirePacket::decode,
+public class SubWeaponReloadPacket implements CustomPacketPayload, IPacket<SubWeaponReloadPacket> {
+    public static final ResourceLocation ID = GCR.RL("sub_weapon_reload");
+    public static final Type<SubWeaponReloadPacket> TYPE = new Type<>(ID);
+    public static final Codec<SubWeaponReloadPacket> STREAM_CODEC = new Codec<> (
+            SubWeaponReloadPacket::decode,
             (buf, p) -> p.encode(buf));
 
     public String gunId;
     public String nodeId;
-    public float gunKickPitch;
-    public float gunKickYaw;
 
-    public SubWeaponFirePacket(String gunId, String nodeId, float gunKickPitch, float gunKickYaw) {
+    public SubWeaponReloadPacket(String gunId, String nodeId) {
         this.gunId = gunId;
         this.nodeId = nodeId;
-        this.gunKickPitch = gunKickPitch;
-        this.gunKickYaw = gunKickYaw;
     }
 
     private void encode(FriendlyByteBuf buf) {
         buf.writeUtf(gunId);
         buf.writeUtf(nodeId);
-        buf.writeFloat(gunKickPitch);
-        buf.writeFloat(gunKickYaw);
     }
 
-    private static SubWeaponFirePacket decode(FriendlyByteBuf buf) {
-        return new SubWeaponFirePacket(
+    private static SubWeaponReloadPacket decode(FriendlyByteBuf buf) {
+        return new SubWeaponReloadPacket(
                 buf.readUtf(),
-                buf.readUtf(),
-                buf.readFloat(),
-                buf.readFloat()
+                buf.readUtf()
         );
     }
 
     @Override
-    public void onClient(SubWeaponFirePacket packet, IPayloadContext context) {
+    public void onClient(SubWeaponReloadPacket packet, IPayloadContext context) {
 
     }
 
     @Override
-    public void onServer(SubWeaponFirePacket packet, IPayloadContext context) {
+    public void onServer(SubWeaponReloadPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             ItemStack heldItem = player.getMainHandItem();
@@ -77,7 +69,7 @@ public class SubWeaponFirePacket implements CustomPacketPayload, IPacket<SubWeap
                             String moduleId = compound.getString(Unit.MODULE_ID);
                             SubWeapon subWeapon = ModuleRegister.get(moduleId, SubWeapon.class);
                             if (subWeapon != null) {
-                                subWeapon.serverShoot(packet, heldItem, player, gun, subWeapon);
+                                subWeapon.serverReload(packet, heldItem, player, gun, subWeapon);
                             }
                             return;
                         }
@@ -92,4 +84,5 @@ public class SubWeaponFirePacket implements CustomPacketPayload, IPacket<SubWeap
         return TYPE;
     }
 }
+
 
