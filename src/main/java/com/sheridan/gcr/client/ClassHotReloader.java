@@ -1,24 +1,7 @@
 package com.sheridan.gcr.client;
 
-import com.sheridan.gcr.client.recoil.IRecoilUpdater;
-import com.sheridan.gcr.client.recoil.RecoilHandler;
-import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
-import com.sheridan.gcr.client.render.IGlobalAnimationHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
-import javax.tools.*;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ClassHotReloader {

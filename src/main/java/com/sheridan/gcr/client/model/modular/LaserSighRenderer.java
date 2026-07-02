@@ -1,26 +1,16 @@
 package com.sheridan.gcr.client.model.modular;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.fx.LaserModel;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
-import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.LaserEffectRenderer;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.DisplayData;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-
-import java.nio.FloatBuffer;
 
 @OnlyIn(Dist.CLIENT)
 public class LaserSighRenderer {

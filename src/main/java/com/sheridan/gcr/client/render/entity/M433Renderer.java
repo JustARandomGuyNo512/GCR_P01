@@ -1,26 +1,18 @@
 package com.sheridan.gcr.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.sheridan.gcr.client.render.RenderTypes;
-import com.sheridan.gcr.client.render.entity.model.CommonTracer;
 import com.sheridan.gcr.client.render.entity.model.M433;
-import com.sheridan.gcr.entity.projectile.BulletEntity;
 import com.sheridan.gcr.entity.projectile.GrenadeEntity;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class M433Renderer extends EntityRenderer<GrenadeEntity> {

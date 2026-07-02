@@ -12,8 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.Objects;
-
 @OnlyIn(Dist.CLIENT)
 public class DrawHolsterHandler {
 

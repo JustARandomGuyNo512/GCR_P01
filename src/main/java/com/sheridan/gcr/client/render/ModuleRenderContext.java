@@ -9,7 +9,6 @@ import com.sheridan.gcr.client.model.modular.state.IStateViewer;
 import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.LivingEntity;

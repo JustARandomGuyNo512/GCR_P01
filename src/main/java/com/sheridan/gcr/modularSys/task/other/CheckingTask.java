@@ -5,7 +5,6 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.task.GunTask;
 import com.sheridan.gcr.modularSys.task.IGunTask;
-import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;

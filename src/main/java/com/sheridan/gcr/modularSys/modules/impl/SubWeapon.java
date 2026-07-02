@@ -8,7 +8,6 @@ import com.sheridan.gcr.network.c2s.SubWeaponFirePacket;
 import com.sheridan.gcr.network.c2s.SubWeaponReloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class SubWeapon extends UniqueModule implements IInteractiveModular {

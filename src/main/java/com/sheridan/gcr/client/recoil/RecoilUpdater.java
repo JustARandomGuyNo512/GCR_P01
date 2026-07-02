@@ -2,12 +2,9 @@ package com.sheridan.gcr.client.recoil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
-import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
-
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.modular.IGunModel;
-import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;

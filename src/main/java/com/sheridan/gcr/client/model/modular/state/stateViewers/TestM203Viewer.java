@@ -3,9 +3,7 @@ package com.sheridan.gcr.client.model.modular.state.stateViewers;
 import com.sheridan.gcr.client.animation.IAnimated;
 import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.model.modular.state.StateViewer;
-import com.sheridan.gcr.client.model.modular.state.StaticState;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
-import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 
 public class TestM203Viewer extends StateViewer<IM203View> {

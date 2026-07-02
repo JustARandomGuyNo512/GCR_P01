@@ -1,7 +1,6 @@
 package com.sheridan.gcr.client.events;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
@@ -12,15 +11,12 @@ import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.IrisExtendRT;
-import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyScreen;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.builder.Node;
 import com.sheridan.gcr.modularSys.modules.IScope;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

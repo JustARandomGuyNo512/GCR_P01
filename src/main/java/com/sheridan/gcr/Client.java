@@ -3,13 +3,14 @@ package com.sheridan.gcr;
 import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.WeaponStatus;
+import com.sheridan.gcr.client.events.ControllerEvents;
 import com.sheridan.gcr.client.recoil.IRecoilCameraHandler;
 import com.sheridan.gcr.client.recoil.RecoilCameraHandler;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.client.render.DefaultGunRenderer;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
-import com.sheridan.gcr.client.render.IGunRenderer;
 import com.sheridan.gcr.client.render.IGlobalAnimationHandler;
+import com.sheridan.gcr.client.render.IGunRenderer;
 import com.sheridan.gcr.events.LivingFireEvent;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
@@ -100,7 +101,9 @@ public class Client {
     public static void exitAds() {
         RIGHT_BUTTON_PRESSED.set(false);
         WEAPON_STATUS.isAiming = false;
+        ControllerEvents.adsDelay = 1;
     }
+
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {

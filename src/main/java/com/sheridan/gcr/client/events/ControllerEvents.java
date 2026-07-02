@@ -5,7 +5,6 @@ import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
-import com.sheridan.gcr.client.ClassHotReloader;
 import com.sheridan.gcr.client.screen.DebugDisplayDataAdjustScreen;
 import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyUI;
 import com.sheridan.gcr.items.GunItem;
@@ -31,6 +30,8 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class ControllerEvents {
     public static boolean debug_i = false;
+    public static int adsDelay = 0;
+
     @SubscribeEvent
     public static void onKeyBoardEvent(InputEvent.Key event) {
         //if (event.getAction() == 1) {
@@ -131,6 +132,11 @@ public class ControllerEvents {
     }
 
     @SubscribeEvent
+    public static void onTick(ClientTickEvent.Post event) {
+        adsDelay = Math.max(0, adsDelay - 1);
+    }
+
+    @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         if (shouldHandleMouseEvent() && Client.WEAPON_STATUS.isHoldingGun()) {
             ItemStack itemStack = Client.WEAPON_STATUS.getItemStack();
@@ -169,8 +175,10 @@ public class ControllerEvents {
                 if (btn == 0) {//left
                     Client.LEFT_BUTTON_PRESSED.set(true);
                 } else if (btn == 1) {//right
-                    boolean pressed = Client.RIGHT_BUTTON_PRESSED.get();
-                    Client.RIGHT_BUTTON_PRESSED.set(!pressed);
+                    if (adsDelay <= 0) {
+                        boolean pressed = Client.RIGHT_BUTTON_PRESSED.get();
+                        Client.RIGHT_BUTTON_PRESSED.set(!pressed);
+                    }
                 }
                 event.setCanceled(true);
             } else if (action == 0) {//up

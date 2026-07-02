@@ -9,7 +9,6 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.IGunTask;
-import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import com.sheridan.gcr.network.c2s.RemoveStuckPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
