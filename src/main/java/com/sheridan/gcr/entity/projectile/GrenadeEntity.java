@@ -23,7 +23,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -142,9 +141,6 @@ public class GrenadeEntity extends Entity{
                 }
                 this.level().playSound(this, hitResult.getBlockPos(), SoundEvents.IRON_GOLEM_HURT, SoundSource.BLOCKS, 1, 1);
                 nextPos = hitResult.getLocation();
-                if (this.level().getBlockState(hitResult.getBlockPos()).getBlock() instanceof BellBlock bell && this.shooter instanceof Player) {
-                    bell.attemptToRing(this, this.level(), hitResult.getBlockPos(), hitResult.getDirection());
-                }
                 bounced ++;
             } else {
                 explode(hitResult.getDirection(), hitResult.getLocation());
@@ -196,14 +192,10 @@ public class GrenadeEntity extends Entity{
 
     private void spawnCustomExplosionEffect(ServerLevel level, double x, double y, double z, Direction hitDir) {
         if (this.shooter instanceof ServerPlayer serverPlayer) {
-            FlashOption flashOptions = new FlashOption(
-                    explodeRadius * (0.5f + level.random.nextFloat() * 0.1f)
-            );
             Color color = new Color(255, 250, 200);
             int rgb = color.getRGB();
             Color color2 = new Color(255, 75, 25);
             int rgb2 = color2.getRGB();
-            level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
             FragmentOption fragmentOptions = new FragmentOption(
                     explodeRadius,
                     (int) (explodeRadius * 50),
@@ -225,19 +217,27 @@ public class GrenadeEntity extends Entity{
 
             int heatSmokeCount = (int) Mth.clamp(explodeRadius, 1, 10);
             float smokeScale = Mth.clamp(explodeRadius, 1, 5);
+            EmberOption emberOptions = new EmberOption(
+                    ModParticles.HEAT_SMOKE.get(),
+                    8,
+                    EmberOption.EasingType.SQR,
+                    15,
+                    smokeScale,
+                    true
+            );
             for (int i = 0; i < heatSmokeCount; i ++) {
-                EmberOption emberOptions = new EmberOption(
-                        ModParticles.HEAT_SMOKE.get(),
-                        8,
-                        EmberOption.EasingType.SQR,
-                        15,
-                        smokeScale
-                );
                 float randomX = (level().random.nextFloat() - 0.5f) * explodeRadius;
-                float randomZ = (level().random.nextFloat() - 0.2f) * explodeRadius * 0.75f;
-                float randomY = (level().random.nextFloat() - 0.5f) * explodeRadius;
-                level.sendParticles(serverPlayer, emberOptions, true, x + randomX, y + randomZ, z + randomY, 1, 0, 0, 0, 0.0);
+                float randomY = (level().random.nextFloat() - 0.2f) * explodeRadius * 0.75f;
+                float randomZ = (level().random.nextFloat() - 0.5f) * explodeRadius;
+                emberOptions.addEntry(randomX, randomY, randomZ);
             }
+            level.sendParticles(serverPlayer, emberOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+
+
+            FlashOption flashOptions = new FlashOption(
+                    explodeRadius * (0.5f + level.random.nextFloat() * 0.1f)
+            );
+            level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
         }
 
         level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE,
