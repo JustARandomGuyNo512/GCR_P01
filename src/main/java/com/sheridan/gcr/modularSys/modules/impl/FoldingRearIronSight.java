@@ -4,8 +4,8 @@ import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
 import net.minecraft.resources.ResourceLocation;
 
-public class FoldableIronSight extends Sight{
-    public FoldableIronSight(ResourceLocation id, IVoxelHandler voxelHandler, float weight, boolean fixedPosition, float adsSpeedModifier) {
+public class FoldingRearIronSight extends Sight{
+    public FoldingRearIronSight(ResourceLocation id, IVoxelHandler voxelHandler, float weight, boolean fixedPosition, float adsSpeedModifier) {
         super(id, voxelHandler, weight, fixedPosition, adsSpeedModifier);
     }
 
