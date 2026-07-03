@@ -126,7 +126,9 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
     ).addTags("barrel");
 
-    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag");
+    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
+    public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.18f, 40).addTags("mag", "ar", "5.56x45");
+
 
     public static final IModular CAR_15_HANDGUARD = new SplitARHandguard(
             RL("car_15_handguard"),
@@ -256,7 +258,7 @@ public class GCR {
             .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasTag("handguard")))
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasTag("rear_grip")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasTag("stock")))
-            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasTag("mag")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
             .addSlot(new Rail("SCOPE", Direction.UPPER, 10.8f, -1.802f, -14.4f)
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
             .setDefaultModuleInitHandler(workspace -> {
@@ -300,8 +302,10 @@ public class GCR {
             ITEMS.register(A2_PISTOL_GRIP.getSimpleID(), () -> new ModuleItem<>(A2_PISTOL_GRIP));
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
             ITEMS.register(M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(M4_PROFILE_FSB_BARREL));
-    public static final DeferredItem<Item> stanag_mag_30r_ITEM =
+    public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
             ITEMS.register(STANAG_MAG_30R.getSimpleID(), () -> new ModuleItem<>(STANAG_MAG_30R));
+    public static final DeferredItem<Item> PMAG_40R_ITEM =
+            ITEMS.register(PMAG_40R.getSimpleID(), () -> new ModuleItem<>(PMAG_40R));
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
     public static final DeferredItem<Item> MUZZLE_ITEM =
@@ -346,7 +350,8 @@ public class GCR {
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
-                                output.accept(stanag_mag_30r_ITEM.get());
+                                output.accept(STANAG_MAG_30R_ITEM.get());
+                                output.accept(PMAG_40R_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(MUZZLE_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());

@@ -54,7 +54,6 @@ public class SplitSlottedARHandguard extends SplitARHandguard implements ISlotPr
     @Override
     public void validate(IAccessor accessor, Unit thisUnit, ValidateResult result) {
         findFirstUnderBarrel(accessor).ifPresent(underBarrel -> {
-            System.out.println("find under barrel: " + underBarrel.getModuleId());
             //对于自身的lower part配件，如果不为空，则产生冲突
             List<SlotInstance> slots = accessor.filterSlots(thisUnit, slot -> lowerSlots.contains(slot.slotName())).orElse(List.of());
             for (SlotInstance slotInstance : slots) {

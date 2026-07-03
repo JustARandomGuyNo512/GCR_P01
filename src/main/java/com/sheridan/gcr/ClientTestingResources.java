@@ -65,9 +65,12 @@ public class ClientTestingResources {
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/ar_mag_30r.states.json",
                 Map.of(
-                        "full_1", "ar_mag_30r_full_1", "full_2", "ar_mag_30r_full_2",
-                        "left_1", "ar_mag_30r_left_1", "left_2", "ar_mag_30r_left_2",
-                        "left_3", "ar_mag_30r_left_3", "empty", "ar_mag_30r_empty"
+                        "full_1", "ar_mag_30r_full_1",
+                        "full_2", "ar_mag_30r_full_2",
+                        "left_1", "ar_mag_30r_left_1",
+                        "left_2", "ar_mag_30r_left_2",
+                        "left_3", "ar_mag_30r_left_3",
+                        "empty", "ar_mag_30r_empty"
                 )
         );
         // 全局动画
@@ -129,6 +132,11 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCR.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
                 meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCR.PMAG_40R, "model_assets/gltf/pmag_40r.gltf", "model_assets/gltf/pmag_40r.png", true,
+                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.PMAG_40R))
         );
 
 
