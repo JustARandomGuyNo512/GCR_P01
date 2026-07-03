@@ -5,6 +5,7 @@ import com.sheridan.gcr.client.render.fx.particles.ember.EmberOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class GrenadeEntity extends Entity{
@@ -189,55 +192,75 @@ public class GrenadeEntity extends Entity{
     }
 
     private void spawnCustomExplosionEffect(ServerLevel level, double x, double y, double z, Direction hitDir) {
-        if (this.shooter instanceof ServerPlayer serverPlayer) {
-            Color color = new Color(255, 250, 200);
-            int rgb = color.getRGB();
-            Color color2 = new Color(255, 75, 25);
-            int rgb2 = color2.getRGB();
-            FragmentOption fragmentOptions = new FragmentOption(
-                    explodeRadius,
-                    (int) (explodeRadius * 50),
-                    6f,
-                    rgb
-            );
-
-            level.sendParticles(serverPlayer, fragmentOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
-
-            SparkOption sparkOptions = new SparkOption(
-                    explodeRadius * 0.5f,
-                    (int) (explodeRadius * 10),
-                    4f,
-                    rgb,
-                    rgb2
-            );
-
-            level.sendParticles(serverPlayer, sparkOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
-
-            int heatSmokeCount = (int) Mth.clamp(explodeRadius, 1, 10);
-            float smokeScale = Mth.clamp(explodeRadius, 1, 5);
-            EmberOption emberOptions = new EmberOption(
-                    ModParticles.HEAT_SMOKE.get(),
-                    8,
-                    EmberOption.EasingType.SQR,
-                    15,
-                    smokeScale,
-                    true
-            );
-            for (int i = 0; i < heatSmokeCount; i ++) {
-                float randomX = (level().random.nextFloat() - 0.5f) * explodeRadius;
-                float randomY = (level().random.nextFloat() - 0.2f) * explodeRadius * 0.75f;
-                float randomZ = (level().random.nextFloat() - 0.5f) * explodeRadius;
-                emberOptions.addEntry(randomX, randomY, randomZ);
-            }
-            level.sendParticles(serverPlayer, emberOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
-
-
-            FlashOption flashOptions = new FlashOption(
-                    explodeRadius * (0.5f + level.random.nextFloat() * 0.1f)
-            );
-            level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+        if (level.players().isEmpty()) {
+            return;
         }
+        List<ServerPlayer> players = level.players();
+        Color color = new Color(255, 250, 200);
+        int rgb = color.getRGB();
+        Color color2 = new Color(255, 75, 25);
+        int rgb2 = color2.getRGB();
+        FragmentOption fragmentOptions = new FragmentOption(
+                explodeRadius,
+                (int) (explodeRadius * 50),
+                6f,
+                rgb
+        );
 
+        SparkOption sparkOptions = new SparkOption(
+                explodeRadius * 0.5f,
+                (int) (explodeRadius * 10),
+                4f,
+                rgb,
+                rgb2
+        );
+
+        int heatSmokeCount = (int) Mth.clamp(explodeRadius, 1, 10);
+        float smokeScale = Mth.clamp(explodeRadius, 1, 5);
+        EmberOption emberOptions = new EmberOption(
+                ModParticles.HEAT_SMOKE.get(),
+                8,
+                EmberOption.EasingType.SQR,
+                15,
+                smokeScale,
+                true
+        );
+        for (int i = 0; i < heatSmokeCount; i ++) {
+            float randomX = (level().random.nextFloat() - 0.5f) * explodeRadius;
+            float randomY = (level().random.nextFloat() - 0.2f) * explodeRadius * 0.75f;
+            float randomZ = (level().random.nextFloat() - 0.5f) * explodeRadius;
+            emberOptions.addEntry(randomX, randomY, randomZ);
+        }
+        FlashOption flashOptions = new FlashOption(
+                explodeRadius * (0.5f + level.random.nextFloat() * 0.1f)
+        );
+        ClientboundLevelParticlesPacket fragmentPacket = null;
+        ClientboundLevelParticlesPacket sparkPacket = null;
+        ClientboundLevelParticlesPacket emberPacket = null;
+        ClientboundLevelParticlesPacket flashPacket = null;
+        if (players.size() > 1 || players.getFirst() != this.shooter) {
+            fragmentPacket = new ClientboundLevelParticlesPacket(fragmentOptions, false, x, y, z, 0, 0, 0, 0, 1);
+            sparkPacket = new ClientboundLevelParticlesPacket(sparkOptions, false, x, y, z, 0, 0, 0, 0, 1);
+            emberPacket = new ClientboundLevelParticlesPacket(emberOptions, false, x, y, z, 0, 0, 0, 0, 1);
+            flashPacket = new ClientboundLevelParticlesPacket(flashOptions, false, x, y, z, 0, 0, 0, 0, 1);
+        }
+        for (ServerPlayer serverPlayer : players) {
+            if (serverPlayer == this.shooter) {
+                level.sendParticles(serverPlayer, fragmentOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+                level.sendParticles(serverPlayer, sparkOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+                level.sendParticles(serverPlayer, emberOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+                level.sendParticles(serverPlayer, flashOptions, true, x, y, z, 1, 0, 0, 0, 0.0);
+            } else {
+                BlockPos blockpos = serverPlayer.blockPosition();
+                if (blockpos.closerToCenterThan(new Vec3(x, y, z), 64.0F)) {
+                    assert fragmentPacket != null;
+                    serverPlayer.connection.send(fragmentPacket);
+                    serverPlayer.connection.send(sparkPacket);
+                    serverPlayer.connection.send(emberPacket);
+                    serverPlayer.connection.send(flashPacket);
+                }
+            }
+        }
         level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE,
                 SoundSource.PLAYERS, 4f, 0.9f);
     }

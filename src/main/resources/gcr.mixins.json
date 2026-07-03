@@ -6,6 +6,7 @@
   "refmap": "gcr.refmap.json",
   "mixins": [
     "IrisShaderCompatMixin",
+    "Ldlib2DebugMixin",
     "PlayerMixin"
   ],
   "client": [
