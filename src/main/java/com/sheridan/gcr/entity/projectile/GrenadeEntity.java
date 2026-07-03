@@ -191,15 +191,13 @@ public class GrenadeEntity extends Entity{
         }
     }
 
+    static int rgb = new Color(255, 250, 200).getRGB();
+    static int rgb2 = new Color(255, 75, 25).getRGB();
     private void spawnCustomExplosionEffect(ServerLevel level, double x, double y, double z, Direction hitDir) {
         if (level.players().isEmpty()) {
             return;
         }
         List<ServerPlayer> players = level.players();
-        Color color = new Color(255, 250, 200);
-        int rgb = color.getRGB();
-        Color color2 = new Color(255, 75, 25);
-        int rgb2 = color2.getRGB();
         FragmentOption fragmentOptions = new FragmentOption(
                 explodeRadius,
                 (int) (explodeRadius * 50),
