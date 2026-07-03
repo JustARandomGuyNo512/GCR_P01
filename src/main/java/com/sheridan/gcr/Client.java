@@ -93,6 +93,9 @@ public class Client {
     public static final ReentrantLock LOCK = new ReentrantLock();
 
     @OnlyIn(Dist.CLIENT)
+    public static int LOCAL_PLAYER_ID = -1;
+
+    @OnlyIn(Dist.CLIENT)
     public static float distFromLastJump() {
         return (System.currentTimeMillis() - WEAPON_STATUS.getLastJump()) * 0.001f;
     }

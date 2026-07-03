@@ -15,6 +15,7 @@ import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.neoforged.api.distmarker.Dist;
@@ -126,6 +127,9 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                 return;
             }
             if (context.isFirstPerson()) {
+                if (context.entity.getId() != Client.LOCAL_PLAYER_ID) {
+                    return;
+                }
                 MuzzleFlash muzzleFlash = entry.getMuzzleFlash();
                 if (System.currentTimeMillis() - startTime <= muzzleFlash.length) {
                     MUZZLE_FLASH_QUEUE.add(Triple.of(entry, bonePose, startTime));
@@ -223,7 +227,10 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
 
     @Override
     public void onAfterAllRendered(ModuleRenderContext context) {
-        if (context.getLocalStorage(RENDER_CANCELED) != null) {
+        if (!context.isFirstPerson() || context.getLocalStorage(RENDER_CANCELED) != null) {
+            return;
+        }
+        if (context.entity == null || context.entity.getId() != Client.LOCAL_PLAYER_ID) {
             return;
         }
         if (Client.isIrisShaderInUse) {

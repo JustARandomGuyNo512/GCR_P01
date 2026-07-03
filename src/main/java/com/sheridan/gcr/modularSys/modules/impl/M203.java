@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IM203View {
     private final IVoxelHandler voxelHandler;
@@ -159,6 +160,12 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
 
     @Override
     public void serverShoot(SubWeaponFirePacket packet, ItemStack itemStack, ServerPlayer player, IGun gun, SubWeapon subWeapon) {
+        CompoundTag nodeStatesTag = gun.getNodeStatesTag(itemStack, packet.nodeId);
+        String s = CHAMBER_STATUS.get(nodeStatesTag);
+        if (!Objects.equals(s, CHAMBER_LOADED)) {
+            return;
+        }
+
         float yaw = player.getYRot();
         float pitch = player.getXRot();
 
@@ -170,6 +177,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         GrenadeEntity grenade = new GrenadeEntity(ModEntities.GRENADE.get(), level);
         grenade.shootFromRotation(player, pitch, yaw, 0.0F, velocity, spread, explodeRadius);
         level.addFreshEntity(grenade);
+        CHAMBER_STATUS.set(CHAMBER_FIRED, nodeStatesTag);
         int latency = player.connection.latency();
         ModSounds.sound(3F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M203_FIRE.get());
         // 广播开火事件

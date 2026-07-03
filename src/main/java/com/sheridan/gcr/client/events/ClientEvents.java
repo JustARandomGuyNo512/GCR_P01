@@ -36,6 +36,7 @@ public class ClientEvents {
         AnimationHandler.INSTANCE.onClientTick();
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
+            Client.LOCAL_PLAYER_ID = player.getId();
             Client.WEAPON_STATUS.onTickStart(player);
             SprintingHandler.INSTANCE.tick(player);
             GunTaskHandler.INSTANCE.tick(player);
