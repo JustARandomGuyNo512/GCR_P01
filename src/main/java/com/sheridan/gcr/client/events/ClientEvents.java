@@ -32,7 +32,9 @@ public class ClientEvents {
         if (Minecraft.getInstance().screen == null) {
             Client.getGunRenderer().setHideFPRender(false);
         }
-
+        try {
+            Client.LOCK.lock();
+        } catch (Exception ignored) {}
         AnimationHandler.INSTANCE.onClientTick();
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
@@ -41,14 +43,10 @@ public class ClientEvents {
             SprintingHandler.INSTANCE.tick(player);
             GunTaskHandler.INSTANCE.tick(player);
         }
-        try {
-            Client.LOCK.lock();
-        } catch (Exception ignored) {}
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onClientTick(ClientTickEvent.Post event) {
-        Client.LOCK.unlock();
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             Client.WEAPON_STATUS.onTickEnd(player);
@@ -57,6 +55,7 @@ public class ClientEvents {
             HardCodeAnimationHandler.getInstance().clientTick(player);
             DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);
         }
+        Client.LOCK.unlock();
     }
 
     public static void registerCustomVanillaShader(RegisterShadersEvent event) {
