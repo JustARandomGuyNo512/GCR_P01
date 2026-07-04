@@ -219,7 +219,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0005f, 1.3f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0007f, 1.3f,
                     Map.of(
                             "mag_reload_length", 1.8f,
                             "mag_reload_empty_length", 2.45f,
@@ -231,7 +231,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.275f, -7.8125f, -23.2375f, 0, 0, 0, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.074999f, -7.8125f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
