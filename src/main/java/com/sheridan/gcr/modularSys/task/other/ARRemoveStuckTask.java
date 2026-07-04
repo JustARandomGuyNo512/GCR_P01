@@ -40,7 +40,7 @@ public class ARRemoveStuckTask extends RemoveStuckTask<AR>{
         sendPacketDelay = Utils.secondToTick(gun.baseProperties.taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
         AnimationDef animationDef = AnimationRegister.get(GCR.RL("m4a1_" + animationName));
         if (animationDef != null) {
-            this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.1f), sendPacketDelay);
+            this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.05f), sendPacketDelay);
         }
     }
 

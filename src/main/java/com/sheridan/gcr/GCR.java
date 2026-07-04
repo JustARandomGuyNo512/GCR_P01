@@ -219,7 +219,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0005f, 1.3f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.5f, 1.3f,
                     Map.of(
                             "mag_reload_length", 1.8f,
                             "mag_reload_empty_length", 2.45f,
