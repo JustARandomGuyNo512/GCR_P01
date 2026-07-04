@@ -396,21 +396,9 @@ public class WeaponStatus {
         return muzzleFlashPos;
     }
 
-//    public void setMuzzleFlashIntensity(float muzzleFlashIntensity) {
-//        if (muzzleFlashIntensity > this.muzzleFlashIntensity) {
-//            this.muzzleFlashIntensity = muzzleFlashIntensity;
-//        }
-//    }
-
     public boolean isUsingScope() {
         return activeSight != null && ModuleModelRegister.get(activeSight.getModule()) instanceof IScopeModel;
     }
-
-//    public void setMuzzleFlashRadius(float muzzleFlashRadius) {
-//        if (muzzleFlashRadius > this.muzzleFlashRadius) {
-//            this.muzzleFlashRadius = muzzleFlashRadius;
-//        }
-//    }
 
     public void clearMuzzleFlashModelEffect() {
         muzzleFlashRadius = 0;

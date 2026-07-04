@@ -138,52 +138,6 @@ public abstract class AnimationController<T extends IModularModel> implements IA
         this.tempContext = context;
     }
 
-    public void animate(String animationName, long startTime) {
-        AnimationDef animationDef = animDef(animationName);
-        if (animationDef == null) {
-            return;
-        }
-        if (tempContext != null) {
-            this._animate(animationDef, startTime);
-        }
-    }
-
-    public void stateOrAnimate(String animationName, long startTime, String coverState) {
-        if (tempContext == null) {
-            return;
-        }
-        AnimationDef animation = animDef(animationName);
-        if (animation == null) {
-            return;
-        }
-        this._animate(animation, startTime);
-        float timeDist = KeyframeAnimator.dist(startTime, 0, animation.looping(), animation.keepOnLastFrame(), animation, 1);
-        if (!Float.isNaN(timeDist)) {
-            tempContext.addStateLockBone(coverState);
-        }
-    }
-
-    public void statesOrAnimate(String animationName, long startTime, String... coverStates) {
-        if (tempContext == null) {
-            return;
-        }
-        AnimationDef animation = animDef(animationName);
-        if (animation == null) {
-            return;
-        }
-        this._animate(animation, startTime);
-        float timeDist = KeyframeAnimator.dist(startTime, 0, animation.looping(), animation.keepOnLastFrame(), animation, 1);
-        if (!Float.isNaN(timeDist)) {
-            for (String coverState : coverStates) {
-                tempContext.addStateLockBone(coverState);
-            }
-        }
-    }
-
-    private void _animate(AnimationDef animation, long startTime) {
-        KeyframeAnimator._animate(tempContext.currentRenderNode().model, animation, startTime, 0, 0.0625f, 0.0625f, 0.0625f, animation.looping(), animation.keepOnLastFrame(), 1);
-    }
-
     @Override
     public void clearTracks(String... trackNames) {
         for (String trackName : trackNames) {

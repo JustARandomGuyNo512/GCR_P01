@@ -50,7 +50,7 @@ public class AnimationEventBus {
                 EventRegistry registry = triple.getLeft();
                 IAnimationController<?> controller = triple.getRight();
                 controller.onUsingNode(node.id);
-                context.setCurrentRenderNode(node);
+                eventContext.setEventRenderNode(node);
 
                 registry.callback.onTriggered(eventContext);
                 if (eventContext.isCanceled()) {

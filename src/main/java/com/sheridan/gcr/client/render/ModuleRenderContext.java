@@ -192,9 +192,9 @@ public class ModuleRenderContext {
         return currentRenderNode;
     }
 
-    public void setCurrentRenderNode(ModuleRenderNode currentRenderNode) {
-        this.currentRenderNode = currentRenderNode;
-    }
+//    public void setCurrentRenderNode(ModuleRenderNode currentRenderNode) {
+//        this.currentRenderNode = currentRenderNode;
+//    }
 
 
     public int getCurrentParam(String key) {

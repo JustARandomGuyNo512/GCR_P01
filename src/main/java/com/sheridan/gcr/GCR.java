@@ -383,6 +383,7 @@ public class GCR {
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
+                                output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
@@ -392,7 +393,6 @@ public class GCR {
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
-                                output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());
                                 output.accept(PEQ_15_ITEM.get());

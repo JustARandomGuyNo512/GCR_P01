@@ -253,7 +253,8 @@ public class DefaultGunRenderer implements IGunRenderer {
             guiCallback.accept(context);
         }
         node.dfsTravel((n -> {
-            context.setCurrentRenderNode(n);
+            //context.setCurrentRenderNode(n);
+            context.currentRenderNode = n;
             n.model.afterAllRendered(context);
         }));
         GUN_MODIFY_BUFFER_SOURCE.endBatch();
@@ -328,7 +329,8 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         FP_BUFFER_SOURCE.endBatch();
         for (ModuleRenderNode node : models) {
-            context.setCurrentRenderNode(node);
+            //context.setCurrentRenderNode(node);
+            context.currentRenderNode = node;
             node.model.afterAllRendered(context);
         }
 
