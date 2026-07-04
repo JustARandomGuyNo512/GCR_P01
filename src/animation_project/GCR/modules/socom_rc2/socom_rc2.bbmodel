@@ -4,7 +4,7 @@
 		"model_format": "free",
 		"box_uv": true
 	},
-	"name": "scocom_rc2",
+	"name": "socom_rc2",
 	"model_identifier": "urgi_barrel",
 	"visible_box": [1, 1, 0],
 	"variable_placeholders": "",
@@ -7169,7 +7169,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0, 0],
+			"origin": [0, 0, -25.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -7192,7 +7192,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0, -1.7],
+			"origin": [0, 0, -26.7],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -7202,7 +7202,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -7227,7 +7227,7 @@
 	"textures": [
 		{
 			"name": "socom_rc2.png",
-			"relative_path": "suppressor_556.png",
+			"relative_path": "socom_rc2.png",
 			"folder": "block",
 			"namespace": "",
 			"id": "0",

@@ -24,7 +24,7 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> M203_SHELL_INSERT = registerSound("m203_shell_insert", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_SHELL_OUT = registerSound("m203_shell_out", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M4A1_FIRE = registerSound("m4a1_fire", "gcr");
-    public static DeferredHolder<SoundEvent, SoundEvent> M4A1_FIRE1 = registerSound("m4a1_fire1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4A1_FIRE_SUPPRESSED = registerSound("m4a1_fire_suppressed", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_SWITCH_FIRE_MODE = registerSound("ar_switch_fire_mode", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_ARM_WAVE = registerSound("ar_arm_wave", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_MAG_IN = registerSound("ar_mag_in", "gcr");

@@ -23,6 +23,7 @@ import com.sheridan.gcr.modularSys.modules.Module;
 import com.sheridan.gcr.modularSys.modules.gunProperties.IProperties;
 import com.sheridan.gcr.modularSys.modules.gunProperties.PropertiesAccessor;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
+import com.sheridan.gcr.modularSys.modules.impl.Muzzle;
 import com.sheridan.gcr.modularSys.modules.states.Str;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
@@ -40,6 +41,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -110,7 +112,10 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     @Override
     public void clientShoot(Player player, ItemStack itemStack) {
         RecoilHandler.INSTANCE.onShoot(player);
-        ModSounds.sound(3.5F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M4A1_FIRE.get());
+        SoundEvent fireSound = getFireSound(itemStack);
+        if (fireSound != null) {
+            ModSounds.sound(1, (float) (0.9f + Math.random() * 0.1f), player, fireSound);
+        }
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, rootNodeId(itemStack), System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.currentTimeMillis();
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
@@ -123,11 +128,9 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             return;
         }
 
-        // 玩家视角
         float yaw = shooter.getYRot();
         float pitch = shooter.getXRot();
 
-        // 加 recoil kick
         pitch += packet.gunKickPitch;
         yaw += packet.gunKickYaw;
 
@@ -139,17 +142,11 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         pitch += randPitch;
         yaw += randYaw;
 
-        // 方向向量
         Vec3 dir = Vec3.directionFromRotation(pitch, yaw).normalize();
-
-        // 枪口位置（简单用眼睛位置）
         Vec3 pos = shooter.getEyePosition();
-
-        // 子弹速度
-        double speed = 25f;
+        double speed = 30f;
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
-
         bullet.setPos(pos);
         Vec3 velocity = dir.scale(speed);
 
@@ -160,9 +157,12 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         int latency = 0;
         if (shooter instanceof ServerPlayer player) {
             latency = player.connection.latency();
-            ModSounds.sound(3.5F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M4A1_FIRE.get());
+            SoundEvent fireSound = getFireSound(itemStack);
+            if (fireSound != null) {
+                ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
+            }
         }
-        // 广播开火事件
+
         BroadcastLivingFirePacket firePacket = new BroadcastLivingFirePacket(
                 shooter.getId(),
                 rootNodeId(itemStack),
@@ -173,6 +173,16 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 shooter,
                 firePacket
         );
+    }
+
+    protected SoundEvent getFireSound(ItemStack itemStack) {
+        int type = FIRE_SOUND_TYPE.get(rootNodeTag(itemStack));
+        if (type == FIRE_SOUND_NORMAL) {
+            return baseProperties.getFireSoundNormal();
+        } else if (type == FIRE_SOUND_SUPPRESSED) {
+            return baseProperties.getFireSoundSuppressed();
+        }
+        return baseProperties.getFireSoundNormal();
     }
 
     @Override
@@ -638,6 +648,12 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
+    public float getFireSoundRange(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.fireSoundRange.get(pick);
+    }
+
+    @Override
     public boolean isPistol() {
         return false;
     }
@@ -748,6 +764,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         RIGHT_ARM_HOLD.init(states);
         FIRE_MODEL_ID.init(states);
         STUCK.init(states);
+        FIRE_SOUND_TYPE.init(states);
     }
 
     @Override
@@ -774,12 +791,15 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                     context.set(USING_SIGHT, usingSightID);
                 }
             }
-            String usingAmmoSourceID = findUsingAmmoSourceID(context.getAllNodesOfThisTree(), context);
+            List<ShadowNode> allNodesOfThisTree = context.getAllNodesOfThisTree();
+            String usingAmmoSourceID = findUsingAmmoSourceID(allNodesOfThisTree, context);
             context.set(USING_AMMO_SOURCE, usingAmmoSourceID);
-            String leftArmHoldID = findLeftArmHoldID(context.getAllNodesOfThisTree(), context);
+            String leftArmHoldID = findLeftArmHoldID(allNodesOfThisTree, context);
             context.set(LEFT_ARM_HOLD, leftArmHoldID);
-            String rightArmHoldID = findRightArmHoldID(context.getAllNodesOfThisTree(), context);
+            String rightArmHoldID = findRightArmHoldID(allNodesOfThisTree, context);
             context.set(RIGHT_ARM_HOLD, rightArmHoldID);
+            int fireSoundType = decideFireSoundType(allNodesOfThisTree);
+            context.set(FIRE_SOUND_TYPE, fireSoundType);
         } else {
             /*
               如果不是可装配件的枪械，瞄具模块直接默认使用当前节点,弹药源模块同理
@@ -788,6 +808,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             context.set(USING_AMMO_SOURCE, context.thisNodeId());
             context.set(LEFT_ARM_HOLD, context.thisNodeId());
             context.set(RIGHT_ARM_HOLD, context.thisNodeId());
+            context.set(FIRE_SOUND_TYPE, FIRE_SOUND_NORMAL);
         }
         List<IFireMode<?>> fireModes = context.gun.getAllFireModes();
         if (fireModes != null && !fireModes.isEmpty()) {
@@ -810,6 +831,16 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     protected String findUsingAmmoSourceID(List<ShadowNode> nodes, StatesUpdateContext context) {
         return nodes.getFirst().nodeId;
     }
+
+    protected int decideFireSoundType(List<ShadowNode> nodes) {
+        for (ShadowNode node : nodes) {
+            if (node.unit.getModule() instanceof Muzzle muzzle) {
+                return muzzle.getFireSoundType();
+            }
+        }
+        return FIRE_SOUND_NORMAL;
+    }
+
 
     protected String findUsingSightID(List<ShadowNode> nodes, int maxSightPriority) {
         String id = nodes.getFirst().nodeId;

@@ -40,6 +40,7 @@ import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.impl.*;
 import com.sheridan.gcr.modularSys.slot.*;
@@ -109,9 +110,9 @@ public class GCR {
     public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f,
             new SlotProvider(RL( "common/pivot_maps/m4_profile_fsb_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("UNDER_BARREL")
-                            .setFilter(SlotFilters.hasAllTags("under_barrel")))
+                            .setFilter(SlotFilters.hasAllTags("under_barrel", "ar")))
                     .addSlot(new SingleFixedSlot("MUZZLE")
-                            .setFilter(SlotFilters.hasTag("muzzle"))),
+                            .setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
             new VoxelHandler(RL("common/voxel_shapes/m4_profile_fsb_barrel_voxel.geo.json"))
     ).addTags("has_ar_front_sight", "barrel", "5.56x45");
 
@@ -122,7 +123,7 @@ public class GCR {
 
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f,
             new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
-                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasTag("muzzle"))),
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45");
 
@@ -143,7 +144,7 @@ public class GCR {
             new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
             3.3f, 2.45f, 60f, 20f, 40f, 140f,
             0.4f, 4f, 4)
-            .addTags("under_barrel", "sub_weapon");
+            .addTags("under_barrel", "sub_weapon", "ar");
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(
             RL( "a2_carry_handle"),
@@ -165,7 +166,8 @@ public class GCR {
             1).addTags("canted_sight", "sight", "upper", "on_rail");
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
-    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f).addTags("muzzle");
+    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0).addTags("muzzle", "ar");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f).addTags("muzzle", "ar");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -244,7 +246,9 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0007f, 1.3f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0007f, 1.3f, 4f,
+                    RL("m4a1_fire"),
+                    RL("m4a1_fire_suppressed"),
                     Map.of(
                             "mag_reload_length", 1.8f,
                             "mag_reload_empty_length", 2.45f,
@@ -333,8 +337,10 @@ public class GCR {
             ITEMS.register(PMAG_40R.getSimpleID(), () -> new ModuleItem<>(PMAG_40R));
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
-    public static final DeferredItem<Item> MUZZLE_ITEM =
+    public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
             ITEMS.register(A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(A2_FLASH_HINDER));
+    public static final DeferredItem<Item> SOCOM_RC2_ITEM =
+            ITEMS.register(SOCOM_RC2.getSimpleID(), () -> new ModuleItem<>(SOCOM_RC2));
     public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
             ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
     public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
@@ -380,7 +386,8 @@ public class GCR {
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
-                                output.accept(MUZZLE_ITEM.get());
+                                output.accept(A2_FLASH_HINDER_ITEM.get());
+                                output.accept(SOCOM_RC2_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());

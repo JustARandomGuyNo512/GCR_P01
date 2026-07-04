@@ -11,6 +11,7 @@ import com.sheridan.gcr.modularSys.modules.IStateModular;
 import com.sheridan.gcr.modularSys.modules.gunProperties.IProperties;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
 import com.sheridan.gcr.modularSys.modules.states.Bool;
+import com.sheridan.gcr.modularSys.modules.states.Int;
 import com.sheridan.gcr.modularSys.modules.states.Str;
 import com.sheridan.gcr.modularSys.modules.views.IGunView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
@@ -41,11 +42,15 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     String DATA_CHANGED_KEY = "gcr_data_changed";
 
+    int FIRE_SOUND_NORMAL = 0;
+    int FIRE_SOUND_SUPPRESSED = 1;
+
     Str USING_SIGHT = new Str("using_sight");
     Str USING_AMMO_SOURCE = new Str("using_ammo_source");
     Str LEFT_ARM_HOLD = new Str("left_arm_hold");
     Str RIGHT_ARM_HOLD = new Str("right_arm_hold");
     Str FIRE_MODEL_ID = new Str("fire_mode_id", "none");
+    Int FIRE_SOUND_TYPE = new Int("fire_sound_type", 0);
     Bool STUCK = new Bool("stuck");
 
     void serverShoot(LivingEntity entity, ItemStack itemStack, int shootID, GunFirePacket packet);
@@ -169,6 +174,8 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     float getStability(ItemStack itemStack);
 
     float getAgility(ItemStack itemStack);
+
+    float getFireSoundRange(ItemStack itemStack);
 
     boolean isPistol();
 

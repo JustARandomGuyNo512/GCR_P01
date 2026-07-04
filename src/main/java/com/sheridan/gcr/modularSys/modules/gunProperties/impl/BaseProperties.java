@@ -6,7 +6,11 @@ import com.sheridan.gcr.modularSys.modules.gunProperties.IntProp;
 import com.sheridan.gcr.modularSys.modules.gunProperties.NumProp;
 import com.sheridan.gcr.modularSys.modules.gunProperties.Properties;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.sound.ModSounds;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
@@ -25,10 +29,16 @@ public class BaseProperties extends Properties {
     public final NumProp agility;
     public final NumProp impulse;
     public final NumProp aimingSpeed;
-
+    public final NumProp fireSoundRange;
+    private SoundEvent fireSoundNormal;
+    private SoundEvent fireSoundSuppressed;
+    private final ResourceLocation fireSoundNormalName;
+    private final ResourceLocation fireSoundSuppressedName;
     public Map<String, Float> taskTimers;
 
-    public BaseProperties(int rpm,  float weight, float spread, float agility, float faultRate, float aimingSpeed, Map<String, Float> taskTimers) {
+    public BaseProperties(int rpm,  float weight, float spread, float agility, float faultRate, float aimingSpeed, float soundRange,
+                          ResourceLocation fireSoundNormalName, ResourceLocation fireSoundSuppressedName,
+                          Map<String, Float> taskTimers) {
         super(GCR.RL("base"));
         this.rpm = defProp(new IntProp("rpm", rpm, 0.8f, 1.2f));
         this.recoilControl = defProp(new NumProp("recoil_control", 1));
@@ -39,7 +49,26 @@ public class BaseProperties extends Properties {
         this.faultRate = defProp(new NumProp("fault_rate", faultRate));
         this.impulse = defProp(new NumProp("impulse", 1));
         this.aimingSpeed = defProp(new NumProp("aiming_speed", aimingSpeed));
+        this.fireSoundRange = defProp(new NumProp("sound_range", soundRange));
+
+        this.fireSoundNormalName = fireSoundNormalName;
+        this.fireSoundSuppressedName = fireSoundSuppressedName;
+
         this.taskTimers = taskTimers;
+    }
+
+    public SoundEvent getFireSoundNormal() {
+        if (fireSoundNormal == null) {
+            fireSoundNormal = BuiltInRegistries.SOUND_EVENT.get(fireSoundNormalName);
+        }
+        return fireSoundNormal;
+    }
+
+    public SoundEvent getFireSoundSuppressed() {
+        if (fireSoundSuppressed == null) {
+            fireSoundSuppressed = BuiltInRegistries.SOUND_EVENT.get(fireSoundSuppressedName);
+        }
+        return fireSoundSuppressed;
     }
 
     public CompoundTag pick(ItemStack itemStack, IGun gun) {

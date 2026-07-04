@@ -370,7 +370,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             float rand = (randomSeed * 0.6f + 0.4f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, rand * halfPI * 0.67f);
-            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.25f, halfPI);
+            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, halfPI);
         }
 
         Bone handRotPivot = model.getHandRotPivot();
