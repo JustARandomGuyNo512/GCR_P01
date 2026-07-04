@@ -113,7 +113,7 @@ public class GCR {
                     .addSlot(new SingleFixedSlot("MUZZLE")
                             .setFilter(SlotFilters.hasTag("muzzle"))),
             new VoxelHandler(RL("common/voxel_shapes/m4_profile_fsb_barrel_voxel.geo.json"))
-    ).addTags("has_ar_front_sight", "barrel");
+    ).addTags("has_ar_front_sight", "barrel", "5.56x45");
 
 
     public static final IModular A2_PISTOL_GRIP = new RiflePistolGrip(
@@ -124,7 +124,7 @@ public class GCR {
             new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasTag("muzzle"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
-    ).addTags("barrel");
+    ).addTags("barrel", "5.56x45");
 
     public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.18f, 40).addTags("mag", "ar", "5.56x45");
@@ -135,7 +135,7 @@ public class GCR {
             0.26f, 0.03f,
             new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/car_15_handguard_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.1f,0.1f,0.1f, 0.05f)
-    ).addTags("handguard");
+    ).addTags("handguard", "ar");
 
     public static final IModular M203 = new M203(
             RL( "m203"), 1.36f,
@@ -161,10 +161,10 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/canted_rail.voxel.geo.json")),
             new SlotProvider(RL("common/pivot_maps/canted_rail.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("SIGHT")
-                            .setFilter(SlotFilters.hasAllTags("sight", "on_rail", "upper").and(SlotFilters.notModular(RL( "canted_rail"))))),
+                            .setFilter(SlotFilters.hasAllTags("sight", "on_rail", "upper", "canted_sight").and(SlotFilters.notModular(RL( "canted_rail"))))),
             1).addTags("canted_sight", "sight", "upper", "on_rail");
 
-    public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock");
+    public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f).addTags("muzzle");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
@@ -186,7 +186,32 @@ public class GCR {
             new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/kac_ras_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.085f,0.07f,0.09f, 0.05f),
             "RAIL_LOWER"
-    ).addTags("handguard");
+    ).addTags("handguard", "ar");
+
+    public static final IModular DANIEL_DEFENSE_RIS_II_HANDGUARD = new SplitSlottedARHandguard(
+            RL( "daniel_defense_ris_ii_handguard"),
+            new SlotProvider(RL( "common/pivot_maps/daniel_defense_ris_ii.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL_LOWER", Direction.LOWER, 13.35f, 0.9207f, -33.1603f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                            )))
+                    .addSlot(new Rail("RAIL_LEFT", Direction.LOWER, 17.498f, 0f, -34.2535f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_RIGHT", Direction.LOWER, 17.498f, 0f, -34.2535f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 17.498f, 2.698f, -12.102f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            )))
+                    .addSlot(new Rail("RAIL_UPPER_FRONT", Direction.UPPER, -20.925f, -27.7092f, -34.2535f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            ))),
+            0.5f, 0.03f,
+            new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/daniel_defense_ris_ii_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.12f,0.11f,0.05f, 0.05f),
+            "RAIL_LOWER"
+    ).addTags("handguard", "ar");
 
     public static final IModular URGI_HANDGUARD = new ARHandguard
             (RL( "urgi_handguard"),
@@ -206,7 +231,7 @@ public class GCR {
                             .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_handguard_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.1f,0.12f,0.1f, 0.065f)
-    ).addTags("handguard");
+    ).addTags("handguard", "ar");
 
     public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
             RL( "kac_forward_grip"),
@@ -250,14 +275,14 @@ public class GCR {
                             175.0f, 11f,
                             820.0f, 15.0f,
                             2.0f, 1.25f,
-                            2.3f, 1.8f,
+                            2.5f, 2f,
                             10f)
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
-            .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasTag("barrel")))
-            .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasTag("handguard")))
+            .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "5.56x45")))
+            .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "ar")))
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasTag("rear_grip")))
-            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasTag("stock")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
             .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
             .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f)
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
@@ -312,10 +337,12 @@ public class GCR {
             ITEMS.register(A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(A2_FLASH_HINDER));
     public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
             ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
+    public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
+            ITEMS.register(DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(DANIEL_DEFENSE_RIS_II_HANDGUARD));
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
             ITEMS.register(KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(KAC_FORWARD_GRIP));
     public static final DeferredItem<Item> M203_ITEM =
-            ITEMS.register("m203", () -> new ModuleItem<>(M203));
+            ITEMS.register(M203.getSimpleID(), () -> new ModuleItem<>(M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
             ITEMS.register(URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(URGI_BARREL));
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
@@ -355,6 +382,7 @@ public class GCR {
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(MUZZLE_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
+                                output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());

@@ -215,7 +215,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float aimingFactorSqr = aimingFactor * aimingFactor;
         RecoilImpulse impulse = data.getImpulse();
         float rotLever = impulse.leverArmY() * recoilControlFactor
-                * (Mth.clamp(1 - aimingFactorSqr, 0.1f, 1f));
+                * (Mth.clamp(1 - aimingFactorSqr, 0.05f, 1f));
 
          impulseZ *= Math.max(0, impulseVal);
 
