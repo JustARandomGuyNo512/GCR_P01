@@ -779,19 +779,21 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             return;
         }
         if (context.gun instanceof ISlottedGun) {
+            List<ShadowNode> allNodesOfThisTree = context.getAllNodesOfThisTree();
             String oldSightId = context.get(USING_SIGHT);
             if (!context.hasNode(oldSightId)) {
-                String usingSightID = findUsingSightID(context.getAllNodesOfThisTree(), Integer.MIN_VALUE);
+                String usingSightID = findUsingSightID(allNodesOfThisTree, Integer.MIN_VALUE);
                 context.set(USING_SIGHT, usingSightID);
             } else  {
                 ShadowNode nodeById = context.getNodeById(oldSightId);
                 Unit unit = nodeById.unit;
-                if (unit.getModule() instanceof ISight sight && sight.getSightPriority(unit) == ISight.GUN_BASE) {
-                    String usingSightID = findUsingSightID(context.getAllNodesOfThisTree(), ISight.GUN_BASE);
+                if (unit.getModule() instanceof ISight sight &&
+                        (sight.getSightPriority(unit) == ISight.GUN_BASE || sight.getSightPriority(unit) == ISight.IGNORE)) {
+                    int sightPriority = sight.getSightPriority(unit);
+                    String usingSightID = findUsingSightID(allNodesOfThisTree, Math.min(sightPriority, ISight.GUN_BASE));
                     context.set(USING_SIGHT, usingSightID);
                 }
             }
-            List<ShadowNode> allNodesOfThisTree = context.getAllNodesOfThisTree();
             String usingAmmoSourceID = findUsingAmmoSourceID(allNodesOfThisTree, context);
             context.set(USING_AMMO_SOURCE, usingAmmoSourceID);
             String leftArmHoldID = findLeftArmHoldID(allNodesOfThisTree, context);
@@ -860,7 +862,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
 
     @Override
-    public int getPriority(boolean rightArm) {
+    public final int getPriority(boolean rightArm) {
         return DEFAULT_PRIORITY;
     }
 

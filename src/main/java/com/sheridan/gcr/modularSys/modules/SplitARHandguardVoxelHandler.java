@@ -18,14 +18,8 @@ public class SplitARHandguardVoxelHandler extends VoxelHandler {
     @Override
     public void setVoxelIfNull(MultiVoxel voxel) {
         super.setVoxelIfNull(voxel);
-        total = voxel.getVoxel("total");
-        if (total == null) {
-            throw new IllegalArgumentException("voxel asset path: " + voxelAssetPath + " does not contain 'total' voxel");
-        }
-        upper = voxel.getVoxel("upper");
-        if (upper == null) {
-            throw new IllegalArgumentException("voxel asset path: " + voxelAssetPath + " does not contain 'upper' voxel");
-        }
+        total = voxel.getVoxelOrThrow("total");
+        upper = voxel.getVoxelOrThrow("upper");
     }
 
     @Override

@@ -111,11 +111,13 @@ public class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISl
                 }
                 if (unit.getModule() instanceof ISight sight) {
                     int sightPriority = sight.getSightPriority(unit);
-                    priorityMap.computeIfAbsent(sightPriority, k -> new ArrayList<>());
-                    priorityMap.get(sightPriority).add(data);
-                    String id = data.getString(Unit.IN_TIME_ID);
-                    if (id.equals(usingSightID)) {
-                        currentSight = data;
+                    if (sightPriority != ISight.IGNORE) {
+                        priorityMap.computeIfAbsent(sightPriority, k -> new ArrayList<>());
+                        priorityMap.get(sightPriority).add(data);
+                        String id = data.getString(Unit.IN_TIME_ID);
+                        if (id.equals(usingSightID)) {
+                            currentSight = data;
+                        }
                     }
                 }
             }

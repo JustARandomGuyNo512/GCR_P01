@@ -151,6 +151,23 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"), true, true),
             0.1f, true).addTags("sight", "iron_sight", "upper", "on_rail");
 
+
+    public static final IModular KAC_FOLDING_SIGHT_FAR = new FoldingFarIronSight(
+            RL( "kac_folding_sight_far"),
+            false,
+            0.01f,
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_far_voxel.geo.json"), false, false))
+            .addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular KAC_FOLDING_SIGHT_REAR = new FoldingRearIronSight(
+            RL( "kac_folding_sight_rear"),
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json"), true, false),
+            0.01f,
+            false,
+            1.0f
+            ).addTags("sight", "iron_sight", "upper", "on_rail");
+
+
     public static final IModular ACOG = new Scope(
             RL( "acog"),
             new VoxelHandler(RL("common/voxel_shapes/acog_voxel.geo.json")),
@@ -325,6 +342,10 @@ public class GCR {
             ITEMS.register(CANTED_RAIL.getSimpleID(), () -> new ModuleItem<>(CANTED_RAIL));
     public static final DeferredItem<Item> A2_CARRY_HANDLE_ITEM =
             ITEMS.register(A2_CARRY_HANDLE.getSimpleID(), () -> new ModuleItem<>(A2_CARRY_HANDLE));
+    public static final DeferredItem<Item> KAC_FOLDING_SIGHT_REAR_ITEM =
+            ITEMS.register(KAC_FOLDING_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(KAC_FOLDING_SIGHT_REAR));
+    public static final DeferredItem<Item> KAC_FOLDING_SIGHT_FAR_ITEM =
+            ITEMS.register(KAC_FOLDING_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(KAC_FOLDING_SIGHT_FAR));
     public static final DeferredItem<Item> CAR_15_HANDGUARD_ITEM =
             ITEMS.register(CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(CAR_15_HANDGUARD));
     public static final DeferredItem<Item> A2_PISTOL_GRIP_ITEM =
@@ -380,6 +401,8 @@ public class GCR {
                                 output.accept(ACOG_ITEM.get());
                                 output.accept(CANTED_RAIL_ITEM.get());
                                 output.accept(A2_CARRY_HANDLE_ITEM.get());
+                                output.accept(KAC_FOLDING_SIGHT_REAR_ITEM.get());
+                                output.accept(KAC_FOLDING_SIGHT_FAR_ITEM.get());
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());

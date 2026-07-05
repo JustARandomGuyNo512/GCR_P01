@@ -18,4 +18,11 @@ public class MultiVoxel {
         return voxels.get(index);
     }
 
+    public IVoxel getVoxelOrThrow(String index) {
+        IVoxel voxel = getVoxel(index);
+        if (voxel == null) {
+            throw new IllegalArgumentException("voxel index: " + index + " does not exist");
+        }
+        return voxel;
+    }
 }

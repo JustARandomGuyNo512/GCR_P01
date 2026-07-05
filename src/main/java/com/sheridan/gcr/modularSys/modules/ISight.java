@@ -5,6 +5,10 @@ import com.sheridan.gcr.modularSys.builder.Unit;
 public interface ISight {
     String ON_SIDE_POSITION = "on_side_position";
     /**
+     * 禁用
+     * */
+    int IGNORE = -1;
+    /**
      * 最低优先级，用于安装在侧面瞄具基座上的瞄具，或者其它副瞄具
      * */
     int SIDE = 0;

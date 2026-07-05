@@ -15,11 +15,13 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class ARMainModel extends ArmHandlerModel<ARView> implements IBulletShellHandlerModel<ARView>, ISightModel, IGunModel {
     private final AssaultRifleBulletShellHandler bulletShellHandler;
     private final Bone handHoldPivot;
+    private final Bone sightPose;
 
     public ARMainModel(MeshModelData root, BulletShellDisplay display, ARMainViewer viewer) {
         super(root, viewer, GCR.RL("m4a1_main"));
         this.bulletShellHandler = new AssaultRifleBulletShellHandler(this, display);
         this.handHoldPivot = getOrThrow(DEFAULT_HAND_ROT_PIVOT_NAME);
+        this.sightPose = getOrThrow("SIGHT_POSE");
     }
 
     @Override
@@ -35,5 +37,10 @@ public class ARMainModel extends ArmHandlerModel<ARView> implements IBulletShell
     @Override
     public Bone getHandRotPivot() {
         return handHoldPivot;
+    }
+
+    @Override
+    public Bone getSightPoseBone(ModuleRenderContext context) {
+        return sightPose;
     }
 }

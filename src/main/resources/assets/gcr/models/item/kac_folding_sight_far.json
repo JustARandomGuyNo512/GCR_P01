@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "gcr:item/kac_folding_sight_far"
+  }
+}

@@ -149,6 +149,9 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCR.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCR.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCR.KAC_FOLDING_SIGHT_FAR, "model_assets/gltf/kac_folding_sight_far.gltf", "model_assets/gltf/kac_folding_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
+
         ModelRegistrationManager.registerModel(GCR.CANTED_RAIL, "model_assets/gltf/canted_rail.gltf", "model_assets/gltf/canted_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.DANIEL_DEFENSE_RIS_II_HANDGUARD, "model_assets/gltf/daniel_defense_ris_ii.gltf", "model_assets/gltf/daniel_defense_ris_ii.png", true, SplitARHandguardModel::new);
@@ -170,7 +173,7 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(
                 GCR.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
-                d -> new SightModel.PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCR.PEQ_15)));
+                d -> new PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCR.PEQ_15)));
 
 
         BufferedPlayerArmModel.init();
