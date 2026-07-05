@@ -47,6 +47,9 @@ public class BulletRenderer extends EntityRenderer<BulletEntity> {
         boolean firstPerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
         Vector3f translation = poseStack.last().pose().getTranslation(new Vector3f());
         if (firstPerson) {
+            if (entity.getShooterId() != Client.LOCAL_PLAYER_ID && entity.tickCount <= 2) {
+                return;
+            }
             if (translation.length() < 6.5f) {
                 return;
             }

@@ -40,8 +40,9 @@ import org.joml.Vector3f;
 
 public class BulletEntity extends Entity {
     private long serverBirthTime;
-    private int life;
     private LivingEntity shooter;
+    // 新增：命中后先移动到命中点，延迟一帧再真正移除，避免客户端来不及渲染就消失
+    private boolean markedForRemoval = false;
     public static final EntityDataAccessor<Vector3f> EXACT_VELOCITY =
             SynchedEntityData.defineId(BulletEntity.class, EntityDataSerializers.VECTOR3);
     private int shooterId;
@@ -86,6 +87,14 @@ public class BulletEntity extends Entity {
             setPos(end);
             return;
         }
+
+        // 新增：上一 tick 已经命中过，这一 tick 才真正移除，
+        // 保证命中那一帧的位置同步包已经发给了客户端
+        if (markedForRemoval) {
+            discard();
+            return;
+        }
+
         if (System.currentTimeMillis() - serverBirthTime > 2500) {
             discard();
             return;
@@ -111,10 +120,9 @@ public class BulletEntity extends Entity {
 
         Vec3 entityCheckEnd = end;
         if (blockHit.getType() != HitResult.Type.MISS) {
-            entityCheckEnd = blockHit.getLocation(); // 实体检测只到方块
+            entityCheckEnd = blockHit.getLocation();
         }
 
-        // 实体碰撞（限制到非树叶方块之前）
         EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(
                 level(),
                 this,
@@ -129,19 +137,16 @@ public class BulletEntity extends Entity {
             return;
         }
 
-        // 如果实体没命中，再处理非树叶 block
         if (blockHit.getType() != HitResult.Type.MISS) {
             onHitBlock(blockHit);
             return;
         }
 
-        // 移动
         setPos(end);
     }
 
     private void onHitBlock(BlockHitResult hit) {
         Level world = this.level();
-
         if (!world.isClientSide && world instanceof ServerLevel serverWorld) {
             BlockPos pos = hit.getBlockPos();
             BlockState state = world.getBlockState(pos);
@@ -149,32 +154,24 @@ public class BulletEntity extends Entity {
             Block block = state.getBlock();
 
             if (interactWith(pos, state, direction, block, hit)) {
-                // 1. 处理音效
                 SoundType soundType = state.getSoundType();
-                // 判断是否为金属：通过音效类型是否为金属（METAL/NETHERITE_BLOCK）或者通过材质标签判断
                 boolean isMetal = soundType == SoundType.METAL || soundType == SoundType.NETHERITE_BLOCK;
-
                 if (isMetal) {
                     world.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.5F, 1.8F);
                 } else {
                     world.playSound(null, pos, soundType.getBreakSound(), SoundSource.BLOCKS, 0.8F, 1.0F);
                 }
-
                 Vec3 normal = Vec3.atLowerCornerOf(direction.getNormal());
-
                 double speed = 2.5f;
                 double vx = normal.x * speed;
                 double vy = normal.y * speed;
                 double vz = normal.z * speed;
-
                 BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
                 Vec3 hitLocation = hit.getLocation();
-
                 for (int i = 0; i < 8; i++) {
                     double rx = vx + (world.random.nextDouble() - 0.5) * 0.25;
                     double ry = vy + (world.random.nextDouble() - 0.5) * 0.25;
                     double rz = vz + (world.random.nextDouble() - 0.5) * 0.25;
-
                     serverWorld.sendParticles(
                             particleData,
                             hitLocation.x, hitLocation.y, hitLocation.z,
@@ -184,9 +181,14 @@ public class BulletEntity extends Entity {
                     );
                 }
             }
+            if (tickCount <= 2) {
+                markedForRemoval = true;
+            } else {
+                discard();
+            }
         }
-        discard();
 
+        setPos(hit.getLocation());
     }
 
     protected boolean interactWith(BlockPos pos, BlockState state, Direction direction, Block block, BlockHitResult result) {
@@ -212,7 +214,12 @@ public class BulletEntity extends Entity {
                 damageSource,
                 (float) (6f * (0.9f + 0.2f * Math.random()))
         );
-        discard();
+        setPos(hit.getLocation());
+        if (tickCount <= 2) {
+            markedForRemoval = true;
+        } else {
+            discard();
+        }
     }
 
     @Override
@@ -233,9 +240,9 @@ public class BulletEntity extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-        life = tag.getInt("life");
         shooterId = tag.getInt("shooterId");
         serverBirthTime = tag.getLong("serverBirthTime");
+        markedForRemoval = tag.getBoolean("markedForRemoval");
         Vec3 velocity = new Vec3(
                 tag.getDouble("vx"),
                 tag.getDouble("vy"),
@@ -251,13 +258,13 @@ public class BulletEntity extends Entity {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putInt("life", life);
         tag.putInt("shooterId", shooterId);
         Vec3 velocity = getDeltaMovement();
         tag.putDouble("vx", velocity.x);
         tag.putDouble("vy", velocity.y);
         tag.putDouble("vz", velocity.z);
         tag.putLong("serverBirthTime", serverBirthTime);
+        tag.putBoolean("markedForRemoval", markedForRemoval);
     }
 
     public LivingEntity getShooter() {
