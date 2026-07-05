@@ -10,15 +10,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SightModel extends ModularModel implements ISightModel {
-    private final Bone sightPoseBone;
-
     public SightModel(MeshModelData root, ResourceLocation name) {
         super(root, name);
-        sightPoseBone = getOrThrow("SIGHT_POSE");
-    }
-
-    @Override
-    public Bone getSightPoseBone(ModuleRenderContext context) {
-        return sightPoseBone;
+        getOrThrow(ISightModel.DEFAULT_BONE_NAME);
     }
 }

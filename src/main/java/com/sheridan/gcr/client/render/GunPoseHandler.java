@@ -214,20 +214,17 @@ public class GunPoseHandler {
         }
         for (ModuleRenderNode node : tempPoseMap.keySet()) {
             if (usingSightID.equals(node.id) && node.model instanceof ISightModel model) {
+                Map<String, BoneRenderStatus> bonePoseMap = tempPoseMap.get(node);
                 String rearLensBoneName = null;
                 if (model instanceof IScopeModel scopeModel) {
                     rearLensBoneName = scopeModel.getRearLensBone().name;
-                    switchToFov(scopeModel.getFovModify());
-                } else {
-                    switchToFov(70);
                 }
-                //String sightPoseBoneName = model.getSightPoseBoneName(context);
                 Map<String, BoneRenderStatus> stringPoseMap = tempPoseMap.get(node);
                 if (stringPoseMap == null) {
                     setNoSight();
                     break;
                 }
-                BoneRenderStatus sightPoseStatus = model.getSightPoseBone(context).renderStatus;//stringPoseMap.get(sightPoseBoneName);
+                BoneRenderStatus sightPoseStatus = bonePoseMap.get(model.getSightPoseBoneName(context));
                 BoneRenderStatus rearLensStatus = stringPoseMap.get(rearLensBoneName);
                 if (sightPoseStatus != null) {
                     Matrix4f mat = sightPoseStatus.pose.pose();

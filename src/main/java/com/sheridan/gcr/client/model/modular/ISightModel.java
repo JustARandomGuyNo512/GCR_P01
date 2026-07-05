@@ -7,10 +7,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public interface ISightModel {
-//    String DEFAULT_BONE_NAME = "SIGHT_POSE";
-//    default String getSightPoseBoneName(ModuleRenderContext context) {
-//        return DEFAULT_BONE_NAME;
-//    }
-
-    Bone getSightPoseBone(ModuleRenderContext context);
+    String DEFAULT_BONE_NAME = "SIGHT_POSE";
+    default String getSightPoseBoneName(ModuleRenderContext context) {
+        return DEFAULT_BONE_NAME;
+    }
 }

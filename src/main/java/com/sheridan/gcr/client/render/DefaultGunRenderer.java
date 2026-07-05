@@ -150,9 +150,8 @@ public class DefaultGunRenderer implements IGunRenderer {
     private void frameUpdate(int light, int overlay, float partialTicks) {
         String usingSightID = cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack);
         if (!Objects.equals(lastUsingSightID, usingSightID)) {
-            GunPoseHandler.INSTANCE.calculateSightPose(
-                    cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack),
-                    cachedFPContext, () -> renderFirstPerson(cachedFPContext));
+            System.out.println("switch to sight: " + usingSightID);
+            GunPoseHandler.INSTANCE.calculateSightPose(usingSightID, cachedFPContext, () -> renderFirstPerson(cachedFPContext));
         }
         lastUsingSightID = usingSightID;
 
@@ -312,7 +311,6 @@ public class DefaultGunRenderer implements IGunRenderer {
     }
 
     protected void renderFirstPerson(FirstPersonRenderContext context) {
-
         context.calcPose();
         if (context.renderMode) {
             Bone camera = context.root.model.getBone("camera");
@@ -329,7 +327,6 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         FP_BUFFER_SOURCE.endBatch();
         for (ModuleRenderNode node : models) {
-            //context.setCurrentRenderNode(node);
             context.currentRenderNode = node;
             node.model.afterAllRendered(context);
         }

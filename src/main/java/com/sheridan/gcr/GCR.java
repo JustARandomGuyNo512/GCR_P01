@@ -116,10 +116,13 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/m4_profile_fsb_barrel_voxel.geo.json"))
     ).addTags("has_ar_front_sight", "barrel", "5.56x45");
 
-
     public static final IModular A2_PISTOL_GRIP = new RiflePistolGrip(
             RL( "a2_pistol_grip"), 0.08f, 0.07f, 0.12f, 0.05f)
-            .addTags("rear_grip");
+            .addTags("rear_grip", "ar");
+
+    public static final IModular MOE_GRIP = new RiflePistolGrip(
+            RL( "moe_grip"), 0.1f, 0.8f, 0.15f, 0.06f)
+            .addTags("rear_grip", "ar");
 
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f,
             new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
@@ -302,7 +305,7 @@ public class GCR {
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
             .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "5.56x45")))
             .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "ar")))
-            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasTag("rear_grip")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
             .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
             .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f)
@@ -350,6 +353,8 @@ public class GCR {
             ITEMS.register(CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(CAR_15_HANDGUARD));
     public static final DeferredItem<Item> A2_PISTOL_GRIP_ITEM =
             ITEMS.register(A2_PISTOL_GRIP.getSimpleID(), () -> new ModuleItem<>(A2_PISTOL_GRIP));
+    public static final DeferredItem<Item> MOE_GRIP_ITEM =
+            ITEMS.register(MOE_GRIP.getSimpleID(), () -> new ModuleItem<>(MOE_GRIP));
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
             ITEMS.register(M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(M4_PROFILE_FSB_BARREL));
     public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
@@ -405,6 +410,7 @@ public class GCR {
                                 output.accept(KAC_FOLDING_SIGHT_FAR_ITEM.get());
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
+                                output.accept(MOE_GRIP_ITEM.get());
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
