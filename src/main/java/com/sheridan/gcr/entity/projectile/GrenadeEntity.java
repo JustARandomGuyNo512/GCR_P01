@@ -264,6 +264,7 @@ public class GrenadeEntity extends Entity{
     }
 
     private void onHitEntity(Entity entity, Vec3 location) {
+        explode(Direction.UP, location);
         entity.invulnerableTime = 0;
         float length = (float) this.getDeltaMovement().length();
         if (length > 0.5f) {
@@ -272,7 +273,6 @@ public class GrenadeEntity extends Entity{
                     damageSources().mobProjectile(this, this.shooter);
             entity.hurt(damageSource, length * 2f);
         }
-        explode(Direction.UP, location);
     }
 
 
