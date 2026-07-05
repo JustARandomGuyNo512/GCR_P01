@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.model.modular.animation.eventSys;
 import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
+import net.minecraft.nbt.CompoundTag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
@@ -22,15 +23,23 @@ public interface Callback {
         private boolean cancel;
         private Map<String, String> params;
         private ModuleRenderNode eventRenderNode;
-
-        public ReadOnlyTag getStates() {
-            return renderContext.currentRenderNode().getStates();
-        }
+        private ReadOnlyTag states;
 
         public EventContext(EventType type, ModuleRenderContext renderContext) {
             this.type = type;
             this.renderContext = renderContext;
-            cancel = false;
+            this.cancel = false;
+            this.states = new ReadOnlyTag(new CompoundTag());
+        }
+
+        public ReadOnlyTag getStates() {
+            return states;
+        }
+
+        void setStates(ReadOnlyTag states) {
+            if (states != null) {
+                this.states = states;
+            }
         }
 
         void setEventRenderNode(ModuleRenderNode node) {
@@ -43,7 +52,7 @@ public interface Callback {
         }
 
         public Optional<ModuleRenderNode> getCurrentRenderNode() {
-            return Optional.ofNullable(renderContext.currentRenderNode());
+            return Optional.ofNullable(eventRenderNode);
         }
 
         public void cancel() {

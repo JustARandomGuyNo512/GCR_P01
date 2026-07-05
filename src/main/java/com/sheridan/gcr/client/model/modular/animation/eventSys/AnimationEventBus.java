@@ -1,8 +1,10 @@
 package com.sheridan.gcr.client.model.modular.animation.eventSys;
 
+import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.nbt.CompoundTag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Triple;
@@ -34,10 +36,6 @@ public class AnimationEventBus {
         }
     }
 
-    public void clearAnimation() {
-
-    }
-
     public void dispatch(EventType type, ModuleRenderContext context, @Nullable Map<String, String> params) {
         List<Triple<EventRegistry, ModuleRenderNode, IAnimationController<?>>> triples = events.get(type);
         if (triples != null) {
@@ -51,16 +49,15 @@ public class AnimationEventBus {
                 IAnimationController<?> controller = triple.getRight();
                 controller.onUsingNode(node.id);
                 eventContext.setEventRenderNode(node);
-
+                eventContext.setEventRenderNode(node);
+                eventContext.setStates(node.getStates());
                 registry.callback.onTriggered(eventContext);
                 if (eventContext.isCanceled()) {
                     break;
                 }
                 controller.clearNode();
-
             }
         }
     }
-
 
 }
