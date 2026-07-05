@@ -56,16 +56,22 @@ public class BulletEntity extends Entity {
         this.shooterId = shooter.getId();
     }
 
+    private static final Vector3f ZERO_VELOCITY = new Vector3f(0.0F, 0.0F, 0.0F);
+
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        builder.define(EXACT_VELOCITY, new Vector3f(0.0F, 0.0F, 0.0F));
+        builder.define(EXACT_VELOCITY, ZERO_VELOCITY);
     }
 
     @Override
     public void setDeltaMovement(@NotNull Vec3 velocity) {
         super.setDeltaMovement(velocity);
         if (!this.level().isClientSide) {
-            this.getEntityData().set(EXACT_VELOCITY, velocity.toVector3f());
+            if (markedForRemoval) {
+                this.getEntityData().set(EXACT_VELOCITY, ZERO_VELOCITY);
+            } else {
+                this.getEntityData().set(EXACT_VELOCITY, velocity.toVector3f());
+            }
         }
     }
 
@@ -181,7 +187,7 @@ public class BulletEntity extends Entity {
                     );
                 }
             }
-            if (tickCount <= 2) {
+            if (tickCount < 2) {
                 markedForRemoval = true;
             } else {
                 discard();
@@ -215,7 +221,7 @@ public class BulletEntity extends Entity {
                 (float) (6f * (0.9f + 0.2f * Math.random()))
         );
         setPos(hit.getLocation());
-        if (tickCount <= 2) {
+        if (tickCount < 2) {
             markedForRemoval = true;
         } else {
             discard();

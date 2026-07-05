@@ -259,7 +259,7 @@ public class GCR {
             RL( "kac_forward_grip"),
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/kac_forward_grip.voxel.geo.json")),
             0.06f,
-            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.25f, 0.12f))
+            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.28f, 0.15f))
             .addTags("m_lok_rail_fit");
 
     public static final IModular M4A1 = new AR(
