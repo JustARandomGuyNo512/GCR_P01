@@ -74,6 +74,7 @@
   "packet.set_module_tree.fixed": "An error was detected when the server verifies the data and has been pruned according to the server rules",
   "packet.set_module_tree.module_not_exist": "The module with ID: $id does not exist",
 
+  "gcr.overlay.bad_network": "Bad Network! Ping: $p",
 
   "tooltip.prop.modifier": "$amount% $name",
   "tooltip.prop.modifier_holding": "While Held: $amount% $name",

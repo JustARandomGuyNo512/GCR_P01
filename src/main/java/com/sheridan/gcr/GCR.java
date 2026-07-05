@@ -47,9 +47,7 @@ import com.sheridan.gcr.modularSys.slot.*;
 import com.sheridan.gcr.modularSys.util.io.PivotMapLoader;
 import com.sheridan.gcr.modularSys.util.io.VoxelLoader;
 import com.sheridan.gcr.network.c2s.*;
-import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
-import com.sheridan.gcr.network.s2c.BroadcastPlayerStatusPacket;
-import com.sheridan.gcr.network.s2c.CommitModuleTreeResponsePacket;
+import com.sheridan.gcr.network.s2c.*;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -121,7 +119,7 @@ public class GCR {
             .addTags("rear_grip", "ar");
 
     public static final IModular MOE_GRIP = new RiflePistolGrip(
-            RL( "moe_grip"), 0.1f, 0.8f, 0.15f, 0.06f)
+            RL( "moe_grip"), 0.1f, 0.1f, 0.1f, 0.06f)
             .addTags("rear_grip", "ar");
 
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f,
@@ -266,7 +264,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0007f, 1.3f, 4f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.005f, 1.3f, 4f,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
@@ -613,6 +611,15 @@ public class GCR {
             registrar.playBidirectional(
                     SubWeaponReloadPacket.TYPE,
                     SubWeaponReloadPacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
+
+            registrar.playBidirectional(
+                    GunFireAckPacket.TYPE,
+                    GunFireAckPacket.STREAM_CODEC,
                     new DirectionalPayloadHandler<>(
                             (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)

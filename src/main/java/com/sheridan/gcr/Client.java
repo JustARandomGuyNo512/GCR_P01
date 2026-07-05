@@ -16,6 +16,7 @@ import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
+import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -36,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Client {
@@ -107,6 +109,14 @@ public class Client {
         ControllerEvents.adsDelay = 1;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public static AtomicInteger CLIENT_SHOOT_ID = new AtomicInteger(0);
+
+    @OnlyIn(Dist.CLIENT)
+    public static volatile int LAST_SERVER_ACK_SHOOT_ID = 0;
+
+    @OnlyIn(Dist.CLIENT)
+    public static volatile long LAST_SERVER_ACK_SHOOT_TIME = 0;
 
     @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
@@ -173,6 +183,16 @@ public class Client {
         return 0;
     }
 
+    public static void serverShootAck(GunFireAckPacket packet, ItemStack itemStack, IGun gun) {
+        LAST_SERVER_ACK_SHOOT_ID = packet.shootId;
+        LAST_SERVER_ACK_SHOOT_TIME = System.currentTimeMillis();
+        gun.serverShootAck(packet, itemStack);
+    }
+
+    public static void resetFireState() {
+        LAST_SERVER_ACK_SHOOT_TIME = Client.lastShootMain();
+        LAST_SERVER_ACK_SHOOT_ID = Client.CLIENT_SHOOT_ID.get();
+    }
 
     public static void handleLivingFire(BroadcastLivingFirePacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {

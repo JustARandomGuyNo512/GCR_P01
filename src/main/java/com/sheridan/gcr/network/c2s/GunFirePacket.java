@@ -21,25 +21,26 @@ public class GunFirePacket implements CustomPacketPayload, IPacket<GunFirePacket
             GunFirePacket::decode,
             (buf, p) -> p.encode(buf));
 
-    public boolean stuck;
+
+    public int shootId;
     public float gunKickPitch;
     public float gunKickYaw;
 
-    public GunFirePacket(boolean stuck, float gunKickPitch, float gunKickYaw) {
-        this.stuck = stuck;
+    public GunFirePacket(int shootId, float gunKickPitch, float gunKickYaw) {
+        this.shootId = shootId;
         this.gunKickPitch = gunKickPitch;
         this.gunKickYaw = gunKickYaw;
     }
 
     private void encode(FriendlyByteBuf buf) {
-        buf.writeBoolean(stuck);
+        buf.writeInt(shootId);
         buf.writeFloat(gunKickPitch);
         buf.writeFloat(gunKickYaw);
     }
 
     private static GunFirePacket decode(FriendlyByteBuf buf) {
         return new GunFirePacket(
-                buf.readBoolean(),
+                buf.readInt(),
                 buf.readFloat(),
                 buf.readFloat()
         );

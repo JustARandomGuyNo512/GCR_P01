@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PlaySoundPacket  implements CustomPacketPayload, IPacket<PlaySoundPacket> {
+public class PlaySoundPacket implements CustomPacketPayload, IPacket<PlaySoundPacket> {
     public static final ResourceLocation ID = GCR.RL("play_sound");
     public static final Type<PlaySoundPacket> TYPE = new Type<>(ID);
     public static final Codec<PlaySoundPacket> STREAM_CODEC = new Codec<> (

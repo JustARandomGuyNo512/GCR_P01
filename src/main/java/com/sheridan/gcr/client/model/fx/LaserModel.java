@@ -54,7 +54,7 @@ public class LaserModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	public void renderThirdPerson(PoseStack poseStack, VertexConsumer vertexConsumer, int color) {
-		poseStack.scale(0.2f, 0.2f, 16);
+		poseStack.scale(0.2f, 0.2f, 8);
 		first_person.render(poseStack, vertexConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
 	}
 

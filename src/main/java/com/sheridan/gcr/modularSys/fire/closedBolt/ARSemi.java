@@ -22,7 +22,7 @@ public class ARSemi extends ARFireMode{
         if (useAmmoClient(player, stack, gun)) {
             boolean stuck = gun.isStuck(stack);
             gun.clientShoot(player, stack);
-            sendPacket(stuck);
+            sendPacket();
             IFireMode.stopFire();
             Client.WEAPON_STATUS.onShoot();
             Client.getGunRenderer().dispatchAnimationEvent(EventType.SHOOT);

@@ -74,7 +74,7 @@
   "packet.set_module_tree.fixed": "服务端验证数据时检测到错误，已根据服务端规则进行裁剪",
   "packet.set_module_tree.module_not_exist": "ID为：$id，的模块不存在",
 
-
+  "gcr.overlay.bad_network": "网络状况不佳! Ping: $p",
 
   "tooltip.prop.modifier": "$name $amount%",
   "tooltip.prop.modifier_holding": "握持时: $name $amount%",

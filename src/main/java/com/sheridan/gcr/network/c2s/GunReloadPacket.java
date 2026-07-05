@@ -39,6 +39,7 @@ public class GunReloadPacket implements CustomPacketPayload, IPacket<GunReloadPa
             ItemStack heldItem = player.getMainHandItem();
             if (heldItem.getItem() instanceof GunItem gunItem) {
                 gunItem.getGun().reload(heldItem, player);
+                gunItem.getGun().rollStuckSeed(heldItem);
                 gunItem.getGun().notifyDataChanged(heldItem);
             }
         });

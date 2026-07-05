@@ -1,16 +1,19 @@
 package com.sheridan.gcr.modularSys.fire.closedBolt;
 
-import com.sheridan.gcr.Client;
 import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.modularSys.fire.FireMode;
+import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -32,10 +35,30 @@ public abstract class ARFireMode extends FireMode<AR> {
         return baseRpm;
     }
 
+    boolean stuckMsgNoticed = false;
     boolean removeStuckTaskSent = false;
     @OnlyIn(Dist.CLIENT)
     @Override
     public FireControl clientIntentToFire(Player player, ItemStack stack, AR gun) {
+        Minecraft mc = Minecraft.getInstance();
+        ClientPacketListener connection = mc.getConnection();
+        if (connection != null && mc.player != null) {
+            PlayerInfo info = connection.getPlayerInfo(mc.player.getUUID());
+            if (info != null) {
+                int ping = info.getLatency();
+                if (ping > 500) {
+                    String string = Component.translatable("gcr.overlay.bad_network").getString();
+                    string = string.replace("$p", ping + "");
+                    player.sendSystemMessage(Component.literal(string));
+                    return FireControl.CANCEL_FIRE;
+                }
+            }
+        }
+        String identityID = gun.getIdentityID(stack);
+        if (IGun.NONE.equals(identityID)) {
+            player.sendSystemMessage(Component.literal("server data not synced"));
+            return FireControl.EXIT_FIRE_STATE;
+        }
         SprintingHandler.INSTANCE.exitSprinting(Utils.secondToTick(1.3f));
         if (SprintingHandler.INSTANCE.getSprintingProgress() != 0) {
             return FireControl.CANCEL_FIRE;
@@ -43,6 +66,13 @@ public abstract class ARFireMode extends FireMode<AR> {
         if (!GunTaskHandler.INSTANCE.blockShoot()) {//有任务在执行
             boolean stuck = gun.isStuck(stack);
             if (stuck) {
+                if (!stuckMsgNoticed) {
+                    Minecraft.getInstance().gui.setOverlayMessage(
+                            Component.translatable("gcr.overlay.stuck")
+                                    .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+                    stuckMsgNoticed = true;
+                    return FireControl.EXIT_FIRE_STATE;
+                }
                 if (!removeStuckTaskSent) {
                     IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                     if (task != null) {
@@ -52,6 +82,7 @@ public abstract class ARFireMode extends FireMode<AR> {
                 }
                 return FireControl.EXIT_FIRE_STATE;
             }
+            stuckMsgNoticed = false;
             removeStuckTaskSent = false;
             int ammoLeft = gun.getGunAmmoLeft(stack);
             return ammoLeft > 0 ? FireControl.ALLOW_FIRE : FireControl.EXIT_FIRE_STATE;
@@ -61,21 +92,26 @@ public abstract class ARFireMode extends FireMode<AR> {
 
     @Override
     public void triggerServerShoot(Player player, ItemStack stack, AR gun, GunFirePacket packet) {
-        if (useAmmo(player, stack, gun, packet.stuck)) {
-            gun.serverShoot(player, stack, 0, packet);
+        boolean stuck = Math.random() < gun.getFaultRate(stack);
+        if (useAmmo(player, stack, gun, stuck)) {
+            gun.serverShoot(player, stack, packet.shootId, packet);
         }
     }
 
     protected boolean useAmmoClient(Player player, ItemStack stack, AR gun) {
-        boolean handleStuck = Client.DEBUG_ALWAYS_STUCK;
-        float faultRate = gun.getFaultRate(stack);
-        if (Math.random() < faultRate) {
-            handleStuck = true;
+        boolean ammoUsed = useAmmo(player, stack, gun, false);
+        boolean stuck = gun.isStuck(stack);
+        if (stuck) {
+            IFireMode.stopFire();
         }
-        return useAmmo(player, stack, gun, handleStuck);
+        return ammoUsed;
     }
 
-    protected boolean useAmmo(Player player, ItemStack stack, AR gun, boolean handleStuck) {
+    protected boolean useAmmo(Player player, ItemStack stack, AR gun, @Deprecated boolean handleStuck) {
+        boolean stuck = gun.isStuck(stack);
+        if (stuck) {
+            return false;
+        }
         int ammoLeft = gun.getGunAmmoLeft(stack);
         if (ammoLeft > 0) {
             gun.setGunAmmoLeft(stack, 0);
@@ -93,9 +129,12 @@ public abstract class ARFireMode extends FireMode<AR> {
             if (handleStuck) {
                 gun.setStuck(true, gunStates);
                 ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
-                Minecraft.getInstance().gui.setOverlayMessage(
-                        Component.translatable("gcr.overlay.stuck")
-                                .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+                if (player.level().isClientSide) {
+                    Minecraft.getInstance().gui.setOverlayMessage(
+                            Component.translatable("gcr.overlay.stuck")
+                                    .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+                }
+
             }
             return;
         }
@@ -107,9 +146,11 @@ public abstract class ARFireMode extends FireMode<AR> {
         if (handleStuck) {
             gun.setStuck(true, gunStates);
             ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
-            Minecraft.getInstance().gui.setOverlayMessage(
-                    Component.translatable("gcr.overlay.stuck")
-                            .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+            if (player.level().isClientSide) {
+                Minecraft.getInstance().gui.setOverlayMessage(
+                        Component.translatable("gcr.overlay.stuck")
+                                .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+            }
             return;
         }
         int magAmmoLeft = mag.getAmmoLeft(magStates);

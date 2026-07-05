@@ -16,6 +16,7 @@ import com.sheridan.gcr.modularSys.modules.states.Str;
 import com.sheridan.gcr.modularSys.modules.views.IGunView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
+import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,6 +43,8 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     String DATA_CHANGED_KEY = "gcr_data_changed";
 
+    String STUCK_SEED = "gcr_stuck_seed";
+
     int FIRE_SOUND_NORMAL = 0;
     int FIRE_SOUND_SUPPRESSED = 1;
 
@@ -61,7 +64,7 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     void clientShoot(Player player, ItemStack itemStack);
 
     @OnlyIn(Dist.CLIENT)
-    void serverShootAck(Vector3f bulletDirection, ItemStack itemStack, int shootID, int realAmmoLeft);
+    void serverShootAck(GunFireAckPacket packet, ItemStack itemStack);
 
     DisplayData getDisplayData();
 
@@ -180,4 +183,8 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     boolean isPistol();
 
     float getSpread(ItemStack itemStack);
+
+    int getStuckSeed(ItemStack itemStack);
+
+    void rollStuckSeed(ItemStack itemStack);
 }

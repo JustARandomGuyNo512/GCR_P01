@@ -23,7 +23,7 @@ public class ARBust extends ARFireMode{
         if (useAmmoClient(player, stack, gun)) {
             boolean stuck = gun.isStuck(stack);
             gun.clientShoot(player, stack);
-            sendPacket(stuck);
+            sendPacket();
             if (stuck) {
                 IFireMode.stopFire();
             } else {

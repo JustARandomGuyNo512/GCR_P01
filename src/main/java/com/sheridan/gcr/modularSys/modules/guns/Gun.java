@@ -32,6 +32,7 @@ import com.sheridan.gcr.modularSys.task.other.FireModeSwitchTask;
 import com.sheridan.gcr.modularSys.task.other.RemoveStuckTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
+import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -161,6 +162,11 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             if (fireSound != null) {
                 ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
             }
+            GunFireAckPacket ackPacket = new GunFireAckPacket(getIdentityID(itemStack), getAmmoLeft(itemStack), shootID, isStuck(itemStack));
+            PacketDistributor.sendToPlayer(
+                    player,
+                    ackPacket
+            );
         }
 
         BroadcastLivingFirePacket firePacket = new BroadcastLivingFirePacket(
@@ -185,9 +191,10 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         return baseProperties.getFireSoundNormal();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void serverShootAck(Vector3f bulletDirection, ItemStack itemStack, int shootID, int realAmmoLeft) {
-        setAmmoLeft(itemStack, realAmmoLeft);
+    public void serverShootAck(GunFireAckPacket packet, ItemStack itemStack) {
+        setStuck(packet.stuck, rootNodeTag(itemStack));
     }
 
     @Override
@@ -220,6 +227,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     public void serverInitData(ItemStack itemStack) {
         CompoundTag compoundTag = checkAndGetRaw(itemStack);
         compoundTag.putString(IDENTITY_ID_KEY, IDGenerator.randomId());
+        compoundTag.putInt(STUCK_SEED, (int) (Math.random() * 1000000));
         CustomData.set(DataComponents.CUSTOM_DATA, itemStack, compoundTag.copy());
     }
 
@@ -527,6 +535,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         dataModel.putString(IDENTITY_ID_KEY, NONE);
         dataModel.putInt(MODIFY_ID_KEY, -1);
         dataModel.putBoolean(DATA_CHANGED_KEY, false);
+        dataModel.putInt(STUCK_SEED, -1);
 
         IBuilder builder = getBuilderForInit();
         IWorkSpace workspace = builder.getWorkspace();
@@ -664,6 +673,20 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         return baseProperties.spread.get(pick);
     }
 
+    @Override
+    public int getStuckSeed(ItemStack itemStack) {
+        CustomData orDefault = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        if (orDefault.isEmpty()) {
+            return -1;
+        }
+        return orDefault.getUnsafe().getInt(STUCK_SEED);
+    }
+
+    @Override
+    public void rollStuckSeed(ItemStack itemStack) {
+        CustomData orDefault = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        orDefault.getUnsafe().putInt(STUCK_SEED, (int) (Math.random() * 100000));
+    }
 
     protected IReadOnlyTree tryInitialCommit(IBuilder builder) {
         if (GCR.IS_DEVELOPMENT) {
