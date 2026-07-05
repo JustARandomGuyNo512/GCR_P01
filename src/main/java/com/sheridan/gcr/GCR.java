@@ -215,9 +215,9 @@ public class GCR {
                             .setFilter(SlotFilters.hasTag("on_rail").and(
                                     SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
                             )))
-                    .addSlot(new Rail("RAIL_LEFT", Direction.LOWER, 17.498f, 0f, -34.2535f)
+                    .addSlot(new Rail("RAIL_LEFT", Direction.LOWER, 17.498f, -8.3778f, -34.2535f)
                             .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
-                    .addSlot(new Rail("RAIL_RIGHT", Direction.LOWER, 17.498f, 0f, -34.2535f)
+                    .addSlot(new Rail("RAIL_RIGHT", Direction.LOWER, 17.498f, -8.3778f, -34.2535f)
                             .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
                     .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 17.498f, 2.698f, -12.102f)
                             .setFilter(SlotFilters.hasTag("on_rail").and(
