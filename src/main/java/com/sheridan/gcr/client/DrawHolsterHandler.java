@@ -139,6 +139,7 @@ public class DrawHolsterHandler {
     }
 
     private void startDraw(ItemStack stack) {
+        AnimationHandler.INSTANCE.clearAllAnimation();
         state = State.DRAWING;
         timer = 0f;
         duration = getDrawDuration(stack);
@@ -147,29 +148,21 @@ public class DrawHolsterHandler {
         Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
     }
 
-    // =========================
-    // Render Tick
-    // =========================
+
     public void onRenderTick(ItemInHandRenderer renderer) {
-        // ✅ 核心实现：检查 renderLockedStack 是否发生改变
         if (isRenderLockedStackChanged(lastRenderLockedStack, renderLockedStack)) {
             AnimationHandler.INSTANCE.clearAllAnimation();
-            // 更新记录，防止在同一帧/满足相同条件时重复触发
             lastRenderLockedStack = renderLockedStack;
         }
-
         if (!(renderer instanceof DualHandItemAccessor accessor)) {
             return;
         }
-        // 只有当锁定的渲染物品是枪，且在切换周期内，才劫持渲染
         if (equipProgress > 0f && equipProgress < 1f && isGun(renderLockedStack, "render")) {
             accessor.setMainHandItem(renderLockedStack);
         }
     }
 
-    /**
-     * ✅ 新增：用于判断渲染锁定的物品在本质上是否发生了改变
-     */
+
     private boolean isRenderLockedStackChanged(ItemStack oldStack, ItemStack newStack) {
         if (oldStack == newStack) {
             return false;
@@ -178,15 +171,13 @@ public class DrawHolsterHandler {
             return true;
         }
         if (oldStack.isEmpty()) {
-            return false; // 都是 Empty
+            return false;
         }
 
-        // 如果物品类型变了（比如枪A换成了枪B，或者枪换成了空气/方块）
         if (oldStack.getItem() != newStack.getItem()) {
             return true;
         }
 
-        // 如果都是枪，且内部的 Gun 实例变了（安全校验）
         if (oldStack.getItem() instanceof GunItem && newStack.getItem() instanceof GunItem) {
             IGun oldGun = ((GunItem) oldStack.getItem()).getGun();
             IGun newGun = ((GunItem) newStack.getItem()).getGun();

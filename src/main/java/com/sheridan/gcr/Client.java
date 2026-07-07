@@ -17,11 +17,13 @@ import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
 import com.sheridan.gcr.network.s2c.GunFireAckPacket;
+import com.sheridan.gcr.network.s2c.InitClientGunDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -33,6 +35,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -192,6 +195,25 @@ public class Client {
     public static void resetFireState() {
         LAST_SERVER_ACK_SHOOT_TIME = Client.lastShootMain();
         LAST_SERVER_ACK_SHOOT_ID = Client.CLIENT_SHOOT_ID.get();
+    }
+
+    public static void onReceivedGunDataFromServer(InitClientGunDataPacket packet) {
+        Minecraft instance = Minecraft.getInstance();
+        LocalPlayer player = instance.player;
+        if (player != null && player.getMainHandItem().getItem() instanceof GunItem gunItem) {
+            String identityID = gunItem.getGun().getIdentityID(player.getMainHandItem());
+            if (!IGun.NONE.equals(identityID)) {
+                return;
+            }
+            if (packet.itemId != Item.getId(gunItem)) {
+                return;
+            }
+            IGun gun = gunItem.getGun();
+            if (!Objects.equals(gun.getID(), packet.moduleId)) {
+                return;
+            }
+            gun.fullSyncFromServer(player.getMainHandItem(), packet.data);
+        }
     }
 
     public static void handleLivingFire(BroadcastLivingFirePacket packet, IPayloadContext context) {

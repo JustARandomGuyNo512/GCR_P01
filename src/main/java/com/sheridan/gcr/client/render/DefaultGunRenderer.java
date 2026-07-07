@@ -8,6 +8,7 @@ import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
+import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
@@ -150,7 +151,6 @@ public class DefaultGunRenderer implements IGunRenderer {
     private void frameUpdate(int light, int overlay, float partialTicks) {
         String usingSightID = cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack);
         if (!Objects.equals(lastUsingSightID, usingSightID)) {
-            System.out.println("switch to sight: " + usingSightID);
             GunPoseHandler.INSTANCE.calculateSightPose(usingSightID, cachedFPContext, () -> renderFirstPerson(cachedFPContext));
         }
         lastUsingSightID = usingSightID;

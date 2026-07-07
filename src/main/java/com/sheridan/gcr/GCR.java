@@ -264,7 +264,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.005f, 1.3f, 4f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.004f, 1.3f, 4f,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
@@ -620,6 +620,15 @@ public class GCR {
             registrar.playBidirectional(
                     GunFireAckPacket.TYPE,
                     GunFireAckPacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
+
+            registrar.playBidirectional(
+                    InitClientGunDataPacket.TYPE,
+                    InitClientGunDataPacket.STREAM_CODEC,
                     new DirectionalPayloadHandler<>(
                             (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)

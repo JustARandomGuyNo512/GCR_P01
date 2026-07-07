@@ -4,17 +4,21 @@ import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.builder.*;
 import com.sheridan.gcr.modularSys.modules.StatesUpdateContext;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.network.s2c.InitClientGunDataPacket;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -47,6 +51,19 @@ public class CommonEvents {
             long serverStartTime = Commons.getServerStartTime();
             if (IGun.NONE.equals(identityID)) {
                 gun.serverInitData(eventTo);
+                String initID = gun.getIdentityID(eventTo);
+                if (!IGun.NONE.equals(initID) && event.getEntity() instanceof ServerPlayer player) {
+                    //TODO:发送数据同步包给客户端
+                    System.out.println("should send data to client");
+                    PacketDistributor.sendToPlayer(
+                            player,
+                            new InitClientGunDataPacket(
+                                    gun.getID(),
+                                    Item.getId(gunItem),
+                                    gun.checkAndGetRaw(eventTo)
+                            )
+                    );
+                }
             } else if (dataDate != serverStartTime) {
                 //String modifyID = gun.getStructureID(eventTo);
                 ListTag modulesTag = gun.getModulesTag(eventTo);
