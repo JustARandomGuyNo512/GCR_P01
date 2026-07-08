@@ -222,7 +222,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         DisplayData displayData = gun.getDisplayData();
         if (displayData != null) {
-            if (Client.isUseIrisShader) {
+            if (Client.isUsingIrisShader) {
                 RenderEvents.addDelayedEntityRenderTask(() -> {
                     RenderSystem.backupProjectionMatrix();
                     RenderSystem.setProjectionMatrix(Client.FIRST_PERSON_PROJECTION_MAT, VertexSorting.DISTANCE_TO_ORIGIN);

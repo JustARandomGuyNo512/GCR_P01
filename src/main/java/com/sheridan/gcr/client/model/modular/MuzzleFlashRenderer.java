@@ -232,7 +232,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         if (context.entity == null || context.entity.getId() != Client.LOCAL_PLAYER_ID) {
             return;
         }
-        if (Client.isUseIrisShader) {
+        if (Client.isUsingIrisShader) {
             if (IrisCompat.isRenderingShadowPass()) {
                 return;
             }

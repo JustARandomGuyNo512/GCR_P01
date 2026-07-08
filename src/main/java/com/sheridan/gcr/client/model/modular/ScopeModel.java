@@ -69,7 +69,7 @@ public class ScopeModel extends AbstractScopeModel{
     public void preFirstPersonRender(FirstPersonRenderContext context) {
         super.preFirstPersonRender(context);
         if (shouldHandlerScopeRender(context)) {
-            if (Client.isUseIrisShader) {
+            if (Client.isUsingIrisShader) {
                 AuxRenderTarget.getInstance().check();
                 AuxRenderTarget.getInstance().bindWrite(true);
                 RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
@@ -85,7 +85,7 @@ public class ScopeModel extends AbstractScopeModel{
                 context.setLocalStorage(MuzzleFlashRenderer.RENDER_CANCELED, 1);
             }
 
-            if (!Client.isUseIrisShader) {
+            if (!Client.isUsingIrisShader) {
                 renderRearLensWithStencil(0);
                 GL11.glStencilFunc(GL11.GL_EQUAL, 1, 0xFF);
                 GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
@@ -101,7 +101,7 @@ public class ScopeModel extends AbstractScopeModel{
             renderRearLensOnly = true;
             renderingVertexCount = 1;
             rearLensBone.renderStatus.visible = true;
-            float zOffset = Client.isUseIrisShader ? -0.0085f : -0.002f;
+            float zOffset = Client.isUsingIrisShader ? -0.0085f : -0.002f;
             rearLensBone.renderStatus.pose.pose().translate(0, 0, zOffset);
             RenderType original = getRenderType();
             setRenderType(RenderTypes.getMeshDepthMask(), false);
@@ -109,7 +109,7 @@ public class ScopeModel extends AbstractScopeModel{
             setRenderType(original, false);
             renderRearLensOnly = false;
 
-            if (Client.isUseIrisShader) {
+            if (Client.isUsingIrisShader) {
                 context.setLocalStorage(CROSSHAIR_POSE, getCrosshairBone().renderStatus.pose.copy());
             }
             context.setLocalStorage(SCOPE_NODE_ID, context.currentRenderNode().id);
@@ -140,7 +140,7 @@ public class ScopeModel extends AbstractScopeModel{
         context.removeLocalStorage(SCOPE_NODE_ID);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         try {
-            if (Client.isUseIrisShader && !IrisCompat.isRenderingShadowPass()) {
+            if (Client.isUsingIrisShader && !IrisCompat.isRenderingShadowPass()) {
                 if (crosshairPose == null || rearLensPose == null || crosshairZPose == null) {
                     GL11.glDisable(GL11.GL_STENCIL_TEST);
                     return;

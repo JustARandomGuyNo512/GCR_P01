@@ -252,7 +252,7 @@ public class BufferedBoneMeshModel {
 
 
     protected boolean updateCompatType() {
-        CompatType prevType = Client.isUseIrisShader ? CompatType.IRIS : CompatType.VANILLA;
+        CompatType prevType = Client.isUsingIrisShader ? CompatType.IRIS : CompatType.VANILLA;
         if (compatType != prevType) {
             compatType = prevType;
             release();
@@ -379,7 +379,7 @@ public class BufferedBoneMeshModel {
     }
 
     public static ShaderInstance getShader() {
-        return Client.isUseIrisShader ?
+        return Client.isUsingIrisShader ?
                 GameRenderer.getRendertypeEntityCutoutShader() :
                 Shaders.getEntityCutOutUBO();
     }

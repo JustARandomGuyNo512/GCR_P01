@@ -42,7 +42,7 @@ public class RenderEvents {
 
     @SubscribeEvent
     public static void onRenderTickStart(RenderFrameEvent.Pre event) {
-        Client.isUseIrisShader = IrisCompat.isShaderPackInUse();
+        Client.isUsingIrisShader = IrisCompat.isShaderPackInUse();
         Utils.setUpStencil();
         DrawHolsterHandler.get().onRenderTick(Minecraft.getInstance().gameRenderer.itemInHandRenderer);
         Client.getGunRenderer().renderTickPre(event.getPartialTick().getRealtimeDeltaTicks());
@@ -88,7 +88,7 @@ public class RenderEvents {
             }
             ItemStack itemStack = event.getItemStack();
             if (itemStack.getItem() instanceof GunItem) {
-                if (Client.isUseIrisShader && !IrisCompat.isRenderingShadowPass()) {
+                if (Client.isUsingIrisShader && !IrisCompat.isRenderingShadowPass()) {
                     ShaderInstance shader = BufferedBoneMeshModel.getShader();
                     if (shader != null) {
                         shader.apply();
@@ -102,7 +102,7 @@ public class RenderEvents {
 
     @SubscribeEvent
     public static void checkIrisExtensions(RenderFrameEvent.Pre event) {
-        if (Client.isUseIrisShader) {
+        if (Client.isUsingIrisShader) {
             RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
             int width = mainRenderTarget.width;
             int height = mainRenderTarget.height;

@@ -82,7 +82,7 @@ public class FPMuzzleFlashEnvLightingRenderer {
         float cameraFar = mc.gameRenderer.getDepthFar();
         Uniform.uploadInteger(MuzzleFlashEnvShader.gdepthLoc, 0);
         GL20.glUniform1f(MuzzleFlashEnvShader.flashIntensityLoc, intensity);
-        GL20.glUniform1f(MuzzleFlashEnvShader.minDepthLoc, Client.isUseIrisShader ? 0.15f : 0f);
+        GL20.glUniform1f(MuzzleFlashEnvShader.minDepthLoc, Client.isUsingIrisShader ? 0.15f : 0f);
         GL20.glUniform1f(MuzzleFlashEnvShader.maxDepthLoc, 12f);
         GL20.glUniform1f(MuzzleFlashEnvShader.lightRadiusLoc, Mth.clamp((muzzleFlashIntensity - 0.5f) * 4.7f, 0, 12f));
         GL20.glUniform1f(MuzzleFlashEnvShader.cameraNFLoc, 0.1f * cameraFar);

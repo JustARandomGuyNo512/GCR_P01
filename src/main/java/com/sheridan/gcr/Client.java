@@ -51,7 +51,7 @@ public class Client {
     @OnlyIn(Dist.CLIENT)
     public static final ScheduledExecutorService WEAPON_SCHEDULER = Executors.newSingleThreadScheduledExecutor();
     @OnlyIn(Dist.CLIENT)
-    public static boolean isUseIrisShader;
+    public static boolean isUsingIrisShader;
     @OnlyIn(Dist.CLIENT)
     public static final WeaponStatus WEAPON_STATUS = new WeaponStatus();
     @OnlyIn(Dist.CLIENT)

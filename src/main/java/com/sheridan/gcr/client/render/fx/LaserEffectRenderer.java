@@ -106,7 +106,7 @@ public class LaserEffectRenderer {
     @SubscribeEvent
     public static void saveMatrix(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            if (Client.isUseIrisShader) {
+            if (Client.isUsingIrisShader) {
                 Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
                 Quaternionf quaternionf = camera.rotation().conjugate(new Quaternionf());
                 Matrix4f matrix4f = (new Matrix4f()).rotation(quaternionf);

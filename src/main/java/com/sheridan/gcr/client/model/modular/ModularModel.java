@@ -68,7 +68,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
                 GL20.glUniform1f(muzzleFlashRadius, r);
-                if (Client.isUseIrisShader) {
+                if (Client.isUsingIrisShader) {
                     IrisExtendRT.setUpDrawBuffers();
                 }
             } else {

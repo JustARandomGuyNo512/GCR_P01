@@ -264,7 +264,7 @@ public class GCR {
             RL( "rk_2_grip"),
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/rk_2_grip.voxel.geo.json")),
             0.07f,
-            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.35f, 0.2f))
+            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.36f, 0.2f))
             .addTags("m_lok_rail_fit");
 
     public static final IModular M4A1 = new AR(
