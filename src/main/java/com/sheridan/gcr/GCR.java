@@ -260,6 +260,13 @@ public class GCR {
             new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.28f, 0.15f))
             .addTags("m_lok_rail_fit");
 
+    public static final IModular RK_2_GRIP = new ForwardGrip(
+            RL( "rk_2_grip"),
+            new MLokFitVoxelHandler(RL( "common/voxel_shapes/rk_2_grip.voxel.geo.json")),
+            0.07f,
+            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.35f, 0.2f))
+            .addTags("m_lok_rail_fit");
+
     public static final IModular M4A1 = new AR(
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
@@ -371,6 +378,8 @@ public class GCR {
             ITEMS.register(DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(DANIEL_DEFENSE_RIS_II_HANDGUARD));
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
             ITEMS.register(KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(KAC_FORWARD_GRIP));
+    public static final DeferredItem<Item> RK_6_GRIP_ITEM =
+            ITEMS.register(RK_2_GRIP.getSimpleID(), () -> new ModuleItem<>(RK_2_GRIP));
     public static final DeferredItem<Item> M203_ITEM =
             ITEMS.register(M203.getSimpleID(), () -> new ModuleItem<>(M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
@@ -419,6 +428,7 @@ public class GCR {
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
+                                output.accept(RK_6_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
                                 output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());

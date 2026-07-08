@@ -49,6 +49,7 @@ public class GunTaskHandler {
     }
 
     public void cancelTask() {
+        System.out.println("task canceled");
         task.onCancel();
         task = null;
     }

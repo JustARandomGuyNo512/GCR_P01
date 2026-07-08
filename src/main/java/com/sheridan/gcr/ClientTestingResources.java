@@ -158,6 +158,8 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCR.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.DANIEL_DEFENSE_RIS_II_HANDGUARD, "model_assets/gltf/daniel_defense_ris_ii.gltf", "model_assets/gltf/daniel_defense_ris_ii.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.KAC_FORWARD_GRIP, "model_assets/gltf/kac_forward_grip.gltf", "model_assets/gltf/kac_forward_grip.png", true, MLokFitGripModel::new);
+        ModelRegistrationManager.registerModel(GCR.RK_2_GRIP, "model_assets/gltf/rk_2_grip.gltf", "model_assets/gltf/rk_2_grip.png", true, MLokFitGripModel::new);
+
         ModelRegistrationManager.registerModel(GCR.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d -> new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f));
 
