@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -84,10 +85,17 @@ public class DefaultGunRenderer implements IGunRenderer {
     private static final Vector3f TMP_LIGHT1 = new Vector3f();
     private static final Quaternionf TMP_INV_CAM_ROT = new Quaternionf();
 
-    private float localCameraYaw;
-    private float localCameraPitch;
-    private float localCameraRoll;
+//    private float localCameraYaw;
+//    private float localCameraPitch;
+//    private float localCameraRoll;
+//    private Vector3f cleanCameraRot = new Vector3f();
+//    private Vector3f cameraRotLast = new Vector3f();
+    private Vector3f currCameraRot = new Vector3f();
+    private Vector3f renderCameraRot = new Vector3f();
+//    private boolean cleanCameraRot = false;
+//    private boolean overrideRenderCameraRot = false;
     private final List<EventType> delayedEvents = new ArrayList<>();
+    //private boolean clearCameraRot = false;
 
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
@@ -113,7 +121,7 @@ public class DefaultGunRenderer implements IGunRenderer {
             cachedFPContext.itemStack = itemStack;
         }
 
-        firstPersonPoseStack.mulPose(new Quaternionf().rotateXYZ(localCameraPitch, localCameraYaw, localCameraRoll));
+        firstPersonPoseStack.mulPose(new Quaternionf().rotateXYZ(currCameraRot.x, currCameraRot.y, currCameraRot.z));
 
         GunPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
         firstPersonPoseStack.last().pose().getTranslation(GUN_LOCAL_POS);
@@ -187,6 +195,17 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
     }
 
+
+    @Override
+    public void renderTickPre(float partialTicks) {
+
+    }
+
+    @Override
+    public void renderTickPost(float partialTicks) {
+
+    }
+
     @Override
     public void setHideFPRender(boolean hide) {
         hideFPRender = hide;
@@ -252,7 +271,6 @@ public class DefaultGunRenderer implements IGunRenderer {
             guiCallback.accept(context);
         }
         node.dfsTravel((n -> {
-            //context.setCurrentRenderNode(n);
             context.currentRenderNode = n;
             n.model.afterAllRendered(context);
         }));
@@ -267,9 +285,6 @@ public class DefaultGunRenderer implements IGunRenderer {
         animationEventBus = null;
         bulletShellHandlerModel = null;
         bulletShellHandlerNodeID = "";
-        localCameraPitch = 0;
-        localCameraYaw = 0;
-        localCameraRoll = 0;
     }
 
     private void newFirstPersonContextInit() {
@@ -315,10 +330,9 @@ public class DefaultGunRenderer implements IGunRenderer {
         if (context.renderMode) {
             Bone camera = context.root.model.getBone("camera");
             if (camera != null) {
-                localCameraPitch = camera.xRot;
-                localCameraYaw = camera.yRot;
-                localCameraRoll = camera.zRot;
-                CameraAnimationHandler.INSTANCE.set(camera);
+                currCameraRot.set(camera.xRot, camera.yRot, camera.zRot);
+                currCameraRot.mul(DrawHolsterHandler.get().getEquipProgress(context.partialTicks));
+                CameraAnimationHandler.INSTANCE.set(currCameraRot);
             }
         }
         context.startRender();

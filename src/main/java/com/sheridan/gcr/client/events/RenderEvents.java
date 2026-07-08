@@ -45,8 +45,13 @@ public class RenderEvents {
         Client.isIrisShaderInUse = IrisCompat.isShaderPackInUse();
         Utils.setUpStencil();
         DrawHolsterHandler.get().onRenderTick(Minecraft.getInstance().gameRenderer.itemInHandRenderer);
+        Client.getGunRenderer().renderTickPre(event.getPartialTick().getRealtimeDeltaTicks());
     }
 
+    @SubscribeEvent
+    public static void onRenderTickEnd(RenderFrameEvent.Post event) {
+        Client.getGunRenderer().renderTickPost(event.getPartialTick().getRealtimeDeltaTicks());
+    }
 
     @SubscribeEvent
     public static void onRenderCrosshair(RenderGuiLayerEvent.Pre event) {

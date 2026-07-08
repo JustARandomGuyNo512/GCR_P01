@@ -31,6 +31,10 @@ public interface IGunRenderer {
 
     void tick(LocalPlayer player);
 
+    void renderTickPre(float partialTicks);
+
+    void renderTickPost(float partialTicks);
+
     void setHideFPRender(boolean hide);
 
     boolean isHideFPRender();
