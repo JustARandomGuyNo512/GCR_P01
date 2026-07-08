@@ -37,7 +37,7 @@ public abstract class AbstractScopeModel extends SightModel implements IScopeMod
                 !IrisCompat.isRenderingShadowPass() &&
                 Utils.isStencilEnabled() &&
                 Client.WEAPON_STATUS.isSightActivated(context.currentRenderNode().id);
-        if (Client.isIrisShaderInUse) {
+        if (Client.isUseIrisShader) {
             return BufferedBoneMeshModel.isCurrentSupportGcrRender() && b;
         }
         return b;

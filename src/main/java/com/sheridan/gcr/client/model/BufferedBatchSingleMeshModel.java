@@ -298,7 +298,7 @@ public class BufferedBatchSingleMeshModel {
     }
 
     protected boolean updateCompatType() {
-        CompatType prevType = Client.isIrisShaderInUse ? CompatType.IRIS : CompatType.VANILLA;
+        CompatType prevType = Client.isUseIrisShader ? CompatType.IRIS : CompatType.VANILLA;
         if (compatType != prevType) {
             compatType = prevType;
             release();

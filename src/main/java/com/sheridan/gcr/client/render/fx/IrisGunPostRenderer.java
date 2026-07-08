@@ -34,7 +34,7 @@ public class IrisGunPostRenderer {
 
     @SubscribeEvent
     public static void onRenderHand(RenderHandEvent event) {
-        if (Client.isIrisShaderInUse && IrisGunPostShader.isOK() && !IrisCompat.isRenderingShadowPass()) {
+        if (Client.isUseIrisShader && IrisGunPostShader.isOK() && !IrisCompat.isRenderingShadowPass()) {
             InteractionHand hand = event.getHand();
             Item item = event.getItemStack().getItem();
             if (hand == InteractionHand.MAIN_HAND && item instanceof GunItem) {

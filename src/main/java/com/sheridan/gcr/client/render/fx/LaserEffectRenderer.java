@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render.fx;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.delayed.Stage;
@@ -105,7 +106,14 @@ public class LaserEffectRenderer {
     @SubscribeEvent
     public static void saveMatrix(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            modelViewMat.set(RenderSystem.getModelViewMatrix());
+            if (Client.isUseIrisShader) {
+                Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                Quaternionf quaternionf = camera.rotation().conjugate(new Quaternionf());
+                Matrix4f matrix4f = (new Matrix4f()).rotation(quaternionf);
+                modelViewMat.set(matrix4f);
+            } else {
+                modelViewMat.set(RenderSystem.getModelViewMatrix());
+            }
             projectionMat.set(calculateCleanProjectionMatrix());
         }
     }

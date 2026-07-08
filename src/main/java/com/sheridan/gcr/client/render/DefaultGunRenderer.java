@@ -8,7 +8,6 @@ import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
-import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.model.Bone;
@@ -38,7 +37,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -224,7 +222,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         }
         DisplayData displayData = gun.getDisplayData();
         if (displayData != null) {
-            if (Client.isIrisShaderInUse) {
+            if (Client.isUseIrisShader) {
                 RenderEvents.addDelayedEntityRenderTask(() -> {
                     RenderSystem.backupProjectionMatrix();
                     RenderSystem.setProjectionMatrix(Client.FIRST_PERSON_PROJECTION_MAT, VertexSorting.DISTANCE_TO_ORIGIN);

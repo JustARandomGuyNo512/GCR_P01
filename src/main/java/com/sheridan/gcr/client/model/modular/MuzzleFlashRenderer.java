@@ -15,7 +15,6 @@ import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.neoforged.api.distmarker.Dist;
@@ -233,7 +232,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         if (context.entity == null || context.entity.getId() != Client.LOCAL_PLAYER_ID) {
             return;
         }
-        if (Client.isIrisShaderInUse) {
+        if (Client.isUseIrisShader) {
             if (IrisCompat.isRenderingShadowPass()) {
                 return;
             }

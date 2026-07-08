@@ -144,7 +144,7 @@ public class FlashLightRenderer {
                         pass.getEffect().safeGetUniform("Angle").set((float) Math.toRadians(finalAngle));
                         pass.getEffect().safeGetUniform("Range").set(finalRange);
                         pass.getEffect().safeGetUniform("Luminance").set(finalLuminance);
-                        pass.getEffect().safeGetUniform("MinZ").set(Client.isIrisShaderInUse ? 0.75f : 0f);
+                        pass.getEffect().safeGetUniform("MinZ").set(Client.isUseIrisShader ? 0.75f : 0f);
                         pass.getEffect().safeGetUniform("Mode").set(1);
                         pass.getEffect().safeGetUniform("TexelSize").set(1.0f / lastWidth, 1.0f / lastHeight);
                     }
