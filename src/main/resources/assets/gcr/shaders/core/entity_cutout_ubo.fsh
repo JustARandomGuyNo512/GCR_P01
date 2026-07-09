@@ -32,11 +32,11 @@ void main() {
     color.rgb += muzzleLightContribution;
 
     float heat = gcrHeat * texture(gcrHeatMap, texCoord0).r;
-
+    float heat2 = heat * heat;
     vec3 heatColor = vec3(
     heat,
-    heat * 0.5,
-    heat * 0.3);
+    heat2 * 0.5,
+    heat2 * 0.3);
 
     color.rgb += heatColor;
 
