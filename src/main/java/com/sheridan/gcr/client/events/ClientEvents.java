@@ -7,6 +7,7 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.animation.AnimationHandler;
+import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.Shaders;
@@ -56,6 +57,7 @@ public class ClientEvents {
             DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);
         }
         Client.LOCK.unlock();
+        ModularModel.debugHeat = Math.max(0, ModularModel.debugHeat - 0.005f);
     }
 
     public static void registerCustomVanillaShader(RegisterShadersEvent event) {

@@ -5,6 +5,7 @@ import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
+import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.screen.DebugDisplayDataAdjustScreen;
 import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyUI;
 import com.sheridan.gcr.items.GunItem;

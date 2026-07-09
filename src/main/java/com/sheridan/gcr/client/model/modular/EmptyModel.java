@@ -6,6 +6,8 @@ import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +63,21 @@ public final class EmptyModel implements IModularModel{
 
     @Override
     public void copyRenderStatus(Map<String, BoneRenderStatus> statusStorage) {
+
+    }
+
+    @Override
+    public IModularModel setHeatMapTexPath(ResourceLocation path) {
+        return this;
+    }
+
+    @Override
+    public @Nullable ResourceLocation getHeatMapTexPath() {
+        return null;
+    }
+
+    @Override
+    public void compile(RenderType type) {
 
     }
 

@@ -72,6 +72,7 @@ public class BufferedPlayerArmModel extends BufferedBoneMeshModel {
     protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
         super.afterUniformLoaded(shader, isFirstPerson, isShadowPass);
         if (isFirstPerson && !isShadowPass) {
+            ModularModel.uploadHeatMapTex(shader.getId(), true, null);
             ModularModel.uploadMuzzleFlashEffectUniforms(shader.getId());
         }
     }

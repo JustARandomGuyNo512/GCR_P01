@@ -40,20 +40,6 @@ public abstract class ARFireMode extends FireMode<AR> {
     @OnlyIn(Dist.CLIENT)
     @Override
     public FireControl clientIntentToFire(Player player, ItemStack stack, AR gun) {
-//        Minecraft mc = Minecraft.getInstance();
-//        ClientPacketListener connection = mc.getConnection();
-//        if (connection != null && mc.player != null) {
-//            PlayerInfo info = connection.getPlayerInfo(mc.player.getUUID());
-//            if (info != null) {
-//                int ping = info.getLatency();
-//                if (ping > 500) {
-//                    String string = Component.translatable("gcr.overlay.bad_network").getString();
-//                    string = string.replace("$p", ping + "");
-//                    player.sendSystemMessage(Component.literal(string));
-//                    return FireControl.CANCEL_FIRE;
-//                }
-//            }
-//        }
         String identityID = gun.getIdentityID(stack);
         if (IGun.NONE.equals(identityID)) {
             player.sendSystemMessage(Component.literal("server data not synced"));

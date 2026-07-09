@@ -1,5 +1,6 @@
 package com.sheridan.gcr.client.model.modular;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.animation.IAnimated;
@@ -8,6 +9,7 @@ import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.render.FirstPersonRenderContext;
+import com.sheridan.gcr.client.render.HeatMapTextureManager;
 import com.sheridan.gcr.client.render.IrisExtendRT;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -17,6 +19,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import java.util.Map;
@@ -24,6 +27,7 @@ import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class ModularModel extends BufferedBoneMeshModel implements IModularModel{
+    protected ResourceLocation heatMapTexPath = null;
 
     public ModularModel(MeshModelData root, ResourceLocation name) {
         super(root, name);
@@ -48,12 +52,32 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
     @Override
     protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
         if (isFirstPerson && !isShadowPass) {
+            if (Client.isUsingIrisShader) {
+                IrisExtendRT.setUpDrawBuffers();
+            }
             uploadMuzzleFlashEffectUniforms(shader.getId());
+            uploadHeatMapTex(shader.getId(), false, heatMapTexPath);
         }
+    }
+    public static float debugHeat = 0;
+    public static void uploadHeatMapTex(int shaderId, boolean forceUseEmptyHeatMap, ResourceLocation heatMapTexPath) {
+        int heatUni = GL20.glGetUniformLocation(shaderId, "gcrHeat");
+        int heatMapTexUni = GL20.glGetUniformLocation(shaderId, "gcrHeatMap");
+        if (heatUni == -1 || heatMapTexUni == -1) {
+            return;
+        }
+        int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
+        GL20.glUniform1f(heatUni, debugHeat * 5f);
+        RenderSystem.activeTexture(GL13.GL_TEXTURE7);
+        RenderSystem.bindTexture(texId);
+        GL20.glUniform1i(heatMapTexUni, 7);
     }
 
     public static void uploadMuzzleFlashEffectUniforms(int shaderId) {
         Vector3f muzzleFlashPos = Client.WEAPON_STATUS.getMuzzleFlashPos();
+        if (Client.isUsingIrisShader) {
+            IrisExtendRT.setUpDrawBuffers();
+        }
         if (muzzleFlashPos != null) {
             float progress = Client.distFromLastShoot();
             int muzzleFlashPosition = GL20.glGetUniformLocation(shaderId, "MuzzleFlashPosition");
@@ -68,9 +92,6 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
                 GL20.glUniform1f(muzzleFlashRadius, r);
-                if (Client.isUsingIrisShader) {
-                    IrisExtendRT.setUpDrawBuffers();
-                }
             } else {
                 GL20.glUniform1f(muzzleFlashIntensity, 0);
                 Client.WEAPON_STATUS.clearMuzzleFlashModelEffect();
@@ -156,6 +177,18 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             }
         }
     }
+
+    @Override
+    public IModularModel setHeatMapTexPath(ResourceLocation path) {
+        this.heatMapTexPath = path;
+        return this;
+    }
+
+    @Override
+    public @Nullable ResourceLocation getHeatMapTexPath() {
+        return heatMapTexPath;
+    }
+
 
     public Bone getOrThrow(String boneName) {
         Bone bone = getBone(boneName);

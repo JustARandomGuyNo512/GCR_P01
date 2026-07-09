@@ -53,8 +53,6 @@ public class CommonEvents {
                 gun.serverInitData(eventTo);
                 String initID = gun.getIdentityID(eventTo);
                 if (!IGun.NONE.equals(initID) && event.getEntity() instanceof ServerPlayer player) {
-                    //TODO:发送数据同步包给客户端
-                    System.out.println("should send data to client");
                     PacketDistributor.sendToPlayer(
                             player,
                             new InitClientGunDataPacket(
@@ -65,7 +63,6 @@ public class CommonEvents {
                     );
                 }
             } else if (dataDate != serverStartTime) {
-                //String modifyID = gun.getStructureID(eventTo);
                 ListTag modulesTag = gun.getModulesTag(eventTo);
                 System.out.println(modulesTag);
                 IBuilder builder = new Builder();
@@ -100,7 +97,7 @@ public class CommonEvents {
                     gun.setModifyID(eventTo, gun.getModifyID(eventTo) + 1, false);
                     gun.notifyDataChanged(eventTo);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         }

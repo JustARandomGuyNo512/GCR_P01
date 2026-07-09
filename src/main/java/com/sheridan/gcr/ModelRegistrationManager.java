@@ -5,6 +5,7 @@ import com.sheridan.gcr.client.animation.AnimationRegister;
 import com.sheridan.gcr.client.animation.io.BedrockAnimationLoader;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
+import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
 import com.sheridan.gcr.client.render.RenderTypes;
@@ -27,7 +28,7 @@ public class ModelRegistrationManager {
      * @param immediateCompile 是否加入延迟编译队列
      * @param modelFactory 自定义实例化的Lambda编码参数
      */
-    public static <T extends ModularModel> T registerModel(
+    public static <T extends IModularModel> T registerModel(
             Object registryKey,
             String gltfPath,
             String texturePath,
@@ -52,6 +53,8 @@ public class ModelRegistrationManager {
 
         return model;
     }
+
+
 
     public static void addDeferredCompileTask(Runnable task) {
         DEFERRED_COMPILE_TASKS.add(task);

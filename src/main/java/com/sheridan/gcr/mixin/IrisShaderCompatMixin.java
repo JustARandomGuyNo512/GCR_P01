@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Mixin(targets = "net.irisshaders.iris.pipeline.transform.TransformPatcher")
 public class IrisShaderCompatMixin {
@@ -49,120 +51,302 @@ public class IrisShaderCompatMixin {
     }
 
 
+//    private static String patchFPFsh(String fsh) {
+//
+//        if (fsh.contains("gcrMuzzleLightContributions")) {
+//
+//            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(
+//                    "layout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*out\\s+(?:float|vec2)\\s+gcrMuzzleLightContributions\\s*;");
+//            java.util.regex.Matcher matcher = pattern.matcher(fsh);
+//            if (matcher.find()) {
+//                int loc = Integer.parseInt(matcher.group(1));
+//                IrisExtendRT.updateAttachmentLayout(loc);
+//            } else {
+//                IrisExtendRT.updateAttachmentLayout(-1);
+//            }
+//            return fsh; // 不做修改，直接返回
+//        }
+//
+//        int maxDrawBuffers = GL11.glGetInteger(GL20.GL_MAX_DRAW_BUFFERS);
+//        int maxColorAttachments = GL11.glGetInteger(GL30.GL_MAX_COLOR_ATTACHMENTS);
+//        int maxMRT = Math.min(maxDrawBuffers, maxColorAttachments);
+//
+//        java.util.Set<Integer> usedLocations = new java.util.HashSet<>();
+//        java.util.regex.Pattern locPattern = java.util.regex.Pattern.compile(
+//                "layout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*out\\s+\\w+");
+//        java.util.regex.Matcher locMatcher = locPattern.matcher(fsh);
+//        while (locMatcher.find()) {
+//            try {
+//                int loc = Integer.parseInt(locMatcher.group(1));
+//                usedLocations.add(loc);
+//            } catch (NumberFormatException ignored) {
+//            }
+//        }
+//
+//        int chosenLoc = -1;
+//        for (int i = 0; i < maxMRT; i++) {
+//            if (!usedLocations.contains(i)) {
+//                chosenLoc = i;
+//                break;
+//            }
+//        }
+//
+//        if (chosenLoc == -1) {
+//            System.out.println("No available location found for gcrMuzzleLightContributions");
+//            IrisExtendRT.updateAttachmentLayout(-1);
+//            return fsh;
+//        }
+//
+//        IrisExtendRT.updateAttachmentLayout(chosenLoc);
+//
+//
+//        String layout = "layout(location = " + chosenLoc + ") out vec2 gcrMuzzleLightContributions;";
+//        String inDecl = "in float gcrMuzzleLightContribution;\nin vec2 gcrUV0;";
+//
+//
+//        String code =
+//                "float gcrHeatRes = gcrHeat * texture(gcrHeatMap, gcrUV0).r;\n" +
+//                "gcrMuzzleLightContributions = vec2(gcrMuzzleLightContribution, gcrHeatRes);";
+//
+//        StringBuilder sb = new StringBuilder(fsh);
+//
+//
+//        StringBuilder extraUniforms = new StringBuilder();
+//        if (!sb.toString().contains("uniform sampler2D gcrHeatMap;")) {
+//            extraUniforms.append("uniform sampler2D gcrHeatMap;\n");
+//        }
+//        if (!sb.toString().contains("uniform float gcrHeat;")) {
+//            extraUniforms.append("uniform float gcrHeat;\n");
+//        }
+//        if (extraUniforms.length() > 0) {
+//            int versionEnd = sb.indexOf("\n", sb.indexOf("#version")) + 1;
+//            sb.insert(versionEnd, extraUniforms.toString());
+//        }
+//
+//        // 插入 layout 声明（复用原逻辑，找第一个 "out " 所在行插入）
+//        int insertLayoutPos = sb.indexOf("out ");
+//        if (insertLayoutPos != -1) {
+//            while (insertLayoutPos > 0 && sb.charAt(insertLayoutPos - 1) != '\n') {
+//                insertLayoutPos--;
+//            }
+//            sb.insert(insertLayoutPos, layout + "\n");
+//        } else {
+//            insertLayoutPos = sb.indexOf("void main");
+//            if (insertLayoutPos != -1) {
+//                while (insertLayoutPos > 0 && sb.charAt(insertLayoutPos - 1) != '\n') {
+//                    insertLayoutPos--;
+//                }
+//                sb.insert(insertLayoutPos, layout + "\n");
+//            } else {
+//                sb.insert(0, layout + "\n");
+//            }
+//        }
+//
+//        // 插入 in 声明
+//        int inInsertPos = sb.indexOf(layout);
+//        if (inInsertPos != -1) {
+//            inInsertPos += layout.length() + 1;
+//            sb.insert(inInsertPos, inDecl + "\n");
+//        } else {
+//            sb.insert(0, inDecl + "\n");
+//        }
+//
+//        // 插入赋值代码到 main() 第一行
+//        int mainPos = sb.indexOf("void main");
+//        if (mainPos != -1) {
+//            int bracePos = sb.indexOf("{", mainPos);
+//            if (bracePos != -1) {
+//                int insertCodePos = bracePos + 1;
+//                while (insertCodePos < sb.length() &&
+//                        Character.isWhitespace(sb.charAt(insertCodePos))) {
+//                    insertCodePos++;
+//                }
+//                sb.insert(insertCodePos, code + "\n");
+//            }
+//        }
+//
+//        return sb.toString();
+//    }
+
     private static String patchFPFsh(String fsh) {
-        // 如果已经包含 gcrMuzzleLightContributions，则提取已有的 location 并赋值给 MuzzleRT.attachmentLayoutLocation
+        // 已经处理过：直接从已有声明里读出 location，赋值给 IrisExtendRT，不重复注入
         if (fsh.contains("gcrMuzzleLightContributions")) {
-            // 匹配 layout(location = X) out float gcrMuzzleLightContributions;
-            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(
-                    "layout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*out\\s+float\\s+gcrMuzzleLightContributions\\s*;");
-            java.util.regex.Matcher matcher = pattern.matcher(fsh);
-            if (matcher.find()) {
-                int loc = Integer.parseInt(matcher.group(1));
-                IrisExtendRT.updateAttachmentLayout(loc);
-            } else {
-                // 虽然包含名称，但 layout 格式不标准，也设为 -1
-                IrisExtendRT.updateAttachmentLayout(-1);
-            }
-            return fsh; // 不做修改，直接返回
+            int existingLoc = extractExistingLocation(fsh);
+            IrisExtendRT.updateAttachmentLayout(existingLoc);
+            return fsh;
         }
 
-        int maxDrawBuffers = GL11.glGetInteger(GL20.GL_MAX_DRAW_BUFFERS);
-        int maxColorAttachments = GL11.glGetInteger(GL30.GL_MAX_COLOR_ATTACHMENTS);
-        int maxMRT = Math.min(maxDrawBuffers, maxColorAttachments); // 默认保守值，可根据设备查询调整
+        int maxMRT = Math.min(
+                GL11.glGetInteger(GL20.GL_MAX_DRAW_BUFFERS),
+                GL11.glGetInteger(GL30.GL_MAX_COLOR_ATTACHMENTS)
+        );
 
-        // 收集 fsh 中所有已使用的 layout(location = X) 的 X 值
-        java.util.Set<Integer> usedLocations = new java.util.HashSet<>();
-        java.util.regex.Pattern locPattern = java.util.regex.Pattern.compile(
-                "layout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*out\\s+\\w+");
-        java.util.regex.Matcher locMatcher = locPattern.matcher(fsh);
-        while (locMatcher.find()) {
-            try {
-                int loc = Integer.parseInt(locMatcher.group(1));
-                usedLocations.add(loc);
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        // 寻找最小的非负空闲 location（从 0 开始，连续查找空位）
-        int chosenLoc = -1;
-        for (int i = 0; i < maxMRT; i++) {
-            if (!usedLocations.contains(i)) {
-                chosenLoc = i;
-                break;
-            }
-        }
-
-        // 如果没有可用空位，设为 -1 并直接返回原 shader
+        int chosenLoc = findFreeAttachmentLocation(fsh, maxMRT);
         if (chosenLoc == -1) {
             System.out.println("No available location found for gcrMuzzleLightContributions");
             IrisExtendRT.updateAttachmentLayout(-1);
             return fsh;
         }
-
-        // 有可用位置，赋值
         IrisExtendRT.updateAttachmentLayout(chosenLoc);
 
-        // 准备要注入的字符串
-        String layout = "layout(location = " + chosenLoc + ") out float gcrMuzzleLightContributions;";
-        String inDecl = "in float gcrMuzzleLightContribution;";  // 注意：原文中是 in float gcrMuzzleLightContribution（无 s）
-        String code = "gcrMuzzleLightContributions = gcrMuzzleLightContribution;";
+        String fshOut = fsh;
 
-        // 1. 将 layout 声明注入到所有 out 变量声明之后（或文件开头合适位置，通常在 precision/uniform 之后）
-        //    这里简单地在第一个 out 出现的位置之前插入，或文件开头后合适处
-        //    更健壮的做法：找到最后一个 layout(out) 或 uniform 之后插入
+        // 1. 在 #version 之后插入需要的 uniform 声明（如果这份 fsh 本身还没有）
+        fshOut = insertMissingUniformsAfterVersion(fshOut);
+
+        // 2. 插入 layout(out) 输出声明 + in 声明（放在第一个 out 变量之前，找不到就放在 main 之前）
+        String layoutDecl = "layout(location = " + chosenLoc + ") out vec2 gcrMuzzleLightContributions;";
+        String inDecl = "in float gcrMuzzleLightContribution;\nin vec2 gcrUV0;";
+        fshOut = insertDeclarationsBeforeFirstOutOrMain(fshOut, layoutDecl + "\n" + inDecl);
+
+        // 3. 在 main() 函数体第一行插入赋值代码
+        String code =
+                """
+                float gcrHeatRes = gcrHeat * texture(gcrHeatMap, gcrUV0).r;
+                gcrMuzzleLightContributions = vec2(gcrMuzzleLightContribution, gcrHeatRes);
+                """;
+        fshOut = insertAtStartOfMain(fshOut, code);
+
+        return fshOut;
+    }
+
+    /**
+     * 从已经 patch 过的 fsh 中提取 gcrMuzzleLightContributions 的 location 值。
+     * 逐行扫描，找到包含 "out vec2 gcrMuzzleLightContributions" 的那一行，
+     * 再从 "location = " 和 ")" 之间截取数字。
+     */
+    private static int extractExistingLocation(String fsh) {
+        for (String line : fsh.split("\n")) {
+            if (!line.contains("gcrMuzzleLightContributions") || !line.contains("layout")) {
+                continue;
+            }
+            int locKeywordPos = line.indexOf("location");
+            if (locKeywordPos == -1) {
+                continue;
+            }
+            int eqPos = line.indexOf('=', locKeywordPos);
+            int closeParenPos = line.indexOf(')', eqPos);
+            if (eqPos == -1 || closeParenPos == -1) {
+                continue;
+            }
+            String numberPart = line.substring(eqPos + 1, closeParenPos).trim();
+            try {
+                return Integer.parseInt(numberPart);
+            } catch (NumberFormatException ignored) {
+                // 格式不标准，继续找下一行（理论上不应该发生）
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 逐行扫描 fsh，收集所有已经被占用的 "layout(location = X) out ..." 的 X 值，
+     * 然后从 0 开始找第一个没被占用的 location。
+     */
+    private static int findFreeAttachmentLocation(String fsh, int maxMRT) {
+        java.util.Set<Integer> usedLocations = new java.util.HashSet<>();
+
+        for (String line : fsh.split("\n")) {
+            String trimmed = line.trim();
+            if (!trimmed.startsWith("layout") || !trimmed.contains("out ")) {
+                continue;
+            }
+            int locKeywordPos = trimmed.indexOf("location");
+            if (locKeywordPos == -1) {
+                continue;
+            }
+            int eqPos = trimmed.indexOf('=', locKeywordPos);
+            int closeParenPos = trimmed.indexOf(')', eqPos);
+            if (eqPos == -1 || closeParenPos == -1) {
+                continue;
+            }
+            String numberPart = trimmed.substring(eqPos + 1, closeParenPos).trim();
+            try {
+                usedLocations.add(Integer.parseInt(numberPart));
+            } catch (NumberFormatException ignored) {
+                // 忽略格式不标准的行
+            }
+        }
+
+        for (int i = 0; i < maxMRT; i++) {
+            if (!usedLocations.contains(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 在 #version 那一行之后插入还缺失的 uniform 声明（HeatMap 采样器 + Heat 强度值）。
+     * 跟 injectUniformsAndTransformLogicFP 里插入 vsh uniform 的做法完全一致。
+     */
+    private static String insertMissingUniformsAfterVersion(String fsh) {
+        StringBuilder extraUniforms = new StringBuilder();
+        if (!fsh.contains("uniform sampler2D gcrHeatMap;")) {
+            extraUniforms.append("uniform sampler2D gcrHeatMap;\n");
+        }
+        if (!fsh.contains("uniform float gcrHeat;")) {
+            extraUniforms.append("uniform float gcrHeat;\n");
+        }
+        if (extraUniforms.length() == 0) {
+            return fsh;
+        }
+
+        int versionIndex = fsh.indexOf("#version");
+        if (versionIndex == -1) {
+            System.err.println("Shader is missing #version directive!");
+            return fsh;
+        }
+        int versionLineEnd = fsh.indexOf('\n', versionIndex) + 1;
+
+        return fsh.substring(0, versionLineEnd) + extraUniforms + fsh.substring(versionLineEnd);
+    }
+
+    /**
+     * 把声明文本插入到第一个 "out " 变量声明所在行之前；
+     * 如果这份 fsh 里完全没有 out 变量，就插到 "void main" 之前；
+     * 都找不到就插到文件开头（兜底）。
+     */
+    private static String insertDeclarationsBeforeFirstOutOrMain(String fsh, String declarations) {
         StringBuilder sb = new StringBuilder(fsh);
 
-        // 查找合适插入 layout 的位置：通常在 #version 或 precision 之后，所有 in/out/uniform 声明区域
-        // 这里采用一个简单策略：在第一个 "out " 出现之前插入（如果有 out），否则在文件开头合理位置
-        int insertLayoutPos = sb.indexOf("out ");
-        if (insertLayoutPos != -1) {
-            // 找到该 out 行的开头（向上找换行）
-            while (insertLayoutPos > 0 && sb.charAt(insertLayoutPos - 1) != '\n') {
-                insertLayoutPos--;
-            }
-            sb.insert(insertLayoutPos, layout + "\n");
-        } else {
-            // 没有 out，插入到文件较前面（例如第一个 { 或 main 之前）
-            insertLayoutPos = sb.indexOf("void main");
-            if (insertLayoutPos != -1) {
-                while (insertLayoutPos > 0 && sb.charAt(insertLayoutPos - 1) != '\n') {
-                    insertLayoutPos--;
-                }
-                sb.insert(insertLayoutPos, layout + "\n");
-            } else {
-                // 兜底：头部添加
-                sb.insert(0, layout + "\n");
-            }
+        int insertPos = sb.indexOf("out ");
+        if (insertPos == -1) {
+            insertPos = sb.indexOf("void main");
         }
 
-        // 2. 将 in 声明注入（通常在 layout 附近，或所有 in 声明区域）
-        //    这里复用类似逻辑，插入在 layout 之后
-        int inInsertPos = sb.indexOf(layout);
-        if (inInsertPos != -1) {
-            inInsertPos += layout.length() + 1; // 换行后
-            sb.insert(inInsertPos, inDecl + "\n");
-        } else {
-            // 兜底
-            sb.insert(0, inDecl + "\n");
+        if (insertPos == -1) {
+            sb.insert(0, declarations + "\n");
+            return sb.toString();
         }
 
-        // 3. 将 code 注入到 void main() 的第一行内部
-        int mainPos = sb.indexOf("void main");
-        if (mainPos != -1) {
-            // 找到 main 的 {
-            int bracePos = sb.indexOf("{", mainPos);
-            if (bracePos != -1) {
-                // 跳过 { 和可能的空白，插入在第一行
-                int insertCodePos = bracePos + 1;
-                while (insertCodePos < sb.length() &&
-                        Character.isWhitespace(sb.charAt(insertCodePos))) {
-                    insertCodePos++;
-                }
-                sb.insert(insertCodePos, code + "\n");
-            }
+        // 回退到这一行的行首
+        while (insertPos > 0 && sb.charAt(insertPos - 1) != '\n') {
+            insertPos--;
         }
-
+        sb.insert(insertPos, declarations + "\n");
         return sb.toString();
+    }
+
+    /**
+     * 把代码插入到 main() 函数体的第一行（跳过左花括号后的空白）。
+     */
+    private static String insertAtStartOfMain(String fsh, String code) {
+        int mainPos = fsh.indexOf("void main");
+        if (mainPos == -1) {
+            return fsh;
+        }
+        int bracePos = fsh.indexOf("{", mainPos);
+        if (bracePos == -1) {
+            return fsh;
+        }
+
+        int insertCodePos = bracePos + 1;
+        while (insertCodePos < fsh.length() && Character.isWhitespace(fsh.charAt(insertCodePos))) {
+            insertCodePos++;
+        }
+
+        return fsh.substring(0, insertCodePos) + code + "\n" + fsh.substring(insertCodePos);
     }
 
     private static String injectUniformsAndTransformLogicFP(String vsh) {
@@ -221,6 +405,10 @@ public class IrisShaderCompatMixin {
             uniforms += "out float gcrMuzzleLightContribution;\n";
         }
 
+        if (!vsh.contains("out vec2 gcrUV0;")) {
+            uniforms += "out vec2 gcrUV0;\n";
+        }
+
         int versionLineEnd = vsh.indexOf('\n', versionIndex);
         String beforeVersionEnd = vsh.substring(0, versionLineEnd + 1);
         String afterVersionEnd = vsh.substring(versionLineEnd + 1);
@@ -241,6 +429,7 @@ public class IrisShaderCompatMixin {
                 gcrTransformedNormal = iris_Normal;
                 gcrTransformedPos = vec4(iris_Position, 1.0);
                 gcrMixedLightmap = iris_UV2;
+                gcrUV0 = iris_UV0;
                 float gcrMuzzleLightContributionRes = 0.0;
                 if (gcrDoTransformOverride == 1) {
                     int boneId = iris_UV1.x;

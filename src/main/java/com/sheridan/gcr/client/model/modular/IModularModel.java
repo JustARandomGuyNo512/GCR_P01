@@ -6,6 +6,8 @@ import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.render.FirstPersonRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -38,4 +40,11 @@ public interface IModularModel extends IAnimated {
     void preFirstPersonRender(FirstPersonRenderContext context);
 
     void copyRenderStatus(Map<String, BoneRenderStatus> statusStorage);
+
+    IModularModel setHeatMapTexPath(ResourceLocation path);
+
+    @Nullable
+    ResourceLocation getHeatMapTexPath();
+
+    void compile(RenderType type);
 }

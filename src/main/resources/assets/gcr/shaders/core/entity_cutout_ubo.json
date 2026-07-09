@@ -18,6 +18,7 @@
     { "name": "MuzzleFlashPosition", "type": "float", "count": 3, "values": [0.0, 0.0, 0.0 ] },
     { "name": "MuzzleFlashIntensity", "type": "float", "count": 1, "values": [ 0.0 ] },
     { "name": "MuzzleFlashRadius", "type": "float", "count": 1, "values": [ 0.0 ] },
-    { "name": "FogShape", "type": "int", "count": 1, "values": [ 0 ] }
+    { "name": "FogShape", "type": "int", "count": 1, "values": [ 0 ] },
+    { "name": "gcrHeat", "type": "float", "count": 1, "values": [ 0.0 ] }
   ]
 }

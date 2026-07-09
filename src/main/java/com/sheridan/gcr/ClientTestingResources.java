@@ -15,6 +15,7 @@ import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMainViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.FlashLightStatesViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.TestM203Viewer;
 import com.sheridan.gcr.client.model.playerArm.BufferedPlayerArmModel;
+import com.sheridan.gcr.client.render.HeatMapTextureManager;
 import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.CommonMuzzleFlashes;
@@ -142,9 +143,18 @@ public class ClientTestingResources {
 
 
         // 常规单行注册
-        ModelRegistrationManager.registerModel(GCR.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d -> new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f));
-        ModelRegistrationManager.registerModel(GCR.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d -> new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.25f));
-        ModelRegistrationManager.registerModel(GCR.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d -> new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  0.8f));
+        ModelRegistrationManager.registerModel(GCR.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/m4_profile_fsb_barrel.png"))
+        );
+        ModelRegistrationManager.registerModel(GCR.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.25f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/a2_flash_hider.png"))
+        );
+        ModelRegistrationManager.registerModel(GCR.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
+                new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  0.8f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
+        );
         ModelRegistrationManager.registerModel(GCR.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
@@ -182,6 +192,8 @@ public class ClientTestingResources {
 
         BufferedPlayerArmModel.init();
         event.enqueueWork(() -> RenderSystem.recordRenderCall(ClientTestingResources::compile));
+
+        HeatMapTextureManager.handleTextureLoad();
     }
 
     public static void afterModelRegister() {

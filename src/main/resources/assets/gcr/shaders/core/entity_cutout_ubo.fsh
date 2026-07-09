@@ -4,11 +4,14 @@
 
 uniform sampler2D Sampler0;
 uniform sampler2D depth;
+uniform sampler2D gcrHeatMap;
 
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
+//0~1
+uniform float gcrHeat;
 
 in float vertexDistance;
 in vec4 vertexColor;
@@ -27,5 +30,15 @@ void main() {
     color *= vertexColor * ColorModulator;
     color *= lightMapColor;
     color.rgb += muzzleLightContribution;
+
+    float heat = gcrHeat * texture(gcrHeatMap, texCoord0).r;
+
+    vec3 heatColor = vec3(
+    heat,
+    heat * 0.5,
+    heat * 0.3);
+
+    color.rgb += heatColor;
+
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }
