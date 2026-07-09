@@ -171,7 +171,10 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCR.RK_2_GRIP, "model_assets/gltf/rk_2_grip.gltf", "model_assets/gltf/rk_2_grip.png", true, MLokFitGripModel::new);
 
         ModelRegistrationManager.registerModel(GCR.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCR.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d -> new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f));
+        ModelRegistrationManager.registerModel(GCR.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/urgi_barrel.png"))
+        );
 
         ModelRegistrationManager.registerModel(GCR.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL("bruh"), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
 
