@@ -67,12 +67,13 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             return;
         }
         int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
-        GL20.glUniform1f(heatUni, debugHeat * 5f);
+        float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
+        GL20.glUniform1f(heatUni, debugHeat * shaderFactor);
         RenderSystem.activeTexture(GL13.GL_TEXTURE7);
         RenderSystem.bindTexture(texId);
         GL20.glUniform1i(heatMapTexUni, 7);
     }
-
+public static boolean k = false;
     public static void uploadMuzzleFlashEffectUniforms(int shaderId) {
         Vector3f muzzleFlashPos = Client.WEAPON_STATUS.getMuzzleFlashPos();
         if (Client.isUsingIrisShader) {
@@ -89,6 +90,9 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             if (progress < 0.1f) {
                 progress = progress >= 0.05f ? 0 : (0.05f - progress) * 20f;
                 float r = Client.WEAPON_STATUS.getMuzzleFlashRadius();
+                if (Client.isUsingIrisShader && k) {
+                    r *= 0.25f;
+                }
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
                 GL20.glUniform1f(muzzleFlashRadius, r);

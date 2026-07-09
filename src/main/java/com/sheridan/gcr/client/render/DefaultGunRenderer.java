@@ -83,17 +83,8 @@ public class DefaultGunRenderer implements IGunRenderer {
     private static final Vector3f TMP_LIGHT1 = new Vector3f();
     private static final Quaternionf TMP_INV_CAM_ROT = new Quaternionf();
 
-//    private float localCameraYaw;
-//    private float localCameraPitch;
-//    private float localCameraRoll;
-//    private Vector3f cleanCameraRot = new Vector3f();
-//    private Vector3f cameraRotLast = new Vector3f();
-    private Vector3f currCameraRot = new Vector3f();
-    private Vector3f renderCameraRot = new Vector3f();
-//    private boolean cleanCameraRot = false;
-//    private boolean overrideRenderCameraRot = false;
+    private final Vector3f currCameraRot = new Vector3f();
     private final List<EventType> delayedEvents = new ArrayList<>();
-    //private boolean clearCameraRot = false;
 
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
@@ -112,6 +103,10 @@ public class DefaultGunRenderer implements IGunRenderer {
         FP_MODEL_VIEW_MAT.set(RenderSystem.getModelViewMatrix());
         setUpLightDir();
         IGunModel gunModel = (IGunModel) ModuleModelRegister.get(gun);
+        if (Client.isUsingIrisShader && ModularModel.k) {
+            //光影包下缩小模型，避免光影后处理出现问题
+            firstPersonPoseStack.scale(0.25f, 0.25f, 0.25f);
+        }
         HardCodeAnimationHandler.getInstance().applyTransformPre(firstPersonPoseStack, gun, partialTicks, player);
         RecoilHandler.INSTANCE.applyTransformPre(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
 
