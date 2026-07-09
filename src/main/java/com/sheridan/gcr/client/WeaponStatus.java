@@ -375,7 +375,7 @@ public class WeaponStatus {
     public void setMuzzleFlashConfig(PoseStack.Pose pose, float muzzleFlashIntensity) {
         if (muzzleFlashIntensity > this.muzzleFlashIntensity) {
             this.muzzleFlashIntensity = muzzleFlashIntensity;
-            this.muzzleFlashRadius = this.muzzleFlashIntensity * 2;
+            this.muzzleFlashRadius = this.muzzleFlashIntensity * 1.5f;
             setMuzzleFlashPos(pose);
         }
     }

@@ -132,7 +132,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                 MuzzleFlash muzzleFlash = entry.getMuzzleFlash();
                 if (System.currentTimeMillis() - startTime <= muzzleFlash.length) {
                     MUZZLE_FLASH_QUEUE.add(Triple.of(entry, bonePose, startTime));
-                    Client.WEAPON_STATUS.setMuzzleFlashConfig(bonePose, entry.flashLightIntensity * (0.95f + 0.1f * Client.WEAPON_STATUS.shootRandomSeed));
+                    Client.WEAPON_STATUS.setMuzzleFlashConfig(bonePose, entry.flashLightIntensity * (0.9f + 0.2f * Client.WEAPON_STATUS.shootRandomSeed));
                 }
                 FastMuzzleSmoke muzzleSmoke = entry.getMuzzleSmoke();
                 if (muzzleSmoke != null) {

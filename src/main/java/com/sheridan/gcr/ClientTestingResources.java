@@ -144,15 +144,15 @@ public class ClientTestingResources {
 
         // 常规单行注册
         ModelRegistrationManager.registerModel(GCR.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
-                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f)
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/m4_profile_fsb_barrel.png"))
         );
         ModelRegistrationManager.registerModel(GCR.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
-                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.25f)
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.75f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/a2_flash_hider.png"))
         );
         ModelRegistrationManager.registerModel(GCR.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
-                new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  0.8f)
+                new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
         );
         ModelRegistrationManager.registerModel(GCR.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
@@ -172,7 +172,7 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(GCR.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->
-                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 2.5f)
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/urgi_barrel.png"))
         );
 

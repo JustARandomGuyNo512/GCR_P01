@@ -87,7 +87,7 @@ public static boolean k = false;
             if (muzzleFlashPosition == -1 || muzzleFlashIntensity == -1 || muzzleFlashRadius == -1) {
                 return;
             }
-            if (progress < 0.1f) {
+            if (progress < 0.08f) {
                 progress = progress >= 0.05f ? 0 : (0.05f - progress) * 20f;
                 float r = Client.WEAPON_STATUS.getMuzzleFlashRadius();
                 if (Client.isUsingIrisShader && k) {
@@ -95,7 +95,7 @@ public static boolean k = false;
                 }
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
-                GL20.glUniform1f(muzzleFlashRadius, r);
+                GL20.glUniform1f(muzzleFlashRadius, r * (0.5f + progress * 0.5f));
             } else {
                 GL20.glUniform1f(muzzleFlashIntensity, 0);
                 Client.WEAPON_STATUS.clearMuzzleFlashModelEffect();
