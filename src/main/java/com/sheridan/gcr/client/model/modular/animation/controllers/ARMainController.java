@@ -51,7 +51,7 @@ public class ARMainController extends AnimationController<ARMainModel> {
 
         subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
             String after = context.getParam("after");
-            getTrack("main").play(anim(after).coverState());
+            getTrack("main").play(anim(after).coverStateExclude("shell"));
         });
         
         subscribe(EventType.RELOAD, 0, (context) -> {
