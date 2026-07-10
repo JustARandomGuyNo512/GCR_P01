@@ -437,14 +437,13 @@ public class IrisShaderCompatMixin {
                 
                     bool visible = data.PacketNormalLightVisible[3][2] > 0.5;
                 
-                    if (!visible) {
-                        gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-                        return;
-                    }
-                
                     gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal;
                     gcrTransformedNormal = normalize(gcrTransformedNormal);
                     gcrTransformedPos = data.TransMat * gcrTransformedPos;
+                    
+                    if (!visible) {
+                         gcrTransformedPos.xyz = vec3(1e20);
+                    }
                 
                     gcrMixedLightmap = ivec2(data.PacketNormalLightVisible[3][0], data.PacketNormalLightVisible[3][1]);
                     gcrOverrideOverlay = ivec2(0, 10);
@@ -553,15 +552,15 @@ public class IrisShaderCompatMixin {
                     GcrBoneData data = gcrBones[boneId];
                 
                     bool visible = data.PacketNormalLightVisible[3][2] > 0.5;
-                
-                    if (!visible) {
-                        gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-                        return;
-                    }
+
                 
                     gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal;
                     gcrTransformedNormal = normalize(gcrTransformedNormal);
                     gcrTransformedPos = data.TransMat * gcrTransformedPos;
+                    
+                    if (!visible) {
+                         gcrTransformedPos.xyz = vec3(1e20);
+                    }
                 
                     gcrMixedLightmap = ivec2(data.PacketNormalLightVisible[3][0], data.PacketNormalLightVisible[3][1]);
                     gcrOverrideOverlay = ivec2(0, 10);

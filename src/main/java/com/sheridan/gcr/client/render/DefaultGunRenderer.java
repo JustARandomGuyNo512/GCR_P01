@@ -103,7 +103,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         FP_MODEL_VIEW_MAT.set(RenderSystem.getModelViewMatrix());
         setUpLightDir();
         IGunModel gunModel = (IGunModel) ModuleModelRegister.get(gun);
-        if (Client.isUsingIrisShader && ModularModel.k) {
+        if (Client.isUsingIrisShader) {
             //光影包下缩小模型，避免光影后处理出现问题
             firstPersonPoseStack.scale(0.25f, 0.25f, 0.25f);
         }

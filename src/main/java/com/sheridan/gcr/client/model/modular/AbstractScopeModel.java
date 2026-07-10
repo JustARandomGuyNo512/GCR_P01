@@ -99,12 +99,15 @@ public abstract class AbstractScopeModel extends SightModel implements IScopeMod
                 farPos.y * scale,
                 nearPos.z
         );
-
+        float crosshairScale = getCrosshairScale();
+        if (Client.isUsingIrisShader) {
+            crosshairScale *= 0.5f;
+        }
         // 构造新的 matrix
         Matrix4f mat = new Matrix4f()
                 .translation(projectedPos)
                 .rotate(nearMat.getNormalizedRotation(new Quaternionf()))
-                .scale(getCrosshairScale());
+                .scale(crosshairScale);
 
         BufferBuilder buffer = Tesselator.getInstance()
                 .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
