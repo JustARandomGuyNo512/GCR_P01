@@ -24,6 +24,7 @@ import com.sheridan.gcr.client.render.fx.particles.explosion.SparkParticle;
 import com.sheridan.gcr.client.screen.containers.ModContainers;
 import com.sheridan.gcr.common.CommonEvents;
 import com.sheridan.gcr.common.Commons;
+import com.sheridan.gcr.common.GunHeatHandler;
 import com.sheridan.gcr.components.ModComponents;
 import com.sheridan.gcr.data.ModData;
 import com.sheridan.gcr.data.PlayerStatusEvents;
@@ -272,6 +273,7 @@ public class GCR {
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
             new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.004f, 1.3f, 4f,
+                    30f,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
@@ -294,15 +296,15 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            29f, 1.72f,
+                            30f, 1.8f,
                             20, 17f, 0.2f,
-                            115.0f, 3f, 3f, 0.014f),
+                            120.0f, 3f, 3f, 0.014f),
                     new RecoilController(
-                            1000.0f, 135f,
+                            900.0f, 140f,
                             160.0f, 13f,
                             165.0f, 10f,
                             175.0f, 11f,
-                            820.0f, 15.0f,
+                            820.0f, 16f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             10f)
@@ -464,6 +466,7 @@ public class GCR {
         NeoForge.EVENT_BUS.register(CommonEvents.class);
         NeoForge.EVENT_BUS.register(com.sheridan.gcr.common.TestEvents.class);
         NeoForge.EVENT_BUS.register(PlayerStatusEvents.class);
+        NeoForge.EVENT_BUS.register(GunHeatHandler.class);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
 
 

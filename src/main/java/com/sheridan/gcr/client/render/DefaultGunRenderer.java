@@ -85,7 +85,7 @@ public class DefaultGunRenderer implements IGunRenderer {
 
     private final Vector3f currCameraRot = new Vector3f();
     private final List<EventType> delayedEvents = new ArrayList<>();
-
+    private long fpRenderTimeStamp = 0;
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
@@ -248,6 +248,16 @@ public class DefaultGunRenderer implements IGunRenderer {
         return new Vector3f(GUN_LOCAL_POS);
     }
 
+    @Override
+    public long getCurrFPRenderTimeStampNano() {
+        if (fpRenderTimeStamp == 0) {
+            return System.nanoTime();
+        } else {
+            return fpRenderTimeStamp;
+        }
+    }
+
+
     private void renderGunModifyScreen(ItemStack itemStack, IGun gun, ModuleRenderNode node,
                                        float x, float y, float rx, float ry, float scale, Consumer<ModifyScreenRenderContext> guiCallback, DisplayData displayData) {
         gunModifyPoseStack.setIdentity();
@@ -327,6 +337,7 @@ public class DefaultGunRenderer implements IGunRenderer {
                 currCameraRot.mul(DrawHolsterHandler.get().getEquipProgress(context.partialTicks));
                 CameraAnimationHandler.INSTANCE.set(currCameraRot);
             }
+            fpRenderTimeStamp = System.nanoTime();
         }
         context.startRender();
         if (context.renderMode) {

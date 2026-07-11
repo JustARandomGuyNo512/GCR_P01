@@ -29,6 +29,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -46,6 +48,7 @@ public class RenderEvents {
         Utils.setUpStencil();
         DrawHolsterHandler.get().onRenderTick(Minecraft.getInstance().gameRenderer.itemInHandRenderer);
         Client.getGunRenderer().renderTickPre(event.getPartialTick().getRealtimeDeltaTicks());
+        Client.MAX_SHADER_TEXTURES = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
     }
 
     @SubscribeEvent

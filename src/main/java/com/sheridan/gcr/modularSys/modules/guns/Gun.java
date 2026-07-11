@@ -119,7 +119,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             ModSounds.sound(1, (float) (0.9f + Math.random() * 0.1f), player, fireSound);
         }
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, rootNodeId(itemStack), System.currentTimeMillis());
-        Client.WEAPON_STATUS.lastShoot = System.currentTimeMillis();
+        Client.WEAPON_STATUS.lastShoot = System.nanoTime();
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
         ModularModel.debugHeat = Mth.clamp(ModularModel.debugHeat + 0.1f, 0, 1);
     }

@@ -30,6 +30,7 @@ public class BaseProperties extends Properties {
     public final NumProp impulse;
     public final NumProp aimingSpeed;
     public final NumProp fireSoundRange;
+    public final NumProp bulletVelocity;
     private SoundEvent fireSoundNormal;
     private SoundEvent fireSoundSuppressed;
     private final ResourceLocation fireSoundNormalName;
@@ -37,6 +38,7 @@ public class BaseProperties extends Properties {
     public Map<String, Float> taskTimers;
 
     public BaseProperties(int rpm,  float weight, float spread, float agility, float faultRate, float aimingSpeed, float soundRange,
+                          float bulletVelocity,
                           ResourceLocation fireSoundNormalName, ResourceLocation fireSoundSuppressedName,
                           Map<String, Float> taskTimers) {
         super(GCR.RL("base"));
@@ -50,6 +52,7 @@ public class BaseProperties extends Properties {
         this.impulse = defProp(new NumProp("impulse", 1));
         this.aimingSpeed = defProp(new NumProp("aiming_speed", aimingSpeed));
         this.fireSoundRange = defProp(new NumProp("sound_range", soundRange));
+        this.bulletVelocity = defProp(new NumProp("bullet_velocity", bulletVelocity));
 
         this.fireSoundNormalName = fireSoundNormalName;
         this.fireSoundSuppressedName = fireSoundSuppressedName;

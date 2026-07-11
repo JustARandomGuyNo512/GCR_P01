@@ -26,7 +26,8 @@ public class GunTaskHandler {
     }
 
     public void setTask(IGunTask<?> task) {
-        if (this.task != null && task.getPriority() < prevTaskPriority()) {
+
+        if (this.task != null && task.getPriority() <= prevTaskPriority()) {
             return;
         }
         setForceTask(task);

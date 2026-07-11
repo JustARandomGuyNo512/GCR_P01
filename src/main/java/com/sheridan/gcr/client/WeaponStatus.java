@@ -60,7 +60,7 @@ public class WeaponStatus {
     private IFireMode<?> fireMode;
     private int fireDelay;
     public int fireCount;
-    public long lastShoot;
+    public volatile long lastShoot;
     public float aimingSpeed;
 
     private Node activeSight = null;

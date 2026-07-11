@@ -214,7 +214,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         SoundEvent soundEvent = ModSounds.M203_FIRE.get();
         ModSounds.sound(1, 1, player, soundEvent);
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, nodeId, System.currentTimeMillis());
-        Client.WEAPON_STATUS.lastShoot = System.currentTimeMillis();
+        Client.WEAPON_STATUS.lastShoot = System.nanoTime();
         float gunKickPitch = recoilUpdater.getGunKickPitch();
         float gunKickYaw = recoilUpdater.getGunKickYaw();
         PacketDistributor.sendToServer(new SubWeaponFirePacket(gunId, nodeId, gunKickPitch, gunKickYaw));

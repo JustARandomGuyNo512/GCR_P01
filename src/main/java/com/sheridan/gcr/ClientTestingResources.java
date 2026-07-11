@@ -148,7 +148,7 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/m4_profile_fsb_barrel.png"))
         );
         ModelRegistrationManager.registerModel(GCR.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
-                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.75f)
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/a2_flash_hider.png"))
         );
         ModelRegistrationManager.registerModel(GCR.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->

@@ -8,12 +8,10 @@ import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.model.MeshModelData;
-import com.sheridan.gcr.client.render.FirstPersonRenderContext;
-import com.sheridan.gcr.client.render.HeatMapTextureManager;
-import com.sheridan.gcr.client.render.IrisExtendRT;
-import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.*;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -69,9 +67,9 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
         GL20.glUniform1f(heatUni, debugHeat * shaderFactor);
-        RenderSystem.activeTexture(GL13.GL_TEXTURE31);
+        RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
         RenderSystem.bindTexture(texId);
-        GL20.glUniform1i(heatMapTexUni, 31);
+        GL20.glUniform1i(heatMapTexUni, Client.MAX_SHADER_TEXTURES - 1);
     }
 
     public static void uploadMuzzleFlashEffectUniforms(int shaderId) {
@@ -80,14 +78,14 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             IrisExtendRT.setUpDrawBuffers();
         }
         if (muzzleFlashPos != null) {
-            float progress = Client.distFromLastShoot();
+            float progress = (Client.getGunRenderer().getCurrFPRenderTimeStampNano() - Client.WEAPON_STATUS.lastShoot) * 1e-9f;
             int muzzleFlashPosition = GL20.glGetUniformLocation(shaderId, "MuzzleFlashPosition");
             int muzzleFlashIntensity = GL20.glGetUniformLocation(shaderId, "MuzzleFlashIntensity");
             int muzzleFlashRadius = GL20.glGetUniformLocation(shaderId, "MuzzleFlashRadius");
             if (muzzleFlashPosition == -1 || muzzleFlashIntensity == -1 || muzzleFlashRadius == -1) {
                 return;
             }
-            if (progress < 0.08f) {
+            if (progress < 0.1f) {
                 progress = progress >= 0.05f ? 0 : (0.05f - progress) * 20f;
                 float r = Client.WEAPON_STATUS.getMuzzleFlashRadius();
                 if (Client.isUsingIrisShader) {
@@ -95,7 +93,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 }
                 GL20.glUniform3f(muzzleFlashPosition, muzzleFlashPos.x, muzzleFlashPos.y, muzzleFlashPos.z);
                 GL20.glUniform1f(muzzleFlashIntensity, progress * Client.WEAPON_STATUS.getMuzzleFlashIntensity());
-                GL20.glUniform1f(muzzleFlashRadius, r * (0.5f + progress * 0.5f));
+                GL20.glUniform1f(muzzleFlashRadius, r);
             } else {
                 GL20.glUniform1f(muzzleFlashIntensity, 0);
                 Client.WEAPON_STATUS.clearMuzzleFlashModelEffect();

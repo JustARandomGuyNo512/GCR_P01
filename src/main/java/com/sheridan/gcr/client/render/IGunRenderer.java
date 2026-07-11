@@ -47,4 +47,5 @@ public interface IGunRenderer {
 
     Vector3f getGunLocalPos();
 
+    long getCurrFPRenderTimeStampNano();
 }

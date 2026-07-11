@@ -1,5 +1,6 @@
 package com.sheridan.gcr;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.WeaponStatus;
@@ -122,6 +123,10 @@ public class Client {
     public static volatile long LAST_SERVER_ACK_SHOOT_TIME = 0;
 
     @OnlyIn(Dist.CLIENT)
+    public static int MAX_SHADER_TEXTURES = 16;
+
+
+    @OnlyIn(Dist.CLIENT)
     public static void onClientSetup(FMLClientSetupEvent event) {
         WEAPON_SCHEDULER.scheduleAtFixedRate(new ClientWeaponLooper(), 0, 5L, TimeUnit.MILLISECONDS); // 500Hz
 
@@ -192,11 +197,6 @@ public class Client {
         gun.serverShootAck(packet, itemStack);
     }
 
-    public static void resetFireState() {
-        LAST_SERVER_ACK_SHOOT_TIME = Client.lastShootMain();
-        LAST_SERVER_ACK_SHOOT_ID = Client.CLIENT_SHOOT_ID.get();
-    }
-
     public static void onReceivedGunDataFromServer(InitClientGunDataPacket packet) {
         Minecraft instance = Minecraft.getInstance();
         LocalPlayer player = instance.player;
@@ -252,9 +252,6 @@ public class Client {
 
     }
 
-    public static long lastShootMain() {
-        return WEAPON_STATUS.lastShoot;
-    }
 
     public static boolean isAiming() {
         return WEAPON_STATUS.isAiming();
@@ -269,6 +266,6 @@ public class Client {
     }
 
     public static float distFromLastShoot() {
-        return (System.currentTimeMillis() - WEAPON_STATUS.lastShoot) * 0.001f;
+        return (System.nanoTime() - WEAPON_STATUS.lastShoot) * 1e-9f;
     }
 }
