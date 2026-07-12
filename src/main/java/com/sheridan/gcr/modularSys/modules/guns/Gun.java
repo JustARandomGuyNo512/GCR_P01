@@ -782,6 +782,16 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
+    public float getHeat(CompoundTag states) {
+        return HEAT.get(states);
+    }
+
+    @Override
+    public long getHeatLastUpdate(CompoundTag states) {
+        return HEAT_LAST_UPDATE.get(states);
+    }
+
+    @Override
     public void onInitStates(CompoundTag states, String nodeId, String moduleId) {
         USING_SIGHT.init(states);
         USING_AMMO_SOURCE.init(states);

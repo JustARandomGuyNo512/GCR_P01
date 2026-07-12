@@ -10,9 +10,7 @@ import com.sheridan.gcr.modularSys.modules.IArmHandlerModular;
 import com.sheridan.gcr.modularSys.modules.IStateModular;
 import com.sheridan.gcr.modularSys.modules.gunProperties.IProperties;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
-import com.sheridan.gcr.modularSys.modules.states.Bool;
-import com.sheridan.gcr.modularSys.modules.states.Int;
-import com.sheridan.gcr.modularSys.modules.states.Str;
+import com.sheridan.gcr.modularSys.modules.states.*;
 import com.sheridan.gcr.modularSys.modules.views.IGunView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
@@ -55,6 +53,8 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     Str FIRE_MODEL_ID = new Str("fire_mode_id", "none");
     Int FIRE_SOUND_TYPE = new Int("fire_sound_type", 0);
     Bool STUCK = new Bool("stuck");
+    Num HEAT = new Num("heat", 0);
+    LInt HEAT_LAST_UPDATE = new LInt("heat_last_update");
 
     void serverShoot(LivingEntity entity, ItemStack itemStack, int shootID, GunFirePacket packet);
 
