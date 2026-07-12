@@ -423,7 +423,7 @@ public class GCR {
                     () -> CreativeModeTab
                             .builder()
                             .title(Component.translatable("itemGroup.gcr.attachment"))
-                            .withTabsBefore(CreativeModeTabs.COMBAT)
+                            .withTabsBefore(GUN_TAB.getKey())
                             .icon(() -> ACOG_ITEM.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(ACOG_ITEM.get());

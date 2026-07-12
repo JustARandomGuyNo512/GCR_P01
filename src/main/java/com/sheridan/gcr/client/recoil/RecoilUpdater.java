@@ -370,7 +370,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             float rand = (randomSeed * 0.6f + 0.4f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, rand * halfPI * 0.67f);
-            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, halfPI);
+            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
         }
 
         Bone handRotPivot = model.getHandRotPivot();
@@ -398,7 +398,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.25f - zBack * (0.1f - aimingProgress * 0.08f),
+                lerpGunDisplacement.y + yDist + shakeY * 0.5f - zBack * (0.07f - aimingProgress * 0.05f),
                 zBack + zDist);
     }
 
