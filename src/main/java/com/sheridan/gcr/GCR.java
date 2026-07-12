@@ -178,6 +178,12 @@ public class GCR {
             0.3f, 1.0f, 1.5f, 4f, 0.15f
             ).addTags("sight", "scope", "upper", "on_rail");
 
+    public static final IModular VORTEX_RAZOR_HD = new Scope(
+            RL( "vortex_razor_hd"),
+            new VoxelHandler(RL("common/voxel_shapes/vortex_razor_hd_voxel.geo.json")),
+            0.61f, 1.0f, 1.0f, 6f, 0.15f
+    ).addTags("sight", "scope", "upper", "on_rail");
+
     public static final IModular CANTED_RAIL = new CantedRail(
             RL( "canted_rail"),
             new VoxelHandler(RL("common/voxel_shapes/canted_rail.voxel.geo.json")),
@@ -289,7 +295,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.074999f, -7.8125f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.075f, -7.8125f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -300,7 +306,7 @@ public class GCR {
                     new RecoilImpulse(
                             30f, 1.8f,
                             20, 17f, 0.2f,
-                            150.0f, 3f, 3f, 0.014f),
+                            125.0f, 3f, 3f, 0.015f),
                     new RecoilController(
                             900.0f, 140f,
                             160.0f, 13f,
@@ -350,6 +356,8 @@ public class GCR {
             ITEMS.register(M4A1.getSimpleID(), () -> new GunItem((AR) M4A1));
     public static final DeferredItem<Item> ACOG_ITEM =
             ITEMS.register(ACOG.getSimpleID(), () -> new ModuleItem<>(ACOG));
+    public static final DeferredItem<Item> VORTEX_RAZOR_HD_ITEM =
+            ITEMS.register(VORTEX_RAZOR_HD.getSimpleID(), () -> new ModuleItem<>(VORTEX_RAZOR_HD));
     public static final DeferredItem<Item> CANTED_RAIL_ITEM =
             ITEMS.register(CANTED_RAIL.getSimpleID(), () -> new ModuleItem<>(CANTED_RAIL));
     public static final DeferredItem<Item> A2_CARRY_HANDLE_ITEM =
@@ -419,11 +427,11 @@ public class GCR {
                             .icon(() -> ACOG_ITEM.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(ACOG_ITEM.get());
+                                output.accept(VORTEX_RAZOR_HD_ITEM.get());
                                 output.accept(CANTED_RAIL_ITEM.get());
                                 output.accept(A2_CARRY_HANDLE_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_REAR_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_FAR_ITEM.get());
-                                output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(MOE_GRIP_ITEM.get());
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
@@ -435,12 +443,13 @@ public class GCR {
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());
+                                output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
+                                output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
                                 output.accept(RK_6_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
-                                output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());
                                 output.accept(PEQ_15_ITEM.get());
                             }).build());

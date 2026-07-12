@@ -186,7 +186,9 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/urgi_barrel.png"))
         );
 
-        ModelRegistrationManager.registerModel(GCR.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL("bruh"), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCR.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCR.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, 1.8f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
+
 
         BulletShellModel shell_5_56x45 = new BulletShellModel(
                 GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.gltf")),
