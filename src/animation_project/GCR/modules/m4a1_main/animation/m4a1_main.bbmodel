@@ -123079,7 +123079,7 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -123401,7 +123401,7 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -123747,7 +123747,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "shell@G",
@@ -123903,7 +123903,7 @@
 								},
 								{
 									"uuid": "d9db6bb9-f07a-259f-6a85-bbeb70534167",
-									"isOpen": true,
+									"isOpen": false,
 									"children": [
 										{
 											"uuid": "ff694efc-f1e6-3bbd-b695-112114b66247",
@@ -124020,7 +124020,7 @@
 								},
 								{
 									"uuid": "2be6cef0-2210-db06-3a8e-69f12f158e71",
-									"isOpen": true,
+									"isOpen": false,
 									"children": [
 										{
 											"uuid": "407ba467-10ed-7bb2-2cb9-2477b5a3a6ad",
@@ -125196,7 +125196,7 @@
 			"override": false,
 			"length": 1.5,
 			"snapping": 90,
-			"selected": true,
+			"selected": false,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -136387,24 +136387,7 @@
 					"name": "shell",
 					"type": "bone",
 					"rotation_global": false,
-					"quaternion_interpolation": false,
-					"keyframes": [
-						{
-							"channel": "scale",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "574f2ded-5575-db9e-7204-f539c5765c7f",
-							"time": 0,
-							"color": -1,
-							"uniform": true,
-							"interpolation": "linear"
-						}
-					]
+					"quaternion_interpolation": false
 				},
 				"86c9ed9c-35c8-84c2-a4f4-b58323741544": {
 					"name": "shell@G",
@@ -136421,7 +136404,7 @@
 			"override": false,
 			"length": 0.41,
 			"snapping": 100,
-			"selected": false,
+			"selected": true,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -137162,24 +137145,7 @@
 					"name": "shell",
 					"type": "bone",
 					"rotation_global": false,
-					"quaternion_interpolation": false,
-					"keyframes": [
-						{
-							"channel": "scale",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "9e033e11-3818-feb9-a103-17219be1ccfe",
-							"time": 0,
-							"color": -1,
-							"uniform": true,
-							"interpolation": "linear"
-						}
-					]
+					"quaternion_interpolation": false
 				},
 				"86c9ed9c-35c8-84c2-a4f4-b58323741544": {
 					"name": "shell@G",

@@ -2278,9 +2278,6 @@
 				},
 				"ammo_reloading": {
 					"scale": 0
-				},
-				"shell": {
-					"scale": 0
 				}
 			},
 			"sound_effects": {
@@ -2387,9 +2384,6 @@
 					}
 				},
 				"ammo_reloading": {
-					"scale": 0
-				},
-				"shell": {
 					"scale": 0
 				}
 			},
