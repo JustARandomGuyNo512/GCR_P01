@@ -112,6 +112,8 @@
   "gcr:m4_profile_fsb_barrel": "M4 Profile FSB Barrel",
   "gcr:stanag_mag_30r": "STANAG 30-Rounds Mag",
   "gcr:pmag_40r": "PMAG 40-Rounds Mag",
+  "gcr:surefire_mag_60r": "SureFire 60-Rounds Mag",
+  "gcr:usgi_mag_20r": "USGI 20-Rounds Mag",
   "gcr:m4_carbine_stock": "M4 Carbine Stock",
   "gcr:a2_flash_hinder": "A2 Flash Hinder",
   "gcr:socom_rc2": "SOCOM RC2 Suppressor",

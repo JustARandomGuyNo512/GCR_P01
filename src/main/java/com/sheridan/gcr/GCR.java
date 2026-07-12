@@ -131,6 +131,8 @@ public class GCR {
 
     public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.18f, 40).addTags("mag", "ar", "5.56x45");
+    public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
+    public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
 
 
     public static final IModular CAR_15_HANDGUARD = new SplitARHandguard(
@@ -368,6 +370,10 @@ public class GCR {
             ITEMS.register(STANAG_MAG_30R.getSimpleID(), () -> new ModuleItem<>(STANAG_MAG_30R));
     public static final DeferredItem<Item> PMAG_40R_ITEM =
             ITEMS.register(PMAG_40R.getSimpleID(), () -> new ModuleItem<>(PMAG_40R));
+    public static final DeferredItem<Item> SUREFIRE_MAG_60R_ITEM =
+            ITEMS.register(SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(SUREFIRE_MAG_60R));
+    public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
+            ITEMS.register(USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(USGI_MAG_20R));
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
@@ -424,6 +430,8 @@ public class GCR {
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
+                                output.accept(SUREFIRE_MAG_60R_ITEM.get());
+                                output.accept(USGI_MAG_20R_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());

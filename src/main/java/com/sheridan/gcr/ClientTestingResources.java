@@ -140,6 +140,16 @@ public class ClientTestingResources {
                 meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.PMAG_40R))
         );
 
+        ModelRegistrationManager.registerModel(
+                GCR.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
+                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.SUREFIRE_MAG_60R))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCR.USGI_MAG_20R, "model_assets/gltf/usgi_mag_20r.gltf", "model_assets/gltf/usgi_mag_20r.png", true,
+                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.USGI_MAG_20R))
+        );
+
 
 
         // 常规单行注册
