@@ -49,7 +49,6 @@ public class AnimationEventBus {
                 IAnimationController<?> controller = triple.getRight();
                 controller.onUsingNode(node.id);
                 eventContext.setEventRenderNode(node);
-                eventContext.setEventRenderNode(node);
                 eventContext.setStates(node.getStates());
                 registry.callback.onTriggered(eventContext);
                 if (eventContext.isCanceled()) {

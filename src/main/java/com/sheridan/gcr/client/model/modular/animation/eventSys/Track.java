@@ -17,7 +17,12 @@ public class Track<T extends IModularModel> {
     private boolean activated;
     private List<Consumer<IAnimationSequence>> onPlayedCallbacks;
     private List<AppliedCallback<T>> onAppliedCallbacks;
-    private String currName = null;
+
+    // 使用 ThreadLocal 保存每个线程独立的节点绑定名称，避免多线程环境下
+    // (例如渲染线程与其他并发线程同时调用 onUsingNode/getCurrName)
+    // 互相覆盖导致的 track 节点 id 绑定错乱问题。
+    // 初始值为 null，表示尚未绑定节点，此时 getCurrName() 回退到 name。
+    private final ThreadLocal<String> currName = ThreadLocal.withInitial(() -> null);
 
     public Track(String name) {
         this.name = name;
@@ -170,15 +175,16 @@ public class Track<T extends IModularModel> {
     }
 
     public String getCurrName() {
-        return currName == null ? name : currName;
+        String bound = currName.get();
+        return bound == null ? name : bound;
     }
 
     public void clearNodeBinding() {
-        currName = null;
+        currName.remove();
     }
 
     public void onUsingNode(String id) {
-        this.currName = id + getName();
+        currName.set(id + getName());
     }
 
     public interface AppliedCallback<E extends IModularModel> {

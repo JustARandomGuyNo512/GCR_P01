@@ -163,7 +163,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
             }
             updateHeat(itemStack, getShootHeat(itemStack), shooter.level().getGameTime(), true);
-            CompoundTag states = rootNodeTag(itemStack);
             GunFireAckPacket ackPacket = new GunFireAckPacket(
                     getIdentityID(itemStack),
                     getAmmoLeft(itemStack),
@@ -749,16 +748,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     @Override
     public void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime) {
         CompoundTag states = rootNodeTag(itemStack);
-//        float heat = getHeat(states);
-//        long lastShootTime = getLastShootTime(states);
-//        boolean coolDown = time - lastShootTime > 40;
-//        if (coolDown) {
-//            long heatLastUpdate = getHeatLastUpdate(states);
-//            float heatDecSpeed = getHeatDecSpeed(itemStack);
-//            int tickNum = (int) (time - heatLastUpdate);
-//            float heatDec = heatDecSpeed * tickNum;
-//            heat -= heatDec;
-//        }
         float heat = calcHeat(itemStack, time);
         heat += heatInc;
         HEAT_LAST_UPDATE.set(time, states);
