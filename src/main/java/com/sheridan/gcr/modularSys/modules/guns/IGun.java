@@ -55,6 +55,7 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     Num HEAT = new Num("heat", 0);
     LInt HEAT_LAST_UPDATE = new LInt("heat_last_update");
     LInt LAST_SHOOT_TIME = new LInt("last_shoot");
+    Num HEAT_STUCK_RATIO = new Num("heat_stuck_ratio", 1);
 
     void serverShoot(LivingEntity entity, ItemStack itemStack, int shootID, GunFirePacket packet);
 
@@ -192,7 +193,9 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     float getCurrHeat(ItemStack itemStack, long now);
 
-    void setHeat(ItemStack itemStack, float heat);
+    void setCurrHeat(ItemStack itemStack, float heat, long heatLastUpdate);
 
     void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime);
+
+    float getHeatStuckRatio(ItemStack itemStack);
 }

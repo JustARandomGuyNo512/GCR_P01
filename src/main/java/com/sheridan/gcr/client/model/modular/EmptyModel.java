@@ -82,6 +82,11 @@ public final class EmptyModel implements IModularModel{
     }
 
     @Override
+    public IModularModel modifyHeatSensitive(float heatSensitive) {
+        return this;
+    }
+
+    @Override
     public void offsetPos(Vector3f vector3f) {}
 
     @Override

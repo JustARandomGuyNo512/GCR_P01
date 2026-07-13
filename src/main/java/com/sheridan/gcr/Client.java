@@ -5,6 +5,7 @@ import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.WeaponStatus;
 import com.sheridan.gcr.client.events.ControllerEvents;
+import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.recoil.IRecoilCameraHandler;
 import com.sheridan.gcr.client.recoil.RecoilCameraHandler;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
@@ -21,6 +22,7 @@ import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import com.sheridan.gcr.network.s2c.InitClientGunDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -268,4 +270,5 @@ public class Client {
     public static float distFromLastShoot() {
         return (System.nanoTime() - WEAPON_STATUS.lastShoot) * 1e-9f;
     }
+
 }

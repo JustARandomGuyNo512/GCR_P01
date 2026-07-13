@@ -106,7 +106,7 @@ public class GCR {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
 
-    public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f,
+    public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f, 1.0f,
             new SlotProvider(RL( "common/pivot_maps/m4_profile_fsb_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("UNDER_BARREL")
                             .setFilter(SlotFilters.hasAllTags("under_barrel", "ar")))
@@ -123,7 +123,7 @@ public class GCR {
             RL( "moe_grip"), 0.1f, 0.1f, 0.1f, 0.06f)
             .addTags("rear_grip", "ar");
 
-    public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f,
+    public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f, 1.0f,
             new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
@@ -193,8 +193,8 @@ public class GCR {
             1).addTags("canted_sight", "sight", "upper", "on_rail");
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
-    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0).addTags("muzzle", "ar");
-    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f).addTags("muzzle", "ar");
+    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 2.5f).addTags("muzzle", "ar");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -280,8 +280,8 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.0025f, 0.25f, 1.3f, 4f,
-                    30f, 0.005f, 0.05f / 60,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.002f, 0.1f, 1.3f, 4f,
+                    30f, 0.005f, 0.05f / 30,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(

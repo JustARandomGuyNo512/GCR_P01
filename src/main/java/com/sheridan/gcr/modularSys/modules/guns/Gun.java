@@ -163,7 +163,15 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
             }
             updateHeat(itemStack, getShootHeat(itemStack), shooter.level().getGameTime(), true);
-            GunFireAckPacket ackPacket = new GunFireAckPacket(getIdentityID(itemStack), getAmmoLeft(itemStack), shootID, isStuck(itemStack));
+            CompoundTag states = rootNodeTag(itemStack);
+            GunFireAckPacket ackPacket = new GunFireAckPacket(
+                    getIdentityID(itemStack),
+                    getAmmoLeft(itemStack),
+                    shootID,
+                    isStuck(itemStack),
+                    getHeatLastUpdate(states),
+                    getHeat(states)
+            );
             PacketDistributor.sendToPlayer(
                     player,
                     ackPacket
@@ -196,6 +204,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     @Override
     public void serverShootAck(GunFireAckPacket packet, ItemStack itemStack) {
         setStuck(packet.stuck, rootNodeTag(itemStack));
+        setCurrHeat(itemStack, packet.heat, packet.heatUpdateTime);
     }
 
     @Override
@@ -412,6 +421,12 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     @Override
     public void setUsingSightID(ItemStack itemStack, String sightID) {
         USING_SIGHT.set(sightID, rootNodeTag(itemStack));
+    }
+
+    @Override
+    public float getHeatStuckRatio(ItemStack itemStack) {
+        CompoundTag compoundTag = rootNodeTag(itemStack);
+        return HEAT_STUCK_RATIO.get(compoundTag);
     }
 
     @Override
@@ -705,6 +720,15 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
+    public void setCurrHeat(ItemStack itemStack, float heat, long heatLastUpdate) {
+        heat = Mth.clamp(heat, 0, 1);
+        heatLastUpdate = Math.max(heatLastUpdate, 0);
+        CompoundTag states = rootNodeTag(itemStack);
+        HEAT.set(heat, states);
+        HEAT_LAST_UPDATE.set(heatLastUpdate, states);
+    }
+
+    @Override
     public void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime) {
         CompoundTag states = rootNodeTag(itemStack);
         float heat = getHeat(states);
@@ -725,7 +749,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         setHeat(itemStack, heat);
     }
 
-    @Override
     public void setHeat(ItemStack itemStack, float heat) {
         CompoundTag states = rootNodeTag(itemStack);
         heat = Mth.clamp(heat, 0, 1);
@@ -850,6 +873,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         HEAT.init(states);
         LAST_SHOOT_TIME.init(states);
         HEAT_LAST_UPDATE.init(states);
+        HEAT_STUCK_RATIO.init(states);
     }
 
     @Override
@@ -887,6 +911,8 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             context.set(RIGHT_ARM_HOLD, rightArmHoldID);
             int fireSoundType = decideFireSoundType(allNodesOfThisTree);
             context.set(FIRE_SOUND_TYPE, fireSoundType);
+            float heatStuckRate = calcHeatStuckRate(allNodesOfThisTree);
+            context.set(HEAT_STUCK_RATIO, heatStuckRate);
         } else {
             /*
               如果不是可装配件的枪械，瞄具模块直接默认使用当前节点,弹药源模块同理
@@ -896,6 +922,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             context.set(LEFT_ARM_HOLD, context.thisNodeId());
             context.set(RIGHT_ARM_HOLD, context.thisNodeId());
             context.set(FIRE_SOUND_TYPE, FIRE_SOUND_NORMAL);
+            context.set(HEAT_STUCK_RATIO, 1f);
         }
         List<IFireMode<?>> fireModes = context.gun.getAllFireModes();
         if (fireModes != null && !fireModes.isEmpty()) {
@@ -905,6 +932,19 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 context.set(FIRE_MODEL_ID, name);
             }
         }
+    }
+
+    protected float calcHeatStuckRate(List<ShadowNode> nodes) {
+        float maxFactor = 1.0f;
+        for (ShadowNode node : nodes) {
+            if (node.unit.getModule() instanceof IHeatSensitiveModular modular) {
+                float heatSensitive = modular.getHeatSensitive();
+                if (heatSensitive > maxFactor) {
+                    maxFactor = heatSensitive;
+                }
+            }
+        }
+        return maxFactor;
     }
 
     protected String findRightArmHoldID(List<ShadowNode> nodes, StatesUpdateContext context) {

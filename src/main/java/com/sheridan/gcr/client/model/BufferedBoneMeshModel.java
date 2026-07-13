@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.render.Shaders;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.mixin.VertexBufferAccessor;
@@ -72,11 +73,11 @@ public class BufferedBoneMeshModel {
     protected int vertexCount = 0;
     protected int renderingVertexCount = 0;
 
-    private final ResourceLocation name;
+    protected ResourceLocation debugName = GCR.RL("");
 
-    public BufferedBoneMeshModel(MeshModelData root, ResourceLocation name) {
+    public BufferedBoneMeshModel(MeshModelData root, ResourceLocation debugName) {
         this.readFromMeshData(root);
-        this.name = name;
+        this.debugName = debugName;
     }
 
     protected void readFromMeshData(MeshModelData root) {
@@ -533,9 +534,8 @@ public class BufferedBoneMeshModel {
     }
 
 
-    public ResourceLocation getName() {
-        return name;
+    public ResourceLocation getDebugName() {
+        return debugName;
     }
-
 
 }

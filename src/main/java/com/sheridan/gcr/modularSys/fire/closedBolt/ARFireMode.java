@@ -88,6 +88,9 @@ public abstract class ARFireMode extends FireMode<AR> {
         float stuckRate = gun.getStuckRate(stack);
         float maxStuckRate = gun.getMaxStuckRate(stack);
         float currHeat = gun.getCurrHeat(stack, player.level().getGameTime());
+        float heatStuckRatio = gun.getHeatStuckRatio(stack);
+        currHeat *= heatStuckRatio;
+        currHeat = Mth.clamp(currHeat, 0, 1);
         currHeat = (float) Math.pow(currHeat, 3);
         float finalRate = Mth.lerp(currHeat, stuckRate, maxStuckRate);
         return Math.random() < finalRate;

@@ -164,6 +164,8 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCR.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
                 new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
+                        .modifyHeatSensitive(3f)
+
         );
         ModelRegistrationManager.registerModel(GCR.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));

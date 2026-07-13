@@ -15,6 +15,9 @@ public class MuzzleModel extends MuzzleFlashRendererModel {
         super(root, new MuzzleFlashRenderer(
                 new MuzzleEntry("no1", "MUZZLE_FLASH", null, scale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity)
         ));
+
     }
+
+
 
 }

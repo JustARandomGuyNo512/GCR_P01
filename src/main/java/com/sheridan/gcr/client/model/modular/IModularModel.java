@@ -47,4 +47,6 @@ public interface IModularModel extends IAnimated {
     ResourceLocation getHeatMapTexPath();
 
     void compile(RenderType type);
+
+    IModularModel modifyHeatSensitive(float heatSensitive);
 }

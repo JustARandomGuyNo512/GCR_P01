@@ -26,6 +26,7 @@ import java.util.Optional;
 @OnlyIn(Dist.CLIENT)
 public class ModularModel extends BufferedBoneMeshModel implements IModularModel{
     protected ResourceLocation heatMapTexPath = null;
+    protected float heatSensitive = 1;
 
     public ModularModel(MeshModelData root, ResourceLocation name) {
         super(root, name);
@@ -54,11 +55,11 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 IrisExtendRT.setUpDrawBuffers();
             }
             uploadMuzzleFlashEffectUniforms(shader.getId());
-            uploadHeatMapTex(shader.getId(), false, heatMapTexPath, partialTicks);
+            uploadHeatMapTex(heatSensitive, shader.getId(), false, heatMapTexPath, partialTicks);
         }
     }
 
-    public static void uploadHeatMapTex(int shaderId, boolean forceUseEmptyHeatMap, ResourceLocation heatMapTexPath, float partialTicks) {
+    public static void uploadHeatMapTex(float heatSensitive, int shaderId, boolean forceUseEmptyHeatMap, ResourceLocation heatMapTexPath, float partialTicks) {
         int heatUni = GL20.glGetUniformLocation(shaderId, "gcrHeat");
         int heatMapTexUni = GL20.glGetUniformLocation(shaderId, "gcrHeatMap");
         if (heatUni == -1 || heatMapTexUni == -1) {
@@ -67,6 +68,8 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
         float heat = Client.WEAPON_STATUS.getHeat(partialTicks);
+        heat *= heatSensitive;
+        heat = Mth.clamp(heat, 0, 1);
         heat *= heat;
         GL20.glUniform1f(heatUni, heat * shaderFactor);
         RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
@@ -200,5 +203,17 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
             throw new RuntimeException("can't find bone: " + boneName);
         }
         return bone;
+    }
+
+    public ModularModel setDebugName(ResourceLocation name) {
+        this.debugName = name;
+        return this;
+    }
+
+    @Override
+    public IModularModel modifyHeatSensitive(float heatSensitive) {
+        heatSensitive = Math.max(heatSensitive, 0.1f);
+        this.heatSensitive = heatSensitive;
+        return this;
     }
 }
