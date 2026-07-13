@@ -69,10 +69,10 @@ public class BufferedPlayerArmModel extends BufferedBoneMeshModel {
     }
 
     @Override
-    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
-        super.afterUniformLoaded(shader, isFirstPerson, isShadowPass);
+    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
+        super.afterUniformLoaded(shader, isFirstPerson, isShadowPass, 0);
         if (isFirstPerson && !isShadowPass) {
-            ModularModel.uploadHeatMapTex(shader.getId(), true, null);
+            //ModularModel.uploadHeatMapTex(shader.getId(), true, null);
             ModularModel.uploadMuzzleFlashEffectUniforms(shader.getId());
         }
     }
@@ -86,8 +86,8 @@ public class BufferedPlayerArmModel extends BufferedBoneMeshModel {
     }
 
     @Override
-    public void render(boolean isFirstPerson) {
-        super.render(isFirstPerson);
+    public void render(boolean isFirstPerson, float partialTicks) {
+        super.render(isFirstPerson, 0);
     }
 
     public boolean checkSkinTexture() {

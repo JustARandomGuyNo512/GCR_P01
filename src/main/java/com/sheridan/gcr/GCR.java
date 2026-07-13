@@ -281,7 +281,7 @@ public class GCR {
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
             new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.004f, 1.3f, 4f,
-                    30f,
+                    30f, 0.05f, 0.01f,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(

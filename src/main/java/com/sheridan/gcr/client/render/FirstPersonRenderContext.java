@@ -172,7 +172,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
 
     protected void handleArmRender() {
         if (canRenderArm()) {
-            BufferedPlayerArmModel.getInstance().render(true);
+            BufferedPlayerArmModel.getInstance().render(true, 0);
         }
     }
 

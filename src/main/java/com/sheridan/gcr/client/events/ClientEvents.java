@@ -57,7 +57,7 @@ public class ClientEvents {
             DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);
         }
         Client.LOCK.unlock();
-        ModularModel.debugHeat = Math.max(0, ModularModel.debugHeat - 0.005f);
+        //ModularModel.debugHeat = Math.max(0, ModularModel.debugHeat - 0.005f);
     }
 
     public static void registerCustomVanillaShader(RegisterShadersEvent event) {

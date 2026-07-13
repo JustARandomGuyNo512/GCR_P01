@@ -42,7 +42,7 @@ public class RedDotModel extends AbstractScopeModel {
         GlStateManager._stencilMask(0xFF);
         GlStateManager._stencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
         GlStateManager._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        super.render(true);
+        super.render(true, 0);
         renderRearLensOnly = false;
 
         setRenderType(tempRenderType, false);

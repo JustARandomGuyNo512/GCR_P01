@@ -318,7 +318,7 @@ public class BufferedBoneMeshModel {
         lastKnownProgramId = -1;
     }
 
-    public void render(boolean isFirstPerson) {
+    public void render(boolean isFirstPerson, float partialTicks) {
         if (prepared()) {
             if (renderingVertexCount == 0) {
                 return;
@@ -333,16 +333,16 @@ public class BufferedBoneMeshModel {
             shader.apply();
             prepareUbo();
             uploadUbo();
-            callRender(shader, isFirstPerson);
+            callRender(shader, isFirstPerson, partialTicks);
             unUseShaderAndBuffer(shader);
         }
     }
 
-    protected void callRender(ShaderInstance shader, boolean isFirstPerson) {
+    protected void callRender(ShaderInstance shader, boolean isFirstPerson, float partialTicks) {
         if (compatType == CompatType.IRIS) {
-            renderInIris(shader, isFirstPerson, IrisCompat.isRenderingShadowPass());
+            renderInIris(shader, isFirstPerson, IrisCompat.isRenderingShadowPass(), partialTicks);
         } else if (compatType == CompatType.VANILLA) {
-            renderInVanilla(shader, isFirstPerson);
+            renderInVanilla(shader, isFirstPerson, partialTicks);
         }
     }
 
@@ -384,22 +384,22 @@ public class BufferedBoneMeshModel {
                 Shaders.getEntityCutOutUBO();
     }
 
-    protected void renderInIris(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
+    protected void renderInIris(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
         irisOverride = GL20.glGetUniformLocation(shader.getId(), "gcrDoTransformOverride");
         if (irisOverride == -1) {
             return;
         }
         GL20.glUniform1i(irisOverride, 1);
-        renderInner(shader, isFirstPerson, isShadowPass);
+        renderInner(shader, isFirstPerson, isShadowPass, partialTicks);
         GL20.glUniform1i(irisOverride, 0);
     }
 
-    protected void renderInVanilla(ShaderInstance shader, boolean isFirstPerson) {
-        renderInner(shader, isFirstPerson, false);
+    protected void renderInVanilla(ShaderInstance shader, boolean isFirstPerson, float partialTicks) {
+        renderInner(shader, isFirstPerson, false, partialTicks);
     }
 
-    protected void renderInner(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
-        afterUniformLoaded(shader, isFirstPerson, isShadowPass);
+    protected void renderInner(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
+        afterUniformLoaded(shader, isFirstPerson, isShadowPass, partialTicks);
         draw(vertexCount, 0);
     }
 
@@ -464,7 +464,7 @@ public class BufferedBoneMeshModel {
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
     }
 
-    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {}
+    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {}
 
     private void loadLightAndVisible(BoneRenderStatus status) {
         int light = status.lightmapUV;

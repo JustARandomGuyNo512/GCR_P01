@@ -101,11 +101,11 @@ public class ScopeModel extends AbstractScopeModel{
             renderRearLensOnly = true;
             renderingVertexCount = 1;
             rearLensBone.renderStatus.visible = true;
-            float zOffset = -0.0085f;
+            float zOffset = Client.isUsingIrisShader ? -0.0085f : -0.002f;
             rearLensBone.renderStatus.pose.pose().translate(0, 0, zOffset);
             RenderType original = getRenderType();
             setRenderType(RenderTypes.getMeshDepthMask(), false);
-            super.render(true);
+            super.render(true,0);
             setRenderType(original, false);
             renderRearLensOnly = false;
 
@@ -241,7 +241,7 @@ public class ScopeModel extends AbstractScopeModel{
         RenderType original = getRenderType();
         setRenderType(RenderTypes.getMeshStencilMask(), false);
         renderingVertexCount = 1;
-        super.render(true);
+        super.render(true,0);
         setRenderType(original, false);
         renderRearLensOnly = false;
         GL11.glStencilMask(0x00);

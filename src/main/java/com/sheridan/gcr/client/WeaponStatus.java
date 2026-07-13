@@ -29,6 +29,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
@@ -81,6 +82,8 @@ public class WeaponStatus {
     private float stability;
     private float length;
     private float weight;
+    private float heat;
+    private float lastHeat;
 
     private float cantedAdsIncSpeedFactor = 1;
     private float cantedAdsDecSpeedFactor = 1;
@@ -163,6 +166,8 @@ public class WeaponStatus {
                 RecoilData recoilData = getGun().getRecoilData();
                 RecoilHandler.INSTANCE.getRecoilUpdater().setRecoilData(recoilData);
             }
+            lastHeat = heat;
+            heat = gun.getCurrHeat(itemStack, localPlayer.level().getGameTime());
             checkSight();
             handleInteractiveModules();
         }
@@ -354,6 +359,8 @@ public class WeaponStatus {
         identityID = null;
         muzzleFlashRadius = 0;
         muzzleFlashIntensity = 0;
+        heat = 0;
+        lastHeat = 0;
     }
 
     public IFireMode<?> getPrevFireMode() {
@@ -435,5 +442,13 @@ public class WeaponStatus {
 
     public long getLastJump() {
         return lastJump;
+    }
+
+    public float getHeat(long nowTick) {
+        return gun == null ? 0 : gun.getCurrHeat(itemStack, nowTick);
+    }
+
+    public float getHeat(float particleTicks) {
+        return Mth.lerp(particleTicks, lastHeat, heat);
     }
 }

@@ -184,7 +184,13 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     float getSpread(ItemStack itemStack);
 
-    int getStuckSeed(ItemStack itemStack);
+    float getShootHeat(ItemStack itemStack);
 
-    void rollStuckSeed(ItemStack itemStack);
+    float getHeatDecSpeed(ItemStack itemStack);
+
+    float getCurrHeat(ItemStack itemStack, long now);
+
+    void setHeat(ItemStack itemStack, float heat);
+
+    void updateHeat(ItemStack itemStack, float heatInc, long time);
 }

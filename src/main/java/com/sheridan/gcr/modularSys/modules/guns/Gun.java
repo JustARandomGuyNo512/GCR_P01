@@ -121,7 +121,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, rootNodeId(itemStack), System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.nanoTime();
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
-        ModularModel.debugHeat = Mth.clamp(ModularModel.debugHeat + 0.1f, 0, 1);
+        //ModularModel.debugHeat = Mth.clamp(ModularModel.debugHeat + 0.1f, 0, 1);
     }
 
     @Override
@@ -164,6 +164,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             if (fireSound != null) {
                 ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
             }
+            updateHeat(itemStack, getShootHeat(itemStack), shooter.level().getGameTime());
             GunFireAckPacket ackPacket = new GunFireAckPacket(getIdentityID(itemStack), getAmmoLeft(itemStack), shootID, isStuck(itemStack));
             PacketDistributor.sendToPlayer(
                     player,
@@ -675,19 +676,50 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         return baseProperties.spread.get(pick);
     }
 
+
     @Override
-    public int getStuckSeed(ItemStack itemStack) {
-        CustomData orDefault = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-        if (orDefault.isEmpty()) {
-            return -1;
-        }
-        return orDefault.getUnsafe().getInt(STUCK_SEED);
+    public float getShootHeat(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.shootHeatInc.get(pick);
     }
 
     @Override
-    public void rollStuckSeed(ItemStack itemStack) {
-        CustomData orDefault = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-        orDefault.getUnsafe().putInt(STUCK_SEED, (int) (Math.random() * 100000));
+    public float getHeatDecSpeed(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.heatDecSpeed.get(pick);
+    }
+
+    @Override
+    public float getCurrHeat(ItemStack itemStack, long now) {
+        CompoundTag states = rootNodeTag(itemStack);
+        float heat = getHeat(states);
+        long heatLastUpdate = getHeatLastUpdate(states);
+        float heatDecSpeed = getHeatDecSpeed(itemStack);
+        int tickNum = (int) (now - heatLastUpdate);
+        float heatDec = heatDecSpeed * tickNum;
+        heat -= heatDec;
+        return Mth.clamp(heat, 0, 1);
+    }
+
+    @Override
+    public void updateHeat(ItemStack itemStack, float heatInc, long time) {
+        CompoundTag states = rootNodeTag(itemStack);
+        float heat = getHeat(states);
+        long heatLastUpdate = getHeatLastUpdate(states);
+        float heatDecSpeed = getHeatDecSpeed(itemStack);
+        int tickNum = (int) (time - heatLastUpdate);
+        float heatDec = heatDecSpeed * tickNum;
+        heat -= heatDec;
+        heat += heatInc;
+        HEAT_LAST_UPDATE.set(time, states);
+        setHeat(itemStack, heat);
+    }
+
+    @Override
+    public void setHeat(ItemStack itemStack, float heat) {
+        CompoundTag states = rootNodeTag(itemStack);
+        heat = Mth.clamp(heat, 0, 1);
+        HEAT.set(heat, states);
     }
 
     protected IReadOnlyTree tryInitialCommit(IBuilder builder) {

@@ -44,21 +44,21 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
 
     @Override
     public void render(ModuleRenderContext context) {
-        super.render(context.isFirstPerson());
+        super.render(context.isFirstPerson(), context.partialTicks);
     }
 
     @Override
-    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
+    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
         if (isFirstPerson && !isShadowPass) {
             if (Client.isUsingIrisShader) {
                 IrisExtendRT.setUpDrawBuffers();
             }
             uploadMuzzleFlashEffectUniforms(shader.getId());
-            uploadHeatMapTex(shader.getId(), false, heatMapTexPath);
+            uploadHeatMapTex(shader.getId(), false, heatMapTexPath, partialTicks);
         }
     }
-    public static float debugHeat = 0;
-    public static void uploadHeatMapTex(int shaderId, boolean forceUseEmptyHeatMap, ResourceLocation heatMapTexPath) {
+    //public static float debugHeat = 0;
+    public static void uploadHeatMapTex(int shaderId, boolean forceUseEmptyHeatMap, ResourceLocation heatMapTexPath, float partialTicks) {
         int heatUni = GL20.glGetUniformLocation(shaderId, "gcrHeat");
         int heatMapTexUni = GL20.glGetUniformLocation(shaderId, "gcrHeatMap");
         if (heatUni == -1 || heatMapTexUni == -1) {
@@ -66,7 +66,8 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         }
         int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
-        GL20.glUniform1f(heatUni, debugHeat * shaderFactor);
+        float heat = Client.WEAPON_STATUS.getHeat(partialTicks);
+        GL20.glUniform1f(heatUni, heat * shaderFactor);
         RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
         RenderSystem.bindTexture(texId);
         GL20.glUniform1i(heatMapTexUni, Client.MAX_SHADER_TEXTURES - 1);
