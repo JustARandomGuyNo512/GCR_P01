@@ -100,6 +100,8 @@
   "gcr.ani.mag_ammo_left_almost_full": "Almost full",
   "gcr.overlay.stuck": "Jam",
 
+  "death.attack.custom_explosion": "You exploded",
+
   "gcr:m4a1": "M4A1",
   "gcr:acog": "ACOG Scope",
   "gcr:vortex_razor_hd": "Vortex Razor HD Scope",

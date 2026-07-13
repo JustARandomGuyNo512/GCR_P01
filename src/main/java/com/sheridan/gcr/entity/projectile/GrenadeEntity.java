@@ -5,10 +5,13 @@ import com.sheridan.gcr.client.render.fx.particles.ember.EmberOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
+import com.sheridan.gcr.damageTypes.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -20,8 +23,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +34,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -183,12 +185,105 @@ public class GrenadeEntity extends Entity{
 
     public void explode(Direction hitDir, Vec3 location) {
         if (!this.level().isClientSide) {
-            this.level().explode(this, Explosion.getDefaultDamageSource(this.level(), this), null,location.x, location.y, location.z, explodeRadius, false, Level.ExplosionInteraction.NONE, false,  ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
+            //this.level().explode(this, Explosion.getDefaultDamageSource(this.level(), this), null,location.x, location.y, location.z, explodeRadius, false, Level.ExplosionInteraction.NONE, false,  ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
+            customExplode(location, 40, 10, 6);
             //TODO:增加自定义炫酷爆炸效果
             spawnCustomExplosionEffect((ServerLevel) this.level(), location.x, location.y, location.z, hitDir);
+
             this.discard();
 
         }
+    }
+
+    public void customExplode(Vec3 location, float centerDamage, float edgeDamage, double radius) {
+        if (this.level().isClientSide) {
+            return;
+        }
+        ServerLevel serverLevel = (ServerLevel) this.level();
+
+        AABB aabb = new AABB(
+                location.x - radius, location.y - radius, location.z - radius,
+                location.x + radius, location.y + radius, location.z + radius
+        );
+
+        List<LivingEntity> targets = serverLevel.getEntitiesOfClass(LivingEntity.class, aabb);
+        Entity causing = this.shooter == null ? this : this.shooter;
+        DamageSource source = getCustomExplosionSource(serverLevel, causing);
+        for (LivingEntity target : targets) {
+            double distance = target.position().distanceTo(location);
+            if (distance > radius) {
+                continue;
+            }
+
+
+            double exposure = getSeenPercent(location, target);
+            if (exposure <= 0) {
+                continue;
+            }
+
+            double falloff = 1.0 - (distance / radius);
+            float damage = (float) (edgeDamage + (centerDamage - edgeDamage) * falloff);
+            damage *= (float) exposure;
+
+            if (damage > 0) {
+                target.hurt(source, damage);
+//                if (this.shooter instanceof ServerPlayer serverPlayer) {
+//                    if (target instanceof ServerPlayer targetPlayer) {
+//                        System.out.println(source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) + " " +
+//                                serverPlayer.canHarmPlayer(targetPlayer));
+//                        float amount = Math.max(0.0F, source.type().scaling().getScalingFunction().scaleDamage(source, targetPlayer, 10, this.level().getDifficulty()));
+//                        System.out.println("scaled amount: " + amount);
+//                    }
+//                }
+
+                Vec3 knockDir = target.position().subtract(location).normalize();
+                double knockStrength = 0.5 * falloff + 0.1;
+                target.setDeltaMovement(target.getDeltaMovement().add(
+                        knockDir.x * knockStrength,
+                        knockDir.y * knockStrength + 0.1,
+                        knockDir.z * knockStrength
+                ));
+                target.hurtMarked = true;
+            }
+        }
+
+    }
+
+    private DamageSource getCustomExplosionSource(ServerLevel level, Entity causing) {
+        Holder<DamageType> holder = level.registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(ModDamageTypes.CUSTOM_EXPLOSION);
+        return new DamageSource(holder, this, causing);
+    }
+
+    private double getSeenPercent(Vec3 center, Entity target) {
+        AABB box = target.getBoundingBox();
+        double xStep = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
+        double yStep = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
+        double zStep = 1.0 / ((box.maxZ - box.minZ) * 2.0 + 1.0);
+        if (xStep < 0 || yStep < 0 || zStep < 0) {
+            return 0;
+        }
+
+        int hit = 0, total = 0;
+        for (double x = 0; x <= 1; x += xStep) {
+            for (double y = 0; y <= 1; y += yStep) {
+                for (double z = 0; z <= 1; z += zStep) {
+                    Vec3 sample = new Vec3(
+                            Mth.lerp(x, box.minX, box.maxX),
+                            Mth.lerp(y, box.minY, box.maxY),
+                            Mth.lerp(z, box.minZ, box.maxZ)
+                    );
+                    if (target.level().clip(new ClipContext(center, sample,
+                                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, target))
+                            .getType() == HitResult.Type.MISS) {
+                        hit++;
+                    }
+                    total++;
+                }
+            }
+        }
+        return total == 0 ? 0 : (double) hit / total;
     }
 
     static int rgb = new Color(255, 250, 200).getRGB();

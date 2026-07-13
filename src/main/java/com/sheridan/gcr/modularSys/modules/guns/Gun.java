@@ -733,7 +733,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         CompoundTag states = rootNodeTag(itemStack);
         float heat = getHeat(states);
         long lastShootTime = getLastShootTime(states);
-        boolean coolDown = time - lastShootTime >= 20;
+        boolean coolDown = time - lastShootTime > 40;
         if (coolDown) {
             long heatLastUpdate = getHeatLastUpdate(states);
             float heatDecSpeed = getHeatDecSpeed(itemStack);

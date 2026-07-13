@@ -1,0 +1,6 @@
+{
+  "message_id": "custom_explosion",
+  "exhaustion": 0.1,
+  "scaling": "never",
+  "effects": "hurt"
+}

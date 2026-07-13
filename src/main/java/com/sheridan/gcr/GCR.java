@@ -280,8 +280,8 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.002f, 0.1f, 1.3f, 4f,
-                    30f, 0.005f, 0.05f / 30,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.001f, 0.1f, 1.3f, 4f,
+                    30f, 0.003f, 0.05f / 60,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
