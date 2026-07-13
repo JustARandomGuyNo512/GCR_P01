@@ -55,7 +55,7 @@ public abstract class ARFireMode extends FireMode<AR> {
                     Minecraft.getInstance().gui.setOverlayMessage(
                             Component.translatable("gcr.overlay.stuck")
                                     .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
-                    ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
+                    //ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
                     stuckMsgNoticed = true;
                     return FireControl.EXIT_FIRE_STATE;
                 }
@@ -126,7 +126,7 @@ public abstract class ARFireMode extends FireMode<AR> {
         if (mag == null) {
             if (handleStuck) {
                 gun.setStuck(true, gunStates);
-                ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
+                //ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
                 if (player.level().isClientSide) {
                     Minecraft.getInstance().gui.setOverlayMessage(
                             Component.translatable("gcr.overlay.stuck")
@@ -143,7 +143,7 @@ public abstract class ARFireMode extends FireMode<AR> {
         }
         if (handleStuck) {
             gun.setStuck(true, gunStates);
-            ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
+            //ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
             if (player.level().isClientSide) {
                 Minecraft.getInstance().gui.setOverlayMessage(
                         Component.translatable("gcr.overlay.stuck")
