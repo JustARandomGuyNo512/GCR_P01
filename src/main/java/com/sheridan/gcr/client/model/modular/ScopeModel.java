@@ -101,7 +101,7 @@ public class ScopeModel extends AbstractScopeModel{
             renderRearLensOnly = true;
             renderingVertexCount = 1;
             rearLensBone.renderStatus.visible = true;
-            float zOffset = Client.isUsingIrisShader ? -0.0085f : -0.002f;
+            float zOffset = -0.0085f;
             rearLensBone.renderStatus.pose.pose().translate(0, 0, zOffset);
             RenderType original = getRenderType();
             setRenderType(RenderTypes.getMeshDepthMask(), false);
