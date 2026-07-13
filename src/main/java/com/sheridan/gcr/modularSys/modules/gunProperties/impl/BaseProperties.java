@@ -6,7 +6,6 @@ import com.sheridan.gcr.modularSys.modules.gunProperties.IntProp;
 import com.sheridan.gcr.modularSys.modules.gunProperties.NumProp;
 import com.sheridan.gcr.modularSys.modules.gunProperties.Properties;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
-import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +24,8 @@ public class BaseProperties extends Properties {
     public final NumProp stability;
     public final AccProp weight;
     public final NumProp spread;
-    public final NumProp faultRate;
+    public final NumProp stuckRate;
+    public final NumProp maxStuckRate;
     public final NumProp agility;
     public final NumProp impulse;
     public final NumProp aimingSpeed;
@@ -39,7 +39,7 @@ public class BaseProperties extends Properties {
     private final ResourceLocation fireSoundSuppressedName;
     public Map<String, Float> taskTimers;
 
-    public BaseProperties(int rpm,  float weight, float spread, float agility, float faultRate, float aimingSpeed, float soundRange,
+    public BaseProperties(int rpm,  float weight, float spread, float agility, float stuckRate, float maxStuckRate, float aimingSpeed, float soundRange,
                           float bulletVelocity, float shootHeatInc, float heatDecSpeed,
                           ResourceLocation fireSoundNormalName, ResourceLocation fireSoundSuppressedName,
                           Map<String, Float> taskTimers) {
@@ -50,7 +50,9 @@ public class BaseProperties extends Properties {
         this.weight = defProp(new AccProp("weight", weight));
         this.spread = defProp(new NumProp("spread", spread));
         this.agility = defProp(new NumProp("agility", agility));
-        this.faultRate = defProp(new NumProp("fault_rate", faultRate));
+        this.stuckRate = defProp(new NumProp("stuck_rate", stuckRate));
+        maxStuckRate = Math.max(stuckRate, maxStuckRate);
+        this.maxStuckRate = defProp(new NumProp("max_stuck_rate", maxStuckRate));
         this.impulse = defProp(new NumProp("impulse", 1));
         this.aimingSpeed = defProp(new NumProp("aiming_speed", aimingSpeed));
         this.fireSoundRange = defProp(new NumProp("sound_range", soundRange));

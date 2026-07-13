@@ -23,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Map;
@@ -55,6 +54,7 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     Bool STUCK = new Bool("stuck");
     Num HEAT = new Num("heat", 0);
     LInt HEAT_LAST_UPDATE = new LInt("heat_last_update");
+    LInt LAST_SHOOT_TIME = new LInt("last_shoot");
 
     void serverShoot(LivingEntity entity, ItemStack itemStack, int shootID, GunFirePacket packet);
 
@@ -170,7 +170,9 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     float getAimingSpeed(ItemStack itemStack);
 
-    float getFaultRate(ItemStack itemStack);
+    float getStuckRate(ItemStack itemStack);
+
+    float getMaxStuckRate(ItemStack itemStack);
 
     float getRecoilControl(ItemStack itemStack);
 
@@ -192,5 +194,5 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     void setHeat(ItemStack itemStack, float heat);
 
-    void updateHeat(ItemStack itemStack, float heatInc, long time);
+    void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime);
 }

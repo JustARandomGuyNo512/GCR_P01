@@ -37,7 +37,7 @@ public class BulletShellModel extends BufferedBatchSingleMeshModel {
     @Override
     protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass) {
         if (isFirstPerson && !isShadowPass) {
-            //ModularModel.uploadHeatMapTex(shader.getId(), true, null);
+            ModularModel.uploadHeatMapTex(shader.getId(), true, null, 0);
             ModularModel.uploadMuzzleFlashEffectUniforms(shader.getId());
         }
     }

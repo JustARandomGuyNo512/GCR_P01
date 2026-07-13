@@ -6,7 +6,6 @@ import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.KeyBinds;
-import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
@@ -58,7 +57,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -164,7 +162,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             if (fireSound != null) {
                 ModSounds.sound(getFireSoundRange(itemStack), (float) (0.9f + Math.random() * 0.1f), player, fireSound);
             }
-            updateHeat(itemStack, getShootHeat(itemStack), shooter.level().getGameTime());
+            updateHeat(itemStack, getShootHeat(itemStack), shooter.level().getGameTime(), true);
             GunFireAckPacket ackPacket = new GunFireAckPacket(getIdentityID(itemStack), getAmmoLeft(itemStack), shootID, isStuck(itemStack));
             PacketDistributor.sendToPlayer(
                     player,
@@ -467,10 +465,15 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
-    public float getFaultRate(ItemStack itemStack) {
-        CompoundTag propertiesTag = getPropertiesTag(itemStack);
-        CompoundTag compound = propertiesTag.getCompound(baseProperties.getId());
-        return baseProperties.faultRate.get(compound);
+    public float getStuckRate(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.stuckRate.get(pick);
+    }
+
+    @Override
+    public float getMaxStuckRate(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.maxStuckRate.get(pick);
     }
 
     @Override
@@ -587,7 +590,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float stability = getStability(stack);
         float currentWeight = getCurrentWeight(stack);
         float spread = baseProperties.spread.get(baseProperties.pick(stack, this));
-        float faultRate = getFaultRate(stack) * 100f;
+        float faultRate = getStuckRate(stack) * 100f;
         float agility = getAgility(stack);
         float impulse = getImpulseRatio(stack) * 100f;
 
@@ -597,7 +600,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 Component.literal(baseProperties.stability.getFullName() + ": " + String.format("%.3f", stability)),
                 Component.literal(baseProperties.weight.getFullName() + ": " + String.format("%.3f", currentWeight)),
                 Component.literal(baseProperties.spread.getFullName() + ": " + String.format("%.3f", spread)),
-                Component.literal(baseProperties.faultRate.getFullName() + ": " + String.format("%.3f", faultRate) + " %"),
+                Component.literal(baseProperties.stuckRate.getFullName() + ": " + String.format("%.3f", faultRate) + " %"),
                 Component.literal(baseProperties.agility.getFullName() + ": " + String.format("%.3f", agility)),
                 Component.literal(baseProperties.impulse.getFullName() + ": " + String.format("%.3f", impulse) + " %")
         ));
@@ -702,16 +705,23 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
-    public void updateHeat(ItemStack itemStack, float heatInc, long time) {
+    public void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime) {
         CompoundTag states = rootNodeTag(itemStack);
         float heat = getHeat(states);
-        long heatLastUpdate = getHeatLastUpdate(states);
-        float heatDecSpeed = getHeatDecSpeed(itemStack);
-        int tickNum = (int) (time - heatLastUpdate);
-        float heatDec = heatDecSpeed * tickNum;
-        heat -= heatDec;
+        long lastShootTime = getLastShootTime(states);
+        boolean coolDown = time - lastShootTime >= 20;
+        if (coolDown) {
+            long heatLastUpdate = getHeatLastUpdate(states);
+            float heatDecSpeed = getHeatDecSpeed(itemStack);
+            int tickNum = (int) (time - heatLastUpdate);
+            float heatDec = heatDecSpeed * tickNum;
+            heat -= heatDec;
+        }
         heat += heatInc;
         HEAT_LAST_UPDATE.set(time, states);
+        if (setLastShootTime) {
+            LAST_SHOOT_TIME.set(time, states);
+        }
         setHeat(itemStack, heat);
     }
 
@@ -819,6 +829,11 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     }
 
     @Override
+    public long getLastShootTime(CompoundTag states) {
+        return LAST_SHOOT_TIME.get(states);
+    }
+
+    @Override
     public long getHeatLastUpdate(CompoundTag states) {
         return HEAT_LAST_UPDATE.get(states);
     }
@@ -832,6 +847,9 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         FIRE_MODEL_ID.init(states);
         STUCK.init(states);
         FIRE_SOUND_TYPE.init(states);
+        HEAT.init(states);
+        LAST_SHOOT_TIME.init(states);
+        HEAT_LAST_UPDATE.init(states);
     }
 
     @Override

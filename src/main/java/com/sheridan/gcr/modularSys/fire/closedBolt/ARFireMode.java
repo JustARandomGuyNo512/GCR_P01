@@ -12,11 +12,10 @@ import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -56,6 +55,7 @@ public abstract class ARFireMode extends FireMode<AR> {
                     Minecraft.getInstance().gui.setOverlayMessage(
                             Component.translatable("gcr.overlay.stuck")
                                     .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+                    ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
                     stuckMsgNoticed = true;
                     return FireControl.EXIT_FIRE_STATE;
                 }
@@ -78,10 +78,19 @@ public abstract class ARFireMode extends FireMode<AR> {
 
     @Override
     public void triggerServerShoot(Player player, ItemStack stack, AR gun, GunFirePacket packet) {
-        boolean stuck = Math.random() < gun.getFaultRate(stack);
+        boolean stuck = shouldStuck(player, stack, gun, packet);
         if (useAmmo(player, stack, gun, stuck)) {
             gun.serverShoot(player, stack, packet.shootId, packet);
         }
+    }
+
+    protected boolean shouldStuck(Player player, ItemStack stack, AR gun, GunFirePacket packet) {
+        float stuckRate = gun.getStuckRate(stack);
+        float maxStuckRate = gun.getMaxStuckRate(stack);
+        float currHeat = gun.getCurrHeat(stack, player.level().getGameTime());
+        currHeat = (float) Math.pow(currHeat, 3);
+        float finalRate = Mth.lerp(currHeat, stuckRate, maxStuckRate);
+        return Math.random() < finalRate;
     }
 
     protected boolean useAmmoClient(Player player, ItemStack stack, AR gun) {
