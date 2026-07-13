@@ -168,9 +168,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                     getIdentityID(itemStack),
                     getAmmoLeft(itemStack),
                     shootID,
-                    isStuck(itemStack),
-                    getHeatLastUpdate(states),
-                    getHeat(states)
+                    isStuck(itemStack)
             );
             PacketDistributor.sendToPlayer(
                     player,
@@ -204,7 +202,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     @Override
     public void serverShootAck(GunFireAckPacket packet, ItemStack itemStack) {
         setStuck(packet.stuck, rootNodeTag(itemStack));
-        setCurrHeat(itemStack, packet.heat, packet.heatUpdateTime);
     }
 
     @Override
@@ -709,38 +706,60 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
     @Override
     public float getCurrHeat(ItemStack itemStack, long now) {
-        CompoundTag states = rootNodeTag(itemStack);
-        float heat = getHeat(states);
-        long heatLastUpdate = getHeatLastUpdate(states);
-        float heatDecSpeed = getHeatDecSpeed(itemStack);
-        int tickNum = (int) (now - heatLastUpdate);
-        float heatDec = heatDecSpeed * tickNum;
-        heat -= heatDec;
-        return Mth.clamp(heat, 0, 1);
+//        CompoundTag states = rootNodeTag(itemStack);
+//        float heat = getHeat(states);
+//        long lastShootTime = getLastShootTime(states);
+//        boolean coolDown = now - lastShootTime > 40;
+//        if (coolDown) {
+//            long heatLastUpdate = getHeatLastUpdate(states);
+//            float heatDecSpeed = getHeatDecSpeed(itemStack);
+//            int tickNum = (int) (now - heatLastUpdate);
+//            float heatDec = heatDecSpeed * tickNum;
+//            heat -= heatDec;
+//        }
+//        return Mth.clamp(heat, 0, 1);
+        return calcHeat(itemStack, now);
     }
 
     @Override
-    public void setCurrHeat(ItemStack itemStack, float heat, long heatLastUpdate) {
+    public void setCurrHeat(ItemStack itemStack, float heat, long heatLastUpdate, long lastShoot) {
         heat = Mth.clamp(heat, 0, 1);
         heatLastUpdate = Math.max(heatLastUpdate, 0);
         CompoundTag states = rootNodeTag(itemStack);
         HEAT.set(heat, states);
         HEAT_LAST_UPDATE.set(heatLastUpdate, states);
+        LAST_SHOOT_TIME.set(lastShoot, states);
+    }
+
+    protected float calcHeat(ItemStack itemStack, long now) {
+        CompoundTag states = rootNodeTag(itemStack);
+        float heat = getHeat(states);
+        long lastShootTime = getLastShootTime(states);
+        boolean coolDown = now - lastShootTime > 40;
+        if (coolDown) {
+            long heatLastUpdate = getHeatLastUpdate(states);
+            float heatDecSpeed = getHeatDecSpeed(itemStack);
+            int tickNum = (int) (now - heatLastUpdate);
+            float heatDec = heatDecSpeed * tickNum;
+            heat -= heatDec;
+        }
+        return Mth.clamp(heat, 0, 1);
     }
 
     @Override
     public void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime) {
         CompoundTag states = rootNodeTag(itemStack);
-        float heat = getHeat(states);
-        long lastShootTime = getLastShootTime(states);
-        boolean coolDown = time - lastShootTime > 40;
-        if (coolDown) {
-            long heatLastUpdate = getHeatLastUpdate(states);
-            float heatDecSpeed = getHeatDecSpeed(itemStack);
-            int tickNum = (int) (time - heatLastUpdate);
-            float heatDec = heatDecSpeed * tickNum;
-            heat -= heatDec;
-        }
+//        float heat = getHeat(states);
+//        long lastShootTime = getLastShootTime(states);
+//        boolean coolDown = time - lastShootTime > 40;
+//        if (coolDown) {
+//            long heatLastUpdate = getHeatLastUpdate(states);
+//            float heatDecSpeed = getHeatDecSpeed(itemStack);
+//            int tickNum = (int) (time - heatLastUpdate);
+//            float heatDec = heatDecSpeed * tickNum;
+//            heat -= heatDec;
+//        }
+        float heat = calcHeat(itemStack, time);
         heat += heatInc;
         HEAT_LAST_UPDATE.set(time, states);
         if (setLastShootTime) {

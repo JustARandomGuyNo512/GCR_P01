@@ -194,7 +194,7 @@ public class GCR {
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar");
-    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 2.5f).addTags("muzzle", "ar");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -281,7 +281,7 @@ public class GCR {
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
             new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.001f, 0.1f, 1.3f, 4f,
-                    30f, 0.003f, 0.05f / 60,
+                    30f, 0.005f, 0.05f / 60,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
@@ -664,6 +664,15 @@ public class GCR {
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
                     )
             );
+
+//            registrar.playBidirectional(
+//                    SyncHeatDataPacket.TYPE,
+//                    SyncHeatDataPacket.STREAM_CODEC,
+//                    new DirectionalPayloadHandler<>(
+//                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+//                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+//                    )
+//            );
         }
     }
 

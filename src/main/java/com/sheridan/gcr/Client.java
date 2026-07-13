@@ -20,6 +20,7 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
 import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import com.sheridan.gcr.network.s2c.InitClientGunDataPacket;
+import com.sheridan.gcr.network.s2c.SyncHeatDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -271,4 +272,17 @@ public class Client {
         return (System.nanoTime() - WEAPON_STATUS.lastShoot) * 1e-9f;
     }
 
+//    public static void syncGunHeatData(SyncHeatDataPacket packet) {
+//        LocalPlayer player = Minecraft.getInstance().player;
+//        if (player != null) {
+//            ItemStack mainHandItem = player.getMainHandItem();
+//            if (mainHandItem.getItem() instanceof GunItem gunItem) {
+//                IGun gun = gunItem.getGun();
+//                String identityID = gun.getIdentityID(mainHandItem);
+//                if (Objects.equals(identityID, packet.gunId)) {
+//                    gun.setCurrHeat(mainHandItem, packet.heat, packet.lastHeatUpdateTime, packet.lastShootTime);
+//                }
+//            }
+//        }
+//    }
 }

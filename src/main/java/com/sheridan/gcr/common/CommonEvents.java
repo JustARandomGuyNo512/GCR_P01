@@ -5,6 +5,7 @@ import com.sheridan.gcr.modularSys.builder.*;
 import com.sheridan.gcr.modularSys.modules.StatesUpdateContext;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.network.s2c.InitClientGunDataPacket;
+import com.sheridan.gcr.network.s2c.SyncHeatDataPacket;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -99,6 +100,18 @@ public class CommonEvents {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+//                LivingEntity entity = event.getEntity();
+//                if (!entity.level().isClientSide) {
+//                    long gameTime = entity.level().getGameTime();
+//                    gun.updateHeat(eventTo, 0, gameTime, false);
+//                    CompoundTag states = gun.rootNodeTag(eventTo);
+//                    float heat = gun.getHeat(states);
+//                    long lastShootTime = gun.getLastShootTime(states);
+//                    long heatLastUpdate = gun.getHeatLastUpdate(states);
+//                    SyncHeatDataPacket syncHeatDataPacket = new SyncHeatDataPacket(identityID, heat, heatLastUpdate, lastShootTime);
+//                    PacketDistributor.sendToPlayer((ServerPlayer) entity, syncHeatDataPacket);
+//                }
             }
         }
     }

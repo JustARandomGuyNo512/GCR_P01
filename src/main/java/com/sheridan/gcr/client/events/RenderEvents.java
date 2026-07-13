@@ -196,7 +196,9 @@ public class RenderEvents {
                 mc.options.sensitivity().set(baseSensitivity);
                 baseSensitivity = null;
             }
-            event.setNewFovModifier(1);
+            if (status.isHoldingGun()) {
+                event.setNewFovModifier(1);
+            }
         }
     }
 

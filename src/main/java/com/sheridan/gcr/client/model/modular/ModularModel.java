@@ -70,7 +70,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         float heat = Client.WEAPON_STATUS.getHeat(partialTicks);
         heat *= heatSensitive;
         heat = Mth.clamp(heat, 0, 1);
-        heat *= heat;
+        heat = (float) (heat * (Math.min(1, Math.pow(heat * 1.65f, 3))));
         GL20.glUniform1f(heatUni, heat * shaderFactor);
         RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
         RenderSystem.bindTexture(texId);

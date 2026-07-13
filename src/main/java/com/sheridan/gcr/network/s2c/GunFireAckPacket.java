@@ -24,17 +24,13 @@ public class GunFireAckPacket implements CustomPacketPayload, IPacket<GunFireAck
     public String gunId;
     public int ammoLeft;
     public int shootId;
-    public long heatUpdateTime;
-    public float heat;
     public boolean stuck;
 
-    public GunFireAckPacket(String gunId, int ammoLeft, int shootId, boolean stuck, long heatUpdateTime, float heat) {
+    public GunFireAckPacket(String gunId, int ammoLeft, int shootId, boolean stuck) {
         this.gunId = gunId;
         this.ammoLeft = ammoLeft;
         this.shootId = shootId;
         this.stuck = stuck;
-        this.heatUpdateTime = heatUpdateTime;
-        this.heat = heat;
     }
 
     private static GunFireAckPacket decode(FriendlyByteBuf buf) {
@@ -42,9 +38,7 @@ public class GunFireAckPacket implements CustomPacketPayload, IPacket<GunFireAck
                 buf.readUtf(),
                 buf.readInt(),
                 buf.readInt(),
-                buf.readBoolean(),
-                buf.readLong(),
-                buf.readFloat());
+                buf.readBoolean());
     }
 
     private void encode(FriendlyByteBuf buf) {
@@ -52,8 +46,6 @@ public class GunFireAckPacket implements CustomPacketPayload, IPacket<GunFireAck
         buf.writeInt(ammoLeft);
         buf.writeInt(shootId);
         buf.writeBoolean(stuck);
-        buf.writeLong(heatUpdateTime);
-        buf.writeFloat(heat);
     }
 
     @Override
