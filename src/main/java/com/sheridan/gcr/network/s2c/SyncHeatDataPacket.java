@@ -49,7 +49,7 @@ public class SyncHeatDataPacket implements CustomPacketPayload, IPacket<SyncHeat
     @Override
     public void onClient(SyncHeatDataPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            Client.syncGunHeatData( packet);
+            //Client.syncGunHeatData( packet);
         });
     }
 
