@@ -233,7 +233,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     public void serverInitData(ItemStack itemStack) {
         CompoundTag compoundTag = checkAndGetRaw(itemStack);
         compoundTag.putString(IDENTITY_ID_KEY, IDGenerator.randomId());
-        compoundTag.putInt(STUCK_SEED, (int) (Math.random() * 1000000));
         CustomData.set(DataComponents.CUSTOM_DATA, itemStack, compoundTag.copy());
     }
 
@@ -552,7 +551,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         dataModel.putString(IDENTITY_ID_KEY, NONE);
         dataModel.putInt(MODIFY_ID_KEY, -1);
         dataModel.putBoolean(DATA_CHANGED_KEY, false);
-        dataModel.putInt(STUCK_SEED, -1);
 
         IBuilder builder = getBuilderForInit();
         IWorkSpace workspace = builder.getWorkspace();
@@ -734,7 +732,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         CompoundTag states = rootNodeTag(itemStack);
         float heat = getHeat(states);
         long lastShootTime = getLastShootTime(states);
-        boolean coolDown = now - lastShootTime > 40;
+        boolean coolDown = now - lastShootTime > 20;
         if (coolDown) {
             long heatLastUpdate = getHeatLastUpdate(states);
             float heatDecSpeed = getHeatDecSpeed(itemStack);

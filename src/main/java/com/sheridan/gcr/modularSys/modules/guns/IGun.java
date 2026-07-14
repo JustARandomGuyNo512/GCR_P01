@@ -40,8 +40,6 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     String DATA_CHANGED_KEY = "gcr_data_changed";
 
-    String STUCK_SEED = "gcr_stuck_seed";
-
     int FIRE_SOUND_NORMAL = 0;
     int FIRE_SOUND_SUPPRESSED = 1;
 
