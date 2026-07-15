@@ -18,6 +18,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -215,7 +217,7 @@ public class BulletEntity extends Entity {
         target.invulnerableTime = 0;
         DamageSource damageSource = this.shooter == null ?
                 damageSources().generic() :
-                damageSources().mobProjectile(this, this.shooter);
+                this.level().damageSources().source(DamageTypes.MOB_PROJECTILE, this.shooter, this);
         target.hurt(
                 damageSource,
                 (float) (6f * (0.9f + 0.2f * Math.random()))

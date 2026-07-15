@@ -181,7 +181,7 @@ public class GCR {
     public static final IModular VORTEX_RAZOR_HD = new Scope(
             RL( "vortex_razor_hd"),
             new VoxelHandler(RL("common/voxel_shapes/vortex_razor_hd_voxel.geo.json")),
-            0.61f, 1.0f, 1.0f, 6f, 0.15f
+            0.61f, 1.0f, 1.0f, 6f, 0.1f
     ).addTags("sight", "scope", "upper", "on_rail");
 
     public static final IModular CANTED_RAIL = new CantedRail(
