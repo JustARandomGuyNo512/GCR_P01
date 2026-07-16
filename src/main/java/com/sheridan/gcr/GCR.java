@@ -304,7 +304,7 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            30f, 1.8f,
+                            30f, 1.7f,
                             20, 17f, 0.2f,
                             125.0f, 3f, 3f, 0.015f),
                     new RecoilController(
@@ -344,6 +344,14 @@ public class GCR {
             false,
             1.1f
     ).addTags("sight", "upper", "red_dot", "on_rail", "canted_sight");
+
+    public static final IModular EOTECH_EXPS3 = new RedDot(
+            RL( "eotech_exps3"),
+            new VoxelHandler(RL( "common/voxel_shapes/eotech_exps3_voxel.geo.json")),
+            0.3f,
+            false,
+            1.1f
+    ).addTags("sight", "upper", "red_dot", "on_rail");
 
     public static final IModular PEQ_15 = new PEQ15(
             RL( "peq_15"),
@@ -404,6 +412,8 @@ public class GCR {
             ITEMS.register(URGI_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(URGI_HANDGUARD));
     public static final DeferredItem<Item> VORTEX_RAZOR_RED_DOT_ITEM =
             ITEMS.register(VORTEX_RAZOR_RED_DOT.getSimpleID(), () -> new ModuleItem<>(VORTEX_RAZOR_RED_DOT));
+    public static final DeferredItem<Item> EOTECH_EXPS3_ITEM =
+            ITEMS.register(EOTECH_EXPS3.getSimpleID(), () -> new ModuleItem<>(EOTECH_EXPS3));
     public static final DeferredItem<Item> PEQ_15_ITEM =
             ITEMS.register(PEQ_15.getSimpleID(), () -> new ModuleItem<>(PEQ_15));
 
@@ -451,6 +461,7 @@ public class GCR {
                                 output.accept(RK_6_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());
+                                output.accept(EOTECH_EXPS3_ITEM.get());
                                 output.accept(PEQ_15_ITEM.get());
                             }).build());
 

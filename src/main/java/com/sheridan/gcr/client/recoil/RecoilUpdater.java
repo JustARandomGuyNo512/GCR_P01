@@ -363,11 +363,11 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeX = 0;
         float shakeY = 0;
         if (distFromLastShoot < 1f && this.data != null) {
-            float scale = 0.8f + recoilHeatRes * 0.8f;
+            float scale = 1f + recoilHeatRes * 0.6f;
             scale *= 1 - aimingProgress * 0.8f;
             scale *= data.getImpulse().shake();
             float omega = (1 + recoilHeatRes * 1.5f) * 22;
-            float rand = (randomSeed * 0.6f + 0.4f) * recoilHeatRes;
+            float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, rand * halfPI * 0.67f);
             shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);

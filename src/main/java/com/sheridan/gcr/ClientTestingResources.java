@@ -200,7 +200,10 @@ public class ClientTestingResources {
         );
 
 
-        ModelRegistrationManager.registerModel(GCR.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 1.1f));
+        ModelRegistrationManager.registerModel(GCR.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 0.06875f));
+
+        ModelRegistrationManager.registerModel(GCR.EOTECH_EXPS3, "model_assets/gltf/eotech_exps3.gltf", "model_assets/gltf/eotech_exps3.png", true, d -> new RedDotModel(d, GCR.RL("eotech_exps3"), GCR.RL("textures/sight/crosshair/eotech_exps3.png"), 0.045f));
+
 
         ModelRegistrationManager.registerModel(
                 GCR.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
