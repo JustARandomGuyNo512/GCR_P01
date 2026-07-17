@@ -193,6 +193,8 @@ public class GCR {
             1).addTags("canted_sight", "sight", "upper", "on_rail");
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
+    public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
+
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar");
     public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar");
 
@@ -304,11 +306,11 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            30f, 1.7f,
-                            20, 17f, 0.2f,
+                            29.5f, 1.6f,
+                            18, 15f, 0.2f,
                             125.0f, 3f, 3f, 0.015f),
                     new RecoilController(
-                            900.0f, 140f,
+                            900.0f, 145f,
                             160.0f, 13f,
                             165.0f, 10f,
                             175.0f, 11f,
@@ -392,6 +394,8 @@ public class GCR {
             ITEMS.register(USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(USGI_MAG_20R));
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
+    public static final DeferredItem<Item> CTR_STOCK_ITEM =
+            ITEMS.register(CTR_STOCK.getSimpleID(), () -> new ModuleItem<>(CTR_STOCK));
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
             ITEMS.register(A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(A2_FLASH_HINDER));
     public static final DeferredItem<Item> SOCOM_RC2_ITEM =
@@ -451,6 +455,7 @@ public class GCR {
                                 output.accept(SUREFIRE_MAG_60R_ITEM.get());
                                 output.accept(USGI_MAG_20R_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
+                                output.accept(CTR_STOCK_ITEM.get());
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
