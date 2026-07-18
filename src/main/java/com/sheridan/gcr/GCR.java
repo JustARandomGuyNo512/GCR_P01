@@ -197,6 +197,7 @@ public class GCR {
 
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar");
     public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar");
+    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -282,7 +283,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.001f, 0.1f, 1.3f, 4f,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.00075f, 0.1f, 1.3f, 4f,
                     30f, 0.005f, 0.05f / 60,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
@@ -400,6 +401,8 @@ public class GCR {
             ITEMS.register(A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(A2_FLASH_HINDER));
     public static final DeferredItem<Item> SOCOM_RC2_ITEM =
             ITEMS.register(SOCOM_RC2.getSimpleID(), () -> new ModuleItem<>(SOCOM_RC2));
+    public static final DeferredItem<Item> AR15_MUZZLE_BRAKE_ITEM =
+            ITEMS.register(AR15_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AR15_MUZZLE_BRAKE));
     public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
             ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
     public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
@@ -458,6 +461,7 @@ public class GCR {
                                 output.accept(CTR_STOCK_ITEM.get());
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());
+                                output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());

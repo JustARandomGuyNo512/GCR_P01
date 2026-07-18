@@ -165,7 +165,10 @@ public class ClientTestingResources {
                 new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
                         .modifyHeatSensitive(3f)
-
+        );
+        ModelRegistrationManager.registerModel(GCR.AR15_MUZZLE_BRAKE, "model_assets/gltf/ar15_muzzle_brake.gltf", "model_assets/gltf/ar15_muzzle_brake.png", true, d ->
+                new MuzzleModel(d, 3.5f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ar15_muzzle_brake.png"))
         );
         ModelRegistrationManager.registerModel(GCR.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));

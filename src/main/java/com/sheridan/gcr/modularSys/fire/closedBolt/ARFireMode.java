@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.common.Mod;
 
 import java.awt.*;
 import java.util.Map;
@@ -55,8 +56,8 @@ public abstract class ARFireMode extends FireMode<AR> {
                     Minecraft.getInstance().gui.setOverlayMessage(
                             Component.translatable("gcr.overlay.stuck")
                                     .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
-                    //ModSounds.sound(1, 1, player, ModSounds.GUN_STUCK.get());
                     stuckMsgNoticed = true;
+                    ModSounds.sound(1,1, player, ModSounds.GUN_STUCK.get());
                     return FireControl.EXIT_FIRE_STATE;
                 }
                 if (!removeStuckTaskSent) {
