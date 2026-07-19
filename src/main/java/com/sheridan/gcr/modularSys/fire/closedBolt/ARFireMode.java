@@ -57,7 +57,7 @@ public abstract class ARFireMode extends FireMode<AR> {
                             Component.translatable("gcr.overlay.stuck")
                                     .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
                     stuckMsgNoticed = true;
-                    ModSounds.sound(1,1, player, ModSounds.GUN_STUCK.get());
+                    //ModSounds.sound(1,1, player, ModSounds.GUN_STUCK.get());
                     return FireControl.EXIT_FIRE_STATE;
                 }
                 if (!removeStuckTaskSent) {

@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.model.modular.IAnimationControllerModel;
 import com.sheridan.gcr.client.model.modular.IArmHandlerModel;
@@ -30,6 +31,8 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
     public boolean saveTempPose = false;
     private final List<ModuleRenderNode> stateViewers = new ArrayList<>();
     private final List<ModuleRenderNode> allRenderNodes = new ArrayList<>();
+    protected ModuleRenderNode leftArmNode;
+    protected ModuleRenderNode rightArmNode;
     protected IArmHandlerModel leftArm;
     protected IArmHandlerModel rightArm;
 
@@ -43,9 +46,11 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
             if (node.model instanceof IArmHandlerModel armHandlerModel) {
                 if (Objects.equals(leftArmHoldID, node.id) && armHandlerModel.has(false)) {
                     this.leftArm = armHandlerModel;
+                    this.leftArmNode = node;
                 }
                 if (Objects.equals(rightArmHoldID, node.id) && armHandlerModel.has(true)) {
                     this.rightArm = armHandlerModel;
+                    this.rightArmNode = node;
                 }
             }
         });
@@ -54,9 +59,11 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
             if (root.model instanceof IArmHandlerModel model) {
                 if (leftArm == null && model.has(false)) {
                     this.leftArm = model;
+                    this.leftArmNode = root;
                 }
                 if (rightArm == null && model.has(true)) {
                     this.rightArm = model;
+                    this.rightArmNode = root;
                 }
             }
         }
@@ -179,23 +186,31 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
     protected void recordArms() {
         if (canRenderArm()) {
             BufferedPlayerArmModel.getInstance().hideAll();
-            recordArm(false, leftArm,
-                    getLocalStorage(RenderConstants.ANIMATED_LEFT_ARM_MODEL),
+            recordArm(
+                    false,
+                    leftArm,
+                    leftArmNode,
+                    getLocalStorage(RenderConstants.ANIMATED_LEFT_ARM_MODEL_NODE),
                     getLocalStorage(RenderConstants.LEFT_ARM_LERP_CONTROL));
 
-            recordArm(true, rightArm,
-                    getLocalStorage(RenderConstants.ANIMATED_RIGHT_ARM_MODEL),
+            recordArm(
+                    true,
+                    rightArm,
+                    rightArmNode,
+                    getLocalStorage(RenderConstants.ANIMATED_RIGHT_ARM_MODEL_NODE),
                     getLocalStorage(RenderConstants.RIGHT_ARM_LERP_CONTROL));
         }
     }
 
-    private void recordArm(boolean isRight, IArmHandlerModel baseArm, Object animatedArmObj, Object lerpControlObj) {
-        IArmHandlerModel animatedArm = (animatedArmObj instanceof IArmHandlerModel a && a != baseArm) ? a : null;
+    private void recordArm(boolean isRight, IArmHandlerModel baseArm, ModuleRenderNode baseArmNode, Object animatedArmObj, Object lerpControlObj) {
+        ModuleRenderNode animatedArmNode = (animatedArmObj instanceof ModuleRenderNode a && a != baseArmNode) ? a : null;
         boolean isSlim = BufferedPlayerArmModel.isPlayerModelSlim();
-        if (animatedArm != null && lerpControlObj instanceof Float progress && progress > 0) {
+        if (animatedArmNode != null && lerpControlObj instanceof Float progress && progress > 0 && animatedArmNode.model instanceof IArmHandlerModel animatedArm) {
             PoseStack.Pose from, to;
-            from = baseArm.getPose(isRight, isSlim);
-            to = animatedArm.getPose(isRight, isSlim);
+            Bone bone = baseArm.getBone(isRight, isSlim);
+            from = getPose(baseArmNode, bone.name);
+            Bone animatedBone = animatedArm.getBone(isRight, isSlim);
+            to = getPose(animatedArmNode, animatedBone.name);
             PoseStack.Pose pose = Utils.lerpPose(from, to, progress);
             BufferedPlayerArmModel.getInstance().record(pose, !isRight, isSlim, light);
         } else {
@@ -215,6 +230,16 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
         }
         handleArmRender();
         handleBulletShellRender();
+    }
+
+    static final PoseStack.Pose EMPTY_POSE = new PoseStack().last();
+    public PoseStack.Pose getPose(ModuleRenderNode node, String boneName) {
+        Map<String, BoneRenderStatus> stringBoneRenderStatusMap = getRenderStatusMap().get(node);
+        if (stringBoneRenderStatusMap == null) {
+            return EMPTY_POSE;
+        }
+        BoneRenderStatus status = stringBoneRenderStatusMap.get(boneName);
+        return status == null ? EMPTY_POSE : status.pose;
     }
 
     @Override

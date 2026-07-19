@@ -48,11 +48,11 @@ public class ArmPoseLerp extends Command{
             return;
         }
         if (leftArm) {
-            context.setLocalStorage(RenderConstants.ANIMATED_LEFT_ARM_MODEL, animated);
+            context.setLocalStorage(RenderConstants.ANIMATED_LEFT_ARM_MODEL_NODE, context.currentRenderNode());
             float progress = getProgress(f);
             context.setLocalStorage(RenderConstants.LEFT_ARM_LERP_CONTROL, progress);
         } else {
-            context.setLocalStorage(RenderConstants.ANIMATED_RIGHT_ARM_MODEL, animated);
+            context.setLocalStorage(RenderConstants.ANIMATED_RIGHT_ARM_MODEL_NODE, context.currentRenderNode());
             float progress = getProgress(f);
             context.setLocalStorage(RenderConstants.RIGHT_ARM_LERP_CONTROL, progress);
         }

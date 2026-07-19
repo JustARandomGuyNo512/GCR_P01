@@ -5,8 +5,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderConstants {
-    public static final int ANIMATED_LEFT_ARM_MODEL = 0;
-    public static final int ANIMATED_RIGHT_ARM_MODEL = 1;
+    public static final int ANIMATED_LEFT_ARM_MODEL_NODE = 0;
+    public static final int ANIMATED_RIGHT_ARM_MODEL_NODE = 1;
 
     public static final int LEFT_ARM_LERP_CONTROL = 2;
     public static final int RIGHT_ARM_LERP_CONTROL = 3;
