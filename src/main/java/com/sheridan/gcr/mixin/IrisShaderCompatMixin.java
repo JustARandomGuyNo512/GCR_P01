@@ -51,6 +51,44 @@ public class IrisShaderCompatMixin {
     }
 
 
+    /**
+     * 从 #version 行之后开始扫描，跳过所有紧邻的预处理器指令行
+     * (#extension / #pragma / 空行)，返回真正可以插入普通声明的位置。
+     * 这是为了满足 GLSL 规范：#extension 必须出现在任何非预处理器 token 之前。
+     */
+    private static int findInsertPositionAfterPreprocessorDirectives(String shader, int fromIndex) {
+        int pos = fromIndex;
+        boolean foundExtension = false;
+
+        while (pos < shader.length()) {
+            int lineEnd = shader.indexOf('\n', pos);
+            boolean hasNewline = lineEnd != -1;
+            if (!hasNewline) {
+                lineEnd = shader.length();
+            }
+
+            String line = shader.substring(pos, lineEnd);
+            String trimmed = line.trim();
+
+            if (trimmed.startsWith("#extension")) {
+                foundExtension = true;
+                pos = hasNewline ? lineEnd + 1 : lineEnd;
+            } else if (trimmed.startsWith("#pragma") || trimmed.isEmpty()) {
+                pos = hasNewline ? lineEnd + 1 : lineEnd;
+            } else {
+                break;
+            }
+        }
+
+        if (GCR.IS_DEVELOPMENT && foundExtension) {
+            System.out.println("[GCR IrisShaderCompat] Detected #extension directive(s), " +
+                    "inserting declarations after them at offset " + pos);
+        }
+
+        return pos;
+    }
+
+
     private static String patchFPFsh(String fsh) {
         // 已经处理过：直接从已有声明里读出 location，赋值给 IrisExtendRT，不重复注入
         if (fsh.contains("gcrMuzzleLightContributions")) {
@@ -175,14 +213,23 @@ public class IrisShaderCompatMixin {
             return fsh;
         }
 
+//        int versionIndex = fsh.indexOf("#version");
+//        if (versionIndex == -1) {
+//            System.err.println("Shader is missing #version directive!");
+//            return fsh;
+//        }
+//        int versionLineEnd = fsh.indexOf('\n', versionIndex) + 1;
+//
+//        return fsh.substring(0, versionLineEnd) + extraUniforms + fsh.substring(versionLineEnd);
         int versionIndex = fsh.indexOf("#version");
         if (versionIndex == -1) {
             System.err.println("Shader is missing #version directive!");
             return fsh;
         }
         int versionLineEnd = fsh.indexOf('\n', versionIndex) + 1;
+        int insertPos = findInsertPositionAfterPreprocessorDirectives(fsh, versionLineEnd);
 
-        return fsh.substring(0, versionLineEnd) + extraUniforms + fsh.substring(versionLineEnd);
+        return fsh.substring(0, insertPos) + extraUniforms + fsh.substring(insertPos);
     }
 
     /**
@@ -293,8 +340,12 @@ public class IrisShaderCompatMixin {
         }
 
         int versionLineEnd = vsh.indexOf('\n', versionIndex);
-        String beforeVersionEnd = vsh.substring(0, versionLineEnd + 1);
-        String afterVersionEnd = vsh.substring(versionLineEnd + 1);
+//        String beforeVersionEnd = vsh.substring(0, versionLineEnd + 1);
+//        String afterVersionEnd = vsh.substring(versionLineEnd + 1);
+//        String s = beforeVersionEnd + uniforms + afterVersionEnd;
+        int insertPos = findInsertPositionAfterPreprocessorDirectives(vsh, versionLineEnd + 1);
+        String beforeVersionEnd = vsh.substring(0, insertPos);
+        String afterVersionEnd = vsh.substring(insertPos);
         String s = beforeVersionEnd + uniforms + afterVersionEnd;
 
         int mainIndex = s.indexOf("void main()");
