@@ -141,10 +141,11 @@ public class RecoilUpdater implements IRecoilUpdater {
         // -- 2.3 侧倾 (Roll)
         float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
         float c_ang_roll = controller.rollDamping() * aimingRotFactorDamp;
-        float torqueRoll = -k_ang_roll * rollDisplacement - c_ang_roll * rollVelocity;
+        float zFactor = Mth.lerp(-gunDisplacement.z * 5, 1, 1.5f);
+        float torqueRoll = (-k_ang_roll * zFactor) * rollDisplacement - c_ang_roll * rollVelocity;
 
         rollVelocity += torqueRoll * dt;
-        rollDisplacement += rollVelocity * dt;
+        rollDisplacement += rollVelocity * dt * zFactor;
 
         gunAngularDisplacement.set(
                 basePitchDisplacement + randomAngularDisplacement.x,
@@ -243,7 +244,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.8f + RANDOM.nextFloat() * 0.2f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.75f + RANDOM.nextFloat() * 0.25f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
