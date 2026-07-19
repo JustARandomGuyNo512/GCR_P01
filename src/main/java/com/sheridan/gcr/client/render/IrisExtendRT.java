@@ -66,7 +66,11 @@ public class IrisExtendRT {
         if (!sizeChanged) {
             return;
         }
-
+        int status = GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER);
+        if (status != GL30.GL_FRAMEBUFFER_COMPLETE) {
+            // 如果 FBO 不完整，直接 return，不进行后续的销毁和重建
+            return;
+        }
         System.out.println("[MuzzleRT] Resize detected: " + lastWidth + "x" + lastHeight + " -> " + expectedWidth + "x" + expectedHeight);
 
         // 如果之前 attach 过，先 detach
