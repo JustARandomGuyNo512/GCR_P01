@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.render.HeatMapTextureManager;
 import com.sheridan.gcr.client.render.Shaders;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.mixin.VertexBufferAccessor;
@@ -20,9 +21,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.*;
 
 import javax.annotation.Nullable;
 import java.nio.FloatBuffer;

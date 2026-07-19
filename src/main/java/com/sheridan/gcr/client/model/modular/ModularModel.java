@@ -1,5 +1,6 @@
 package com.sheridan.gcr.client.model.modular;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
@@ -17,6 +18,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
@@ -65,6 +67,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         if (heatUni == -1 || heatMapTexUni == -1) {
             return;
         }
+
         int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
         float heat = Client.WEAPON_STATUS.getHeat(partialTicks);

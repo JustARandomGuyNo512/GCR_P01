@@ -15,6 +15,7 @@
     "ItemInHandRendererMixin",
     "LightTextureAccessor",
     "LightTextureMixin",
+    "MixinGlStateManagerTextures",
     "RenderItemMixin",
     "RenderSystemAccessor",
     "VertexBufferAccessor"
