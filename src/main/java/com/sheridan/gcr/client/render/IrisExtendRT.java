@@ -36,7 +36,7 @@ public class IrisExtendRT {
     }
 
     public static void setUpDrawBuffers() {
-        if (attachments == null || textureId == -1) {
+        if (attachments == null || textureId == -1 || lastUsingFbo == -1) {
             return;
         }
         GL32C.glDrawBuffers(attachments);
