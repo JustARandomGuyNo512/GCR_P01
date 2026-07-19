@@ -4,6 +4,7 @@
   "package": "com.sheridan.gcr.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "gcr.refmap.json",
+  "plugin": "com.sheridan.gcr.mixin.GCRMixinPlugin",
   "mixins": [
     "IrisShaderCompatMixin",
     "Ldlib2DebugMixin",
