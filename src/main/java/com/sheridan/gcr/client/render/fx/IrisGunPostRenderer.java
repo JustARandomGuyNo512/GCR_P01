@@ -45,7 +45,9 @@ public class IrisGunPostRenderer {
 
     public static void onRender() {
         if (shouldRender && IrisExtendRT.textureId != -1) {
+
             if (IrisExtendRT.dirty) {
+
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL_SRC_ALPHA, GL_ONE);
                 RenderSystem.disableDepthTest();
@@ -70,7 +72,6 @@ public class IrisGunPostRenderer {
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.activeTexture(GL13.GL_TEXTURE0);
                 RenderSystem.bindTexture(0);
-                Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
             }
             shouldRender = false;
         } else {
