@@ -108,7 +108,6 @@ public class DefaultGunRenderer implements IGunRenderer {
             firstPersonPoseStack.scale(0.25f, 0.25f, 0.25f);
         }
         HardCodeAnimationHandler.getInstance().applyTransformPre(firstPersonPoseStack, gun, partialTicks, player);
-        RecoilHandler.INSTANCE.applyTransformPre(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
 
         if (cachedFPContext != null) {
             cachedFPContext.itemStack = itemStack;

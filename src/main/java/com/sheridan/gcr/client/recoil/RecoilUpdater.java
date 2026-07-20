@@ -333,11 +333,6 @@ public class RecoilUpdater implements IRecoilUpdater {
     }
 
     @Override
-    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
-
-    }
-
-    @Override
     public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
         // 1. 计算插值 alpha
         float aimingProgress = Client.getAimingProgress();

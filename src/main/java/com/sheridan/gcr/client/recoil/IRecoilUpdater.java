@@ -13,7 +13,6 @@ public interface IRecoilUpdater {
     void onShoot(Player player);
     void applyImpulse(float impulseZ, float pitch, float yaw,  float shakePitch, float shakeYaw, float shakeRoll);
     void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model);
-    void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model);
     float getGunKickPitch();
     float getGunKickYaw();
     void setRecoilData(RecoilData data);

@@ -37,11 +37,6 @@ public class RecoilHandler {
         }
     }
 
-    public void applyTransformPre(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
-        if (recoilUpdater != null) {
-            recoilUpdater.applyTransformPre(poseStack, aiming, particleTicks, model);
-        }
-    }
 
     public synchronized void setRecoilUpdater(IRecoilUpdater recoilUpdater) {
         this.recoilUpdater = recoilUpdater;
