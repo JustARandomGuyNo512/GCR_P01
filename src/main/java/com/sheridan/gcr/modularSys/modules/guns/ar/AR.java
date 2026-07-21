@@ -27,32 +27,18 @@ public class AR extends SlottedGunMainPart implements ARView {
         super(id, pivotMapPath, baseDataModule, displayData, recoilData, fireModes);
     }
 
-    public void setBoltLocked(boolean locked, CompoundTag states) {
-        BOLT_LOCKED.set(locked, states);
+    @Override
+    protected IGunTask<?> getReloadTask(ItemStack itemStack) {
+        return new ARReloadTask(itemStack, this);
     }
 
     @Override
-    public @Nullable IGunTask<?> getTask(ItemStack itemStack, IGunTask.TaskType type, Map<String, Object> args) {
-        if (type == IGunTask.TaskType.RELOAD) {
-            if (!shouldReload(itemStack)) {
-                return null;
-            }
-            return new ARReloadTask(itemStack, this);
-        }
-        if (type == IGunTask.TaskType.REMOVE_STUCK && isStuck(itemStack)) {
-            return new ARRemoveStuckTask(itemStack, this);
-        }
-        return super.getTask(itemStack, type, args);
+    protected IGunTask<?> getRemoveStuckTask(ItemStack itemStack) {
+        return new ARRemoveStuckTask(itemStack, this);
     }
 
-    protected boolean shouldReload(ItemStack itemStack) {
-        IAmmoSource magAttachment = getMagAttachment(itemStack);
-        if (magAttachment == null) {
-            return getGunAmmoLeft(itemStack) < 1;
-        } else {
-            int ammoLeft = getAmmoLeft(itemStack);
-            return ammoLeft < magAttachment.getMaxCapacity() + 1;
-        }
+    public void setBoltLocked(boolean locked, CompoundTag states) {
+        BOLT_LOCKED.set(locked, states);
     }
 
     @Override
@@ -73,8 +59,6 @@ public class AR extends SlottedGunMainPart implements ARView {
         }
     }
 
-
-
     @Override
     public void removeStuck(ItemStack itemStack) {
         super.removeStuck(itemStack);
@@ -88,19 +72,8 @@ public class AR extends SlottedGunMainPart implements ARView {
             }
         }
     }
-
-    @Override
-    public int getAmmoLeft(CompoundTag states) {
-        return super.getAmmoLeft(states);
-    }
-
     @Override
     public boolean boltLocked(CompoundTag states) {
         return BOLT_LOCKED.get(states);
-    }
-
-    @Override
-    public AdditionalPropModifier getModifier() {
-        return null;
     }
 }

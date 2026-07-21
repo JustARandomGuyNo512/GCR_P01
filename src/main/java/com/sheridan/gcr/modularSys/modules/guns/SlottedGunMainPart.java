@@ -17,7 +17,9 @@ import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.slot.ISlot;
 import com.sheridan.gcr.modularSys.task.IGunTask;
+import com.sheridan.gcr.modularSys.task.other.ARRemoveStuckTask;
 import com.sheridan.gcr.modularSys.task.other.SwitchUsingSightTask;
+import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISlottedGun {
+public abstract class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISlottedGun {
     private final ISlotProvider slotProvider;
     private Consumer<IWorkSpace> onModuleTreeInit;
 
@@ -90,8 +92,21 @@ public class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISl
         if (type == IGunTask.TaskType.SWITCH_USING_SIGHT) {
             return new SwitchUsingSightTask(itemStack, this);
         }
+        if (type == IGunTask.TaskType.RELOAD) {
+            if (!shouldReload(itemStack)) {
+                return null;
+            }
+            return getReloadTask(itemStack);//new ARReloadTask(itemStack, this);
+        }
+        if (type == IGunTask.TaskType.REMOVE_STUCK && isStuck(itemStack)) {
+            return getRemoveStuckTask(itemStack);//new ARRemoveStuckTask(itemStack, this);
+        }
         return super.getTask(itemStack, type, args);
     }
+
+    protected abstract IGunTask<?> getReloadTask(ItemStack itemStack);
+
+    protected abstract IGunTask<?> getRemoveStuckTask(ItemStack itemStack);
 
     @Override
     public boolean switchUsingSight(ItemStack itemStack) {
@@ -310,5 +325,15 @@ public class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISl
             }
         }
         return id;
+    }
+
+    protected boolean shouldReload(ItemStack itemStack) {
+        IAmmoSource magAttachment = getMagAttachment(itemStack);
+        if (magAttachment == null) {
+            return getGunAmmoLeft(itemStack) < 1;
+        } else {
+            int ammoLeft = getAmmoLeft(itemStack);
+            return ammoLeft < magAttachment.getMaxCapacity() + 1;
+        }
     }
 }
