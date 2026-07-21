@@ -1,13 +1,20 @@
 package com.sheridan.gcr.client.model.modular;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.sheridan.gcr.Client;
+import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.state.IStateViewer;
+import com.sheridan.gcr.client.render.DefaultGunRenderer;
+import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.modules.views.IStateView;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> implements IArmHandlerModel {
@@ -19,8 +26,39 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
     protected Bone slimRight;
     protected Bone maleRight;
 
+    protected Bone slimLeftPivot;
+    protected Bone maleLeftPivot;
+
+    protected Bone slimRightPivot;
+    protected Bone maleRightPivot;
+
+    protected Bone innerLeft;
+    protected Bone innerRight;
+
     protected Bone leftArm;
     protected Bone rightArm;
+
+    @Override
+    public void updateBoneRenderStatus(ModuleRenderContext context) {
+        super.updateBoneRenderStatus(context);
+    }
+
+    @Override
+    public void updateBoneRenderStatus(Bone root, PoseStack poseStack, int light) {
+        if (root == leftArm) {
+            poseStack.pushPose();
+            PoseStack testStack = Client.getGunRenderer().getEnvDisturbance();
+            Matrix4f pose = testStack.last().pose();
+            Quaternionf quaternionf = pose.getNormalizedRotation(new Quaternionf());
+            quaternionf.conjugate();
+            Quaternionf half = new Quaternionf().identity().slerp(quaternionf, 0.4f);
+            poseStack.mulPose(half);
+        }
+        super.updateBoneRenderStatus(root, poseStack, light);
+        if (root == leftArm) {
+            poseStack.popPose();
+        }
+    }
 
     public ArmHandlerModel(MeshModelData root, IStateViewer<T> viewer, ResourceLocation name) {
         super(root, name, viewer);
@@ -32,16 +70,22 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
             if ("LEFT_ARM".equals(bone.name)) {
                 if (matchArmStructure(bone, false)) {
                     leftArm = bone;
-                    maleLeft = bone.getBone("INNER_L").getBone("L_MALE");
-                    slimLeft = bone.getBone("INNER_L").getBone("L_SLIM");
+                    innerLeft = bone.getBoneOrThrow("INNER_L");
+                    maleLeft = innerLeft.getBoneOrThrow("L_MALE");
+                    slimLeft = innerLeft.getBoneOrThrow("L_SLIM");
+                    maleLeftPivot = maleLeft.getBoneOrThrow("L_MALE_PIVOT");
+                    slimLeftPivot = slimLeft.getBoneOrThrow("L_SLIM_PIVOT");
                     this.hasLeft = true;
                 }
             }
             if ("RIGHT_ARM".equals(bone.name)) {
                 if (matchArmStructure(bone, true)) {
                     rightArm = bone;
-                    maleRight = bone.getBone("INNER_R").getBone("R_MALE");
-                    slimRight = bone.getBone("INNER_R").getBone("R_SLIM");
+                    innerRight = bone.getBoneOrThrow("INNER_R");
+                    maleRight = innerRight.getBoneOrThrow("R_MALE");
+                    slimRight = innerRight.getBoneOrThrow("R_SLIM");
+                    maleRightPivot = maleRight.getBoneOrThrow("R_MALE_PIVOT");
+                    slimRightPivot = slimRight.getBoneOrThrow("R_SLIM_PIVOT");
                     this.hasRight = true;
                 }
             }

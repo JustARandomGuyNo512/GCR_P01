@@ -13,7 +13,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class ShadowBoneRender extends Command{
     public String refBone;
     public String targetBone;
-    public boolean copyStates;
+    public boolean copyRenderNode;
+    public boolean copyRenderNodeStates;
     public float copyStatesTimestamp;
     public float startProgress;
 

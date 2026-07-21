@@ -10,7 +10,7 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationContro
 import com.sheridan.gcr.client.model.modular.modules.*;
 import com.sheridan.gcr.client.model.modular.state.IStateViewer;
 import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
-import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMagViewer;
+import com.sheridan.gcr.client.model.modular.state.stateViewers.CommonMagViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.ARMainViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.FlashLightStatesViewer;
 import com.sheridan.gcr.client.model.modular.state.stateViewers.TestM203Viewer;
@@ -74,6 +74,19 @@ public class ClientTestingResources {
                         "empty", "ar_mag_30r_empty"
                 )
         );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/6l23.states.json",
+                Map.of(
+                        "full_1", "6l23_full_1",
+                        "full_2", "6l23_full_2",
+                        "left_1", "6l23_left_1",
+                        "left_2", "6l23_left_2",
+                        "left_3", "6l23_left_3",
+                        "left_4", "6l23_left_4",
+                        "left_5", "6l23_left_5",
+                        "empty", "6l23_empty"
+                )
+        );
         // 全局动画
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/ar.global.animation.json",
@@ -132,22 +145,37 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(
                 GCR.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
-                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R))
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.STANAG_MAG_30R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
                 GCR.PMAG_40R, "model_assets/gltf/pmag_40r.gltf", "model_assets/gltf/pmag_40r.png", true,
-                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.PMAG_40R))
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.PMAG_40R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
                 GCR.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
-                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.SUREFIRE_MAG_60R))
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.SUREFIRE_MAG_60R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
                 GCR.USGI_MAG_20R, "model_assets/gltf/usgi_mag_20r.gltf", "model_assets/gltf/usgi_mag_20r.png", true,
-                meshData -> new ARMagModel(meshData, GCR.RL(""), new ARMagViewer((IAmmoSourceView) GCR.USGI_MAG_20R))
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.USGI_MAG_20R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCR.MAG_6L18, "model_assets/gltf/6l18.gltf", "model_assets/gltf/6l18.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.MAG_6L18, 6, "gcr:6l23"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCR.MAG_6L23, "model_assets/gltf/6l23.gltf", "model_assets/gltf/6l23.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.MAG_6L23, 6, "gcr:6l23"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCR.MAG_6L31, "model_assets/gltf/6l31.gltf", "model_assets/gltf/6l31.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCR.MAG_6L31, 6, "gcr:6l23"))
         );
 
 

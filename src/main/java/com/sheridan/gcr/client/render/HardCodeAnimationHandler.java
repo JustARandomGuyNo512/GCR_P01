@@ -223,7 +223,8 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         if (idleProgress > PI * 2.66666666666f) {
             idleProgress = 0;
         }
-        globalScale = Mth.clamp(Client.distFromLastShoot() * 5, 0.25f, 1f);
+        //globalScale = Mth.clamp(Client.distFromLastShoot() * 5, 0.25f, 1f);
+        globalScale = 1f;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             if (player.isSprinting()) {

@@ -130,9 +130,13 @@ public class GCR {
     ).addTags("barrel", "5.56x45");
 
     public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
-    public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.18f, 40).addTags("mag", "ar", "5.56x45");
+    public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
     public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
+
+    public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
 
 
     public static final IModular CAR_15_HANDGUARD = new SplitARHandguard(
@@ -309,7 +313,7 @@ public class GCR {
                     new RecoilImpulse(
                             29.5f, 1.6f,
                             18, 15f, 0.2f,
-                            120.0f, 3f, 3f, 0.0155f),
+                            125.0f, 3f, 3f, 0.016f),
                     new RecoilController(
                             900.0f, 145f,
                             160.0f, 13f,
@@ -393,6 +397,16 @@ public class GCR {
             ITEMS.register(SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(SUREFIRE_MAG_60R));
     public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
             ITEMS.register(USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(USGI_MAG_20R));
+
+    public static final DeferredItem<Item> MAG_6L18_ITEM =
+            ITEMS.register(MAG_6L18.getSimpleID(), () -> new ModuleItem<>(MAG_6L18));
+    public static final DeferredItem<Item> MAG_6L23_ITEM =
+            ITEMS.register(MAG_6L23.getSimpleID(), () -> new ModuleItem<>(MAG_6L23));
+    public static final DeferredItem<Item> MAG_6L31_ITEM =
+            ITEMS.register(MAG_6L31.getSimpleID(), () -> new ModuleItem<>(MAG_6L31));
+
+
+
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
     public static final DeferredItem<Item> CTR_STOCK_ITEM =
@@ -457,6 +471,9 @@ public class GCR {
                                 output.accept(PMAG_40R_ITEM.get());
                                 output.accept(SUREFIRE_MAG_60R_ITEM.get());
                                 output.accept(USGI_MAG_20R_ITEM.get());
+                                output.accept(MAG_6L18_ITEM.get());
+                                output.accept(MAG_6L23_ITEM.get());
+                                output.accept(MAG_6L31_ITEM.get());
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(CTR_STOCK_ITEM.get());
                                 output.accept(A2_FLASH_HINDER_ITEM.get());

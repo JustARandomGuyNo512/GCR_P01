@@ -86,6 +86,9 @@ public class DefaultGunRenderer implements IGunRenderer {
     private final Vector3f currCameraRot = new Vector3f();
     private final List<EventType> delayedEvents = new ArrayList<>();
     private long fpRenderTimeStamp = 0;
+
+    public static PoseStack TEST_STACK = new PoseStack();
+
     @Override
     public void renderFirstPerson(LocalPlayer player, ItemStack itemStack, IGun gun, PoseStack poseStack, int light, int overlay) {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
@@ -118,7 +121,12 @@ public class DefaultGunRenderer implements IGunRenderer {
         GunPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
         firstPersonPoseStack.last().pose().getTranslation(GUN_LOCAL_POS);
         HardCodeAnimationHandler.getInstance().applyTransformPost(firstPersonPoseStack, gun, partialTicks, player);
-        RecoilHandler.INSTANCE.applyTransformPost(firstPersonPoseStack, Client.isAiming(), partialTicks, gunModel);
+
+        TEST_STACK.setIdentity();
+
+        RecoilHandler.INSTANCE.applyTransformPost(TEST_STACK, Client.isAiming(), partialTicks, gunModel);
+
+        firstPersonPoseStack.mulPose(TEST_STACK.last().pose());
 
         if (cachedFPContext == null || doUpdateCache) {
             if (doUpdateCache) {
@@ -254,6 +262,11 @@ public class DefaultGunRenderer implements IGunRenderer {
         } else {
             return fpRenderTimeStamp;
         }
+    }
+
+    @Override
+    public PoseStack getEnvDisturbance() {
+        return TEST_STACK;
     }
 
 

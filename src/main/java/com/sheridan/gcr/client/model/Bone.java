@@ -72,6 +72,14 @@ public class Bone implements IAnimated {
         return children.get(name);
     }
 
+    public Bone getBoneOrThrow(String name) {
+        Bone bone = children.get(name);
+        if (bone == null) {
+            throw new RuntimeException("Bone " + name + " not found");
+        }
+        return bone;
+    }
+
     @Override
     public void offsetPos(Vector3f vector3f) {
         this.x += vector3f.x();
