@@ -17,9 +17,9 @@ public class AKViewer extends StateViewer<AKView> {
 
     @Override
     public void onRegisterStateMapping() {
-        addStateMapping("base", "gcr:m4a1_base", DEFAULT_SCALE, 0);
-        addStateMapping("bolt_locked", "gcr:m4a1_shoot_last", DEFAULT_SCALE, 1);
-        addStateMapping("stuck", "gcr:m4a1_shoot_stuck", DEFAULT_SCALE, 1);
+        addStateMapping("base", "gcr:ak74_base", DEFAULT_SCALE, 0);
+        addStateMapping("stuck", "gcr:ak74_shoot_stuck", DEFAULT_SCALE, 1);
+        addStateMapping("stuck_empty", "gcr:ak74_shoot_last_stuck", DEFAULT_SCALE, 1);
 
         addStateMappings(
                 StaticState.Builder.empty(IGun.FIRE_MODEL_ID.getDefaultValue()),
@@ -41,10 +41,10 @@ public class AKViewer extends StateViewer<AKView> {
 //            doPose("stuck", animated, context);
 //        } else {
 //
-//            doPose("base", animated, context);
-//            if (view.getAmmoLeft(states) <= 0) {
-//                doPose("chamber_empty", animated, context);
-//            }
+            doPose("base", animated, context);
+            if (view.getAmmoLeft(states) <= 0) {
+                doPose("chamber_empty", animated, context);
+            }
 //        }
     }
 }

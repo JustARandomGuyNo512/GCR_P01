@@ -34,6 +34,8 @@ import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
 import com.sheridan.gcr.modularSys.*;
 import com.sheridan.gcr.modularSys.builder.Unit;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.*;
@@ -432,7 +434,7 @@ public class GCR {
                             2.5f, 2f,
                             11f)
             ),
-            List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
+            List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
             .addSlot(new SingleFixedSlot("HANDGUARD_LOWER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "lower")))
             .addSlot(new SingleFixedSlot("HANDGUARD_UPPER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "upper")))
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ak")))

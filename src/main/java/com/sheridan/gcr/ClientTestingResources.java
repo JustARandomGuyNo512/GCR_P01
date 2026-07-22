@@ -75,7 +75,7 @@ public class ClientTestingResources {
                         Map.entry("shoot", "ak74_shoot"),
                         Map.entry("shoot_last", "ak74_shoot_last"),
                         Map.entry("shoot_stuck", "ak74_shoot_stuck"),
-                        Map.entry("shoot_stuck_empty", "ak74_shoot_stuck_empty"),
+                        Map.entry("shoot_last_stuck", "ak74_shoot_last_stuck"),
                         Map.entry("remove_stuck", "ak74_remove_stuck"),
                         Map.entry("remove_stuck_empty", "ak74_remove_stuck_empty"),
                         Map.entry("check_chamber", "ak74_check_chamber"),

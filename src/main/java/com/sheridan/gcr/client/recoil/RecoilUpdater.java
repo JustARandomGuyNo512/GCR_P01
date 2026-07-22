@@ -394,7 +394,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.5f - zBack * (0.07f - aimingProgress * 0.05f),
+                lerpGunDisplacement.y + yDist + shakeY * 0.5f - zBack * (0.075f - aimingProgress * 0.05f),
                 zBack + zDist);
     }
 

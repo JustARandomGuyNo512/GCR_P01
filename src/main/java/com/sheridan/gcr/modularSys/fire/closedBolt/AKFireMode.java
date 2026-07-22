@@ -2,22 +2,23 @@ package com.sheridan.gcr.modularSys.fire.closedBolt;
 
 import com.sheridan.gcr.modularSys.fire.AssaultRifeFireMode;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
-import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
+import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public abstract class ARFireMode extends AssaultRifeFireMode<AR> {
-    public ARFireMode(String name) {
-        super(name);
-    }
-
+public abstract class AKFireMode extends AssaultRifeFireMode<AK> {
     @Override
     public int modifyRpm(int baseRpm) {
         return baseRpm;
     }
 
-    protected void useMagAmmo(ItemStack itemStack, AR gun, Player player, boolean handleStuck) {
+    public AKFireMode(String name) {
+        super(name);
+    }
+
+    @Override
+    protected void useMagAmmo(ItemStack itemStack, AK gun, Player player, boolean handleStuck) {
         IAmmoSource mag = gun.getMagAttachment(itemStack);
         CompoundTag gunStates = gun.rootNodeTag(itemStack);
         if (mag == null) {
@@ -25,7 +26,6 @@ public abstract class ARFireMode extends AssaultRifeFireMode<AR> {
         }
         CompoundTag magStates = gun.getAmmoSourceTag(itemStack);
         if (mag.getAmmoLeft(magStates) <= 0) {
-            gun.setBoltLocked(true, gunStates);
             return;
         }
         if (handleStuck) {
@@ -38,7 +38,7 @@ public abstract class ARFireMode extends AssaultRifeFireMode<AR> {
     }
 
     @Override
-    public Class<AR> getGunClass() {
-        return AR.class;
+    public Class<AK> getGunClass() {
+        return AK.class;
     }
 }
