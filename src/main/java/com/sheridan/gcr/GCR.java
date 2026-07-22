@@ -330,7 +330,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.075f, -7.8125f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.075f, -7.1875f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -339,7 +339,7 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            29f, 1.6f,
+                            28.5f, 1.6f,
                             18, 15f, 0.2f,
                             125.0f, 3f, 3f, 0.016f),
                     new RecoilController(
@@ -397,7 +397,7 @@ public class GCR {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(650, 2.4f, 0.28f, 3.3f,0.0003f, 0.08f, 1.3f, 4f,
+            new BaseProperties(660, 2.4f, 0.28f, 3.3f,0.0003f, 0.08f, 1.3f, 4f,
                     30f, 0.005f, 0.05f / 70,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
@@ -412,7 +412,8 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.0375f, -7.375f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.137501f, -6.125f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON,  9.137501f, -6.125f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -421,14 +422,14 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            27f, 2f,
-                            18, 14f, 0.2f,
-                            130.0f, 3.5f, 3.5f, 0.014f),
+                            30f, 1.9f,
+                            20, 15f, 0.15f,
+                            130.0f, 3.5f, 3.5f, 0.016f),
                     new RecoilController(
-                            850.0f, 135f,
+                            900.0f, 135f,
                             165.0f, 14f,
-                            165.0f, 10.5f,
-                            175.0f, 11.5f,
+                            170.0f, 11f,
+                            180.0f, 12f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,

@@ -18,139 +18,139 @@
 				{
 					"name": "global",
 					"parent": "root",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "reloading",
 					"parent": "global",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "MAG",
 					"parent": "reloading",
-					"pivot": [0, -15, -8]
+					"pivot": [0, -16, -8]
 				},
 				{
 					"name": "LEFT_ARM",
 					"parent": "reloading",
-					"pivot": [27.51783, -40.69428, 7.48473],
+					"pivot": [27.51783, -41.69428, 7.48473],
 					"rotation": [-113.9182, 57.0411, 23.7267]
 				},
 				{
 					"name": "INNER_L",
 					"parent": "LEFT_ARM",
-					"pivot": [27.51783, -88.69428, 7.48473]
+					"pivot": [27.51783, -89.69428, 7.48473]
 				},
 				{
 					"name": "L_MALE",
 					"parent": "INNER_L",
-					"pivot": [29.51783, -88.69428, 7.48473]
+					"pivot": [29.51783, -89.69428, 7.48473]
 				},
 				{
 					"name": "L_SLIM",
 					"parent": "INNER_L",
-					"pivot": [27.51783, -88.69428, 7.48473]
+					"pivot": [27.51783, -89.69428, 7.48473]
 				},
 				{
 					"name": "body",
 					"parent": "global",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "main",
 					"parent": "body",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "bolt_release",
 					"parent": "main",
-					"pivot": [2.50389, -3.49836, -0.07974]
+					"pivot": [2.50389, -4.49836, -0.07974]
 				},
 				{
 					"name": "mag_release",
 					"parent": "main",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "safety",
 					"parent": "main",
-					"pivot": [1.79469, -5.65208, 9.03629]
+					"pivot": [1.79469, -6.65208, 9.03629]
 				},
 				{
 					"name": "charge",
 					"parent": "main",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "locker",
 					"parent": "charge",
-					"pivot": [1.5, 3.6, 15]
+					"pivot": [1.5, 2.6, 15]
 				},
 				{
 					"name": "bolt",
 					"parent": "main",
-					"pivot": [0, 0, 0]
+					"pivot": [0, -1, 0]
 				},
 				{
 					"name": "ammo",
 					"parent": "bolt",
-					"pivot": [0, 0, -17.3]
+					"pivot": [0, -1, -17.3]
 				},
 				{
 					"name": "BARREL",
 					"parent": "body",
-					"pivot": [0, 0, -15]
+					"pivot": [0, -1, -15]
 				},
 				{
 					"name": "STOCK",
 					"parent": "body",
-					"pivot": [0, 0, 32]
+					"pivot": [0, -1, 32]
 				},
 				{
 					"name": "REAR_GRIP",
 					"parent": "body",
-					"pivot": [0, -11, 10]
+					"pivot": [0, -12, 10]
 				},
 				{
 					"name": "SCOPE",
 					"parent": "body",
-					"pivot": [0, 4.9668, -1.802]
+					"pivot": [0, 3.9668, -1.802]
 				},
 				{
 					"name": "SHELL_THROW",
 					"parent": "body",
-					"pivot": [-1.8, 0.6, -6]
+					"pivot": [-1.8, -0.4, -6]
 				},
 				{
 					"name": "HANDGUARD",
 					"parent": "body",
-					"pivot": [0, 0, -32]
+					"pivot": [0, -1, -32]
 				},
 				{
 					"name": "RIGHT_ARM",
 					"parent": "body",
-					"pivot": [-10, -22, 48],
+					"pivot": [-10, -23, 48],
 					"rotation": [-98.515, -8.8609, 8.8379]
 				},
 				{
 					"name": "INNER_R",
 					"parent": "RIGHT_ARM",
-					"pivot": [-10, -70, 48]
+					"pivot": [-10, -71, 48]
 				},
 				{
 					"name": "R_MALE",
 					"parent": "INNER_R",
-					"pivot": [-12, -70, 48]
+					"pivot": [-12, -71, 48]
 				},
 				{
 					"name": "R_SLIM",
 					"parent": "INNER_R",
-					"pivot": [-10, -70, 48]
+					"pivot": [-10, -71, 48]
 				},
 				{
 					"name": "camera",
 					"parent": "root",
-					"pivot": [15, 12.5, 37]
+					"pivot": [15, 11.5, 37]
 				}
 			]
 		}

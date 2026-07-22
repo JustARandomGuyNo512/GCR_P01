@@ -66,6 +66,10 @@ public class RecoilUpdater implements IRecoilUpdater {
     private float recoilHeat = 0f;
     private float recoilBackEMA = 0f;
     private float randomSeed = 0f;
+    // 用于矢量刚性旋转耦合：记录上一物理帧的总俯仰/偏航角
+    private float prevTotalPitch = 0f;
+    private float prevTotalYaw = 0f;
+    private static final float RECOIL_VERTICAL_LEVER = 0f;
 
     /**
      *物理线程在 update 结束时调用，用于发布状态给渲染线程
@@ -110,12 +114,38 @@ public class RecoilUpdater implements IRecoilUpdater {
         float aimingRotFactorDamp = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierDamp());
 
         // 1. 线性位移计算
-        float vz = gunVelocity.z;
-        float z  = gunDisplacement.z;
-        vz = (vz - k_lin_z * z * dt) / (1.0f + c_lin_z * dt);
-        z += vz * dt;
-        gunVelocity.z = vz;
-        gunDisplacement.z = z;
+//        float vz = gunVelocity.z;
+//        float z  = gunDisplacement.z;
+//        vz = (vz - k_lin_z * z * dt) / (1.0f + c_lin_z * dt);
+//        z += vz * dt;
+//        gunVelocity.z = vz;
+//        gunDisplacement.z = z;
+
+        // --- 新增：让位移/速度矢量随枪管角度做刚性旋转（跟随手臂转动） ---
+        // 只取本帧新增的角度增量来旋转已有矢量，而不是用绝对角度重算位置，
+        // 这样弹簧自身的动量/相位不会被角度噪声打断，避免"波浪抖动"。
+        float currTotalPitch = basePitchDisplacement + randomAngularDisplacement.x;
+        float currTotalYaw = randomAngularDisplacement.y;
+        float deltaPitch = currTotalPitch - prevTotalPitch;
+        float deltaYaw = currTotalYaw - prevTotalYaw;
+
+        if (deltaPitch != 0f || deltaYaw != 0f) {
+            Quaternionf deltaRot = new Quaternionf().rotateXYZ(
+                    -(float) Math.toRadians(deltaPitch),
+                    (float) Math.toRadians(deltaYaw),
+                    0f
+            );
+            deltaRot.transform(gunDisplacement);
+            deltaRot.transform(gunVelocity);
+        }
+        prevTotalPitch = currTotalPitch;
+        prevTotalYaw = currTotalYaw;
+
+        // 1. 线性位移计算（各向同性弹簧，作用在整个矢量上而不仅是Z）
+        gunVelocity.x = (gunVelocity.x - k_lin_z * gunDisplacement.x * dt) / (1.0f + c_lin_z * dt);
+        gunVelocity.y = (gunVelocity.y - k_lin_z * gunDisplacement.y * dt) / (1.0f + c_lin_z * dt);
+        gunVelocity.z = (gunVelocity.z - k_lin_z * gunDisplacement.z * dt) / (1.0f + c_lin_z * dt);
+        gunDisplacement.add(gunVelocity.x * dt, gunVelocity.y * dt, gunVelocity.z * dt);
 
         // 2. 角位移计算（根据状态隔离并独立使用恢复参数）
 
@@ -157,6 +187,10 @@ public class RecoilUpdater implements IRecoilUpdater {
                 randomAngularVelocity.y,
                 rollVelocity
         );
+
+
+        float pitchRad = (float) Math.toRadians(gunAngularDisplacement.x);
+        gunDisplacement.y = RECOIL_VERTICAL_LEVER * Mth.sin(pitchRad);
 
         recoilBackEMA = 0.1f * gunDisplacement.z + 0.9f * recoilBackEMA;
 
@@ -256,7 +290,16 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
         float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.03f;
 
-        gunVelocity.add(0, 0, impulseZ);
+        //gunVelocity.add(0, 0, impulseZ);
+        float totalPitchAtShot = basePitchDisplacement + randomAngularDisplacement.x;
+        float totalYawAtShot = randomAngularDisplacement.y;
+        Quaternionf barrelRot = new Quaternionf().rotateXYZ(
+                -(float) Math.toRadians(totalPitchAtShot),
+                (float) Math.toRadians(totalYawAtShot),
+                0f
+        );
+        Vector3f impulseDir = barrelRot.transform(new Vector3f(0f, 0f, 1f));
+        gunVelocity.add(impulseDir.x * impulseZ, impulseDir.y * impulseZ, impulseZ);
 
         basePitchVelocity += torqueImpulseX;
         randomAngularVelocity.add(randPitch + shakePitch, randYaw + shakeYaw);
@@ -380,7 +423,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         poseStack.translate(0, 0, -handRotPivot.z);
         //手臂关节不随摄像机位移，补偿位移
         float up1 = RecoilCameraHandler.getInstance().getUp();
-        double up = up1 * 0.25f * (1 - aimingProgress);
+        double up = up1 * 0.3f * (1 - aimingProgress);
         up = Math.toRadians(up);
         Matrix4f pose = poseStack.last().pose();
         Vector3f translation = pose.getTranslation(new Vector3f());
@@ -394,7 +437,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.4f - zBack * (0.08f - aimingProgress * 0.05f),
+                lerpGunDisplacement.y + yDist + shakeY * 0.45f - zDist * 0.1f,
                 zBack + zDist);
     }
 
@@ -424,6 +467,9 @@ public class RecoilUpdater implements IRecoilUpdater {
         this.rollVelocity = 0f;
         this.gunAngularDisplacement.set(0f, 0f, 0f);
         this.gunAngularVelocity.set(0f, 0f, 0f);
+        // 用于矢量刚性旋转耦合：记录上一物理帧的总俯仰/偏航角
+        this.prevTotalPitch = 0f;
+        this.prevTotalYaw = 0f;
     }
 
     @Override

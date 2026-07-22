@@ -14,6 +14,8 @@ import com.sheridan.gcr.modularSys.modules.views.AKView;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.List;
+
 @OnlyIn(Dist.CLIENT)
 public class AKModel extends ArmHandlerModel<AKView> implements IBulletShellHandlerModel<AKView>, ISightModel, IGunModel, IMuzzleFlashRendererModel  {
     private final AssaultRifleBulletShellHandler bulletShellHandler;
@@ -26,7 +28,7 @@ public class AKModel extends ArmHandlerModel<AKView> implements IBulletShellHand
         this.handHoldPivot = getOrThrow(DEFAULT_HAND_ROT_PIVOT_NAME);
         getOrThrow(ISightModel.DEFAULT_BONE_NAME);
         muzzleFlashRenderer = new MuzzleFlashRenderer(
-                new MuzzleEntry("no1", "MUZZLE_FLASH", null, muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity));
+                new MuzzleEntry("no1", "MUZZLE_FLASH", "MUZZLE", muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity));
     }
 
     @Override
