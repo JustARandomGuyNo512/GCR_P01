@@ -7,6 +7,7 @@ import com.sheridan.gcr.modularSys.ISlotProviderModular;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandlerModule;
 import com.sheridan.gcr.modularSys.slot.IRail;
 import com.sheridan.gcr.modularSys.util.CollisionChecker;
+import com.sheridan.gcr.modularSys.util.Pivot;
 import com.sheridan.gcr.modularSys.util.PivotMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +82,11 @@ public class CollisionHandler implements ICollisionHandler{
                 List<SlotInstance> slots = node.getSlots();
                 for (SlotInstance slotInstance : slots) {
                     String slotName = slotInstance.slotName();
-                    Matrix4f matrix4f = pivotMap.get(slotName).handleTransform(new Matrix4f(pos));
+                    Pivot pivot = pivotMap.get(slotName);
+                    if (pivot == null) {
+                        continue;
+                    }
+                    Matrix4f matrix4f = pivot.handleTransform(new Matrix4f(pos));
                     slotPose.put(slotInstance, matrix4f);
                 }
             }

@@ -8,6 +8,7 @@ import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.modular.state.IStateViewer;
 import com.sheridan.gcr.client.render.DefaultGunRenderer;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.ModuleRenderNode;
 import com.sheridan.gcr.modularSys.modules.views.IStateView;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -38,10 +39,11 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
     protected Bone leftArm;
     protected Bone rightArm;
 
-    @Override
-    public void updateBoneRenderStatus(ModuleRenderContext context) {
-        super.updateBoneRenderStatus(context);
-    }
+//    @Override
+//    public void updateBoneRenderStatus(ModuleRenderContext context) {
+//        ModuleRenderNode moduleRenderNode = context.currentRenderNode();
+//        super.updateBoneRenderStatus(context.poseStack, context.light);
+//    }
 
     @Override
     public void updateBoneRenderStatus(Bone root, PoseStack poseStack, int light) {

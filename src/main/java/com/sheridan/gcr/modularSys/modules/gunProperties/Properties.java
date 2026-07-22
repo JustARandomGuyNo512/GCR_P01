@@ -18,11 +18,11 @@ public class Properties implements IJsonSync, INBTSync, IProperties {
     private final Map<String, IProp> properties;
 
     public Properties(ResourceLocation id) {
-        PropertiesDummies.registerDummy(this);
         this.properties = new HashMap<>();
         this.id = id.toString();
         nameSpace = id.getNamespace();
         path = id.getPath();
+        PropertiesDummies.registerDummy(this);
     }
 
     @Override

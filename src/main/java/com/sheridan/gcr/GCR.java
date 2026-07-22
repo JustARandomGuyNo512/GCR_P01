@@ -32,16 +32,14 @@ import com.sheridan.gcr.entity.ModEntities;
 import com.sheridan.gcr.items.DisplayData;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
-import com.sheridan.gcr.modularSys.Direction;
-import com.sheridan.gcr.modularSys.IModular;
-import com.sheridan.gcr.modularSys.ISlotProviderModular;
-import com.sheridan.gcr.modularSys.SlotProvider;
+import com.sheridan.gcr.modularSys.*;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.impl.*;
 import com.sheridan.gcr.modularSys.slot.*;
@@ -111,7 +109,7 @@ public class GCR {
                     .addSlot(new SingleFixedSlot("UNDER_BARREL")
                             .setFilter(SlotFilters.hasAllTags("under_barrel", "ar")))
                     .addSlot(new SingleFixedSlot("MUZZLE")
-                            .setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
+                            .setFilter(SlotFilters.hasAllTags("muzzle", "ar", "5.56x45"))),
             new VoxelHandler(RL("common/voxel_shapes/m4_profile_fsb_barrel_voxel.geo.json"))
     ).addTags("has_ar_front_sight", "barrel", "5.56x45");
 
@@ -123,11 +121,15 @@ public class GCR {
             RL( "moe_grip"), 0.1f, 0.1f, 0.1f, 0.06f)
             .addTags("rear_grip", "ar");
 
+    public static final IModular AK_POLYMER_GRIP = new RiflePistolGrip(
+            RL( "ak_polymer_grip"), 0.08f, 0.08f, 0.13f, 0.05f)
+            .addTags("rear_grip", "ak");
+
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f, 1.0f,
             new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
-    ).addTags("barrel", "5.56x45");
+    ).addTags("barrel", "5.56x45", "5.56x45");
 
     public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
@@ -198,10 +200,14 @@ public class GCR {
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
     public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
+    public static final IModular STOCK_6P34 = new Stock(RL( "6p34_stock"), 0.3f, 0.18f, 0.18f).addTags("stock", "ak");
 
-    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar");
-    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar");
-    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar");
+
+    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar", "5.56x45");
+
+    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.22f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -249,7 +255,7 @@ public class GCR {
             "RAIL_LOWER"
     ).addTags("handguard", "ar");
 
-    public static final IModular URGI_HANDGUARD = new ARHandguard
+    public static final IModular URGI_HANDGUARD = new Handguard
             (RL( "urgi_handguard"),
             0.4f, 0.025f,
             new SlotProvider(RL( "common/pivot_maps/urgi_handguard.pivot.geo.json"))
@@ -268,6 +274,26 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/urgi_handguard_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.1f,0.12f,0.1f, 0.065f)
     ).addTags("handguard", "ar");
+
+    public static final IModular AK_POLYMER_HANDGUARD_LOWER = new Handguard
+            (RL("ak_polymer_handguard_lower"),
+                    0.09f, 0.015f,
+                    EmptySlotProvider.INSTANCE,
+                    new VoxelHandler(RL("common/voxel_shapes/ak_polymer_handguard_lower_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.07f,0.07f,0.1f, 0.05f)
+            ).addTags("handguard", "ak", "lower");
+
+    public static final IModular AK_POLYMER_HANDGUARD_UPPER = new SlotProviderVoxelModule(
+            RL("ak_polymer_handguard_upper"),
+            true,
+            0.04f,
+            Direction.NONE,
+            EmptySlotProvider.INSTANCE,
+            new VoxelHandler(RL("common/voxel_shapes/ak_polymer_handguard_upper_voxel.geo.json"))
+            )
+            .addTags("handguard", "ak", "upper");
+
+
 
     public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
             RL( "kac_forward_grip"),
@@ -344,6 +370,88 @@ public class GCR {
                 workspace.addChild(root, "SCOPE", A2_CARRY_HANDLE.getID());
             });
 
+
+    public static final IModular DUSTCOVER_6P34 = new AKSimpleDustCover(
+            RL( "6p34_dustcover"),
+            0.15f,
+            0.1f,
+            0.025f)
+            .addTags("ak", "dustcover");
+
+    public static final IModular PDC_DUSTCOVER = new AKDustCover(
+            RL( "pdc_dustcover"),
+            0.194f,
+            0.1f,
+            0.025f,
+            new SlotProvider(RL( "common/pivot_maps/pdc_dustcover_pivot.geo.json"))
+                    .addSlot(
+                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -14.6863f)
+                            .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))
+                    ),
+            new VoxelHandler(RL("common/voxel_shapes/pdc_dustcover_voxel.geo.json")))
+            .addTags("ak", "dustcover");
+
+    public static final IModular AK74M = new AK(
+            RL( "ak74m"),
+            RL( "common/pivot_maps/ak74m_pivot.geo.json"),
+
+            new BaseProperties(650, 2.4f, 0.28f, 3.3f,0.0003f, 0.08f, 1.3f, 4f,
+                    30f, 0.004f, 0.05f / 65,
+                    RL("m4a1_fire"),
+                    RL("m4a1_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 1f,
+                            "mag_reload_empty_length", 1f,
+                            "mag_reload_charge_length", 1f,
+                            "chamber_reload_length", 1f,
+                            "chamber_reload_empty_length", 1f,
+                            "remove_stuck_empty_length", 1f,
+                            "remove_stuck_length", 1f
+                    )
+            ),
+            new DisplayData()
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.237501f, -7.075f, -21.45f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+            new RecoilData(
+                    new RecoilImpulse(
+                            25f, 1.8f,
+                            20, 17f, 0.3f,
+                            130.0f, 3.5f, 3.5f, 0.016f),
+                    new RecoilController(
+                            900.0f, 145f,
+                            160.0f, 13f,
+                            165.0f, 10f,
+                            175.0f, 11f,
+                            900.0f, 18f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            11f)
+            ),
+            List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
+            .addSlot(new SingleFixedSlot("HANDGUARD_LOWER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "lower")))
+            .addSlot(new SingleFixedSlot("HANDGUARD_UPPER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "upper")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ak")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ak")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ak", "5.45x39")))
+            .addSlot(new SingleFixedSlot("DUSTCOVER").setFilter(SlotFilters.hasAllTags("ak", "dustcover")))
+            .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("ak", "muzzle", "5.45x39")))
+            .addSlot(new SingleFixedSlot("MOUNT").setFilter(SlotFilters.hasAllTags("ak", "mount")))
+            .setDefaultModuleInitHandler(workspace -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "MUZZLE", AK74_MUZZLE_BRAKE.getID());
+                workspace.addChild(root, "HANDGUARD_LOWER", AK_POLYMER_HANDGUARD_LOWER.getID());
+                workspace.addChild(root, "HANDGUARD_UPPER", AK_POLYMER_HANDGUARD_UPPER.getID());
+                workspace.addChild(root, "REAR_GRIP", AK_POLYMER_GRIP.getID());
+                workspace.addChild(root, "STOCK", STOCK_6P34.getID());
+                workspace.addChild(root, "MAG", MAG_6L23.getID());
+                workspace.addChild(root, "DUSTCOVER", DUSTCOVER_6P34.getID());
+            });
+
     public static final IModular VORTEX_RAZOR_RED_DOT = new RedDot(
             RL( "vortex_razor_red_dot"),
             new VoxelHandler(RL( "common/voxel_shapes/vortex_razor_red_dot.voxel.geo.json")),
@@ -369,6 +477,10 @@ public class GCR {
 
     public static final DeferredItem<Item> M4A1_ITEM =
             ITEMS.register(M4A1.getSimpleID(), () -> new GunItem((AR) M4A1));
+    public static final DeferredItem<Item> AK74M_ITEM =
+            ITEMS.register(AK74M.getSimpleID(), () -> new GunItem((AK) AK74M));
+
+
     public static final DeferredItem<Item> ACOG_ITEM =
             ITEMS.register(ACOG.getSimpleID(), () -> new ModuleItem<>(ACOG));
     public static final DeferredItem<Item> VORTEX_RAZOR_HD_ITEM =
@@ -381,12 +493,16 @@ public class GCR {
             ITEMS.register(KAC_FOLDING_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(KAC_FOLDING_SIGHT_REAR));
     public static final DeferredItem<Item> KAC_FOLDING_SIGHT_FAR_ITEM =
             ITEMS.register(KAC_FOLDING_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(KAC_FOLDING_SIGHT_FAR));
-    public static final DeferredItem<Item> CAR_15_HANDGUARD_ITEM =
-            ITEMS.register(CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(CAR_15_HANDGUARD));
+
+
     public static final DeferredItem<Item> A2_PISTOL_GRIP_ITEM =
             ITEMS.register(A2_PISTOL_GRIP.getSimpleID(), () -> new ModuleItem<>(A2_PISTOL_GRIP));
     public static final DeferredItem<Item> MOE_GRIP_ITEM =
             ITEMS.register(MOE_GRIP.getSimpleID(), () -> new ModuleItem<>(MOE_GRIP));
+    public static final DeferredItem<Item> AK_POLYMER_GRIP_ITEM =
+            ITEMS.register(AK_POLYMER_GRIP.getSimpleID(), () -> new ModuleItem<>(AK_POLYMER_GRIP));
+
+
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
             ITEMS.register(M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(M4_PROFILE_FSB_BARREL));
     public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
@@ -397,6 +513,7 @@ public class GCR {
             ITEMS.register(SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(SUREFIRE_MAG_60R));
     public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
             ITEMS.register(USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(USGI_MAG_20R));
+
 
     public static final DeferredItem<Item> MAG_6L18_ITEM =
             ITEMS.register(MAG_6L18.getSimpleID(), () -> new ModuleItem<>(MAG_6L18));
@@ -411,16 +528,20 @@ public class GCR {
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
     public static final DeferredItem<Item> CTR_STOCK_ITEM =
             ITEMS.register(CTR_STOCK.getSimpleID(), () -> new ModuleItem<>(CTR_STOCK));
+    public static final DeferredItem<Item> STOCK_6P34_ITEM =
+            ITEMS.register(STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(STOCK_6P34));
+
+
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
             ITEMS.register(A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(A2_FLASH_HINDER));
     public static final DeferredItem<Item> SOCOM_RC2_ITEM =
             ITEMS.register(SOCOM_RC2.getSimpleID(), () -> new ModuleItem<>(SOCOM_RC2));
     public static final DeferredItem<Item> AR15_MUZZLE_BRAKE_ITEM =
             ITEMS.register(AR15_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AR15_MUZZLE_BRAKE));
-    public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
-            ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
-    public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
-            ITEMS.register(DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(DANIEL_DEFENSE_RIS_II_HANDGUARD));
+    public static final DeferredItem<Item> AK74_MUZZLE_BRAKE_ITEM =
+            ITEMS.register(AK74_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AK74_MUZZLE_BRAKE));
+
+
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
             ITEMS.register(KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(KAC_FORWARD_GRIP));
     public static final DeferredItem<Item> RK_6_GRIP_ITEM =
@@ -429,14 +550,34 @@ public class GCR {
             ITEMS.register(M203.getSimpleID(), () -> new ModuleItem<>(M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
             ITEMS.register(URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(URGI_BARREL));
+
+
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
             ITEMS.register(URGI_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(URGI_HANDGUARD));
+    public static final DeferredItem<Item> CAR_15_HANDGUARD_ITEM =
+            ITEMS.register(CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(CAR_15_HANDGUARD));
+    public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
+            ITEMS.register(KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(KAC_RAS_HANDGUARD));
+    public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
+            ITEMS.register(DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(DANIEL_DEFENSE_RIS_II_HANDGUARD));
+    public static final DeferredItem<Item> AK_POLYMER_HANDGUARD_LOWER_ITEM =
+            ITEMS.register(AK_POLYMER_HANDGUARD_LOWER.getSimpleID(), () -> new ModuleItem<>(AK_POLYMER_HANDGUARD_LOWER));
+    public static final DeferredItem<Item> AK_POLYMER_HANDGUARD_UPPER_ITEM =
+            ITEMS.register(AK_POLYMER_HANDGUARD_UPPER.getSimpleID(), () -> new ModuleItem<>(AK_POLYMER_HANDGUARD_UPPER));
+
+
+
     public static final DeferredItem<Item> VORTEX_RAZOR_RED_DOT_ITEM =
             ITEMS.register(VORTEX_RAZOR_RED_DOT.getSimpleID(), () -> new ModuleItem<>(VORTEX_RAZOR_RED_DOT));
     public static final DeferredItem<Item> EOTECH_EXPS3_ITEM =
             ITEMS.register(EOTECH_EXPS3.getSimpleID(), () -> new ModuleItem<>(EOTECH_EXPS3));
     public static final DeferredItem<Item> PEQ_15_ITEM =
             ITEMS.register(PEQ_15.getSimpleID(), () -> new ModuleItem<>(PEQ_15));
+
+    public static final DeferredItem<Item> DUSTCOVER_6P34_ITEM =
+            ITEMS.register(DUSTCOVER_6P34.getSimpleID(), () -> new ModuleItem<>(DUSTCOVER_6P34));
+    public static final DeferredItem<Item> PDC_DUSTCOVER_ITEM =
+            ITEMS.register(PDC_DUSTCOVER.getSimpleID(), () -> new ModuleItem<>(PDC_DUSTCOVER));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB =
             CREATIVE_MODE_TABS.register("gun",
@@ -447,6 +588,7 @@ public class GCR {
                             .icon(() -> M4A1_ITEM.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(M4A1_ITEM.get());
+                                output.accept(AK74M_ITEM.get());
                             }).build());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ATTACHMENT_TAB =
@@ -463,8 +605,11 @@ public class GCR {
                                 output.accept(A2_CARRY_HANDLE_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_REAR_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_FAR_ITEM.get());
+
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(MOE_GRIP_ITEM.get());
+                                output.accept(AK_POLYMER_GRIP_ITEM.get());
+
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
@@ -474,21 +619,34 @@ public class GCR {
                                 output.accept(MAG_6L18_ITEM.get());
                                 output.accept(MAG_6L23_ITEM.get());
                                 output.accept(MAG_6L31_ITEM.get());
+
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(CTR_STOCK_ITEM.get());
+                                output.accept(STOCK_6P34_ITEM.get());
+
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());
                                 output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
+                                output.accept(AK74_MUZZLE_BRAKE_ITEM.get());
+
+
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
                                 output.accept(DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM.get());
                                 output.accept(URGI_HANDGUARD_ITEM.get());
+                                output.accept(AK_POLYMER_HANDGUARD_LOWER_ITEM.get());
+                                output.accept(AK_POLYMER_HANDGUARD_UPPER_ITEM.get());
+
+
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
                                 output.accept(RK_6_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());
                                 output.accept(EOTECH_EXPS3_ITEM.get());
                                 output.accept(PEQ_15_ITEM.get());
+
+                                output.accept(DUSTCOVER_6P34_ITEM.get());
+                                output.accept(PDC_DUSTCOVER_ITEM.get());
                             }).build());
 
     public static ResourceLocation RL(String modId, String path) {

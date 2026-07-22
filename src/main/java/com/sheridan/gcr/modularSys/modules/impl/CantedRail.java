@@ -14,25 +14,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class CantedRail extends AttachmentModule implements IVoxelHandlerModule, ISlotProviderModular {
-    private final IVoxelHandler voxelHandler;
-    private final ISlotProvider provider;
-
+public class CantedRail extends SlotProviderVoxelModule {
     public CantedRail(ResourceLocation id, IVoxelHandler voxelHandler, ISlotProvider provider, float weight) {
-        super(id, false, weight, Direction.UPPER);
-        this.voxelHandler = voxelHandler;
-        this.provider = provider;
+        super(id, false, weight, Direction.UPPER, provider, voxelHandler);
     }
 
-    @Override
-    public void writeToJson(JsonObject jsonObject) {
-
-    }
-
-    @Override
-    public void loadFromJson(JsonObject jsonObject) {
-
-    }
 
     @Override
     public void onMutated(IWriteableAccessor accessor, Unit thisUnit) {
@@ -41,15 +27,5 @@ public class CantedRail extends AttachmentModule implements IVoxelHandlerModule,
         for (Unit sight : sights) {
             accessor.writeCustomParam(sight, ISight.ON_SIDE_POSITION, 1);
         }
-    }
-
-    @Override
-    public @NotNull ISlotProvider getSlotProvider() {
-        return provider;
-    }
-
-    @Override
-    public IVoxelHandler getHandler() {
-        return voxelHandler;
     }
 }

@@ -51,8 +51,7 @@ public class BaseProperties extends Properties {
         this.spread = defProp(new NumProp("spread", spread));
         this.agility = defProp(new NumProp("agility", agility));
         this.stuckRate = defProp(new NumProp("stuck_rate", stuckRate));
-        maxStuckRate = Math.max(stuckRate, maxStuckRate);
-        this.maxStuckRate = defProp(new NumProp("max_stuck_rate", maxStuckRate));
+        this.maxStuckRate = defProp(new NumProp("max_stuck_rate", Math.max(stuckRate, maxStuckRate)));
         this.impulse = defProp(new NumProp("impulse", 1));
         this.aimingSpeed = defProp(new NumProp("aiming_speed", aimingSpeed));
         this.fireSoundRange = defProp(new NumProp("sound_range", soundRange));

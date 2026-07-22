@@ -6,6 +6,7 @@ import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
 import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
+import com.sheridan.gcr.modularSys.modules.views.AKView;
 import com.sheridan.gcr.modularSys.modules.views.IGunView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class AK  extends SlottedGunMainPart implements IGunView {
+public class AK  extends SlottedGunMainPart implements AKView {
     public AK(ResourceLocation id, ResourceLocation pivotMapPath, BaseProperties baseDataModule, DisplayData displayData, RecoilData recoilData, List<IFireMode<?>> fireModes) {
         super(id, pivotMapPath, baseDataModule, displayData, recoilData, fireModes);
     }
