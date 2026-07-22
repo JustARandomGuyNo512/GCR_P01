@@ -33,6 +33,7 @@ public class AKViewer extends StateViewer<AKView> {
     @Override
     public void applyState(IAnimated animated, ModuleRenderContext context, ReadOnlyTag states) {
         AKView view = getStateView();
+
 //        doPose(view.getFireModeId(states), animated, context);
 //        if (view.boltLocked(states)) {
 //            doPose("bolt_locked", animated, context);

@@ -39,13 +39,13 @@ public class ClientTestingResources {
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/m4a1_main.animation.json",
                 Map.ofEntries(
-                        Map.entry("check_mag", "check_mag"),
-                        Map.entry("reload_grenade", "reload_grenade_m203"),
-                        Map.entry("reload_grenade.G", "reload_grenade_m203.g"),
-                        Map.entry("to_semi", "to_semi"),
-                        Map.entry("check_grenade.G", "check_grenade_m203.g"),
-                        Map.entry("check_grenade", "check_grenade_m203"),
-                        Map.entry("to_auto", "to_auto"),
+                        Map.entry("check_mag", "m4a1_check_mag"),
+                        Map.entry("reload_grenade", "m4a1_reload_grenade_m203"),
+                        Map.entry("reload_grenade.G", "m4a1_reload_grenade_m203.g"),
+                        Map.entry("to_semi", "m4a1_to_semi"),
+                        Map.entry("check_grenade.G", "m4a1_check_grenade_m203.g"),
+                        Map.entry("check_grenade", "m4a1_check_grenade_m203"),
+                        Map.entry("to_auto", "m4a1_to_auto"),
                         Map.entry("shoot_last", "m4a1_shoot_last"),
                         Map.entry("mag_reload", "m4a1_mag_reload"),
                         Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
@@ -59,6 +59,27 @@ public class ClientTestingResources {
                         Map.entry("remove_stuck_empty", "m4a1_remove_stuck_empty"),
                         Map.entry("check_chamber", "m4a1_check_chamber"),
                         Map.entry("check_chamber_simple", "m4a1_check_chamber_simple")
+                )
+        );
+
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ak74m.animation.json",
+                Map.ofEntries(
+                        Map.entry("check_mag", "ak74_check_mag"),
+                        Map.entry("to_semi", "ak74_to_semi"),
+                        Map.entry("to_auto", "ak74_to_auto"),
+                        Map.entry("mag_reload", "ak74_mag_reload"),
+                        Map.entry("mag_reload_empty", "ak74_mag_reload_empty"),
+                        Map.entry("chamber_reload", "ak74_chamber_reload"),
+                        Map.entry("base", "ak74_base"),
+                        Map.entry("shoot", "ak74_shoot"),
+                        Map.entry("shoot_last", "ak74_shoot_last"),
+                        Map.entry("shoot_stuck", "ak74_shoot_stuck"),
+                        Map.entry("shoot_stuck_empty", "ak74_shoot_stuck_empty"),
+                        Map.entry("remove_stuck", "ak74_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "ak74_remove_stuck_empty"),
+                        Map.entry("check_chamber", "ak74_check_chamber"),
+                        Map.entry("check_chamber_simple", "ak74_check_chamber_simple")
                 )
         );
         // 弹匣状态动画
@@ -97,8 +118,7 @@ public class ClientTestingResources {
                 Map.of("full", "m203_full",
                         "empty", "m203_empty",
                         "base", "m203_base",
-                        "fired", "m203_fired",
-                        "prepare", "m203_prepare")
+                        "fired", "m203_fired")
         );
 
         // ==================== 2. 模型注册与自定义 Lambda 逻辑 ====================

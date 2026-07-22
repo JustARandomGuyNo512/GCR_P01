@@ -28,9 +28,8 @@ public class M203Controller extends AnimationController<M203Model> {
     @Override
     public void initAnimation(M203Model model) {
         registerAnimations(
-                "check", "gcr:check_grenade_m203.g",
-                "reload", "gcr:reload_grenade_m203.g",
-                "prepare", "gcr:m203_prepare"
+                "check", "gcr:m4a1_check_grenade_m203.g",
+                "reload", "gcr:m4a1_reload_grenade_m203.g"
         );
     }
 
