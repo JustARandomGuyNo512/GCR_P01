@@ -9,6 +9,9 @@ import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
 import com.sheridan.gcr.modularSys.modules.views.AKView;
 import com.sheridan.gcr.modularSys.modules.views.IGunView;
 import com.sheridan.gcr.modularSys.task.IGunTask;
+import com.sheridan.gcr.modularSys.task.other.AKRemoveStuckTask;
+import com.sheridan.gcr.modularSys.task.reload.AKReloadTask;
+import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -39,11 +42,11 @@ public class AK  extends SlottedGunMainPart implements AKView {
 
     @Override
     protected IGunTask<?> getReloadTask(ItemStack itemStack) {
-        return null;
+        return new AKReloadTask(itemStack, this);
     }
 
     @Override
     protected IGunTask<?> getRemoveStuckTask(ItemStack itemStack) {
-        return null;
+        return new AKRemoveStuckTask(itemStack, this);
     }
 }

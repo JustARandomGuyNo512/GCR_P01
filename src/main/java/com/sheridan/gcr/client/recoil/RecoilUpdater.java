@@ -141,7 +141,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         // -- 2.3 侧倾 (Roll)
         float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
         float c_ang_roll = controller.rollDamping() * aimingRotFactorDamp;
-        float zFactor = Mth.lerp(-gunDisplacement.z * 5, 1, 1.5f);
+        float zFactor = Mth.lerp(-gunDisplacement.z * 6, 1, 1.4f);
         float torqueRoll = (-k_ang_roll * zFactor) * rollDisplacement - c_ang_roll * rollVelocity;
 
         rollVelocity += torqueRoll * dt;
@@ -244,7 +244,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 5, 0, 0.75f + RANDOM.nextFloat() * 0.25f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 6, 0, 0.75f + RANDOM.nextFloat() * 0.25f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
@@ -366,7 +366,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, rand * halfPI * 0.67f);
-            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
+            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.3f, rand * halfPI);
         }
 
         Bone handRotPivot = model.getHandRotPivot();
@@ -394,7 +394,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.5f - zBack * (0.075f - aimingProgress * 0.05f),
+                lerpGunDisplacement.y + yDist + shakeY * 0.4f - zBack * (0.08f - aimingProgress * 0.05f),
                 zBack + zDist);
     }
 

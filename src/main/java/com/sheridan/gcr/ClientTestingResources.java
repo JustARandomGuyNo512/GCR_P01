@@ -65,21 +65,21 @@ public class ClientTestingResources {
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/ak74m.animation.json",
                 Map.ofEntries(
-                        Map.entry("check_mag", "ak74_check_mag"),
-                        Map.entry("to_semi", "ak74_to_semi"),
-                        Map.entry("to_auto", "ak74_to_auto"),
+                        Map.entry("check_mag", "ak74m_check_mag"),
+                        Map.entry("to_semi", "ak74m_to_semi"),
+                        Map.entry("to_auto", "ak74m_to_auto"),
                         Map.entry("mag_reload", "ak74_mag_reload"),
-                        Map.entry("mag_reload_empty", "ak74_mag_reload_empty"),
-                        Map.entry("chamber_reload", "ak74_chamber_reload"),
-                        Map.entry("base", "ak74_base"),
-                        Map.entry("shoot", "ak74_shoot"),
-                        Map.entry("shoot_last", "ak74_shoot_last"),
-                        Map.entry("shoot_stuck", "ak74_shoot_stuck"),
-                        Map.entry("shoot_last_stuck", "ak74_shoot_last_stuck"),
-                        Map.entry("remove_stuck", "ak74_remove_stuck"),
-                        Map.entry("remove_stuck_empty", "ak74_remove_stuck_empty"),
-                        Map.entry("check_chamber", "ak74_check_chamber"),
-                        Map.entry("check_chamber_simple", "ak74_check_chamber_simple")
+                        Map.entry("mag_reload_empty", "ak74m_mag_reload_empty"),
+                        Map.entry("chamber_reload", "ak74m_chamber_reload"),
+                        Map.entry("base", "ak74m_base"),
+                        Map.entry("shoot", "ak74m_shoot"),
+                        Map.entry("shoot_last", "ak74m_shoot_last"),
+                        Map.entry("shoot_stuck", "ak74m_shoot_stuck"),
+                        Map.entry("shoot_last_stuck", "ak74m_shoot_last_stuck"),
+                        Map.entry("remove_stuck", "ak74m_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "ak74m_remove_stuck_empty"),
+                        Map.entry("check_chamber", "ak74m_check_chamber"),
+                        Map.entry("check_chamber_simple", "ak74m_check_chamber_simple")
                 )
         );
         // 弹匣状态动画
@@ -146,10 +146,15 @@ public class ClientTestingResources {
                 GCR.AK74M, "model_assets/gltf/ak74m.gltf", "model_assets/gltf/ak74m.png", true,
                 meshData -> {
                     AKViewer viewer = new AKViewer((AK) GCR.AK74M);
-                    AKModel model = new AKModel(meshData, new BulletShellDisplay(
-                            "BULLET_SHELL", GCR.RL("shell_5_45x39"), 20f, 30f, 30f, 8f, 40f, 0.25f,
-                            10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100
-                    ), viewer);
+                    AKModel model = new AKModel(
+                            meshData,
+                            new BulletShellDisplay(
+                            "BULLET_SHELL", GCR.RL("shell_5_45x39"), 15f, 28f, 30f, 8f, 40f, 0.25f,
+                            10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
+                            viewer,
+                            2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f
+                    );
+                    model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
 
                     IAnimationController<?> controller = new AKController();
                     model.bindController(controller);
@@ -278,8 +283,14 @@ public class ClientTestingResources {
         BulletShellModel shell_5_56x45 = new BulletShellModel(
                 GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.gltf")),
                 GCR.RL("shell_5_56x45"));
+        BulletShellModel shell_5_45x39 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.gltf")),
+                GCR.RL("shell_5_45x39"));
         ModelRegistrationManager.addDeferredCompileTask(() ->
                 shell_5_56x45.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.png")))
+        );
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_5_45x39.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.png")))
         );
 
 
