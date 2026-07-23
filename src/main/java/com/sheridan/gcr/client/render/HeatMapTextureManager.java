@@ -46,6 +46,11 @@ public class HeatMapTextureManager {
             System.out.println("load heat map texture: " + path + " model: " + model);
 
             CACHE.put(path, texture);
+
+            RenderSystem.recordRenderCall(() -> {
+                RenderSystem.bindTexture(texture.getId()); // 显式先绑定
+                texture.setFilter(true, false);
+            });
         });
         RenderSystem.recordRenderCall(HeatMapTextureManager::initEmptyTexture);
     }
@@ -57,7 +62,6 @@ public class HeatMapTextureManager {
             if (texture == null || texture == MissingTextureAtlasSprite.getTexture()) {
                 return EMPTY_TEXTURE_ID;
             }
-            texture.setFilter(true, false);
             return texture.getId();
         }
         return EMPTY_TEXTURE_ID;

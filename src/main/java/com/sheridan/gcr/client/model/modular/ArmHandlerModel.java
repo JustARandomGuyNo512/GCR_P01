@@ -39,12 +39,6 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
     protected Bone leftArm;
     protected Bone rightArm;
 
-//    @Override
-//    public void updateBoneRenderStatus(ModuleRenderContext context) {
-//        ModuleRenderNode moduleRenderNode = context.currentRenderNode();
-//        super.updateBoneRenderStatus(context.poseStack, context.light);
-//    }
-
     @Override
     public void updateBoneRenderStatus(Bone root, PoseStack poseStack, int light) {
         if (root == leftArm) {
@@ -53,7 +47,8 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
             Matrix4f pose = testStack.last().pose();
             Quaternionf quaternionf = pose.getNormalizedRotation(new Quaternionf());
             quaternionf.conjugate();
-            Quaternionf half = new Quaternionf().identity().slerp(quaternionf, 0.2f);
+            //抵消60%的旋转震动，先暂时这么干吧
+            Quaternionf half = new Quaternionf().identity().slerp(quaternionf, 0.6f);
             poseStack.mulPose(half);
         }
         super.updateBoneRenderStatus(root, poseStack, light);
