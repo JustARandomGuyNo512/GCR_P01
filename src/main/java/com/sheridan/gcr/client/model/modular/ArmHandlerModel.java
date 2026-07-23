@@ -53,7 +53,7 @@ public class ArmHandlerModel<T extends IStateView> extends AnimatedModel<T> impl
             Matrix4f pose = testStack.last().pose();
             Quaternionf quaternionf = pose.getNormalizedRotation(new Quaternionf());
             quaternionf.conjugate();
-            Quaternionf half = new Quaternionf().identity().slerp(quaternionf, 0.4f);
+            Quaternionf half = new Quaternionf().identity().slerp(quaternionf, 0.2f);
             poseStack.mulPose(half);
         }
         super.updateBoneRenderStatus(root, poseStack, light);

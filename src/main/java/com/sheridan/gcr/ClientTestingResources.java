@@ -154,7 +154,7 @@ public class ClientTestingResources {
                             viewer,
                             2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f
                     );
-                    //model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
+                    model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
 
                     IAnimationController<?> controller = new AKController();
                     model.bindController(controller);

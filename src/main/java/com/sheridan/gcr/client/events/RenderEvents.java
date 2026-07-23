@@ -44,11 +44,11 @@ public class RenderEvents {
 
     @SubscribeEvent
     public static void onRenderTickStart(RenderFrameEvent.Pre event) {
+        Client.MAX_SHADER_TEXTURES = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
         Client.isUsingIrisShader = IrisCompat.isShaderPackInUse();
         Utils.setUpStencil();
         DrawHolsterHandler.get().onRenderTick(Minecraft.getInstance().gameRenderer.itemInHandRenderer);
         Client.getGunRenderer().renderTickPre(event.getPartialTick().getRealtimeDeltaTicks());
-        Client.MAX_SHADER_TEXTURES = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
     }
 
     @SubscribeEvent

@@ -139,7 +139,7 @@ public class GCR {
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
 
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
-    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 300000).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
 
 
@@ -209,7 +209,7 @@ public class GCR {
     public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar", "5.56x45");
     public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar", "5.56x45");
 
-    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.22f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.18f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -339,7 +339,7 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            28.5f, 1.6f,
+                            28.5f, 1.6f, 0.02f,
                             18, 15f, 0.2f,
                             125.0f, 3f, 3f, 0.016f),
                     new RecoilController(
@@ -397,7 +397,10 @@ public class GCR {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(660, 2.4f, 0.28f, 3.3f,0.0003f, 0.08f, 1.3f, 4f,
+            new BaseProperties(660, 2.4f, 0.28f, 3.3f,
+                    //0.0003f, 0.08f,
+                    0, 0,
+                    1.3f, 4f,
                     30f, 0.005f, 0.05f / 70,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
@@ -412,7 +415,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.137501f, -6.125f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 9.637501f, -6.125f, -22.75f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.FIRST_PERSON,  9.137501f, -6.125f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
@@ -422,15 +425,15 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            30f, 1.9f,
-                            20, 15f, 0.15f,
-                            130.0f, 3.5f, 3.5f, 0.016f),
+                            25.4f, 1.6f, 0.05f,
+                            18, 13f, 0.15f,
+                            110.0f, 2.8f, 2.5f, 0.016f),
                     new RecoilController(
-                            900.0f, 135f,
+                            920.0f, 140f,
                             165.0f, 14f,
                             170.0f, 11f,
                             180.0f, 12f,
-                            900.0f, 18f,
+                            850.0f, 18.8f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             10f)

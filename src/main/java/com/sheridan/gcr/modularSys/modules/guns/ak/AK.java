@@ -41,6 +41,20 @@ public class AK  extends SlottedGunMainPart implements AKView {
     }
 
     @Override
+    public void removeStuck(ItemStack itemStack) {
+        super.removeStuck(itemStack);
+        IAmmoSource mag = getMagAttachment(itemStack);
+        if (mag != null) {
+            CompoundTag states = getAmmoSourceTag(itemStack);
+            int ammoLeft = mag.getAmmoLeft(states);
+            if (ammoLeft >= 1 && getGunAmmoLeft(itemStack) <= 0) {
+                setGunAmmoLeft(itemStack, 1);
+                mag.setAmmoLeft(mag.getAmmoLeft(states) - 1, states);
+            }
+        }
+    }
+
+    @Override
     protected IGunTask<?> getReloadTask(ItemStack itemStack) {
         return new AKReloadTask(itemStack, this);
     }

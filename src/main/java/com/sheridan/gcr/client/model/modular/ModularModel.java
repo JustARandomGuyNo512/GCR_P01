@@ -67,8 +67,10 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         if (heatUni == -1 || heatMapTexUni == -1) {
             return;
         }
-
-        int texId = forceUseEmptyHeatMap ? HeatMapTextureManager.getEmptyId() : HeatMapTextureManager.getTexId(heatMapTexPath);
+        RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
+        int emptyId = HeatMapTextureManager.getEmptyId();
+        int texId1 = HeatMapTextureManager.getTexId(heatMapTexPath);
+        int texId = forceUseEmptyHeatMap ? emptyId : texId1;
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
         float heat = Client.WEAPON_STATUS.getHeat(partialTicks);
         heat = (Math.max(0, heat - 0.2f) / 0.8f);
@@ -76,7 +78,6 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         heat *= heatSensitive;
         heat = Math.min(1, heat);
         GL20.glUniform1f(heatUni, heat * shaderFactor);
-        RenderSystem.activeTexture(GL13.GL_TEXTURE0 + (Client.MAX_SHADER_TEXTURES - 1));
         RenderSystem.bindTexture(texId);
         GL20.glUniform1i(heatMapTexUni, Client.MAX_SHADER_TEXTURES - 1);
     }
