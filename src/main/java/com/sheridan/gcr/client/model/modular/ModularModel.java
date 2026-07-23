@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.animation.IAnimated;
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
@@ -72,7 +73,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         int texId1 = HeatMapTextureManager.getTexId(heatMapTexPath);
         int texId = forceUseEmptyHeatMap ? emptyId : texId1;
         float shaderFactor = Client.isUsingIrisShader ? 5 : 4;
-        float heat = Client.WEAPON_STATUS.getHeat(partialTicks);
+        float heat = DrawHolsterHandler.get().getRenderLockedGunHeat(partialTicks);
         heat = (Math.max(0, heat - 0.2f) / 0.8f);
         heat = (float) Math.pow(heat, 1.5f);
         heat *= heatSensitive;

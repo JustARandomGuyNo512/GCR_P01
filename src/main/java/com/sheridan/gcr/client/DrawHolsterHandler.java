@@ -6,6 +6,7 @@ import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.mixinUtils.DualHandItemAccessor;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -43,12 +44,15 @@ public class DrawHolsterHandler {
     private float timer = 0f;
     private float duration = 1f;
 
+    private float heat;
+    private float lastHeat;
+
     private DrawHolsterHandler() {}
 
     // =========================
     // Tick
     // =========================
-    public void tick(ItemStack newStack, int selectedSlot) {
+    public void tick(LocalPlayer player, ItemStack newStack, int selectedSlot) {
         boolean prevIsGun = isGun(prevStack, "prev");
         boolean currIsGun = isGun(newStack, "curr");
 
@@ -69,8 +73,24 @@ public class DrawHolsterHandler {
         }
 
         updateProgress();
+        updateHeat(player);
         lastSelected = selectedSlot;
         prevStack = newStack;
+    }
+
+    private void updateHeat(LocalPlayer localPlayer) {
+        ItemStack itemStack = equipProgress < 1 ? renderLockedStack : localPlayer.getMainHandItem();
+        if (state == State.DRAWING) {
+            itemStack = localPlayer.getMainHandItem();
+        }
+        if (itemStack.getItem() instanceof GunItem gunItem) {
+            IGun gun = gunItem.getGun();
+            lastHeat = heat;
+            heat = gun.getCurrHeat(itemStack, localPlayer.level().getGameTime());
+        } else {
+            heat = 0;
+            lastHeat = 0;
+        }
     }
 
     private void handleNonGunToGun(ItemStack newStack) {
@@ -146,6 +166,10 @@ public class DrawHolsterHandler {
         renderLockedStack = stack;
         equipProgressLast = equipProgress;
         Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+    }
+
+    public float getRenderLockedGunHeat(float particleTicks) {
+        return Mth.lerp(particleTicks, lastHeat, heat);
     }
 
 

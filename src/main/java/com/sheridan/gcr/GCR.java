@@ -424,15 +424,15 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            26f, 1.63f, 0.06f,
+                            26f, 1.6f, 0.06f,
                             18, 13f, 0.15f,
-                            125.0f, 2.8f, 2.5f, 0.016f),
+                            120.0f, 2.8f, 2.5f, 0.0165f),
                     new RecoilController(
                             920.0f, 145f,
                             165.0f, 14f,
                             170.0f, 11f,
                             180.0f, 12f,
-                            850.0f, 18.8f,
+                            850.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             10f)

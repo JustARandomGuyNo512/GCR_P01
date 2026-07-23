@@ -54,7 +54,7 @@ public class ClientEvents {
             GunPoseHandler.INSTANCE.tick(player);
             Client.getGunRenderer().tick(player);
             HardCodeAnimationHandler.getInstance().clientTick(player);
-            DrawHolsterHandler.get().tick(player.getMainHandItem(), player.getInventory().selected);
+            DrawHolsterHandler.get().tick(player, player.getMainHandItem(), player.getInventory().selected);
         }
         Client.LOCK.unlock();
         //ModularModel.debugHeat = Math.max(0, ModularModel.debugHeat - 0.005f);
