@@ -103,24 +103,19 @@ public class RecoilUpdater implements IRecoilUpdater {
         float motionAdsModifierStiff = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierStiff());
         float motionAdsModifierDamp = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierDamp());
 
-        float k_lin_z = controller.linearZStiffness() * motionAdsModifierStiff;
-        float c_lin_z = controller.linearZDamping() * motionAdsModifierDamp;
+        float k_lin_z = controller.linearZStiffness() * motionAdsModifierStiff * 6;
+        float c_lin_z = controller.linearZDamping() * motionAdsModifierDamp * 6;
 
         float aimingRotFactorStiff = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierStiff());
         float aimingRotFactorDamp = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierDamp());
 
         // 1. 线性位移计算
-//        float vz = gunVelocity.z;
-//        float z  = gunDisplacement.z;
-//        vz = (vz - k_lin_z * z * dt) / (1.0f + c_lin_z * dt);
-//        z += vz * dt;
-//        gunVelocity.z = vz;
-//        gunDisplacement.z = z;
-
-        gunVelocity.x = (gunVelocity.x - k_lin_z * gunDisplacement.x * dt) / (1.0f + c_lin_z * dt);
-        gunVelocity.y = (gunVelocity.y - k_lin_z * gunDisplacement.y * dt) / (1.0f + c_lin_z * dt);
-        gunVelocity.z = (gunVelocity.z - k_lin_z * gunDisplacement.z * dt) / (1.0f + c_lin_z * dt);
-        gunDisplacement.add(gunVelocity.x * dt, gunVelocity.y * dt, gunVelocity.z * dt);
+        float vz = gunVelocity.z;
+        float z  = gunDisplacement.z;
+        z += vz * dt;
+        vz = (vz - k_lin_z * z * dt) / (1.0f + c_lin_z * dt);
+        gunVelocity.z = vz;
+        gunDisplacement.z = z;
 
         // 2. 角位移计算（根据状态隔离并独立使用恢复参数）
 
@@ -146,7 +141,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         // -- 2.3 侧倾 (Roll)
         float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
         float c_ang_roll = controller.rollDamping() * aimingRotFactorDamp;
-        float zFactor = Mth.lerp(-gunDisplacement.z * 6, 1, 1.4f);
+        float zFactor = Mth.lerp(-gunDisplacement.z * 5, 1, 1.3f);
         float torqueRoll = (-k_ang_roll * zFactor) * rollDisplacement - c_ang_roll * rollVelocity;
 
         rollVelocity += torqueRoll * dt;
@@ -223,14 +218,14 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rotLever = impulse.leverArmY() * recoilControlFactor
                 * (Mth.clamp(1 - aimingFactorSqr, 0.05f, 1f));
 
-         impulseZ *= Math.max(0, impulseVal);
-
+        impulseZ *= Math.max(0, impulseVal);
         float torqueImpulseX = (float) (rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f) * (0.9f + 0.2f * Math.random()));
 
         float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
                 (2.8f - aimingFactor * 2.65f) *
                 stableFactor * Math.sqrt(impulseVal));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
+        impulseZ *= 0.7f;
         float randPitch = randomNoiseX(noiseTimerX) * pitch * dynamicRand;
 
         randPitch *= 1 - 0.3f * aimingFactorSqr;
@@ -249,7 +244,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
 
 
-        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 6, 0, 0.7f + RANDOM.nextFloat() * 0.2f);
+        float shakeFactor = 1 - Mth.clamp(-gunDisplacement.z * 6, 0, 0.85f + RANDOM.nextFloat() * 0.15f);
 
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
@@ -261,7 +256,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
         float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.03f;
 
-        gunVelocity.add(0, data.getImpulse().impulseYOffset() * impulseZ, impulseZ);
+        gunVelocity.add(0, 0, impulseZ);
 
         basePitchVelocity += torqueImpulseX;
         randomAngularVelocity.add(randPitch + shakePitch, randYaw + shakeYaw);
@@ -275,8 +270,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float camImpactRandomYaw = randYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
 
-        float shakeDir = randYawDir > 0 ? 2e-4f : -2e-4f;
-        this.camShake = shakeDir * shakeRoll;
+        this.camShake =  2e-4f * shakeRoll;
 
         applyCamImpulse(camImpact, camImpactRandomPitch, camImpactRandomYaw, recoilControlFactor, aimingFactor);
         randomSeed = RANDOM.nextFloat();
@@ -371,7 +365,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
             float halfPI =  (float) (Math.PI * (0.45f + rand * 0.1f));
             shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.3f, rand * halfPI * 0.67f);
-            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
+            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.3f, rand * halfPI);
         }
 
         Bone handRotPivot = model.getHandRotPivot();
@@ -384,7 +378,8 @@ public class RecoilUpdater implements IRecoilUpdater {
         ));
         poseStack.translate(0, 0, -handRotPivot.z);
         //手臂关节不随摄像机位移，补偿位移
-        double up = RecoilCameraHandler.getInstance().getUp() * 0.4f * (1 - aimingProgress);
+        float up1 = RecoilCameraHandler.getInstance().getUp();
+        double up = up1 * 0.5f * (1 - aimingProgress);
         up = Math.toRadians(up);
         Matrix4f pose = poseStack.last().pose();
         Vector3f translation = pose.getTranslation(new Vector3f());
@@ -398,7 +393,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         zBack += EMAFactor * 0.8f;
         poseStack.translate(
                 lerpGunDisplacement.x + shakeX,
-                lerpGunDisplacement.y + yDist + shakeY * 0.45f,
+                lerpGunDisplacement.y + yDist + shakeY * 0.4,// - zBack * (0.08f - aimingProgress * 0.05f),
                 zBack + zDist);
     }
 

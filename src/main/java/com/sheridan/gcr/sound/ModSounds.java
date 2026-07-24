@@ -33,6 +33,10 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> AR_SHELL_IN = registerSound("ar_shell_in", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_STUCK_REMOVE = registerSound("ar_stuck_remove", "gcr");
 
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_FIRE = registerSound("ak74m_fire", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_FIRE_SUPPRESSED = registerSound("ak74m_fire_suppressed", "gcr");
+
+
     public static DeferredHolder<SoundEvent, SoundEvent> BTN = registerSound("btn", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> GUN_STUCK = registerSound("gun_stuck", "gcr");
 

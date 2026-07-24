@@ -149,7 +149,7 @@ public class ClientTestingResources {
                     AKModel model = new AKModel(
                             meshData,
                             new BulletShellDisplay(
-                            "BULLET_SHELL", GCR.RL("shell_5_45x39"), 15f, 28f, 30f, 8f, 40f, 0.25f,
+                            "BULLET_SHELL", GCR.RL("shell_5_45x39"), 10f, 28f, 30f, 8f, 40f, 0.25f,
                             10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
                             viewer,
                             2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f

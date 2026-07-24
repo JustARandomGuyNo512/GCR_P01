@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.events;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.ClassHotReloader;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
@@ -105,7 +106,7 @@ public class ControllerEvents {
                 }
             }
             if (KeyBinds.DEBUG_HOT_RELOAD_CLASS.isDown() && GCR.IS_DEVELOPMENT) {
-                //ClassHotReloader.reload();
+                ClassHotReloader.reload();
                 //Client.DEBUG_ALWAYS_STUCK = !Client.DEBUG_ALWAYS_STUCK;
                 //player.sendSystemMessage(Component.literal("Debug Always Stuck: " + Client.DEBUG_ALWAYS_STUCK).withColor(0xFF00FF));
             }

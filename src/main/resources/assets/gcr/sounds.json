@@ -16,6 +16,9 @@
   "ar_shell_in": {"sounds": ["gcr:ar/ar_shell_in" ]},
   "ar_stuck_remove": {"sounds": ["gcr:ar/ar_stuck_remove" ]},
 
+  "ak74m_fire": {"sounds": ["gcr:ak/ak74m_fire" ]},
+  "ak74m_fire_suppressed": {"sounds": ["gcr:ak/ak74m_fire_suppressed" ]},
+
   "btn": {"sounds": ["gcr:generic/btn" ]},
   "gun_stuck": {"sounds": ["gcr:generic/gun_stuck" ]}
 }

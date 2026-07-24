@@ -9,8 +9,6 @@ public record RecoilImpulse(
         // 力矩来源
         float leverArmY,
 
-        float impulseYOffset,
-
         // 随机散布
         float randomPitch,
         float randomYaw,

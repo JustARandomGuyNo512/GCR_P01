@@ -339,7 +339,7 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            28.5f, 1.6f, 0.02f,
+                            25f, 1.8f,
                             18, 15f, 0.2f,
                             125.0f, 3f, 3f, 0.016f),
                     new RecoilController(
@@ -402,8 +402,8 @@ public class GCR {
                     0, 0,
                     1.3f, 4f,
                     30f, 0.005f, 0.05f / 70,
-                    RL("m4a1_fire"),
-                    RL("m4a1_fire_suppressed"),
+                    RL("ak74m_fire"),
+                    RL("ak74m_fire_suppressed"),
                     Map.of(
                             "mag_reload_length", 1f,
                             "mag_reload_empty_length", 1f,
@@ -424,15 +424,15 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            26f, 1.6f, 0.06f,
+                            27f, 1.6f,
                             18, 13f, 0.15f,
-                            120.0f, 2.8f, 2.5f, 0.0165f),
+                            120.0f, 3f, 3f, 0.0165f),
                     new RecoilController(
-                            920.0f, 145f,
+                            1000f, 145f,
                             165.0f, 14f,
-                            170.0f, 11f,
-                            180.0f, 12f,
-                            850.0f, 18f,
+                            170.0f, 10.5f,
+                            180.0f, 11.5f,
+                            900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             10f)
