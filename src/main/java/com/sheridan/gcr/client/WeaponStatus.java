@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
 import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
+import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyScreen;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.ModuleHandler;
@@ -192,6 +193,9 @@ public class WeaponStatus {
     }
 
     private void handleAds(Player localPlayer) {
+        if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
+            Client.RIGHT_BUTTON_PRESSED.set(false);
+        }
         aimingProgressLast = aimingProgress;
         if (Client.RIGHT_BUTTON_PRESSED.get()) {
             if (aimingProgress < 1) {

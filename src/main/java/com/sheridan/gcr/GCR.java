@@ -390,7 +390,7 @@ public class GCR {
             0.025f,
             new SlotProvider(RL( "common/pivot_maps/pdc_dustcover_pivot.geo.json"))
                     .addSlot(
-                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -14.6863f)
+                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -16.5f)
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))
                     ),
             new VoxelHandler(RL("common/voxel_shapes/pdc_dustcover_voxel.geo.json")))
@@ -429,9 +429,9 @@ public class GCR {
                     new RecoilImpulse(
                             26f, 1.8f,
                             18, 13f, 0.15f,
-                            120.0f, 3f, 3f, 0.011f),
+                            120.0f, 3.5f, 3.5f, 0.012f),
                     new RecoilController(
-                            950f, 110f,
+                            920f, 115f,
                             150.0f, 11f,
                             160.0f, 10f,
                             160.0f, 11f,

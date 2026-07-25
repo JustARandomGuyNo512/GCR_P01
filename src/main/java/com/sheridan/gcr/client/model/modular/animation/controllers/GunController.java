@@ -17,7 +17,6 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
         super.firstPersonSubscriptions(model);
         subscribe(EventType.DRAW, 0, (context) -> {
             if (isTrackClear("main")) {
-                System.out.println("dispatch2");
                 DRAW.play(anim("draw"));
             }
         });

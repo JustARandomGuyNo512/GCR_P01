@@ -83,8 +83,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         }
     }
 
-float tz = 0;
-    float tzMax = 0;
+
     @Override
     public void update(double timeDist) {
         if (data == null) {
@@ -112,9 +111,10 @@ float tz = 0;
         // 1. 线性位移计算
         float vz = gunVelocity.z;
         float z  = gunDisplacement.z;
-        tz = k_lin_z * z;
-
-        vz = (vz - tz * dt) / (1.0f + c_lin_z * dt);
+        if (gunDisplacement.z < -0.2f && gunVelocity.z > 0) {
+            c_lin_z /= (1 - gunDisplacement.z);
+        }
+        vz = (vz - k_lin_z * z * dt) / (1.0f + c_lin_z * dt);
         z += vz * dt;
         gunVelocity.z = vz;
         gunDisplacement.z = z;
