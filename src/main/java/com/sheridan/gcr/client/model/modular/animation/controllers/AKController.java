@@ -1,6 +1,7 @@
 package com.sheridan.gcr.client.model.modular.animation.controllers;
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.animation.AnimationDef;
@@ -18,7 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class AKController extends AnimationController<AKModel> {
+public class AKController extends GunController<AKModel> {
     private SingleAnimationSequence shoot;
     private SingleAnimationSequence shootLast;
     private SingleAnimationSequence shootStuck;
@@ -45,8 +46,10 @@ public class AKController extends AnimationController<AKModel> {
             } else if (empty) {
                 animation = shootLast;
             }
-            getTrack("shoot").play(animation.prepare());
+            SHOOT.play(animation.prepare());
         });
+
+
 
     }
 
@@ -56,7 +59,9 @@ public class AKController extends AnimationController<AKModel> {
                 "shoot", "gcr:ak74m_shoot",
                 "shoot_last", "gcr:ak74m_shoot_last",
                 "shoot_stuck", "gcr:ak74m_shoot_stuck",
-                "shoot_last_stuck", "gcr:ak74m_shoot_last_stuck"
+                "shoot_last_stuck", "gcr:ak74m_shoot_last_stuck",
+                "holster", "gcr:ar_holster",
+                "draw", "gcr:ar_draw"
         );
     }
 
@@ -72,19 +77,19 @@ public class AKController extends AnimationController<AKModel> {
         }
     }
 
-    @Override
-    public void initTrack(AKModel moduleModel) {
-        defineTrack("main").addOnPlayed(instance -> getTrack("check").clear());
-        defineTrack("shoot").addOnPlayed(instance -> getTrack("check").clear());
-
-        defineTrack("draw").addOnPlayed(instance -> getTrack("check").clear());
-
-        defineTrack("check").addOnApplied((ctx, model) -> {
-            if (Client.getAimingProgress() != 0) {
-                getTrack("check").clear();
-            }
-        });
-    }
+//    @Override
+//    public void initTrack(AKModel moduleModel) {
+//        defineTrack("main").addOnPlayed(instance -> getTrack("check").clear());
+//        defineTrack("shoot").addOnPlayed(instance -> getTrack("check").clear());
+//
+//        defineTrack("draw").addOnPlayed(instance -> getTrack("check").clear());
+//
+//        defineTrack("check").addOnApplied((ctx, model) -> {
+//            if (Client.getAimingProgress() != 0) {
+//                getTrack("check").clear();
+//            }
+//        });
+//    }
 
     @Override
     public boolean assertCompatible(IModularModel model) {

@@ -139,7 +139,7 @@ public class GCR {
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
 
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
-    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 300000).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
 
 
@@ -206,10 +206,12 @@ public class GCR {
 
 
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar", "5.56x45");
-    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.048f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.48f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar", "5.56x45");
     public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar", "5.56x45");
 
-    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.18f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f).addTags("muzzle", "ak", "5.45x39");
+
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
             RL( "kac_ras_handguard"),
@@ -330,23 +332,24 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.075f, -7.1875f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
-                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
-                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
-                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+                    .setTranslation(0, 8.775F, -7.175875f, -23.037498F, 0.0F, 0.0F, 0.0F, 0.625F, 0.625F, 0.625F)
+                    .setTranslation(1, 0.0F, 1.3F, -0.1F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(2, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(3, 0.0F, 0.0F, 0.0F, 0.0F, 90.0F, 0.0F, 0.3F, 0.3F, 0.3F)
+                    .setTranslation(4, -1.6F, 0.8F, -10.5F, 0.0F, 270.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(5, -16.0F, -10.5F, 4.0F, -18.621124F, 40.83802F, 26.0F, 0.15F, 0.15F, 0.15F)
+                    .setAimingTranslation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F),
+
             new RecoilData(
                     new RecoilImpulse(
-                            25f, 1.8f,
+                            25f, 2f,
                             18, 15f, 0.2f,
-                            125.0f, 3f, 3f, 0.016f),
+                            120.0f, 3f, 3f, 0.016f),
                     new RecoilController(
-                            900.0f, 145f,
-                            160.0f, 13f,
-                            165.0f, 10f,
-                            175.0f, 11f,
+                            900.0f, 120f,
+                            155.0f, 10f,
+                            160.0f, 10f,
+                            170.0f, 11f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
@@ -401,7 +404,7 @@ public class GCR {
                     //0.0003f, 0.08f,
                     0, 0,
                     1.3f, 4f,
-                    30f, 0.005f, 0.05f / 70,
+                    30f, 0.004f, 0.05f / 60,
                     RL("ak74m_fire"),
                     RL("ak74m_fire_suppressed"),
                     Map.of(
@@ -415,7 +418,7 @@ public class GCR {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.0375f, -6.125f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.525f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -424,14 +427,14 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            27f, 1.6f,
+                            26f, 1.8f,
                             18, 13f, 0.15f,
-                            120.0f, 3f, 3f, 0.0165f),
+                            120.0f, 3f, 3f, 0.011f),
                     new RecoilController(
-                            1000f, 145f,
-                            165.0f, 14f,
-                            170.0f, 10.5f,
-                            180.0f, 11.5f,
+                            950f, 110f,
+                            150.0f, 11f,
+                            160.0f, 10f,
+                            160.0f, 11f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
@@ -545,6 +548,8 @@ public class GCR {
             ITEMS.register(AR15_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AR15_MUZZLE_BRAKE));
     public static final DeferredItem<Item> AK74_MUZZLE_BRAKE_ITEM =
             ITEMS.register(AK74_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AK74_MUZZLE_BRAKE));
+    public static final DeferredItem<Item> PBS_4_ITEM =
+            ITEMS.register(PBS_4.getSimpleID(), () -> new ModuleItem<>(PBS_4));
 
 
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
@@ -633,6 +638,7 @@ public class GCR {
                                 output.accept(SOCOM_RC2_ITEM.get());
                                 output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(AK74_MUZZLE_BRAKE_ITEM.get());
+                                output.accept(PBS_4_ITEM.get());
 
 
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());

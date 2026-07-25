@@ -47,6 +47,8 @@ public class DrawHolsterHandler {
     private float heat;
     private float lastHeat;
 
+    public boolean shouldDispatchDraw = false;
+
     private DrawHolsterHandler() {}
 
     // =========================
@@ -110,6 +112,7 @@ public class DrawHolsterHandler {
     private void updateProgress() {
         if (state == State.IDLE) {
             equipProgressLast = equipProgress;
+            shouldDispatchDraw = false;
             return;
         }
 
@@ -165,7 +168,7 @@ public class DrawHolsterHandler {
         duration = getDrawDuration(stack);
         renderLockedStack = stack;
         equipProgressLast = equipProgress;
-        Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+        shouldDispatchDraw = true;
     }
 
     public float getRenderLockedGunHeat(float particleTicks) {

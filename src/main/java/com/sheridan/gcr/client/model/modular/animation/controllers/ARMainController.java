@@ -19,7 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ARMainController extends AnimationController<ARMainModel> {
+public class ARMainController extends GunController<ARMainModel> {
     private SingleAnimationSequence shoot;
     private SingleAnimationSequence shootLast;
     private SingleAnimationSequence shootStuck;
@@ -46,27 +46,27 @@ public class ARMainController extends AnimationController<ARMainModel> {
             } else if (view.getAmmoLeft(states) == 0 && view.hasMagAttachment(states)) {
                 animation = shootLast;
             }
-            getTrack("shoot").play(animation.prepare());
+            SHOOT.play(animation.prepare());
         });
 
         subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
             String after = context.getParam("after");
-            getTrack("main").play(anim(after).coverState());
+            MAIN.play(anim(after).coverState());
         });
         
         subscribe(EventType.RELOAD, 0, (context) -> {
             String name = context.getParam("animation_name");
-            getTrack("main").play(anim(name).coverState());
+            MAIN.play(anim(name).coverState());
         });
 
         subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
             String name = context.getParam("animation_name");
-            getTrack("main").play(anim(name).coverState());
+            MAIN.play(anim(name).coverState());
         });
 
         subscribe(EventType.CHECK_MAG, 0, (context) -> {
             if (isTrackClear("main")) {
-                getTrack("check").play(anim("check_mag").coverState());
+                CHECK.play(anim("check_mag").coverState());
             }
         });
 
@@ -74,9 +74,9 @@ public class ARMainController extends AnimationController<ARMainModel> {
             ReadOnlyTag states = context.getStates();
             if (isTrackClear("main")) {
                 if (view.stuck(states) || view.boltLocked(states)) {
-                    getTrack("check").play(anim("check_chamber_simple"));
+                    CHECK.play(anim("check_chamber_simple"));
                 } else {
-                    getTrack("check").play(anim("check_chamber").coverStateExclude("ammo"));
+                    CHECK.play(anim("check_chamber").coverStateExclude("ammo"));
                 }
             }
         });
@@ -84,36 +84,16 @@ public class ARMainController extends AnimationController<ARMainModel> {
         subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
             if (isTrackClear("main")) {
                 String animationName = context.getParam("animation_name");
-                getTrack("check").play(anim(animationName));
+                CHECK.play(anim(animationName));
             }
         });
 
 
         subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
             String name = context.getParam("name");
-            getTrack("main").play(anim(name).coverState());
+            MAIN.play(anim(name).coverState());
         });
 
-        subscribe(EventType.DRAW, 0, (context) -> {
-            if (isTrackClear("main")) {
-                getTrack("draw").play(anim("draw"));
-            }
-        });
-
-        subscribe(EventType.HOLSTER, 0, (context) -> {
-            if (isTrackClear("main")) {
-                getTrack("draw").play(
-                        anim("holster")
-                                .keepOnLastFrame()
-                                .setOnPlaying((progress) -> {
-                                    DrawHolsterHandler.State state = DrawHolsterHandler.get().getState();
-                                    if (state != DrawHolsterHandler.State.HOLSTERING) {
-                                        clearTrack("draw");
-                                    }
-                                })
-                );
-            }
-        });
     }
 
     @Override
@@ -151,20 +131,6 @@ public class ARMainController extends AnimationController<ARMainModel> {
                 "holster", "gcr:ar_holster",
                 "draw", "gcr:ar_draw"
         );
-    }
-
-    @Override
-    public void initTrack(ARMainModel moduleModel) {
-        defineTrack("main").addOnPlayed(instance -> getTrack("check").clear());
-        defineTrack("shoot").addOnPlayed(instance -> getTrack("check").clear());
-
-        defineTrack("draw").addOnPlayed(instance -> getTrack("check").clear());
-
-        defineTrack("check").addOnApplied((ctx, model) -> {
-            if (Client.getAimingProgress() != 0) {
-                getTrack("check").clear();
-            }
-        });
     }
 
     @Override

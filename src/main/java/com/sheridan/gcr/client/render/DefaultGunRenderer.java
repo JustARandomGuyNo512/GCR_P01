@@ -139,6 +139,10 @@ public class DefaultGunRenderer implements IGunRenderer {
                 cachedFPContext = context;
                 newFirstPersonContextInit();
                 frameUpdate(light, overlay, partialTicks);
+                if (DrawHolsterHandler.get().shouldDispatchDraw) {
+                    Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
+                    DrawHolsterHandler.get().shouldDispatchDraw = false;
+                }
                 for (EventType eventType : delayedEvents) {
                     dispatchAnimationEvent(eventType);
                 }
