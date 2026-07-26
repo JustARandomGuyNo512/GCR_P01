@@ -9061,7 +9061,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-24.3, -38.4, 26.5],
+			"origin": [-24.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -9142,7 +9142,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-24.3, -38.4, 26.5],
+			"origin": [-24.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -149668,8 +149668,8 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -38.4, 26.5],
-			"rotation": [109.23368, -58.70655, 36.07957],
+			"origin": [-24.3, -37.8, 26.5],
+			"rotation": [105.24631, -59.44804, 40.72684],
 			"color": 0,
 			"children": [],
 			"reset": false,
@@ -149691,7 +149691,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -86.4, 26.5],
+			"origin": [-24.3, -85.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -149714,7 +149714,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -86.4, 26.5],
+			"origin": [-26.3, -85.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -149737,7 +149737,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -38.4, 26.5],
+			"origin": [-26.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -149760,7 +149760,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -86.4, 26.5],
+			"origin": [-24.3, -85.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -149783,7 +149783,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -38.4, 26.5],
+			"origin": [-24.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
