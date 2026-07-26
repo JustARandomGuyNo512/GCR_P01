@@ -65,14 +65,14 @@ public class ARMainController extends GunController<ARMainModel> {
         });
 
         subscribe(EventType.CHECK_MAG, 0, (context) -> {
-            if (isTrackClear("main")) {
+            if (isTrackClear(MAIN)) {
                 CHECK.play(anim("check_mag").coverState());
             }
         });
 
         subscribe(EventType.CHECK_CHAMBER, 0, (context) -> {
             ReadOnlyTag states = context.getStates();
-            if (isTrackClear("main")) {
+            if (isTrackClear(MAIN)) {
                 if (view.stuck(states) || view.boltLocked(states)) {
                     CHECK.play(anim("check_chamber_simple"));
                 } else {
@@ -82,7 +82,7 @@ public class ARMainController extends GunController<ARMainModel> {
         });
 
         subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
-            if (isTrackClear("main")) {
+            if (isTrackClear(MAIN)) {
                 String animationName = context.getParam("animation_name");
                 CHECK.play(anim(animationName));
             }

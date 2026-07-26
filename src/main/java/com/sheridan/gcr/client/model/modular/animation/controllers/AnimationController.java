@@ -123,6 +123,11 @@ public abstract class AnimationController<T extends IModularModel> implements IA
     }
 
     @Override
+    public boolean isTrackClear(Track<?> track) {
+        return track == null || !track.hasAnimation();
+    }
+
+    @Override
     public boolean areTracksClear(String... trackNames) {
         for (String trackName : trackNames) {
             Track<T> track = getTrack(trackName);

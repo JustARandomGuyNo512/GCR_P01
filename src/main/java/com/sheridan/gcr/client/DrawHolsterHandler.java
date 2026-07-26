@@ -178,7 +178,7 @@ public class DrawHolsterHandler {
 
     public void onRenderTick(ItemInHandRenderer renderer) {
         if (isRenderLockedStackChanged(lastRenderLockedStack, renderLockedStack)) {
-            AnimationHandler.INSTANCE.clearAllAnimation();
+            //AnimationHandler.INSTANCE.clearAllAnimation();
             lastRenderLockedStack = renderLockedStack;
         }
         if (!(renderer instanceof DualHandItemAccessor accessor)) {

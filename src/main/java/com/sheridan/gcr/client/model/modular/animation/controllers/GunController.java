@@ -16,23 +16,14 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
     public void firstPersonSubscriptions(T model) {
         super.firstPersonSubscriptions(model);
         subscribe(EventType.DRAW, 0, (context) -> {
-            if (isTrackClear("main")) {
+            if (isTrackClear(MAIN)) {
                 DRAW.play(anim("draw"));
             }
         });
 
         subscribe(EventType.HOLSTER, 0, (context) -> {
-            if (isTrackClear("main")) {
-                DRAW.play(
-                        anim("holster")
-                                .keepOnLastFrame()
-                                .setOnPlaying((progress) -> {
-                                    DrawHolsterHandler.State state = DrawHolsterHandler.get().getState();
-                                    if (state != DrawHolsterHandler.State.HOLSTERING) {
-                                        clearTrack("draw");
-                                    }
-                                })
-                );
+            if (isTrackClear(MAIN)) {
+                DRAW.play(anim("holster").keepOnLastFrame());
             }
         });
     }
