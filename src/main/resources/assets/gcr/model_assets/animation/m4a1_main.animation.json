@@ -47,9 +47,6 @@
 						},
 						"0.1": [1, 1, 1]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				}
 			}
 		},
@@ -71,9 +68,6 @@
 					}
 				},
 				"ammo": {
-					"scale": 0
-				},
-				"ammo_reloading": {
 					"scale": 0
 				},
 				"shell": {
@@ -288,9 +282,6 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				},
 				"camera": {
 					"rotation": {
@@ -582,9 +573,6 @@
 						}
 					}
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"camera": {
 					"rotation": {
 						"0.0": {
@@ -726,9 +714,6 @@
 				"ammo": {
 					"scale": 0
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				}
@@ -737,9 +722,6 @@
 		"base": {
 			"animation_length": 1,
 			"bones": {
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				}
@@ -2090,9 +2072,6 @@
 						}
 					}
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				},
@@ -2275,9 +2254,6 @@
 						},
 						"0.41": [0, 0, 0]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				}
 			},
 			"sound_effects": {
@@ -2382,9 +2358,6 @@
 						},
 						"0.41": [0, 0, 0]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				}
 			},
 			"sound_effects": {
@@ -2651,9 +2624,6 @@
 						"1.74": [0.4, 0, 0],
 						"1.82": [0, 0, 0]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				},
 				"shell": {
 					"scale": 0
@@ -3288,9 +3258,6 @@
 						}
 					}
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				}
@@ -3784,9 +3751,6 @@
 						}
 					}
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				}
@@ -4075,9 +4039,6 @@
 						}
 					}
 				},
-				"ammo_reloading": {
-					"scale": 0
-				},
 				"shell": {
 					"scale": 0
 				}
@@ -4295,9 +4256,6 @@
 						},
 						"3.3": [0, 0, 0]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				},
 				"chamber@G": {
 					"rotation": {
@@ -5001,9 +4959,6 @@
 						"1.92": [0, -0.2, -0.2],
 						"2.03": [0, 0, 0]
 					}
-				},
-				"ammo_reloading": {
-					"scale": 0
 				},
 				"chamber@G": {
 					"position": {

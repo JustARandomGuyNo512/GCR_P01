@@ -360,7 +360,7 @@ public class GCR {
             .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "ar")))
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
-            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
+            .addSlot(new ReplaceOnlySlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
             .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f)
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
             .setDefaultModuleInitHandler(workspace -> {
@@ -445,7 +445,7 @@ public class GCR {
             .addSlot(new SingleFixedSlot("HANDGUARD_UPPER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "upper")))
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ak")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ak")))
-            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ak", "5.45x39")))
+            .addSlot(new ReplaceOnlySlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ak", "5.45x39")))
             .addSlot(new SingleFixedSlot("DUSTCOVER").setFilter(SlotFilters.hasAllTags("ak", "dustcover")))
             .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("ak", "muzzle", "5.45x39")))
             .addSlot(new SingleFixedSlot("MOUNT").setFilter(SlotFilters.hasAllTags("ak", "mount")))

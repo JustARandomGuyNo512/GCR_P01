@@ -13,36 +13,46 @@ import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.GunTask;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunReloadPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class AKReloadTask extends GunTask<AK> {
-    private final String animationName;
-    private final IAmmoSource magAttachment;
+    private String animationName;
+    private IAmmoSource magAttachment;
     public int sendPacketDelay;
 
     public AKReloadTask(ItemStack itemStack, AK gun) {
         super(itemStack, gun);
         CompoundTag states = gun.rootNodeTag(itemStack);
         boolean hasMagAttachment = gun.hasMagAttachment(states);
-        int ammoLeft = gun.getGunAmmoLeft(itemStack);
-        if (hasMagAttachment) {
-            if (ammoLeft > 0) {
-                animationName = "mag_reload";
-            } else {
-                animationName = "mag_reload_empty";
+        if (!hasMagAttachment) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                player.sendSystemMessage(Component.translatable("gcr.overlay.require_mag").withColor(Color.RED.getRGB()));
             }
-        } else {
-            animationName = "chamber_reload";
+            length = 0;
+            return;
         }
+        int ammoLeft = gun.getGunAmmoLeft(itemStack);
+
+        if (ammoLeft > 0) {
+            animationName = "mag_reload";
+        } else {
+            animationName = "mag_reload_empty";
+        }
+
         Map<String, Float> taskTimers = gun.baseProperties.taskTimers;
         String sendPacketDelayKey = animationName + "_length";
         sendPacketDelay = Utils.secondToTick(taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
