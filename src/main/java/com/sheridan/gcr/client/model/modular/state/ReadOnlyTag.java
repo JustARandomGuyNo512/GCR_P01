@@ -38,6 +38,10 @@ public class ReadOnlyTag extends CompoundTag {
         return TAG;
     }
 
+    public CompoundTag copyRef() {
+        return ref == TAG ? TAG : ref.copy();
+    }
+
     @Override
     public @NotNull Set<String> getAllKeys() {
         return ref.getAllKeys();

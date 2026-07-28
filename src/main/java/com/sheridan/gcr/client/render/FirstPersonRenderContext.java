@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.animation.command.ShadowNodeRender;
 import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
 import com.sheridan.gcr.client.model.modular.IAnimationControllerModel;
@@ -228,8 +229,54 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
             node.model.copyRenderStatus(stringPoseMap);
             node.model.render(this);
         }
+        handleShadowNodeRender();
         handleArmRender();
         handleBulletShellRender();
+    }
+
+    protected void handleShadowNodeRender() {
+        ShadowNodeRender.ShadowEntries shadowEntries = getLocalStorage(ShadowNodeRender.SHADOW_NODE_RENDER_KEY, ShadowNodeRender.ShadowEntries.class);
+        if (shadowEntries == null) {
+            return;
+        }
+        List<ShadowNodeRender.ShadowEntry> entries = shadowEntries.entries;
+        if (entries.isEmpty()) {
+            return;
+        }
+        for (ShadowNodeRender.ShadowEntry entry : entries) {
+            ModuleRenderNode shadowNode = entry.shadowNode;
+            if (shadowNode == null) {
+                continue;
+            }
+            ModuleRenderNode node = entry.node;
+            Map<String, BoneRenderStatus> stringPoseMap = getRenderStatusMap().get(node);
+            if (stringPoseMap == null) {
+                continue;
+            }
+            BoneRenderStatus targetStatus = stringPoseMap.get(entry.targetBoneName);
+            if (targetStatus == null) {
+                continue;
+            }
+            currentRenderNode = shadowNode;
+            this.poseStack.pushPose();
+            this.poseStack.last().pose().set(targetStatus.pose.pose());
+            this.poseStack.last().normal().set(targetStatus.pose.normal());
+
+            IStateViewer<?> viewer = null;
+            if (shadowNode.model instanceof IStateViewerModel<?> stateListenerModel) {
+                viewer = stateListenerModel.getViewer();
+            }
+            if (viewer != null) {
+                viewer.applyState(root.model, this, currentRenderNode.getStates());
+            }
+
+            shadowNode.initTranslate(poseStack);
+            shadowNode.model.updateBoneRenderStatus(this);
+            shadowNode.model.preFirstPersonRender(this);
+            shadowNode.model.render(this);
+
+            this.poseStack.popPose();
+        }
     }
 
     static final PoseStack.Pose EMPTY_POSE = new PoseStack().last();

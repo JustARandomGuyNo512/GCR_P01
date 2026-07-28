@@ -46,6 +46,16 @@ public class ModuleRenderNode {
         }
     }
 
+    public ModuleRenderNode copySelfOnly(boolean copyStatus) {
+        if (copyStatus && this.states != null) {
+            ModuleRenderNode moduleRenderNode = new ModuleRenderNode(model, id, moduleId, reverseModel);
+            moduleRenderNode.states = ReadOnlyTag.of(this.states.copyRef());
+            return moduleRenderNode;
+        } else {
+            return new ModuleRenderNode(model, id, moduleId, reverseModel);
+        }
+    }
+
     public void setCustomParamTag(CompoundTag tag) {
         customParams = tag;
     }
