@@ -28,16 +28,10 @@ public class AKRemoveStuckTask extends RemoveStuckTask<AK>{
 
     public AKRemoveStuckTask(ItemStack itemStack, AK gun) {
         super(itemStack, gun);
-        int ammoLeft = gun.getGunAmmoLeft(itemStack);
-        if (ammoLeft >= 1) {
-            animationName = "remove_stuck";
-        } else {
-            animationName = "remove_stuck_empty";
-        }
-
+        animationName = "remove_stuck";
         String sendPacketDelayKey = animationName + "_length";
         sendPacketDelay = Utils.secondToTick(gun.baseProperties.taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
-        AnimationDef animationDef = AnimationRegister.get(GCR.RL("m4a1_" + animationName));
+        AnimationDef animationDef = AnimationRegister.get(GCR.RL("ak74m_" + animationName));
         if (animationDef != null) {
             this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.05f), sendPacketDelay);
         }

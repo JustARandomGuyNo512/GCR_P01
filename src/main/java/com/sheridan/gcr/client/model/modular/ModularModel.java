@@ -222,4 +222,9 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
         this.heatSensitive = heatSensitive;
         return this;
     }
+
+    @Override
+    public void resetPose() {
+        super.resetPose();
+    }
 }

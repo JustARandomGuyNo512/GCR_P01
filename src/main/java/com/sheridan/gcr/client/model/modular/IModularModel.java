@@ -48,5 +48,7 @@ public interface IModularModel extends IAnimated {
 
     void compile(RenderType type);
 
+    void resetPose();
+
     IModularModel modifyHeatSensitive(float heatSensitive);
 }

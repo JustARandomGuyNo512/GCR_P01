@@ -15,6 +15,7 @@ import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellRenderer;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -244,10 +246,12 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
         isShadowNodeRender = true;
         ShadowNodeRender.ShadowEntries shadowEntries = getLocalStorage(ShadowNodeRender.SHADOW_NODE_RENDER_KEY, ShadowNodeRender.ShadowEntries.class);
         if (shadowEntries == null) {
+            isShadowNodeRender = false;
             return;
         }
         List<ShadowNodeRender.ShadowEntry> entries = shadowEntries.entries;
         if (entries.isEmpty()) {
+            isShadowNodeRender = false;
             return;
         }
         for (ShadowNodeRender.ShadowEntry entry : entries) {
@@ -266,6 +270,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
             }
             currentRenderNode = shadowNode;
             this.poseStack.pushPose();
+            shadowNode.model.resetPose();
             this.poseStack.last().pose().set(targetStatus.pose.pose());
             this.poseStack.last().normal().set(targetStatus.pose.normal());
 
@@ -274,16 +279,16 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
                 viewer = stateListenerModel.getViewer();
             }
             if (viewer != null) {
-                viewer.applyState(root.model, this, currentRenderNode.getStates());
+                viewer.applyState(currentRenderNode.model, this, currentRenderNode.getStates());
             }
 
             shadowNode.initTranslate(poseStack);
             shadowNode.model.updateBoneRenderStatus(this);
             shadowNode.model.preFirstPersonRender(this);
             shadowNode.model.render(this);
-
             this.poseStack.popPose();
         }
+        currentRenderNode = null;
         isShadowNodeRender = false;
     }
 

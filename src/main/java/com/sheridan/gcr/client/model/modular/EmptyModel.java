@@ -82,6 +82,11 @@ public final class EmptyModel implements IModularModel{
     }
 
     @Override
+    public void resetPose() {
+
+    }
+
+    @Override
     public IModularModel modifyHeatSensitive(float heatSensitive) {
         return this;
     }

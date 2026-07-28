@@ -325,8 +325,6 @@ public class GCR {
                             "mag_reload_length", 1.8f,
                             "mag_reload_empty_length", 2.45f,
                             "mag_reload_charge_length", 2.8f,
-                            "chamber_reload_length", 1.8f,
-                            "chamber_reload_empty_length", 2.0f,
                             "remove_stuck_empty_length", 0.85f,
                             "remove_stuck_length", 0.55f
                     )
@@ -408,13 +406,9 @@ public class GCR {
                     RL("ak74m_fire"),
                     RL("ak74m_fire_suppressed"),
                     Map.of(
-                            "mag_reload_length", 1f,
-                            "mag_reload_empty_length", 1f,
-                            "mag_reload_charge_length", 1f,
-                            "chamber_reload_length", 1f,
-                            "chamber_reload_empty_length", 1f,
-                            "remove_stuck_empty_length", 1f,
-                            "remove_stuck_length", 1f
+                            "mag_reload_length", 2.15f,
+                            "mag_reload_empty_length", 3.2f,
+                            "remove_stuck_length", 0.85f
                     )
             ),
             new DisplayData()

@@ -510,6 +510,7 @@ public class BufferedBoneMeshModel {
         boneStatusUboBuffer.put(mat.m33());
     }
 
+
     public void resetPose() {
         rootBone.resetPoseAll();
     }
