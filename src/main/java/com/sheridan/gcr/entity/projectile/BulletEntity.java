@@ -48,9 +48,14 @@ public class BulletEntity extends Entity {
     public static final EntityDataAccessor<Vector3f> EXACT_VELOCITY =
             SynchedEntityData.defineId(BulletEntity.class, EntityDataSerializers.VECTOR3);
     private int shooterId;
+    public float baseDamage;
 
     public BulletEntity(EntityType<? extends BulletEntity> type, Level level) {
         super(type, level);
+    }
+
+    public void setBaseDamage(float baseDamage) {
+        this.baseDamage = baseDamage;
     }
 
     public void setShooter(LivingEntity shooter) {
@@ -220,7 +225,7 @@ public class BulletEntity extends Entity {
                 this.level().damageSources().source(DamageTypes.MOB_PROJECTILE, this.shooter, this);
         target.hurt(
                 damageSource,
-                (float) (6f * (0.9f + 0.2f * Math.random()))
+                (float) (baseDamage * (0.9f + 0.2f * Math.random()))
         );
         setPos(hit.getLocation());
         if (tickCount < 2) {

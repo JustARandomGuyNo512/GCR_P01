@@ -149,6 +149,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
         bullet.setPos(pos);
+        bullet.setBaseDamage(baseProperties.baseDamage.value);
         Vec3 velocity = dir.scale(speed);
 
         bullet.setDeltaMovement(velocity);
@@ -602,16 +603,18 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float faultRate = getStuckRate(stack) * 100f;
         float agility = getAgility(stack);
         float impulse = getImpulseRatio(stack) * 100f;
+        float baseDamage = baseProperties.baseDamage.value;
 
         tooltipComponents.addAll(List.of(
                 Component.literal(baseProperties.rpm.getFullName() + ": " + rpm),
-                Component.literal(baseProperties.recoilControl.getFullName()  + ": " + String.format("%.3f", recoilControl)),
-                Component.literal(baseProperties.stability.getFullName() + ": " + String.format("%.3f", stability)),
-                Component.literal(baseProperties.weight.getFullName() + ": " + String.format("%.3f", currentWeight)),
-                Component.literal(baseProperties.spread.getFullName() + ": " + String.format("%.3f", spread)),
-                Component.literal(baseProperties.stuckRate.getFullName() + ": " + String.format("%.3f", faultRate) + " %"),
-                Component.literal(baseProperties.agility.getFullName() + ": " + String.format("%.3f", agility)),
-                Component.literal(baseProperties.impulse.getFullName() + ": " + String.format("%.3f", impulse) + " %")
+                Component.literal(baseProperties.recoilControl.getFullName()  + ": " + String.format("%.2f", recoilControl)),
+                Component.literal(baseProperties.stability.getFullName() + ": " + String.format("%.2f", stability)),
+                Component.literal(baseProperties.weight.getFullName() + ": " + String.format("%.2f", currentWeight)),
+                Component.literal(baseProperties.spread.getFullName() + ": " + String.format("%.2f", spread)),
+                //Component.literal(baseProperties.stuckRate.getFullName() + ": " + String.format("%.2f", faultRate) + " %"),
+                Component.literal(baseProperties.agility.getFullName() + ": " + String.format("%.2f", agility)),
+                Component.literal(baseProperties.impulse.getFullName() + ": " + String.format("%.2f", impulse) + " %"),
+                Component.literal(baseProperties.baseDamage.getFullName() + ": " + String.format("%.2f", baseDamage))
         ));
         String string = Component.translatable("tooltip.util.gun_modify").getString();
         String msg = string.replace("$key", KeyBinds.OPEN_GUN_MODIFY_SCREEN.getTranslatedKeyMessage().getString());

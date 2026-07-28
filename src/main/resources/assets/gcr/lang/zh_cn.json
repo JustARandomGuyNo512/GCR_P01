@@ -91,6 +91,7 @@
   "gcr:prop.base.agility": "敏捷度",
   "gcr:prop.base.impulse": "后坐力",
   "gcr:prop.base.aiming_speed": "瞄准速度",
+  "gcr:prop.base.base_damage": "基础伤害",
 
   "gcr.ani.mag_ammo_left_empty": "打光了,可恶!",
   "gcr.ani.mag_ammo_left_few": "快打光了",
@@ -104,6 +105,7 @@
   "death.attack.custom_explosion": "你炸了",
 
   "gcr:m4a1": "M4A1",
+  "gcr:ak74m": "AK74M",
   "gcr:acog": "ACOG 瞄准镜",
   "gcr:vortex_razor_hd": "Vortex Razor HD 瞄准镜",
   "gcr:eotech_exps3": "Eotech EXPS3全息瞄准镜",

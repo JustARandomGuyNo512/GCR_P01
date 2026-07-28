@@ -33,6 +33,7 @@ public class BaseProperties extends Properties {
     public final NumProp bulletVelocity;
     public final NumProp shootHeatInc;
     public final NumProp heatDecSpeed;
+    public final NumProp baseDamage;
     private SoundEvent fireSoundNormal;
     private SoundEvent fireSoundSuppressed;
     private final ResourceLocation fireSoundNormalName;
@@ -40,7 +41,7 @@ public class BaseProperties extends Properties {
     public Map<String, Float> taskTimers;
 
     public BaseProperties(int rpm,  float weight, float spread, float agility, float stuckRate, float maxStuckRate, float aimingSpeed, float soundRange,
-                          float bulletVelocity, float shootHeatInc, float heatDecSpeed,
+                          float bulletVelocity, float shootHeatInc, float heatDecSpeed, float baseDamage,
                           ResourceLocation fireSoundNormalName, ResourceLocation fireSoundSuppressedName,
                           Map<String, Float> taskTimers) {
         super(GCR.RL("base"));
@@ -58,6 +59,7 @@ public class BaseProperties extends Properties {
         this.bulletVelocity = defProp(new NumProp("bullet_velocity", bulletVelocity));
         this.shootHeatInc = defProp(new NumProp("shoot_heat_inc", shootHeatInc));
         this.heatDecSpeed = defProp(new NumProp("heat_dec_speed", heatDecSpeed));
+        this.baseDamage = defProp(new NumProp("base_damage", baseDamage));
 
         this.fireSoundNormalName = fireSoundNormalName;
         this.fireSoundSuppressedName = fireSoundSuppressedName;
