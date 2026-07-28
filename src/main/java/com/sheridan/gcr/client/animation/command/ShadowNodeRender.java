@@ -20,25 +20,27 @@ public class ShadowNodeRender extends Command{
     public String targetBoneName;
     public boolean copyNodeStatus;
     public float startProgress;
+    public float startTimestamp;
     private final ShadowEntry tempEntry;
     private long lastStartTime = 0;
     private IAnimationSequence lastSequence = null;
 
     public ShadowNodeRender(String command, float timeStamp) {
         super(command, timeStamp);
-        if (args.size() != 3) {
+        if (args.size() != 4) {
             throw new IllegalArgumentException("Invalid command args: " + command);
         }
-        refBoneName = args.getFirst();
-        targetBoneName = args.get(1);
-        copyNodeStatus = Boolean.parseBoolean(args.get(2));
+        startTimestamp = Float.parseFloat(args.getFirst());
+        refBoneName = args.get(1);
+        targetBoneName = args.get(2);
+        copyNodeStatus = Boolean.parseBoolean(args.get(3));
         tempEntry = new ShadowEntry(targetBoneName);
     }
 
     @Override
     public void bindDef(AnimationDef def) {
         super.bindDef(def);
-        startProgress = timeStamp / def.lengthInSeconds();
+        startProgress = startTimestamp / def.lengthInSeconds();
     }
 
     @Override

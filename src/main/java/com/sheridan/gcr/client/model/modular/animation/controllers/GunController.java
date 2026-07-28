@@ -26,6 +26,39 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
                 DRAW.play(anim("holster").keepOnLastFrame());
             }
         });
+
+        subscribe(EventType.RELOAD, 0, (context) -> {
+            String name = context.getParam("animation_name");
+            MAIN.play(anim(name).coverState());
+        });
+
+        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
+            String name = context.getParam("animation_name");
+            MAIN.play(anim(name).coverState());
+        });
+
+        subscribe(EventType.CHECK_MAG, 0, (context) -> {
+            if (isTrackClear(MAIN)) {
+                CHECK.play(anim("check_mag").coverState());
+            }
+        });
+
+        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
+            if (isTrackClear(MAIN)) {
+                String animationName = context.getParam("animation_name");
+                CHECK.play(anim(animationName));
+            }
+        });
+
+        subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
+            String name = context.getParam("name");
+            MAIN.play(anim(name).coverState());
+        });
+
+        subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
+            String after = context.getParam("after");
+            MAIN.play(anim(after).coverState());
+        });
     }
 
     @Override

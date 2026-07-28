@@ -19,7 +19,6 @@ public class AKViewer extends StateViewer<AKView> {
     public void onRegisterStateMapping() {
         addStateMapping("base", "gcr:ak74m_base", DEFAULT_SCALE, 0);
         addStateMapping("stuck", "gcr:ak74m_shoot_stuck", DEFAULT_SCALE, 1);
-        addStateMapping("stuck_empty", "gcr:ak74m_shoot_last_stuck", DEFAULT_SCALE, 1);
 
         addStateMappings(
                 StaticState.Builder.empty(IGun.FIRE_MODEL_ID.getDefaultValue()),

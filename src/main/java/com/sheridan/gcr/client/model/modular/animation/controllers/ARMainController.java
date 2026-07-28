@@ -18,6 +18,8 @@ import com.sheridan.gcr.modularSys.modules.views.ARView;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.Consumer;
+
 @OnlyIn(Dist.CLIENT)
 public class ARMainController extends GunController<ARMainModel> {
     private SingleAnimationSequence shoot;
@@ -25,7 +27,11 @@ public class ARMainController extends GunController<ARMainModel> {
     private SingleAnimationSequence shootStuck;
 
     private AnimationDef thirdPersonShoot;
+    private Consumer<ARMainController> animationRegister;
 
+    public ARMainController(Consumer<ARMainController> animationRegister) {
+        this.animationRegister = animationRegister;
+    }
 
     @Override
     public void firstPersonSubscriptions(ARMainModel model) {
@@ -49,26 +55,26 @@ public class ARMainController extends GunController<ARMainModel> {
             SHOOT.play(animation.prepare());
         });
 
-        subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
-            String after = context.getParam("after");
-            MAIN.play(anim(after).coverState());
-        });
+//        subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
+//            String after = context.getParam("after");
+//            MAIN.play(anim(after).coverState());
+//        });
         
-        subscribe(EventType.RELOAD, 0, (context) -> {
-            String name = context.getParam("animation_name");
-            MAIN.play(anim(name).coverState());
-        });
+//        subscribe(EventType.RELOAD, 0, (context) -> {
+//            String name = context.getParam("animation_name");
+//            MAIN.play(anim(name).coverState());
+//        });
 
-        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
-            String name = context.getParam("animation_name");
-            MAIN.play(anim(name).coverState());
-        });
+//        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
+//            String name = context.getParam("animation_name");
+//            MAIN.play(anim(name).coverState());
+//        });
 
-        subscribe(EventType.CHECK_MAG, 0, (context) -> {
-            if (isTrackClear(MAIN)) {
-                CHECK.play(anim("check_mag").coverState());
-            }
-        });
+//        subscribe(EventType.CHECK_MAG, 0, (context) -> {
+//            if (isTrackClear(MAIN)) {
+//                CHECK.play(anim("check_mag").coverState());
+//            }
+//        });
 
         subscribe(EventType.CHECK_CHAMBER, 0, (context) -> {
             ReadOnlyTag states = context.getStates();
@@ -81,18 +87,18 @@ public class ARMainController extends GunController<ARMainModel> {
             }
         });
 
-        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
-            if (isTrackClear(MAIN)) {
-                String animationName = context.getParam("animation_name");
-                CHECK.play(anim(animationName));
-            }
-        });
+//        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
+//            if (isTrackClear(MAIN)) {
+//                String animationName = context.getParam("animation_name");
+//                CHECK.play(anim(animationName));
+//            }
+//        });
 
 
-        subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
-            String name = context.getParam("name");
-            MAIN.play(anim(name).coverState());
-        });
+//        subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
+//            String name = context.getParam("name");
+//            MAIN.play(anim(name).coverState());
+//        });
 
     }
 
@@ -110,27 +116,7 @@ public class ARMainController extends GunController<ARMainModel> {
 
     @Override
     public void initAnimation(ARMainModel model) {
-        registerAnimations(
-                "check_mag", "gcr:m4a1_check_mag",
-                "reload_grenade", "gcr:m4a1_reload_grenade_m203",
-                "check_grenade", "gcr:m4a1_check_grenade_m203",
-                ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
-                ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
-                "mag_reload", "gcr:m4a1_mag_reload",
-                "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
-                "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
-                "chamber_reload", "gcr:m4a1_chamber_reload",
-                "chamber_reload_empty", "gcr:m4a1_chamber_reload_empty",
-                "check_chamber", "gcr:m4a1_check_chamber",
-                "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
-                "shoot", "gcr:m4a1_shoot",
-                "shoot_last", "gcr:m4a1_shoot_last",
-                "shoot_stuck", "gcr:m4a1_shoot_stuck",
-                "remove_stuck", "gcr:m4a1_remove_stuck",
-                "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
-                "holster", "gcr:ar_holster",
-                "draw", "gcr:ar_draw"
-        );
+        animationRegister.accept(this);
     }
 
     @Override

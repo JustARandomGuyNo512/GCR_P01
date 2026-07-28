@@ -36,6 +36,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
     protected ModuleRenderNode rightArmNode;
     protected IArmHandlerModel leftArm;
     protected IArmHandlerModel rightArm;
+    private boolean isShadowNodeRender = false;
 
     public FirstPersonRenderContext(
             LivingEntity entity, ModuleRenderNode root, ItemStack itemStack,
@@ -164,6 +165,11 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
         handleRender();
     }
 
+    @Override
+    public boolean isShadowNodeRender() {
+        return isShadowNodeRender;
+    }
+
     protected void handleBulletShellRender() {
         BulletShellRenderer.renderInFirstPerson(light);
     }
@@ -235,6 +241,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
     }
 
     protected void handleShadowNodeRender() {
+        isShadowNodeRender = true;
         ShadowNodeRender.ShadowEntries shadowEntries = getLocalStorage(ShadowNodeRender.SHADOW_NODE_RENDER_KEY, ShadowNodeRender.ShadowEntries.class);
         if (shadowEntries == null) {
             return;
@@ -277,6 +284,7 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
 
             this.poseStack.popPose();
         }
+        isShadowNodeRender = false;
     }
 
     static final PoseStack.Pose EMPTY_POSE = new PoseStack().last();

@@ -88,6 +88,10 @@ public class ModuleRenderContext {
         }
     }
 
+    public boolean isShadowNodeRender() {
+        return false;
+    }
+
     /**
      * 只在明确知道缓存原始类型时使用
      * */

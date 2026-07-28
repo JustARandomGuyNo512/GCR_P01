@@ -40,7 +40,9 @@ public class CommonMagViewer extends StateViewer<IAmmoSourceView> {
     public void applyState(IAnimated animated, ModuleRenderContext context, ReadOnlyTag states) {
         IAmmoSourceView stateView = getStateView();
         Integer maskAmmoLeft = context.getLocalStorage(MaskMagAmmo.MASK_AMMO_LEFT_KEY, Integer.class);
-        int ammoLeft = maskAmmoLeft == null ? stateView.getAmmoLeft(states) : maskAmmoLeft;
+        int ammoLeft = maskAmmoLeft == null || context.isShadowNodeRender() ?
+                stateView.getAmmoLeft(states) :
+                maskAmmoLeft;
         if (ammoLeft == 0) {
             doPose("empty", animated, context);
         } else if (ammoLeft >= 1 && ammoLeft < ammoModelCount) {

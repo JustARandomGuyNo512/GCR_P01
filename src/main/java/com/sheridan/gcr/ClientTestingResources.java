@@ -18,6 +18,10 @@ import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.CommonMuzzleFlashes;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.CommonMuzzleSmokeEffects;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
@@ -50,8 +54,8 @@ public class ClientTestingResources {
                         Map.entry("mag_reload", "m4a1_mag_reload"),
                         Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
                         Map.entry("mag_reload_charge", "m4a1_mag_reload_charge"),
-                        Map.entry("chamber_reload", "m4a1_chamber_reload"),
-                        Map.entry("chamber_reload_empty", "m4a1_chamber_reload_empty"),
+//                        Map.entry("chamber_reload", "m4a1_chamber_reload"),
+//                        Map.entry("chamber_reload_empty", "m4a1_chamber_reload_empty"),
                         Map.entry("base", "m4a1_base"),
                         Map.entry("shoot", "m4a1_shoot"),
                         Map.entry("shoot_stuck", "m4a1_shoot_stuck"),
@@ -70,14 +74,11 @@ public class ClientTestingResources {
                         Map.entry("to_auto", "ak74m_to_auto"),
                         Map.entry("mag_reload", "ak74_mag_reload"),
                         Map.entry("mag_reload_empty", "ak74m_mag_reload_empty"),
-                        Map.entry("chamber_reload", "ak74m_chamber_reload"),
                         Map.entry("base", "ak74m_base"),
                         Map.entry("shoot", "ak74m_shoot"),
                         Map.entry("shoot_last", "ak74m_shoot_last"),
                         Map.entry("shoot_stuck", "ak74m_shoot_stuck"),
-                        Map.entry("shoot_last_stuck", "ak74m_shoot_last_stuck"),
                         Map.entry("remove_stuck", "ak74m_remove_stuck"),
-                        Map.entry("remove_stuck_empty", "ak74m_remove_stuck_empty"),
                         Map.entry("check_chamber", "ak74m_check_chamber"),
                         Map.entry("check_chamber_simple", "ak74m_check_chamber_simple")
                 )
@@ -133,7 +134,25 @@ public class ClientTestingResources {
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
                     ), viewer);
 
-                    IAnimationController<?> controller = new ARMainController();
+                    IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
+                            "check_mag", "gcr:m4a1_check_mag",
+                            "reload_grenade", "gcr:m4a1_reload_grenade_m203",
+                            "check_grenade", "gcr:m4a1_check_grenade_m203",
+                            ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
+                            ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
+                            "mag_reload", "gcr:m4a1_mag_reload",
+                            "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
+                            "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
+                            "check_chamber", "gcr:m4a1_check_chamber",
+                            "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
+                            "shoot", "gcr:m4a1_shoot",
+                            "shoot_last", "gcr:m4a1_shoot_last",
+                            "shoot_stuck", "gcr:m4a1_shoot_stuck",
+                            "remove_stuck", "gcr:m4a1_remove_stuck",
+                            "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw"
+                    ));
                     model.bindController(controller);
                     model.callInitAnimation();
                     model.callInitTrack();
@@ -156,7 +175,21 @@ public class ClientTestingResources {
                     );
                     model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
 
-                    IAnimationController<?> controller = new AKController();
+                    IAnimationController<?> controller = new AKController(c -> c.registerAnimations(
+                            "shoot", "gcr:ak74m_shoot",
+                            "shoot_last", "gcr:ak74m_shoot_last",
+                            "shoot_stuck", "gcr:ak74m_shoot_stuck",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw",
+                            "mag_reload", "gcr:ak74_mag_reload",
+                            "mag_reload_empty", "gcr:ak74m_mag_reload_empty",
+                            AKFullAuto.FULL_AUTO.getName(), "gcr:ak74m_to_auto",
+                            AKSemi.SEMI.getName(), "gcr:ak74m_to_semi",
+                            "check_chamber", "gcr:ak74m_check_chamber",
+                            "check_chamber_simple", "gcr:ak74m_check_chamber_simple",
+                            "remove_stuck", "gcr:ak74m_remove_stuck",
+                            "check_mag", "gcr:ak74m_check_mag"
+                    ));
                     model.bindController(controller);
                     model.callInitAnimation();
                     model.callInitTrack();
