@@ -142,7 +142,7 @@ public class BulletEntity extends Entity {
                 start,
                 entityCheckEnd,
                 getBoundingBox().expandTowards(velocity).inflate(1.0),
-                e -> e != this && e != this.shooter && e.isPickable()
+                e -> e != this && e != this.shooter && e.isPickable() && e.isAlive()
         );
 
         if (entityHit != null) {
