@@ -354,11 +354,11 @@
 					"effect": "ar_arm_wave"
 				},
 				"0.33": {
-					"effect": "btn"
+					"effect": "ar_switch_fire_mode"
 				}
 			},
 			"timeline": {
-				"0.0": "ads_pose_limit(camera, 0.4, 0.4);"
+				"0.0": "ads_pose_limit(global, 0.2, 0.2);"
 			}
 		},
 		"to_auto": {
@@ -490,12 +490,12 @@
 				"0.0": {
 					"effect": "ar_arm_wave"
 				},
-				"0.27": {
-					"effect": "btn"
+				"0.28": {
+					"effect": "ar_switch_fire_mode"
 				}
 			},
 			"timeline": {
-				"0.0": "ads_pose_limit(global, 0.4, 0.4);"
+				"0.0": "ads_pose_limit(global, 0.2, 0.2);"
 			}
 		},
 		"remove_stuck": {
@@ -2000,6 +2000,11 @@
 						}
 					}
 				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "ar_arm_wave"
+				}
 			}
 		},
 		"mag_reload_empty": {
@@ -2465,10 +2470,7 @@
 				"MAG": {
 					"scale": {
 						"0.0": [0, 0, 0],
-						"0.61": {
-							"pre": [0, 0, 0],
-							"post": [1, 1, 1]
-						}
+						"0.61": {"pre": [0, 0, 0], "post": [1, 1, 1]}
 					}
 				},
 				"slider": {
