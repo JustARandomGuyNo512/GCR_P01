@@ -348,6 +348,17 @@
 						}
 					}
 				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "ar_arm_wave"
+				},
+				"0.33": {
+					"effect": "btn"
+				}
+			},
+			"timeline": {
+				"0.0": "ads_pose_limit(camera, 0.4, 0.4);"
 			}
 		},
 		"to_auto": {
@@ -474,6 +485,17 @@
 						}
 					}
 				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "ar_arm_wave"
+				},
+				"0.27": {
+					"effect": "btn"
+				}
+			},
+			"timeline": {
+				"0.0": "ads_pose_limit(global, 0.4, 0.4);"
 			}
 		},
 		"remove_stuck": {
@@ -870,6 +892,14 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
+				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "ar_arm_wave"
+				},
+				"0.79": {
+					"effect": "ar_stuck_remove"
 				}
 			},
 			"timeline": {
@@ -1423,6 +1453,14 @@
 					}
 				}
 			},
+			"sound_effects": {
+				"0.55": {
+					"effect": "ak74m_magout"
+				},
+				"2.87": {
+					"effect": "ak74m_magin"
+				}
+			},
 			"timeline": {
 				"0.0": "c_left_arm(0.4,3.35,3.75);",
 				"1.04": "show_mag_ammo_left(3.5);"
@@ -1808,6 +1846,14 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
+				}
+			},
+			"sound_effects": {
+				"0.49": {
+					"effect": "ak74m_boltback"
+				},
+				"1.98": {
+					"effect": "ak74m_boltforward"
 				}
 			}
 		},
@@ -2628,6 +2674,20 @@
 					}
 				}
 			},
+			"sound_effects": {
+				"1.01": {
+					"effect": "ak74m_empty_magout"
+				},
+				"1.66": {
+					"effect": "ak74m_magin"
+				},
+				"2.96": {
+					"effect": "ak74m_boltback"
+				},
+				"3.16": {
+					"effect": "ak74m_boltforward"
+				}
+			},
 			"timeline": {
 				"0.0": "c_left_arm(0.35,3.4,3.75);",
 				"0.09": "ads_pose_limit(camera, 0.2, 0.2);",
@@ -3058,6 +3118,14 @@
 						},
 						"2.69": [0, 0, 0]
 					}
+				}
+			},
+			"sound_effects": {
+				"0.52": {
+					"effect": "ak74m_magout"
+				},
+				"1.69": {
+					"effect": "ak74m_magin"
 				}
 			},
 			"timeline": {

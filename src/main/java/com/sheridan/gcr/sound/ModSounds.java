@@ -33,6 +33,13 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> AR_SHELL_IN = registerSound("ar_shell_in", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_STUCK_REMOVE = registerSound("ar_stuck_remove", "gcr");
 
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_BOLT_BACK = registerSound("ak74m_boltback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_BOLT_FORWARD = registerSound("ak74m_boltforward", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_MAG_IN = registerSound("ak74m_magin", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_MAG_OUT = registerSound("ak74m_magout", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_EMPTY_MAG_IN = registerSound("ak74m_empty_magin", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK74M_EMPTY_MAG_OUT = registerSound("ak74m_empty_magout", "gcr");
+
     public static DeferredHolder<SoundEvent, SoundEvent> AK74M_FIRE = registerSound("ak74m_fire", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AK74M_FIRE_SUPPRESSED = registerSound("ak74m_fire_suppressed", "gcr");
 
