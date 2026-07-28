@@ -2072,9 +2072,6 @@
 						}
 					}
 				},
-				"shell": {
-					"scale": 0
-				},
 				"camera": {
 					"rotation": {
 						"0.0": {

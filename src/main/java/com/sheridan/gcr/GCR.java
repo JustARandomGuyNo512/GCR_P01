@@ -399,8 +399,8 @@ public class GCR {
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
             new BaseProperties(660, 2.4f, 0.28f, 3.3f,
-                    //0.0003f, 0.08f,
-                    0, 0,
+                    0.0003f, 0.08f,
+                    //0, 0,
                     1.3f, 4f,
                     30f, 0.004f, 0.05f / 60,
                     RL("ak74m_fire"),

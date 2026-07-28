@@ -55,26 +55,6 @@ public class ARMainController extends GunController<ARMainModel> {
             SHOOT.play(animation.prepare());
         });
 
-//        subscribe(EventType.SWITCH_FIRE_MODE, 0, (context) -> {
-//            String after = context.getParam("after");
-//            MAIN.play(anim(after).coverState());
-//        });
-        
-//        subscribe(EventType.RELOAD, 0, (context) -> {
-//            String name = context.getParam("animation_name");
-//            MAIN.play(anim(name).coverState());
-//        });
-
-//        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
-//            String name = context.getParam("animation_name");
-//            MAIN.play(anim(name).coverState());
-//        });
-
-//        subscribe(EventType.CHECK_MAG, 0, (context) -> {
-//            if (isTrackClear(MAIN)) {
-//                CHECK.play(anim("check_mag").coverState());
-//            }
-//        });
 
         subscribe(EventType.CHECK_CHAMBER, 0, (context) -> {
             ReadOnlyTag states = context.getStates();
@@ -86,19 +66,6 @@ public class ARMainController extends GunController<ARMainModel> {
                 }
             }
         });
-
-//        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
-//            if (isTrackClear(MAIN)) {
-//                String animationName = context.getParam("animation_name");
-//                CHECK.play(anim(animationName));
-//            }
-//        });
-
-
-//        subscribe(EventType.REMOVE_STUCK, 0, (context) -> {
-//            String name = context.getParam("name");
-//            MAIN.play(anim(name).coverState());
-//        });
 
     }
 
