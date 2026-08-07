@@ -133,13 +133,13 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45", "5.56x45");
 
-    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
+    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30_0000).addTags("mag", "ar", "5.56x45");
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
     public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
 
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
-    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30_0000).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
 
 
@@ -317,8 +317,15 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,0.00075f, 0.1f, 1.3f, 4f,
-                    30f, 0.005f, 0.05f / 60, 6,
+            new BaseProperties(850, 1.15f, 0.25f, 3.5f,
+                    //0.00075f, 0.1f,
+                    0,0,
+                    1.3f, 4f,
+                    30f,
+                    //0.005f,
+                    0,
+                    0.05f / 60,
+                    6,
                     RL("m4a1_fire"),
                     RL("m4a1_fire_suppressed"),
                     Map.of(
@@ -399,10 +406,13 @@ public class GCR {
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
             new BaseProperties(660, 2.4f, 0.28f, 3.3f,
-                    0.0003f, 0.08f,
-                    //0, 0,
+                    //0.0003f, 0.08f,
+                    0,0,
                     1.3f, 4f,
-                    30f, 0.004f, 0.05f / 60, 5.5f,
+                    30f,
+                    //0.004f,
+                    0,
+                    0.05f / 60, 5.5f,
                     RL("ak74m_fire"),
                     RL("ak74m_fire_suppressed"),
                     Map.of(

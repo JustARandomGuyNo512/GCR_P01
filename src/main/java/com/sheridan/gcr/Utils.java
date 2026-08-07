@@ -300,6 +300,23 @@ public class Utils {
         return A * Math.exp(-zeta * omega0 * t) * Math.cos(omega0 * t + phi);
     }
 
+    /**
+     * 模拟阻尼振荡函数
+     * @param t 时间（秒）
+     * @param A 初始振幅
+     * @param omega0 固有角频率（rad/s）
+     * @param zeta 阻尼比（0 ~ 1）
+     * @param phi 初始相位（rad）
+     * @return 振幅值 x(t)
+     */
+    public static double dampedOscillation2(float t, float A, float omega0, float zeta, float phi) {
+        double omegaD = omega0 * Math.sqrt(1.0 - zeta * zeta);
+
+        return A
+                * Math.exp(-zeta * omega0 * t)
+                * Math.cos(omegaD * t + phi);
+    }
+
 
     public static Vector3f getScreenPos(Matrix4f localPose, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, float width, float height) {
         Vector4f vector4f = localPose.transform(new Vector4f(0, 0, 0, 1.0F));

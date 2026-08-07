@@ -6,8 +6,7 @@ public record RecoilImpulse(
         // 主后坐冲量
         float impulseZ,
 
-        // 力矩来源
-        float leverArmY,
+        float impulsePitch,
 
         // 随机散布
         float randomPitch,

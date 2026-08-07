@@ -1,3 +1,4 @@
+
 package com.sheridan.gcr.client.recoil;
 
 import org.jetbrains.annotations.NotNull;
@@ -6,35 +7,57 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 public final class FixedRingQueue<T> implements Iterable<T> {
-    private static final int CAPACITY = 13;
-    private final Object[] buffer = new Object[CAPACITY];
+
+    private final int capacity;
+    private final Object[] buffer;
+
     private int head = 0; // 指向最旧元素
     private int tail = 0; // 指向下一个写入位置
     private int size = 0;
+
+    public FixedRingQueue(int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be greater than 0");
+        }
+
+        this.capacity = capacity;
+        this.buffer = new Object[capacity];
+    }
 
     /** 入队（满时覆盖最旧元素） */
     public void offer(T value) {
         buffer[tail] = value;
         tail++;
-        if (tail == CAPACITY) tail = 0;
 
-        if (size < CAPACITY) {
+        if (tail == capacity) {
+            tail = 0;
+        }
+
+        if (size < capacity) {
             size++;
         } else {
             head++;
-            if (head == CAPACITY) head = 0;
+
+            if (head == capacity) {
+                head = 0;
+            }
         }
     }
 
     /** 出队 */
     @SuppressWarnings("unchecked")
     public T poll() {
-        if (size == 0)
+        if (size == 0) {
             throw new IllegalStateException("Queue empty");
+        }
 
         T value = (T) buffer[head];
+
         head++;
-        if (head == CAPACITY) head = 0;
+        if (head == capacity) {
+            head = 0;
+        }
+
         size--;
         return value;
     }
@@ -42,8 +65,10 @@ public final class FixedRingQueue<T> implements Iterable<T> {
     /** 查看队首元素 */
     @SuppressWarnings("unchecked")
     public T peek() {
-        if (size == 0)
+        if (size == 0) {
             throw new IllegalStateException("Queue empty");
+        }
+
         return (T) buffer[head];
     }
 
@@ -51,10 +76,14 @@ public final class FixedRingQueue<T> implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public void forEachOrdered(Consumer<? super T> action) {
         int index = head;
+
         for (int i = 0; i < size; i++) {
             action.accept((T) buffer[index]);
+
             index++;
-            if (index == CAPACITY) index = 0;
+            if (index == capacity) {
+                index = 0;
+            }
         }
     }
 
@@ -70,12 +99,19 @@ public final class FixedRingQueue<T> implements Iterable<T> {
 
     /** 是否已满 */
     public boolean isFull() {
-        return size == CAPACITY;
+        return size == capacity;
+    }
+
+    /** 队列容量 */
+    public int capacity() {
+        return capacity;
     }
 
     /** 清空 */
     public void clear() {
-        head = tail = size = 0;
+        head = 0;
+        tail = 0;
+        size = 0;
     }
 
     /** 按插入顺序的 Iterator（for-each 支持） */
@@ -94,8 +130,12 @@ public final class FixedRingQueue<T> implements Iterable<T> {
             @Override
             public T next() {
                 T value = (T) buffer[index];
+
                 index++;
-                if (index == CAPACITY) index = 0;
+                if (index == capacity) {
+                    index = 0;
+                }
+
                 count++;
                 return value;
             }
