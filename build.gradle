@@ -133,6 +133,8 @@ dependencies {
     //测试，记得删除
     implementation 'org.javassist:javassist:3.30.2-GA'
     additionalRuntimeClasspath 'org.javassist:javassist:3.30.2-GA'
+
+    //implementation "curse.maven:immediatelyfast-686911:8348515"
 }
 
 tasks.named("shadowJar") {

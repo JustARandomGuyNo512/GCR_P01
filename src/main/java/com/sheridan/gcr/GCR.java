@@ -201,7 +201,7 @@ public class GCR {
             1).addTags("canted_sight", "sight", "upper", "on_rail");
 
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
-    public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
+    public static final IModular MOE_CARBINE_STOCK = new Stock(RL( "moe_carbine_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
     public static final IModular STOCK_6P34 = new Stock(RL( "6p34_stock"), 0.3f, 0.18f, 0.18f).addTags("stock", "ak");
 
 
@@ -322,8 +322,7 @@ public class GCR {
                     0,0,
                     1.3f, 4f,
                     30f,
-                    //0.005f,
-                    0,
+                    0.005f,
                     0.05f / 60,
                     6,
                     RL("m4a1_fire"),
@@ -410,8 +409,7 @@ public class GCR {
                     0,0,
                     1.3f, 4f,
                     30f,
-                    //0.004f,
-                    0,
+                    0.004f,
                     0.05f / 60, 5.5f,
                     RL("ak74m_fire"),
                     RL("ak74m_fire_suppressed"),
@@ -538,8 +536,8 @@ public class GCR {
 
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
             ITEMS.register(M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(M4_CARBINE_STOCK));
-    public static final DeferredItem<Item> CTR_STOCK_ITEM =
-            ITEMS.register(CTR_STOCK.getSimpleID(), () -> new ModuleItem<>(CTR_STOCK));
+    public static final DeferredItem<Item> MOE_CARBINE_STOCK_ITEM =
+            ITEMS.register(MOE_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(MOE_CARBINE_STOCK));
     public static final DeferredItem<Item> STOCK_6P34_ITEM =
             ITEMS.register(STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(STOCK_6P34));
 
@@ -635,7 +633,7 @@ public class GCR {
                                 output.accept(MAG_6L31_ITEM.get());
 
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
-                                output.accept(CTR_STOCK_ITEM.get());
+                                output.accept(MOE_CARBINE_STOCK_ITEM.get());
                                 output.accept(STOCK_6P34_ITEM.get());
 
                                 output.accept(A2_FLASH_HINDER_ITEM.get());

@@ -88,10 +88,7 @@ public class GunModifyScreen extends Screen {
             return;
         }
         int maxPage = getMaxPage();
-        page = Math.max(page, 1);
-        if (page > maxPage) {
-            page = page % maxPage;
-        }
+        page = Mth.clamp(page, 1, maxPage);
         this.page = page;
     }
 

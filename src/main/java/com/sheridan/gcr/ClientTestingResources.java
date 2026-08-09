@@ -284,7 +284,7 @@ public class ClientTestingResources {
         );
         ModelRegistrationManager.registerModel(GCR.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
         ModelRegistrationManager.registerModel(GCR.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCR.CTR_STOCK, "model_assets/gltf/ctr_stock.gltf", "model_assets/gltf/ctr_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCR.MOE_CARBINE_STOCK, "model_assets/gltf/moe_carbine_stock.gltf", "model_assets/gltf/moe_carbine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.STOCK_6P34, "model_assets/gltf/6p34_stock.gltf", "model_assets/gltf/6p34_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.DUSTCOVER_6P34, "model_assets/gltf/6p34_dustcover.gltf", "model_assets/gltf/6p34_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.PDC_DUSTCOVER, "model_assets/gltf/pdc_dustcover.gltf", "model_assets/gltf/pdc_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
