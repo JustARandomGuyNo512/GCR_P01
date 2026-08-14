@@ -128,13 +128,13 @@ dependencies {
     implementation "curse.maven:sodium-394468:6382651"
     implementation "curse.maven:irisshaders-455508:6213632"
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
-    //compileOnly("org.appliedenergistics.yoga:yoga:1.0.0")
 
     //测试，记得删除
     implementation 'org.javassist:javassist:3.30.2-GA'
     additionalRuntimeClasspath 'org.javassist:javassist:3.30.2-GA'
 
-    //implementation "curse.maven:immediatelyfast-686911:8348515"
+    //implementation "curse.maven:immediatelyfast-686911:7537795"
+
 }
 
 tasks.named("shadowJar") {

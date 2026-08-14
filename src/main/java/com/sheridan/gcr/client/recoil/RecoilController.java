@@ -9,10 +9,13 @@ public record RecoilController(
         float pitchStiffness,
         float pitchDamping,
 
-        float randomStiffnessPitch,
-        float randomDampingPitch,
-        float randomStiffnessYaw,
-        float randomDampingYaw,
+        float localRotStiffness,
+        float localRotDamping,
+
+        float globalRotStiffness,
+        float globalRotDamping,
+        float globalMovStiffness,
+        float globalMovDamping,
 
         float rollStiffness,
         float rollDamping,

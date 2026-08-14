@@ -3,17 +3,15 @@ package com.sheridan.gcr.client.recoil;
 import net.minecraft.util.Mth;
 
 public record RecoilImpulse(
-        // 主后坐冲量
         float impulseZ,
+        float rotPitch,
 
-        float impulsePitch,
-
-        // 随机散布
-        float randomPitch,
-        float randomYaw,
+        float randomLocalPitch,
+        float randomLocalYaw,
+        float randomGlobalPitch,
+        float randomGlobalYaw,
         float randomStart,
 
-        // 高频震动
         float shakeRoll,
         float shakePitch,
         float shakeYaw,
