@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -37,16 +38,12 @@ public class RenderItemMixin {
 
     @Inject(at = @At("HEAD"), method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V", cancellable = true)
     public void FirstAndThirdPersonAndEntity(@Nullable LivingEntity entity, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand, PoseStack poseStack, MultiBufferSource bufferSource, @Nullable Level level, int combinedLight, int combinedOverlay, int seed, CallbackInfo ci) {
-        if (itemStack != null && itemStack.getItem() instanceof GunItem gun) {
+        if (itemStack != null && itemStack.getItem() instanceof GunItem gun && entity instanceof LocalPlayer localPlayer) {
             IGunRenderer gunRenderer = Client.getGunRenderer();
-            if (entity == null) {
-                gunRenderer.renderOther(null, itemStack, gun.getGun(), displayContext, poseStack, bufferSource, combinedLight, combinedOverlay);
-            } else {
-                if (displayContext == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
-                    gunRenderer.renderFirstPerson((LocalPlayer) entity, itemStack, gun.getGun(), poseStack, combinedLight, combinedOverlay);
-                } else if (displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                    gunRenderer.renderOther(entity, itemStack, gun.getGun(), displayContext, poseStack, bufferSource, combinedLight, combinedOverlay);
-                }
+            if (displayContext == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+                gunRenderer.renderFirstPerson(localPlayer, itemStack, gun.getGun(), poseStack, combinedLight, combinedOverlay);
+            } else if (displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                gunRenderer.renderOther(entity, itemStack, gun.getGun(), displayContext, poseStack, bufferSource, combinedLight, combinedOverlay);
             }
             ci.cancel();
         }

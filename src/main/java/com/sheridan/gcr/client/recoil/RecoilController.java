@@ -14,8 +14,6 @@ public record RecoilController(
 
         float globalRotStiffness,
         float globalRotDamping,
-        float globalMovStiffness,
-        float globalMovDamping,
 
         float rollStiffness,
         float rollDamping,

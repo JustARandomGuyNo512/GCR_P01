@@ -28,14 +28,11 @@ public class RecoilUpdater implements IRecoilUpdater {
     private float noiseTimerX = (float) (50 + Math.random() * 100);
     private float noiseTimerY = (float) (50 + Math.random() * 100);
 
-    // =========================================================================
-    // --- 1. 物理轴/通道封装 ---
-    // =========================================================================
+
     private final RecoilSpring1D zLinear = new RecoilSpring1D();      // 线性位移 Z
     private final RecoilSpring1D basePitch = new RecoilSpring1D();    // 基础 Pitch 抬起
     private final RecoilSpring2D localRot = new RecoilSpring2D();     // 模型本地 Pitch (X) & Yaw (Y) 旋转震动
     private final RecoilSpring2D globalRot = new RecoilSpring2D();    // 全局 Pitch (X) & Yaw (Y) 旋转震动
-    private final RecoilSpring2D globalTrans = new RecoilSpring2D();  // 全局 X, Y 模型平移位移
     private final RecoilSpring1D roll = new RecoilSpring1D();         // 枪械侧倾 Roll
 
     // 汇总物理状态（用于兼容渲染层与同步）
@@ -112,11 +109,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         float c_lin_z = controller.linearZDamping() * motionAdsModifierDamp;
         zLinear.updateImplicit(dt, k_lin_z, c_lin_z);
 
-        // 1.2 全局平移位移 (X, Y 轴移动)
-        float k_mov_global = controller.globalMovStiffness() * motionAdsModifierStiff;
-        float c_mov_global = controller.globalMovDamping() * motionAdsModifierDamp;
-        globalTrans.updateExplicit(dt, k_mov_global, c_mov_global);
-
         // 2.1 基础发力上抬 (Base Pitch)
         float k_ang_pitch = controller.pitchStiffness() * aimingRotFactorStiff * recoilControl;
         float c_ang_pitch = controller.pitchDamping() * aimingRotFactorDamp * recoilControl;
@@ -138,17 +130,9 @@ public class RecoilUpdater implements IRecoilUpdater {
         float zFactor = Mth.lerp(-zLinear.getDisplacement() * 8, 1, 1.5f);
         roll.updateExplicit(dt, k_ang_roll * zFactor, c_ang_roll);
 
-        // 3. 汇总物理总向量 (X, Y 平移 + Z 线性后坐)
-        gunDisplacement.set(
-                0,//globalTrans.getDisplacementX(),
-                0,//globalTrans.getDisplacementY(),
-                zLinear.getDisplacement()
-        );
-        gunVelocity.set(
-                globalTrans.getVelocityX(),
-                globalTrans.getVelocityY(),
-                zLinear.getVelocity()
-        );
+
+        gunDisplacement.set(0, 0, zLinear.getDisplacement());
+        gunVelocity.set(0, 0, zLinear.getVelocity());
 
         localAngularDisplacement.set(
                 basePitch.getDisplacement() + localRot.getDisplacementX(),
@@ -230,8 +214,10 @@ public class RecoilUpdater implements IRecoilUpdater {
         float noiseY = randomNoiseY(noiseTimerY);
 
         // 1. 本地旋转扰动 (Local Pitch & Yaw)
-        float randLocalPitch = noiseX * localPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
-        float randLocalYaw = noiseY * localYaw * dynamicRand;
+//        float randLocalPitch = noiseX * localPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
+//        float randLocalYaw = noiseY * localYaw * dynamicRand;
+        float randLocalPitch = 0;//noiseX * localPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
+        float randLocalYaw = 0;//noiseY * localYaw * dynamicRand;
 
         // 2. 全局旋转扰动与平移扰动 (使用 globalPitch, globalYaw)
         float randGlobalPitch = noiseX * globalPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
@@ -255,17 +241,16 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
         float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.025f;
 
-        // --- 应用脉冲给各个封装好的轴 ---
+
         zLinear.addVelocity(impulseZ);
         basePitch.addVelocity(torqueImpulseX);
         localRot.addVelocity(shakePitch, shakeYaw);
         globalRot.addVelocity(randGlobalPitch, randGlobalYaw);
 
-        //globalTrans.addVelocity(randGlobalYaw, randGlobalPitch);
         roll.addVelocity(rollVelocityImpulse);
         roll.addDisplacement(rollDisplacementImpulse);
 
-        // 镜头脉冲计算 (汇总本地与全局的随机旋转分量)
+
         float totalRandPitch = randLocalPitch + randGlobalPitch;
         float totalRandYaw = randLocalYaw + randGlobalYaw;
         float randPitchCam = totalRandPitch > 0 ? totalRandPitch * 0.7f : totalRandPitch;
@@ -352,7 +337,7 @@ public class RecoilUpdater implements IRecoilUpdater {
             shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
         }
         Bone handRotPivot = model.getHandRotPivot();
-        float z = handRotPivot.z * 2f;
+        float z = handRotPivot.z * 1.5f;
         poseStack.translate(shakeX, shakeY * 0.5f, z);
         poseStack.mulPose(new Quaternionf().rotateXYZ(
                 -(float) Math.toRadians(lerpGlobalAngular.x),
@@ -399,7 +384,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         basePitch.reset();
         localRot.reset();
         globalRot.reset();
-        globalTrans.reset();
         roll.reset();
 
         gunDisplacement.set(0, 0, 0);
@@ -455,43 +439,32 @@ public class RecoilUpdater implements IRecoilUpdater {
             new RecoilImpulse(
                     5f, 10f,
                     2f, 2f,
-                    6, 8,
+                    13, 11,
                     0.15f,
-                    200.0f, 3.5f, 3.5f, 0.01f),
+                    200.0f, 3, 3, 0.01f),
             new RecoilController(
                     350f, 40f,
                     150.0f, 11f,
                     100.0f, 8f,
-                    120.0f, 10f,
-                    120.0f, 10f,
+                    150.0f, 11f,
                     900.0f, 18f,
                     2.0f, 1.25f,
                     2.5f, 2f,
-                    10f)
+                    13f)
     );
 
-    // =========================================================================
-    // --- 2. 核心封装类：物理弹簧组件 ---
-    // =========================================================================
-    /**
-     * 单轴物理弹簧组件 (位移 / 单角)
-     */
+
     public static class RecoilSpring1D {
         private float displacement = 0f;
         private float velocity = 0f;
 
-        /**
-         * 显式欧拉积分更新
-         */
         public void updateExplicit(float dt, float stiffness, float damping) {
             float force = -stiffness * displacement - damping * velocity;
             velocity += force * dt;
             displacement += velocity * dt;
         }
 
-        /**
-         * 半隐式/隐式积分更新
-         */
+
         public void updateImplicit(float dt, float stiffness, float damping) {
             velocity = (velocity - stiffness * displacement * dt) / (1.0f + damping * dt);
             displacement += velocity * dt;
