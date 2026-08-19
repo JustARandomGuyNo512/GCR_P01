@@ -3,7 +3,7 @@ package com.sheridan.gcr.client.recoil;
 import net.minecraft.util.Mth;
 
 public record RecoilImpulse(
-        float impulseZ,
+        float back,
         float rotPitch,
 
         float randomLocalPitch,
@@ -12,14 +12,11 @@ public record RecoilImpulse(
         float randomGlobalYaw,
         float randomStart,
 
-        float shakeRoll,
-        float shakePitch,
-        float shakeYaw,
-        float shake
+        float roll
 ) {
 
-    public float impulseZ() {
-        return -impulseZ;
+    public float back() {
+        return -back;
     }
 
     public float randomStart() {

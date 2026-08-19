@@ -298,13 +298,6 @@ public class BufferedBoneMeshModel {
         }
     }
     protected void _release() {
-        if (rawDataVertexBuffer != null) {
-            rawDataVertexBuffer.close();
-            rawDataVertexBuffer = null;
-        }
-        if (boneStatusUboBuffer != null) {
-            boneStatusUboBuffer = null;
-        }
         if (RenderSystem.isOnRenderThread()) {
             if (uboId != -1) {
                 GL15.glDeleteBuffers(uboId);
@@ -312,6 +305,14 @@ public class BufferedBoneMeshModel {
             }
         } else {
             throw new IllegalStateException("Cannot release resources outside of the render thread!");
+        }
+
+        if (rawDataVertexBuffer != null) {
+            rawDataVertexBuffer.close();
+            rawDataVertexBuffer = null;
+        }
+        if (boneStatusUboBuffer != null) {
+            boneStatusUboBuffer = null;
         }
 
         irisOverride = -1;

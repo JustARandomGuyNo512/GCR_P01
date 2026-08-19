@@ -210,7 +210,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
             return;
         }
         IRecoilUpdater recoilUpdater = RecoilHandler.INSTANCE.getRecoilUpdater();
-        recoilUpdater.applyImpulse(-impulseZ, impulsePitch, impulseYaw, 0, 0, 0,0, impulseRoll);
+        recoilUpdater.applyImpulse(-impulseZ, impulsePitch, impulseYaw, 0, 0, impulseRoll);
         SoundEvent soundEvent = ModSounds.M203_FIRE.get();
         ModSounds.sound(1, 1, player, soundEvent);
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, nodeId, System.currentTimeMillis());

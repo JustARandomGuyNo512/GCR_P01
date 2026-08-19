@@ -21,7 +21,8 @@ public class RecoilUpdater implements IRecoilUpdater {
     private static final SplittableRandom RANDOM = new SplittableRandom(System.currentTimeMillis());
     private static final SmoothNoise1D noise1DX = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
     private static final SmoothNoise1D noise1DY = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
-
+    private static final float PHI_SHAKE_ROT = (float) -Math.PI * 0.48f;
+    private static final float PHI_VISUAL_BACK_Z = (float) -Math.PI * 0.5f;
     private long lastShoot = 0;
     private RecoilData data;
 
@@ -166,18 +167,16 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         RecoilImpulse impulse = data.getImpulse();
         applyImpulse(
-                impulse.impulseZ(),
+                impulse.back(),
                 impulse.randomLocalPitch(),
                 impulse.randomLocalYaw(),
                 impulse.randomGlobalPitch(),
                 impulse.randomGlobalYaw(),
-                impulse.shakePitch(),
-                impulse.shakeYaw(),
-                impulse.shakeRoll()
+                impulse.roll()
         );
     }
 
-    public void applyImpulse(float impulseZ, float localPitch, float localYaw, float globalPitch, float globalYaw, float shakePitch, float shakeYaw, float shakeRoll) {
+    public void applyImpulse(float impulseZ, float localPitch, float localYaw, float globalPitch, float globalYaw, float shakeRoll) {
         if (data == null) {
             return;
         }
@@ -191,7 +190,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float recoilControlFactor = 1.0f / recoilControl;
         float recoilHeatRes = getRecoilHeat();
 
-        float delta = Math.min(distFromLastShoot(), 1.0f) * 22f;
+        float delta = Math.min(distFromLastShoot(), 1.0f) * 20f;
         this.noiseTimerX += delta;
         this.noiseTimerY += delta;
 
@@ -209,23 +208,14 @@ public class RecoilUpdater implements IRecoilUpdater {
                 stableFactor * Math.sqrt(impulseVal));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
 
-        // 噪声采样
         float noiseX = randomNoiseX(noiseTimerX);
         float noiseY = randomNoiseY(noiseTimerY);
 
-        // 1. 本地旋转扰动 (Local Pitch & Yaw)
-//        float randLocalPitch = noiseX * localPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
-//        float randLocalYaw = noiseY * localYaw * dynamicRand;
-        float randLocalPitch = 0;//noiseX * localPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
-        float randLocalYaw = 0;//noiseY * localYaw * dynamicRand;
-
-        // 2. 全局旋转扰动与平移扰动 (使用 globalPitch, globalYaw)
         float randGlobalPitch = noiseX * globalPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
         float randGlobalYaw = noiseY * globalYaw * dynamicRand;
 
-        // 3. 随机震动方向
-        shakePitch *= (RANDOM.nextBoolean() ? 1 : -1);
-        shakeYaw *= (RANDOM.nextBoolean() ? 1 : -1);
+        localPitch *= (RANDOM.nextBoolean() ? 1 : -1);
+        localYaw *= (RANDOM.nextBoolean() ? 1 : -1);
 
         float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement()));
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
@@ -244,15 +234,15 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         zLinear.addVelocity(impulseZ);
         basePitch.addVelocity(torqueImpulseX);
-        localRot.addVelocity(shakePitch, shakeYaw);
+        localRot.addVelocity(localPitch, localYaw);
         globalRot.addVelocity(randGlobalPitch, randGlobalYaw);
 
         roll.addVelocity(rollVelocityImpulse);
         roll.addDisplacement(rollDisplacementImpulse);
 
 
-        float totalRandPitch = randLocalPitch + randGlobalPitch;
-        float totalRandYaw = randLocalYaw + randGlobalYaw;
+        float totalRandPitch = localPitch + randGlobalPitch;
+        float totalRandYaw = localYaw + randGlobalYaw;
         float randPitchCam = totalRandPitch > 0 ? totalRandPitch * 0.7f : totalRandPitch;
 
         float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
@@ -326,16 +316,36 @@ public class RecoilUpdater implements IRecoilUpdater {
         float EMAFactor = aimingProgress * recoilHeatRes * recoilBackEMA * adsZCompensation;
 
         float distFromLastShoot = Client.distFromLastShoot();
+
         float shakeX = 0;
         float shakeY = 0;
-        if (distFromLastShoot < 1f) {
-            float scale = (1f + recoilHeatRes * 0.6f) * (1 - aimingProgress * 0.7f) * data.getImpulse().shake();
-            float omega = (1 + recoilHeatRes * 1.5f) * 22;
-            float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
-            float halfPI = (float) (Math.PI * (0.45f + rand * 0.1f));
-            shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.26f, rand * halfPI * 0.67f);
-            shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
+        float shakeRotY = 0;
+        float shakeRotX = 0;
+        float visualBackZ = 0;
+        if (data != null) {
+            VisualRecoilMix mix = data.getVisualRecoilMix();
+            if (mix != null) {
+                if (distFromLastShoot < 1f) {
+                    float scale = (1f + recoilHeatRes * 0.6f) * (1 - aimingProgress * 0.7f) * mix.shakeMovScale();
+                    float omega = (1 + recoilHeatRes * 1.5f) * 22;
+                    float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
+                    float halfPI = (float) (Math.PI * (0.45f + rand * 0.1f));
+                    shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.26f, rand * halfPI * 0.67f);
+                    shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
+                }
+                float zFactor = Mth.lerp(-zLinear.getDisplacement() * 8, 0f, 1f);
+                float zOmega = Mth.lerp(zFactor, mix.backOmegaMin(), mix.backOmegaMax());
+               
+                float cScale = mix.shakeRotScale();
+                float f1 = Math.signum(randomSeed - 0.5f) * Math.min(randomSeed + 0.5f, 1);
+                float f2 = (Math.signum(randomSeed2 - 0.5f) + 0.5f) * Math.min(randomSeed2 + 0.6f, 1);
+
+                shakeRotY = (float) Utils.dampedOscillation(distFromLastShoot, f1 * cScale, mix.shakeRotOmega(), mix.shakeRotZeta(), PHI_SHAKE_ROT);
+                shakeRotX = (float) Utils.dampedOscillation(distFromLastShoot, f2 * cScale, mix.shakeRotOmega(), mix.shakeRotZeta(), PHI_SHAKE_ROT);
+                visualBackZ = (float) Utils.dampedOscillation(distFromLastShoot, mix.backScale(), zOmega, mix.backZeta(), PHI_VISUAL_BACK_Z);
+            }
         }
+
         Bone handRotPivot = model.getHandRotPivot();
         float z = handRotPivot.z * 1.5f;
         poseStack.translate(shakeX, shakeY * 0.5f, z);
@@ -345,32 +355,38 @@ public class RecoilUpdater implements IRecoilUpdater {
                 (float) Math.toRadians(lerpGlobalAngular.z)
         ));
         poseStack.translate(0, 0, -z);
-        float cScale = 0.625f;
-        float f1 = Math.signum(randomSeed - 0.5f) * Math.min(randomSeed + 0.5f, 1);
-        float f2 = (Math.signum(randomSeed2 - 0.5f) + 0.5f) * Math.min(randomSeed2 + 0.6f, 1);
-
-        float ry = (float) Utils.dampedOscillation(distFromLastShoot, f1 * cScale, 60f, 0.48f, (float) -Math.PI * 0.48f);
-        float rx2 = (float) Utils.dampedOscillation(distFromLastShoot, f2 * cScale, 60f, 0.48f, (float) -Math.PI * 0.48f);
 
         poseStack.mulPose(new Quaternionf().rotateXYZ(
-                -(float) Math.toRadians(lerpLocalAngular.x + rx2),
-                (float) Math.toRadians(lerpLocalAngular.y + ry),
+                -(float) Math.toRadians(lerpLocalAngular.x + shakeRotX),
+                (float) Math.toRadians(lerpLocalAngular.y + shakeRotY),
                 (float) Math.toRadians(lerpLocalAngular.z)
         ));
 
-        float zBack = Mth.lerp(
-                aimingProgress,
-                -lerpGunDisplacement.z,
-                -lerpGunDisplacement.z * adsZCompensation);
-        zBack += EMAFactor * 0.8f;
-        zBack += (float) Utils.dampedOscillation(distFromLastShoot, 0.5f, 28f, 1.5f, (float) -Math.PI * 0.5f);
+        float zBack = Mth.lerp(aimingProgress, -lerpGunDisplacement.z, -lerpGunDisplacement.z * adsZCompensation);
+        zBack += EMAFactor * 0.8f + visualBackZ;
 
-        poseStack.translate(
-                lerpGunDisplacement.x,
-                lerpGunDisplacement.y,
-                zBack);
+        poseStack.translate(lerpGunDisplacement.x, lerpGunDisplacement.y, zBack);
 
     }
+
+    RecoilData test = new RecoilData(
+            new RecoilImpulse(
+                    5f, 10f,
+                    5f, 5f,
+                    15, 13,
+                    0.15f, 200.0f),
+            new RecoilController(
+                    350f, 40f,
+                    150.0f, 11f,
+                    200.0f, 8f,
+                    150.0f, 14.5f,
+                    900.0f, 18f,
+                    2.0f, 1.25f,
+                    2.5f, 2f,
+                    13f),
+            new VisualRecoilMix(0.5f, 25, 28, 1.5f, 0.25f,
+                    0.625f, 60f, 0.48f, 0.5f, 0.01f)
+    );
 
     @Override
     public void setRecoilData(RecoilData data) {
@@ -379,7 +395,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         this.noiseTimerX = (float) (Math.random() * 200);
         this.noiseTimerY = (float) (Math.random() * 200);
 
-        // 切换武器时统一重置所有轴
         zLinear.reset();
         basePitch.reset();
         localRot.reset();
@@ -434,24 +449,6 @@ public class RecoilUpdater implements IRecoilUpdater {
     private float randomNoiseY(float seed) {
         return noise1DY.sample(seed) + (RANDOM.nextFloat() * 0.5f - 0.25f);
     }
-
-    RecoilData test = new RecoilData(
-            new RecoilImpulse(
-                    5f, 10f,
-                    2f, 2f,
-                    13, 11,
-                    0.15f,
-                    200.0f, 3, 3, 0.01f),
-            new RecoilController(
-                    350f, 40f,
-                    150.0f, 11f,
-                    100.0f, 8f,
-                    150.0f, 11f,
-                    900.0f, 18f,
-                    2.0f, 1.25f,
-                    2.5f, 2f,
-                    13f)
-    );
 
 
     public static class RecoilSpring1D {

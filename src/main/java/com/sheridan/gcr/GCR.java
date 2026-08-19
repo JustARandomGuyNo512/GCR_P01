@@ -348,7 +348,7 @@ public class GCR {
                     new RecoilImpulse(
                             25f, 2f,
                             18, 15f, 0, 0, 0.2f,
-                            120.0f, 3f, 3f, 0.016f),
+                            120.0f),
                     new RecoilController(
                             900.0f, 120f,
                             155.0f, 10f,
@@ -431,7 +431,7 @@ public class GCR {
                     new RecoilImpulse(
                             26f, 1.8f,
                             18, 13f, 0, 0, 0.15f,
-                            120.0f, 3.5f, 3.5f, 0.012f),
+                            120.0f),
                     new RecoilController(
                             920f, 115f,
                             150.0f, 11f,

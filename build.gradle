@@ -135,6 +135,8 @@ dependencies {
 
     //implementation "curse.maven:immediatelyfast-686911:7537795"
 
+    //implementation "curse.maven:jei-238222:8678372"
+
 }
 
 tasks.named("shadowJar") {
