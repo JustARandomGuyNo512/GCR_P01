@@ -99,33 +99,28 @@ public class RecoilUpdater implements IRecoilUpdater {
         float recoilControl = (float) Math.sqrt(control);
         RecoilController controller = data.getRecoilController();
 
-        // 缩放加成参数
         float motionAdsModifierStiff = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierStiff());
         float motionAdsModifierDamp = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierDamp());
         float aimingRotFactorStiff = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierStiff());
         float aimingRotFactorDamp = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierDamp());
 
-        // 1.1 线性位移计算 (Z 轴 - 使用隐式欧拉)
         float k_lin_z = controller.linearZStiffness() * motionAdsModifierStiff;
         float c_lin_z = controller.linearZDamping() * motionAdsModifierDamp;
         zLinear.updateImplicit(dt, k_lin_z, c_lin_z);
 
-        // 2.1 基础发力上抬 (Base Pitch)
         float k_ang_pitch = controller.pitchStiffness() * aimingRotFactorStiff * recoilControl;
         float c_ang_pitch = controller.pitchDamping() * aimingRotFactorDamp * recoilControl;
         basePitch.updateExplicit(dt, k_ang_pitch, c_ang_pitch);
 
-        // 2.2 模型本地旋转 (Local Pitch & Yaw)
         float k_ang_local = controller.localRotStiffness() * aimingRotFactorStiff * recoilControl;
         float c_ang_local = controller.localRotDamping() * aimingRotFactorDamp * recoilControl;
         localRot.updateExplicit(dt, k_ang_local, c_ang_local);
 
-        // 2.3 全局旋转 (Global Pitch & Yaw)
         float k_ang_global = controller.globalRotStiffness() * aimingRotFactorStiff * recoilControl;
         float c_ang_global = controller.globalRotDamping() * aimingRotFactorDamp * recoilControl;
         globalRot.updateExplicit(dt, k_ang_global, c_ang_global);
 
-        // 2.4 侧倾 (Roll)
+
         float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
         float c_ang_roll = controller.rollDamping() * aimingRotFactorDamp;
         float zFactor = Mth.lerp(-zLinear.getDisplacement() * 8, 1, 1.5f);
@@ -325,24 +320,35 @@ public class RecoilUpdater implements IRecoilUpdater {
         if (data != null) {
             VisualRecoilMix mix = data.getVisualRecoilMix();
             if (mix != null) {
-                if (distFromLastShoot < 1f) {
-                    float scale = (1f + recoilHeatRes * 0.6f) * (1 - aimingProgress * 0.7f) * mix.shakeMovScale();
+                if (distFromLastShoot < 1.5f) {
+                    float f1 = Mth.lerp(aimingProgress, 1, mix.shakeAdsScaleFactor());
+
+                    float o1 = Mth.lerp(aimingProgress, 1, mix.backAdsOmegaFactor());
+                    float o2 = Mth.lerp(aimingProgress, 1, mix.rotAdsOmegaFactor());
+
+                    float z1 = Mth.lerp(aimingProgress, 1, mix.backAdsZetaFactor());
+                    float z2 = Mth.lerp(aimingProgress, 1, mix.rotAdsZetaFactor());
+
+                    float zFactor = Mth.clamp(-zLinear.getDisplacement() * 8.5f, 0f, 1f);
+                    float zOmega = Mth.lerp(zFactor, mix.backOmegaMin(), mix.backOmegaMax());
+
+                    float scale = (1f + recoilHeatRes * 0.6f) * f1 * mix.shakeScale();
                     float omega = (1 + recoilHeatRes * 1.5f) * 22;
                     float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
                     float halfPI = (float) (Math.PI * (0.45f + rand * 0.1f));
                     shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.26f, rand * halfPI * 0.67f);
                     shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
-                }
-                float zFactor = Mth.lerp(-zLinear.getDisplacement() * 8, 0f, 1f);
-                float zOmega = Mth.lerp(zFactor, mix.backOmegaMin(), mix.backOmegaMax());
-               
-                float cScale = mix.shakeRotScale();
-                float f1 = Math.signum(randomSeed - 0.5f) * Math.min(randomSeed + 0.5f, 1);
-                float f2 = (Math.signum(randomSeed2 - 0.5f) + 0.5f) * Math.min(randomSeed2 + 0.6f, 1);
 
-                shakeRotY = (float) Utils.dampedOscillation(distFromLastShoot, f1 * cScale, mix.shakeRotOmega(), mix.shakeRotZeta(), PHI_SHAKE_ROT);
-                shakeRotX = (float) Utils.dampedOscillation(distFromLastShoot, f2 * cScale, mix.shakeRotOmega(), mix.shakeRotZeta(), PHI_SHAKE_ROT);
-                visualBackZ = (float) Utils.dampedOscillation(distFromLastShoot, mix.backScale(), zOmega, mix.backZeta(), PHI_VISUAL_BACK_Z);
+
+                    float cScale = mix.rotScale();
+                    float ry = Math.signum(randomSeed - 0.5f) * Math.min(randomSeed + 0.5f, 1);
+                    float rx = (Math.signum(randomSeed2 - 0.5f) + 0.5f - aimingProgress * 0.5f) * Math.min(randomSeed2 + 0.6f, 1);
+
+                    shakeRotY = (float) Utils.dampedOscillation(distFromLastShoot, ry * cScale, mix.rotOmega() * o2, mix.rotZeta() * z2, PHI_SHAKE_ROT);
+                    shakeRotX = (float) Utils.dampedOscillation(distFromLastShoot, rx * cScale, mix.rotOmega() * o2, mix.rotZeta() * z2, PHI_SHAKE_ROT);
+                    visualBackZ = (float) Utils.dampedOscillation(distFromLastShoot, mix.backScale(), zOmega * o1, mix.backZeta() * z1, PHI_VISUAL_BACK_Z);
+
+                }
             }
         }
 
@@ -363,7 +369,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         ));
 
         float zBack = Mth.lerp(aimingProgress, -lerpGunDisplacement.z, -lerpGunDisplacement.z * adsZCompensation);
-        zBack += EMAFactor * 0.8f + visualBackZ;
+        zBack += EMAFactor + visualBackZ * Mth.lerp(aimingProgress, 1, adsZCompensation);
 
         poseStack.translate(lerpGunDisplacement.x, lerpGunDisplacement.y, zBack);
 
@@ -384,8 +390,11 @@ public class RecoilUpdater implements IRecoilUpdater {
                     2.0f, 1.25f,
                     2.5f, 2f,
                     13f),
-            new VisualRecoilMix(0.5f, 25, 28, 1.5f, 0.25f,
-                    0.625f, 60f, 0.48f, 0.5f, 0.01f)
+            new VisualRecoilMix(
+                    0.5f, 25, 28, 1.5f, 0.9f, 1.6f,
+                    0.625f, 60f, 0.48f, 1.25f,  2.5f,
+                    0.01f, 0.35f
+            )
     );
 
     @Override

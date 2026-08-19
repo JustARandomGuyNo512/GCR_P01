@@ -11,6 +11,7 @@ import com.sheridan.gcr.client.events.TestEvents;
 import com.sheridan.gcr.client.recoil.RecoilController;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilImpulse;
+import com.sheridan.gcr.client.recoil.VisualRecoilMix;
 import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
 import com.sheridan.gcr.client.render.entity.BulletRenderer;
 import com.sheridan.gcr.client.render.entity.M433Renderer;
@@ -429,18 +430,24 @@ public class GCR {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            26f, 1.8f,
-                            18, 13f, 0, 0, 0.15f,
-                            120.0f),
+                            5f, 10f,
+                            5f, 5f,
+                            15, 13,
+                            0.15f, 200.0f),
                     new RecoilController(
-                            920f, 115f,
+                            350f, 40f,
                             150.0f, 11f,
-                            160.0f, 10f,
-                            0,0,
+                            200.0f, 8f,
+                            150.0f, 14.5f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
-                            10f)
+                            13f),
+                    new VisualRecoilMix(
+                            0.5f, 25, 28, 1.5f, 0.9f, 1.6f,
+                            0.625f, 60f, 0.48f, 1.25f,  2.5f,
+                            0.01f, 0.35f
+                    )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
             .addSlot(new SingleFixedSlot("HANDGUARD_LOWER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "lower")))
