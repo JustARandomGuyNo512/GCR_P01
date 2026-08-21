@@ -209,8 +209,9 @@ public class RecoilUpdater implements IRecoilUpdater {
         float randGlobalPitch = noiseX * globalPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
         float randGlobalYaw = noiseY * globalYaw * dynamicRand;
 
-        localPitch *= (RANDOM.nextBoolean() ? 1 : -1);
-        localYaw *= (RANDOM.nextBoolean() ? 1 : -1);
+        stableFactor = (float) Math.pow(stableFactor, 0.7f);
+        localPitch *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
+        localYaw *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
 
         float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement()));
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
@@ -235,14 +236,15 @@ public class RecoilUpdater implements IRecoilUpdater {
         roll.addVelocity(rollVelocityImpulse);
         roll.addDisplacement(rollDisplacementImpulse);
 
-
-        float totalRandPitch = localPitch + randGlobalPitch;
-        float totalRandYaw = localYaw + randGlobalYaw;
+        float f1 = (1 - aimingFactor * 0.9f);
+        float f2 = (1 + aimingFactor);
+        float totalRandPitch = localPitch * f1 + randGlobalPitch * f2;
+        float totalRandYaw = localYaw * f1 + randGlobalYaw * f2;
         float randPitchCam = totalRandPitch > 0 ? totalRandPitch * 0.7f : totalRandPitch;
 
         float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
         float camRandomScale = 0.001f + aimingFactor * 0.05f;
-        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (0.6f + aimingFactor * 0.4f));
+        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (1 + aimingFactor * 0.5f));
         float camImpactRandomYaw = totalRandYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
 

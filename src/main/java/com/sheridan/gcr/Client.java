@@ -1,6 +1,6 @@
 package com.sheridan.gcr;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+
 import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.WeaponStatus;
@@ -48,10 +48,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Client {
-    @OnlyIn(Dist.CLIENT)
-    public static boolean DEBUG_ALWAYS_STUCK = false;
-    @OnlyIn(Dist.CLIENT)
-    public static boolean DEV_FREE_CAMERA = false;
     @OnlyIn(Dist.CLIENT)
     public static final ScheduledExecutorService WEAPON_SCHEDULER = Executors.newSingleThreadScheduledExecutor();
     @OnlyIn(Dist.CLIENT)
