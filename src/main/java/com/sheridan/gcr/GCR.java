@@ -134,13 +134,13 @@ public class GCR {
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45", "5.56x45");
 
-    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30_0000).addTags("mag", "ar", "5.56x45");
+    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
     public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
 
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
-    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30_0000).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
 
 
@@ -319,8 +319,7 @@ public class GCR {
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
             new BaseProperties(850, 1.15f, 0.25f, 3.5f,
-                    //0.00075f, 0.1f,
-                    0,0,
+                    0.00075f, 0.1f,
                     1.3f, 4f,
                     30f,
                     0.005f,
@@ -347,18 +346,24 @@ public class GCR {
 
             new RecoilData(
                     new RecoilImpulse(
-                            25f, 2f,
-                            18, 15f, 0, 0, 0.2f,
-                            120.0f),
+                            6.5f, 11.25f,
+                            4f, 4f,
+                            20, 17,
+                            0.11f, 0.5f, 160.0f),
                     new RecoilController(
-                            900.0f, 120f,
-                            155.0f, 10f,
-                            160.0f, 10f,
-                            0,0,
+                            350f, 40f,
+                            145.0f, 11.5f,
+                            210.0f, 9f,
+                            145.0f, 14.5f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
-                            10f)
+                            13f),
+                    new VisualRecoilMix(
+                            0.46f, 25, 28, 1.5f, 0.9f, 1.6f,
+                            0.56f, 65f, 0.47f, 1.15f,  2.5f,
+                            0.0126f, 0.35f
+                    )
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
             .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "5.56x45")))
@@ -405,9 +410,8 @@ public class GCR {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(660, 2.4f, 0.28f, 3.3f,
-                    //0.0003f, 0.08f,
-                    0,0,
+            new BaseProperties(650, 2.4f, 0.28f, 3.3f,
+                    0.0003f, 0.08f,
                     1.3f, 4f,
                     30f,
                     0.004f,
@@ -433,7 +437,7 @@ public class GCR {
                             5f, 10f,
                             5f, 5f,
                             15, 13,
-                            0.15f, 200.0f),
+                            0.15f, 0.6f,200.0f),
                     new RecoilController(
                             350f, 40f,
                             150.0f, 11f,
@@ -444,7 +448,7 @@ public class GCR {
                             2.5f, 2f,
                             13f),
                     new VisualRecoilMix(
-                            0.5f, 25, 28, 1.5f, 0.9f, 1.6f,
+                            0.5f, 25.5f, 28, 1.5f, 0.9f, 1.6f,
                             0.625f, 60f, 0.48f, 1.25f,  2.5f,
                             0.01f, 0.35f
                     )

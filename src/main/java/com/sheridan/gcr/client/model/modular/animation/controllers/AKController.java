@@ -88,19 +88,6 @@ public class AKController extends GunController<AKModel> {
         }
     }
 
-//    @Override
-//    public void initTrack(AKModel moduleModel) {
-//        defineTrack("main").addOnPlayed(instance -> getTrack("check").clear());
-//        defineTrack("shoot").addOnPlayed(instance -> getTrack("check").clear());
-//
-//        defineTrack("draw").addOnPlayed(instance -> getTrack("check").clear());
-//
-//        defineTrack("check").addOnApplied((ctx, model) -> {
-//            if (Client.getAimingProgress() != 0) {
-//                getTrack("check").clear();
-//            }
-//        });
-//    }
 
     @Override
     public boolean assertCompatible(IModularModel model) {

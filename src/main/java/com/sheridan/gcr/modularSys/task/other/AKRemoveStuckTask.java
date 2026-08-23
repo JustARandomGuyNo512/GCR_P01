@@ -29,6 +29,10 @@ public class AKRemoveStuckTask extends RemoveStuckTask<AK>{
     public AKRemoveStuckTask(ItemStack itemStack, AK gun) {
         super(itemStack, gun);
         animationName = "remove_stuck";
+        int ammoLeft = gun.getAmmoLeft(itemStack);
+        if (ammoLeft <= 0) {
+            animationName += "_empty";
+        }
         String sendPacketDelayKey = animationName + "_length";
         sendPacketDelay = Utils.secondToTick(gun.baseProperties.taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
         AnimationDef animationDef = AnimationRegister.get(GCR.RL("ak74m_" + animationName));

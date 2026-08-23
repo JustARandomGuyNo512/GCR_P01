@@ -27,6 +27,7 @@ public abstract class AKFireMode extends AssaultRifeFireMode<AK> {
         CompoundTag magStates = gun.getAmmoSourceTag(itemStack);
         if (handleStuck) {
             gun.setStuck(true, gunStates);
+            return;
         }
         int magAmmoLeft = mag.getAmmoLeft(magStates);
         if (magAmmoLeft <= 0) {

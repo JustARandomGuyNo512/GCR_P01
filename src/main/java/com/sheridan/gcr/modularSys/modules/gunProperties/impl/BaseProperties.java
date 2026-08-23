@@ -81,6 +81,8 @@ public class BaseProperties extends Properties {
         return fireSoundSuppressed;
     }
 
+
+
     public CompoundTag pick(ItemStack itemStack, IGun gun) {
         CompoundTag propertiesTag = gun.getPropertiesTag(itemStack);
         return propertiesTag.getCompound(getId());

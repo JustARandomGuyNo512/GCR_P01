@@ -79,6 +79,7 @@ public class ClientTestingResources {
                         Map.entry("shoot_last", "ak74m_shoot_last"),
                         Map.entry("shoot_stuck", "ak74m_shoot_stuck"),
                         Map.entry("remove_stuck", "ak74m_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "ak74m_remove_stuck_empty"),
                         Map.entry("check_chamber", "ak74m_check_chamber"),
                         Map.entry("check_chamber_simple", "ak74m_check_chamber_simple")
                 )
@@ -188,6 +189,7 @@ public class ClientTestingResources {
                             "check_chamber", "gcr:ak74m_check_chamber",
                             "check_chamber_simple", "gcr:ak74m_check_chamber_simple",
                             "remove_stuck", "gcr:ak74m_remove_stuck",
+                            "remove_stuck_empty", "gcr:ak74m_remove_stuck_empty",
                             "check_mag", "gcr:ak74m_check_mag"
                     ));
                     model.bindController(controller);

@@ -196,7 +196,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         impulseZ *= Math.max(0, impulseVal);
 
-        float torqueImpulseX = (float) (rotLever * impulseZ * (0.6f + recoilHeatRes * 0.4f) * (0.9f + 0.2f * Math.random()));
+        float torqueImpulseX = (float) (rotLever * impulseZ * (impulse.torquePitchStart() + recoilHeatRes * (1 - impulse.torquePitchStart())) * (0.9f + 0.2f * Math.random()));
 
         float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
                 (2.8f - aimingFactor * 2.65f) *
@@ -237,14 +237,13 @@ public class RecoilUpdater implements IRecoilUpdater {
         roll.addDisplacement(rollDisplacementImpulse);
 
         float f1 = (1 - aimingFactor * 0.9f);
-        float f2 = (1 + aimingFactor);
-        float totalRandPitch = localPitch * f1 + randGlobalPitch * f2;
-        float totalRandYaw = localYaw * f1 + randGlobalYaw * f2;
+        float totalRandPitch = localPitch * f1 + randGlobalPitch;
+        float totalRandYaw = localYaw * f1 + randGlobalYaw;
         float randPitchCam = totalRandPitch > 0 ? totalRandPitch * 0.7f : totalRandPitch;
 
-        float camImpactScale = 0.0088f + aimingFactor * 0.0062f;
+        float camImpactScale = 0.0088f + aimingFactor * 0.0075f;
         float camRandomScale = 0.001f + aimingFactor * 0.05f;
-        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (1 + aimingFactor * 0.5f));
+        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (1 + aimingFactor * 1.5f));
         float camImpactRandomYaw = totalRandYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
 
@@ -355,14 +354,13 @@ public class RecoilUpdater implements IRecoilUpdater {
         }
 
         Bone handRotPivot = model.getHandRotPivot();
-        float z = handRotPivot.z * 1.5f;
-        poseStack.translate(shakeX, shakeY * 0.5f, z);
+        poseStack.translate(shakeX, shakeY * 0.5f, handRotPivot.z);
         poseStack.mulPose(new Quaternionf().rotateXYZ(
                 -(float) Math.toRadians(lerpGlobalAngular.x),
                 (float) Math.toRadians(lerpGlobalAngular.y),
                 (float) Math.toRadians(lerpGlobalAngular.z)
         ));
-        poseStack.translate(0, 0, -z);
+        poseStack.translate(0, 0, -handRotPivot.z);
 
         poseStack.mulPose(new Quaternionf().rotateXYZ(
                 -(float) Math.toRadians(lerpLocalAngular.x + shakeRotX),
@@ -377,31 +375,10 @@ public class RecoilUpdater implements IRecoilUpdater {
 
     }
 
-    RecoilData test = new RecoilData(
-            new RecoilImpulse(
-                    5f, 10f,
-                    5f, 5f,
-                    15, 13,
-                    0.15f, 200.0f),
-            new RecoilController(
-                    350f, 40f,
-                    150.0f, 11f,
-                    200.0f, 8f,
-                    150.0f, 14.5f,
-                    900.0f, 18f,
-                    2.0f, 1.25f,
-                    2.5f, 2f,
-                    13f),
-            new VisualRecoilMix(
-                    0.5f, 25, 28, 1.5f, 0.9f, 1.6f,
-                    0.625f, 60f, 0.48f, 1.25f,  2.5f,
-                    0.01f, 0.35f
-            )
-    );
 
     @Override
     public void setRecoilData(RecoilData data) {
-        this.data = test; // 保持测试数据设置
+        this.data = data;
 
         this.noiseTimerX = (float) (Math.random() * 200);
         this.noiseTimerY = (float) (Math.random() * 200);
@@ -500,16 +477,10 @@ public class RecoilUpdater implements IRecoilUpdater {
         }
     }
 
-    /**
-     * 双轴 (X & Y) 物理弹簧组件，共享刚度与阻尼
-     */
     public static class RecoilSpring2D {
         private final Vector2f displacement = new Vector2f(0f, 0f);
         private final Vector2f velocity = new Vector2f(0f, 0f);
 
-        /**
-         * 显式欧拉积分更新 (2D 共享弹簧属性)
-         */
         public void updateExplicit(float dt, float stiffness, float damping) {
             float fx = -stiffness * displacement.x - damping * velocity.x;
             float fy = -stiffness * displacement.y - damping * velocity.y;

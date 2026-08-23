@@ -11,6 +11,7 @@ public record RecoilImpulse(
         float randomGlobalPitch,
         float randomGlobalYaw,
         float randomStart,
+        float torquePitchStart,
 
         float roll
 ) {
