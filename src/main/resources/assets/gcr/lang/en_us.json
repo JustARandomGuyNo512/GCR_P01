@@ -142,6 +142,8 @@
   "gcr:urgi_handguard": "URGI Handguard",
   "gcr:ak_polymer_handguard_upper": "AK Polymer Handguard(upper)",
   "gcr:ak_polymer_handguard_lower": "AK Polymer Handguard(lower)",
+  "gcr:b19_handguard": "B19 Handguard",
+  "gcr:b10_handguard": "B10 Handguard",
   "gcr:vortex_razor_red_dot": "Vortex Razor Red Dot",
   "gcr:peq_15": "PEQ-15",
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense Ris II Handguard",

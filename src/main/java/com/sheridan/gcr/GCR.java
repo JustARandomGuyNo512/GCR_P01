@@ -298,7 +298,21 @@ public class GCR {
             )
             .addTags("handguard", "ak", "upper");
 
-
+    public static final IModular B10_HANDGUARD = new Handguard
+            (RL("b10_handguard"),
+                    0.15f, 0.012f,
+                    new SlotProvider(RL( "common/pivot_maps/b10_handguard_pivot.geo.json"))
+                            .addSlot(new Rail("RAIL_LOWER", Direction.LOWER, 9.2f, 1.6207f, -9f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new SingleFixedSlot("RAIL_MOUNT_LEFT", Direction.LOWER)
+                                    .setFilter(SlotFilters.modular("b10_rail_mount")))
+                            .addSlot(new SingleFixedSlot("RAIL_MOUNT_RIGHT", Direction.LOWER)
+                                    .setFilter(SlotFilters.modular("b10_rail_mount"))),
+                    new VoxelHandler(RL("common/voxel_shapes/b10_handguard_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.08f,0.08f,0.1f, 0.05f)
+            ).addTags("handguard", "ak", "lower");
 
     public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
             RL( "kac_forward_grip"),
@@ -587,6 +601,8 @@ public class GCR {
             ITEMS.register(AK_POLYMER_HANDGUARD_LOWER.getSimpleID(), () -> new ModuleItem<>(AK_POLYMER_HANDGUARD_LOWER));
     public static final DeferredItem<Item> AK_POLYMER_HANDGUARD_UPPER_ITEM =
             ITEMS.register(AK_POLYMER_HANDGUARD_UPPER.getSimpleID(), () -> new ModuleItem<>(AK_POLYMER_HANDGUARD_UPPER));
+    public static final DeferredItem<Item> B10_HANDGUARD_ITEM =
+            ITEMS.register(B10_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(B10_HANDGUARD));
 
 
 
@@ -660,6 +676,7 @@ public class GCR {
                                 output.accept(URGI_HANDGUARD_ITEM.get());
                                 output.accept(AK_POLYMER_HANDGUARD_LOWER_ITEM.get());
                                 output.accept(AK_POLYMER_HANDGUARD_UPPER_ITEM.get());
+                                output.accept(B10_HANDGUARD_ITEM.get());
 
 
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
