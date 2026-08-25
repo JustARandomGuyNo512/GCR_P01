@@ -54,7 +54,6 @@ public class FPMuzzleFlashEnvLightingRenderer {
                 return;
             }
             handleEffect(progress * 3f);
-            //GL42.glMemoryBarrier(GL42.GL_TEXTURE_FETCH_BARRIER_BIT);
         }
 
     }
