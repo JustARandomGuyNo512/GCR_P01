@@ -144,9 +144,11 @@
   "gcr:ak_polymer_handguard_lower": "AK Polymer Handguard(lower)",
   "gcr:b19_handguard": "B19 Handguard",
   "gcr:b10_handguard": "B10 Handguard",
+  "gcr:b10_mount_rail": "B10 Mount Rail",
   "gcr:vortex_razor_red_dot": "Vortex Razor Red Dot",
   "gcr:peq_15": "PEQ-15",
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense Ris II Handguard",
   "gcr:6p34_dustcover": "6P34 Dustcover",
-  "gcr:pdc_dustcover": "PDC Dustcover"
+  "gcr:pdc_dustcover": "PDC Dustcover",
+  "gcr:b13_bracket": "B13 Bracket"
 }

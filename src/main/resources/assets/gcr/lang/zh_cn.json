@@ -144,9 +144,11 @@
   "gcr:ak_polymer_handguard_lower": "AK 尼龙护木(下)",
   "gcr:b19_handguard": "B19 护木",
   "gcr:b10_handguard": "B10 护木",
+  "gcr:b10_mount_rail": "B10 附加导轨",
   "gcr:vortex_razor_red_dot": "Vortex Razor 红点瞄准器",
   "gcr:peq_15": "PEQ-15",
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense Ris II 护木",
   "gcr:6p34_dustcover": "6P34 防尘盖",
-  "gcr:pdc_dustcover": "PDC 防尘盖"
+  "gcr:pdc_dustcover": "PDC 防尘盖",
+  "gcr:b13_bracket": "B13 导轨支架"
 }

@@ -311,6 +311,8 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCR.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.B10_HANDGUARD, "model_assets/gltf/b10_handguard.gltf", "model_assets/gltf/b10_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCR.B19_HANDGUARD, "model_assets/gltf/b19_handguard.gltf", "model_assets/gltf/b19_handguard.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCR.B10_MOUNT_RAIL, "model_assets/gltf/b10_mount_rail.gltf", "model_assets/gltf/b10_mount_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCR.B13_BRACKET, "model_assets/gltf/b13_bracket.gltf", "model_assets/gltf/b13_bracket.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
         ModelRegistrationManager.registerModel(GCR.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->

@@ -4,7 +4,7 @@
 		"model_format": "free",
 		"box_uv": false
 	},
-	"name": "b10_rail_mount",
+	"name": "b10_mount_rail",
 	"model_identifier": "",
 	"visible_box": [1, 1, 0],
 	"variable_placeholders": "",
@@ -4986,7 +4986,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "RAIL",

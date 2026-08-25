@@ -307,22 +307,48 @@ public class GCR {
                                             SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
                                     )))
                             .addSlot(new SingleFixedSlot("RAIL_MOUNT_LEFT", Direction.LOWER)
-                                    .setFilter(SlotFilters.modular("b10_rail_mount")))
+                                    .setFilter(SlotFilters.hasTag("b10_mount_rail")))
                             .addSlot(new SingleFixedSlot("RAIL_MOUNT_RIGHT", Direction.LOWER)
-                                    .setFilter(SlotFilters.modular("b10_rail_mount"))),
+                                    .setFilter(SlotFilters.hasTag("b10_mount_rail"))),
                     new VoxelHandler(RL("common/voxel_shapes/b10_handguard_voxel.geo.json")),
                     new IArmHandlerModular.AdditionalPropModifier(0.08f,0.08f,0.1f, 0.05f)
             ).addTags("handguard", "ak", "lower", "zenitco");
+
+    public static final IModular B10_MOUNT_RAIL = new SlotProviderVoxelModule(
+            RL("b10_mount_rail"),
+            true,
+            0.01f,
+            Direction.NONE,
+            new SlotProvider(RL("common/pivot_maps/b10_mount_rail.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL", Direction.LOWER, 11.8513f, 0f, -11.9301f)
+                    .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction"))),
+            new VoxelHandler(RL("common/voxel_shapes/b10_mount_rail_voxel.geo.json"))
+    ).addTags("b10_mount_rail");
 
     public static final IModular B19_HANDGUARD = new ZenitcoUpperHandguard(
             RL("b19_handguard"),
             true,
             0.075f,
             Direction.NONE,
-            EmptySlotProvider.INSTANCE,
+            new SlotProvider(RL( "common/pivot_maps/b19_handguard_pivot.geo.json"))
+                    .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 6.1258f, -1.5542f, -9.2342f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            ))
+                    ),
             new VoxelHandler(RL("common/voxel_shapes/b19_handguard_voxel.geo.json"))
-    )
-            .addTags("handguard", "ak", "upper");
+    ).addTags("handguard", "ak", "upper");
+
+    public static final IModular B13_BRACKET = new SlotProviderVoxelModule(
+            RL("b13_bracket"),
+            true,
+            0.175f,
+            Direction.NONE,
+            new SlotProvider(RL("common/pivot_maps/b13_bracket.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL", Direction.UPPER, 12.5686f, -3.4314f, -19.4315f)
+                            .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))),
+            new VoxelHandler(RL("common/voxel_shapes/b13_bracket.voxel.geo.json"))
+    ).addTags("ak", "mount");
 
     public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
             RL( "kac_forward_grip"),
@@ -342,7 +368,7 @@ public class GCR {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.25f, 3.5f,
+            new BaseProperties(850, 1.15f, 0.18f, 3.5f,
                     0.00075f, 0.1f,
                     1.3f, 4f,
                     30f,
@@ -434,7 +460,7 @@ public class GCR {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(650, 2.4f, 0.28f, 3.3f,
+            new BaseProperties(650, 2.4f, 0.2f, 3.3f,
                     0.0003f, 0.08f,
                     1.3f, 4f,
                     30f,
@@ -615,6 +641,10 @@ public class GCR {
             ITEMS.register(B10_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(B10_HANDGUARD));
     public static final DeferredItem<Item> B19_HANDGUARD_ITEM =
             ITEMS.register(B19_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(B19_HANDGUARD));
+    public static final DeferredItem<Item> B10_MOUNT_RAIL_ITEM =
+            ITEMS.register(B10_MOUNT_RAIL.getSimpleID(), () -> new ModuleItem<>(B10_MOUNT_RAIL));
+    public static final DeferredItem<Item> B13_BRACKET_ITEM =
+            ITEMS.register(B13_BRACKET.getSimpleID(), () -> new ModuleItem<>(B13_BRACKET));
 
 
 
@@ -690,6 +720,8 @@ public class GCR {
                                 output.accept(AK_POLYMER_HANDGUARD_UPPER_ITEM.get());
                                 output.accept(B10_HANDGUARD_ITEM.get());
                                 output.accept(B19_HANDGUARD_ITEM.get());
+                                output.accept(B10_MOUNT_RAIL_ITEM.get());
+                                output.accept(B13_BRACKET_ITEM.get());
 
 
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
