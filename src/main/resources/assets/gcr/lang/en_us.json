@@ -66,7 +66,7 @@
   "validate.result.collision": "Module: $name1 collides with module: $name2",
   "validate.result.out_of_boundary": "Module :$name location out of bounds",
   "validate.result.conflict": "Module: $name1 conflicts with module: $name2",
-  "validate.result.requires": "$name requires specific attachments to be securely fixed. The applicable accessories are: $list",
+  "validate.result.requires": "$name requires specific attachments. Compatible: $list",
 
   "screen.need_update": "Wait for the server's response. If there is no response for a long time, press 'Esc' to exit the interface",
 
@@ -151,5 +151,6 @@
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense Ris II Handguard",
   "gcr:6p34_dustcover": "6P34 Dustcover",
   "gcr:pdc_dustcover": "PDC Dustcover",
-  "gcr:b13_bracket": "B13 Bracket"
+  "gcr:b13_bracket": "B13 Bracket",
+  "gcr:dtk1_compensator": "DTK-1 Compensator"
 }

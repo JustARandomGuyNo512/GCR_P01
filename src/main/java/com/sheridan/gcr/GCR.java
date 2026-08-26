@@ -212,6 +212,7 @@ public class GCR {
 
     public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
     public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular DTK1_COMPENSATOR = new Muzzle(RL( "dtk1_compensator"), 0.06f, 0.22f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
 
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
@@ -614,6 +615,8 @@ public class GCR {
             ITEMS.register(AK74_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(AK74_MUZZLE_BRAKE));
     public static final DeferredItem<Item> PBS_4_ITEM =
             ITEMS.register(PBS_4.getSimpleID(), () -> new ModuleItem<>(PBS_4));
+    public static final DeferredItem<Item> DTK1_COMPENSATOR_ITEM =
+            ITEMS.register(DTK1_COMPENSATOR.getSimpleID(), () -> new ModuleItem<>(DTK1_COMPENSATOR));
 
 
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
@@ -711,7 +714,7 @@ public class GCR {
                                 output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(AK74_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(PBS_4_ITEM.get());
-
+                                output.accept(DTK1_COMPENSATOR_ITEM.get());
 
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());
                                 output.accept(KAC_RAS_HANDGUARD_ITEM.get());
