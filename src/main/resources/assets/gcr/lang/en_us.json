@@ -66,6 +66,7 @@
   "validate.result.collision": "Module: $name1 collides with module: $name2",
   "validate.result.out_of_boundary": "Module :$name location out of bounds",
   "validate.result.conflict": "Module: $name1 conflicts with module: $name2",
+  "validate.result.requires": "$name requires specific attachments to be securely fixed. The applicable accessories are: $list",
 
   "screen.need_update": "Wait for the server's response. If there is no response for a long time, press 'Esc' to exit the interface",
 

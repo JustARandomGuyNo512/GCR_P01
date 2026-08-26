@@ -55,12 +55,12 @@ public abstract class Module implements IModular {
 
     @Override
     public boolean hasTag(String tag) {
-        return finialTags.contains(tag);
+        return finalized ? finialTags.contains(tag) : tags.contains(tag);
     }
 
     @Override
     public Set<String> getTags() {
-        return finialTags;
+        return finalized ? finialTags : tags;
     }
 
     @Override

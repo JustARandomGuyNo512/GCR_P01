@@ -66,6 +66,7 @@
   "validate.result.collision": "模块:$name1与模块:$name2发生碰撞",
   "validate.result.out_of_boundary": "模块:$name位置超出边界",
   "validate.result.conflict": "模块:$name1与模块:$name2冲突",
+  "validate.result.requires": "$name需要搭配特定配件才能固定牢固，适用的配件有：$list",
 
   "screen.need_update": "等待服务端的响应，如果长时间未响应，按下'Esc'退出界面",
 

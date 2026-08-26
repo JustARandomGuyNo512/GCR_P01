@@ -471,7 +471,8 @@ public class GCR {
                     Map.of(
                             "mag_reload_length", 2.15f,
                             "mag_reload_empty_length", 3.2f,
-                            "remove_stuck_length", 0.85f
+                            "remove_stuck_length", 0.75f,
+                            "remove_stuck_empty_length", 0.75f
                     )
             ),
             new DisplayData()
