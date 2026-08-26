@@ -970,7 +970,6 @@ public class GCR {
             NeoForge.EVENT_BUS.register(GuiEvents.class);
             NeoForge.EVENT_BUS.register(ClientEvents.class);
             NeoForge.EVENT_BUS.register(RenderEvents.class);
-            NeoForge.EVENT_BUS.register(TestEvents.class);
             NeoForge.EVENT_BUS.register(ControllerEvents.class);
             NeoForge.EVENT_BUS.register(FPMuzzleFlashEnvLightingRenderer.class);
             NeoForge.EVENT_BUS.register(FabulousDepthTextureHandler.class);

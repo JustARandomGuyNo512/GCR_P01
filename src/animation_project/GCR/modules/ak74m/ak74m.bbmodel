@@ -95604,7 +95604,7 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -96156,7 +96156,7 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -96319,6 +96319,29 @@
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
+		},
+		{
+			"name": "BARREL",
+			"uuid": "77ffe965-d1e4-1968-6f63-ec606e96ba93",
+			"export": true,
+			"locked": false,
+			"scope": 0,
+			"selected": false,
+			"_static": {
+				"properties": {},
+				"temp_data": {}
+			},
+			"origin": [0, -1.5, -52],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"visibility": true,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -96388,7 +96411,7 @@
 							"children": [
 								{
 									"uuid": "8e688984-9299-f515-66fe-65540b246a3a",
-									"isOpen": true,
+									"isOpen": false,
 									"children": [
 										"70e1a3f4-91f6-b2e7-0ae7-29e0ee699687",
 										{
@@ -96480,7 +96503,7 @@
 								},
 								{
 									"uuid": "fcae1281-01e3-e186-fee9-264d18d2fa4d",
-									"isOpen": true,
+									"isOpen": false,
 									"children": [
 										{
 											"uuid": "c38da1c0-39c6-b18f-671e-4618ba9e387a",
@@ -96526,6 +96549,11 @@
 								},
 								{
 									"uuid": "ce8b9576-9514-7688-5e7c-f11fc1f6ae3c",
+									"isOpen": true,
+									"children": []
+								},
+								{
+									"uuid": "77ffe965-d1e4-1968-6f63-ec606e96ba93",
 									"isOpen": true,
 									"children": []
 								}

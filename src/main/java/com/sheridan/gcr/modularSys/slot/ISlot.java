@@ -16,4 +16,5 @@ public interface ISlot {
     Direction getDirection();
     ISlotFilter getFilter();
     ISlot setFilter(ISlotFilter filter);
+
 }

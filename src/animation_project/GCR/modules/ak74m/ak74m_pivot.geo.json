@@ -204,6 +204,11 @@
 					"pivot": [3.8279, -4.5556, -0.0146]
 				},
 				{
+					"name": "BARREL",
+					"parent": "body",
+					"pivot": [0, -1.5, -52]
+				},
+				{
 					"name": "camera",
 					"parent": "root",
 					"pivot": [14.3, 10.3, 34]

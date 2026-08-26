@@ -304,6 +304,9 @@ public class Node {
         if (nodeA == null || nodeB == null) {
             return true;
         }
+        if (!nodeA.id.equals(nodeB.id)) {
+            return true;
+        }
         if (nodeA.getUnit().diff(nodeB.getUnit())) {
             return true;
         }
