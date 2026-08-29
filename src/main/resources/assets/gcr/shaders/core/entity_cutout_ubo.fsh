@@ -3,7 +3,6 @@
 #moj_import <fog.glsl>
 
 uniform sampler2D Sampler0;
-uniform sampler2D depth;
 uniform sampler2D gcrHeatMap;
 
 uniform vec4 ColorModulator;
