@@ -31,7 +31,9 @@ public interface IGunTask<T extends IGun> {
         }
         String currID = this.getGun().getIdentityID(this.getStack());
         String newID = other.getGun().getIdentityID(other.getStack());
-        if (!Objects.equals(currID, newID)) {
+        // 客户端初始化时 identityID 为 IGun.NONE("__none__")，服务端首次同步后才变成真实 ID，
+        // 此时枪械并没有切换，不能据此判定两把枪不同；只有两侧都是真实 ID 且不同才算换枪。
+        if (!IGun.NONE.equals(currID) && !IGun.NONE.equals(newID) && !Objects.equals(currID, newID)) {
             return false;
         }
         if (this.getType() != other.getType() || this.getPriority() != other.getPriority()) {
