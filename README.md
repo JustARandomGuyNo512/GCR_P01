@@ -1,17 +1,15 @@
-Guns Craft Reforged
-Copyright (c) 2026 Sheridan
+Guns Craft Reforged (GCR) is free and open-source software
+licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later).
 
-All Rights Reserved.
+Copyright (C) 2026 Sheridan
 
-You may:
-- Download and play this mod.
-- Include this mod in private modpacks.
+You are free to use, study, modify, and redistribute GCR under the terms
+of the GNU General Public License.
 
-You may not:
-- Redistribute this mod or its assets.
-- Modify and publish modified versions.
-- Reupload this mod to other websites or platforms.
-- Extract, reuse, or redistribute any assets from this project.
-- Use any part of this project in another project without explicit permission.
+Any modified or redistributed version of GCR must comply with the GPL
+and retain the original copyright notices and license information.
 
-For permissions beyond those granted above, contact the copyright holder.
+Third-party mods and addons may use, extend, or modify GCR's functionality,
+subject to the terms of the GPL where applicable.
+
+GCR is provided without warranty.
