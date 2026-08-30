@@ -7,11 +7,6 @@ import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.events.ClientEvents;
 import com.sheridan.gcr.client.events.ControllerEvents;
 import com.sheridan.gcr.client.events.RenderEvents;
-import com.sheridan.gcr.client.events.TestEvents;
-import com.sheridan.gcr.client.recoil.RecoilController;
-import com.sheridan.gcr.client.recoil.RecoilData;
-import com.sheridan.gcr.client.recoil.RecoilImpulse;
-import com.sheridan.gcr.client.recoil.VisualRecoilMix;
 import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
 import com.sheridan.gcr.client.render.entity.BulletRenderer;
 import com.sheridan.gcr.client.render.entity.M433Renderer;
@@ -30,22 +25,12 @@ import com.sheridan.gcr.components.ModComponents;
 import com.sheridan.gcr.data.ModData;
 import com.sheridan.gcr.data.PlayerStatusEvents;
 import com.sheridan.gcr.entity.ModEntities;
-import com.sheridan.gcr.items.DisplayData;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
 import com.sheridan.gcr.modularSys.*;
-import com.sheridan.gcr.modularSys.builder.Unit;
-import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
-import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.*;
-import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
-import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
-import com.sheridan.gcr.modularSys.modules.impl.*;
-import com.sheridan.gcr.modularSys.slot.*;
 import com.sheridan.gcr.modularSys.util.io.PivotMapLoader;
 import com.sheridan.gcr.modularSys.util.io.VoxelLoader;
 import com.sheridan.gcr.network.c2s.*;
@@ -87,8 +72,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 
 @Mod(GCR.MODID)
@@ -108,120 +91,122 @@ public class GCR {
 
 
     public static final DeferredItem<Item> M4A1_ITEM =
-            ITEMS.register(GCRModels.M4A1.getSimpleID(), () -> new GunItem((AR) GCRModels.M4A1));
+            ITEMS.register(GCRModules.M4A1.getSimpleID(), () -> new GunItem((AR) GCRModules.M4A1));
     public static final DeferredItem<Item> AK74M_ITEM =
-            ITEMS.register(GCRModels.AK74M.getSimpleID(), () -> new GunItem((AK) GCRModels.AK74M));
+            ITEMS.register(GCRModules.AK74M.getSimpleID(), () -> new GunItem((AK) GCRModules.AK74M));
 
 
     public static final DeferredItem<Item> ACOG_ITEM =
-            ITEMS.register(GCRModels.ACOG.getSimpleID(), () -> new ModuleItem<>(GCRModels.ACOG));
+            ITEMS.register(GCRModules.ACOG.getSimpleID(), () -> new ModuleItem<>(GCRModules.ACOG));
     public static final DeferredItem<Item> VORTEX_RAZOR_HD_ITEM =
-            ITEMS.register(GCRModels.VORTEX_RAZOR_HD.getSimpleID(), () -> new ModuleItem<>(GCRModels.VORTEX_RAZOR_HD));
+            ITEMS.register(GCRModules.VORTEX_RAZOR_HD.getSimpleID(), () -> new ModuleItem<>(GCRModules.VORTEX_RAZOR_HD));
     public static final DeferredItem<Item> CANTED_RAIL_ITEM =
-            ITEMS.register(GCRModels.CANTED_RAIL.getSimpleID(), () -> new ModuleItem<>(GCRModels.CANTED_RAIL));
+            ITEMS.register(GCRModules.CANTED_RAIL.getSimpleID(), () -> new ModuleItem<>(GCRModules.CANTED_RAIL));
     public static final DeferredItem<Item> A2_CARRY_HANDLE_ITEM =
-            ITEMS.register(GCRModels.A2_CARRY_HANDLE.getSimpleID(), () -> new ModuleItem<>(GCRModels.A2_CARRY_HANDLE));
+            ITEMS.register(GCRModules.A2_CARRY_HANDLE.getSimpleID(), () -> new ModuleItem<>(GCRModules.A2_CARRY_HANDLE));
     public static final DeferredItem<Item> KAC_FOLDING_SIGHT_REAR_ITEM =
-            ITEMS.register(GCRModels.KAC_FOLDING_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(GCRModels.KAC_FOLDING_SIGHT_REAR));
+            ITEMS.register(GCRModules.KAC_FOLDING_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_FOLDING_SIGHT_REAR));
     public static final DeferredItem<Item> KAC_FOLDING_SIGHT_FAR_ITEM =
-            ITEMS.register(GCRModels.KAC_FOLDING_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(GCRModels.KAC_FOLDING_SIGHT_FAR));
+            ITEMS.register(GCRModules.KAC_FOLDING_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_FOLDING_SIGHT_FAR));
 
 
     public static final DeferredItem<Item> A2_PISTOL_GRIP_ITEM =
-            ITEMS.register(GCRModels.A2_PISTOL_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModels.A2_PISTOL_GRIP));
+            ITEMS.register(GCRModules.A2_PISTOL_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.A2_PISTOL_GRIP));
     public static final DeferredItem<Item> MOE_GRIP_ITEM =
-            ITEMS.register(GCRModels.MOE_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModels.MOE_GRIP));
+            ITEMS.register(GCRModules.MOE_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.MOE_GRIP));
     public static final DeferredItem<Item> AK_POLYMER_GRIP_ITEM =
-            ITEMS.register(GCRModels.AK_POLYMER_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModels.AK_POLYMER_GRIP));
+            ITEMS.register(GCRModules.AK_POLYMER_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_POLYMER_GRIP));
 
 
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
-            ITEMS.register(GCRModels.M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModels.M4_PROFILE_FSB_BARREL));
+            ITEMS.register(GCRModules.M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModules.M4_PROFILE_FSB_BARREL));
     public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
-            ITEMS.register(GCRModels.STANAG_MAG_30R.getSimpleID(), () -> new ModuleItem<>(GCRModels.STANAG_MAG_30R));
+            ITEMS.register(GCRModules.STANAG_MAG_30R.getSimpleID(), () -> new ModuleItem<>(GCRModules.STANAG_MAG_30R));
     public static final DeferredItem<Item> PMAG_40R_ITEM =
-            ITEMS.register(GCRModels.PMAG_40R.getSimpleID(), () -> new ModuleItem<>(GCRModels.PMAG_40R));
+            ITEMS.register(GCRModules.PMAG_40R.getSimpleID(), () -> new ModuleItem<>(GCRModules.PMAG_40R));
     public static final DeferredItem<Item> SUREFIRE_MAG_60R_ITEM =
-            ITEMS.register(GCRModels.SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(GCRModels.SUREFIRE_MAG_60R));
+            ITEMS.register(GCRModules.SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(GCRModules.SUREFIRE_MAG_60R));
     public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
-            ITEMS.register(GCRModels.USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModels.USGI_MAG_20R));
+            ITEMS.register(GCRModules.USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModules.USGI_MAG_20R));
 
 
     public static final DeferredItem<Item> MAG_6L18_ITEM =
-            ITEMS.register(GCRModels.MAG_6L18.getSimpleID(), () -> new ModuleItem<>(GCRModels.MAG_6L18));
+            ITEMS.register(GCRModules.MAG_6L18.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAG_6L18));
     public static final DeferredItem<Item> MAG_6L23_ITEM =
-            ITEMS.register(GCRModels.MAG_6L23.getSimpleID(), () -> new ModuleItem<>(GCRModels.MAG_6L23));
+            ITEMS.register(GCRModules.MAG_6L23.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAG_6L23));
     public static final DeferredItem<Item> MAG_6L31_ITEM =
-            ITEMS.register(GCRModels.MAG_6L31.getSimpleID(), () -> new ModuleItem<>(GCRModels.MAG_6L31));
+            ITEMS.register(GCRModules.MAG_6L31.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAG_6L31));
 
 
 
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
-            ITEMS.register(GCRModels.M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModels.M4_CARBINE_STOCK));
+            ITEMS.register(GCRModules.M4_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.M4_CARBINE_STOCK));
     public static final DeferredItem<Item> MOE_CARBINE_STOCK_ITEM =
-            ITEMS.register(GCRModels.MOE_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModels.MOE_CARBINE_STOCK));
+            ITEMS.register(GCRModules.MOE_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.MOE_CARBINE_STOCK));
     public static final DeferredItem<Item> STOCK_6P34_ITEM =
-            ITEMS.register(GCRModels.STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModels.STOCK_6P34));
+            ITEMS.register(GCRModules.STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModules.STOCK_6P34));
 
 
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
-            ITEMS.register(GCRModels.A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(GCRModels.A2_FLASH_HINDER));
+            ITEMS.register(GCRModules.A2_FLASH_HINDER.getSimpleID(), () -> new ModuleItem<>(GCRModules.A2_FLASH_HINDER));
     public static final DeferredItem<Item> SOCOM_RC2_ITEM =
-            ITEMS.register(GCRModels.SOCOM_RC2.getSimpleID(), () -> new ModuleItem<>(GCRModels.SOCOM_RC2));
+            ITEMS.register(GCRModules.SOCOM_RC2.getSimpleID(), () -> new ModuleItem<>(GCRModules.SOCOM_RC2));
     public static final DeferredItem<Item> AR15_MUZZLE_BRAKE_ITEM =
-            ITEMS.register(GCRModels.AR15_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(GCRModels.AR15_MUZZLE_BRAKE));
+            ITEMS.register(GCRModules.AR15_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(GCRModules.AR15_MUZZLE_BRAKE));
     public static final DeferredItem<Item> AK74_MUZZLE_BRAKE_ITEM =
-            ITEMS.register(GCRModels.AK74_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(GCRModels.AK74_MUZZLE_BRAKE));
+            ITEMS.register(GCRModules.AK74_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK74_MUZZLE_BRAKE));
     public static final DeferredItem<Item> PBS_4_ITEM =
-            ITEMS.register(GCRModels.PBS_4.getSimpleID(), () -> new ModuleItem<>(GCRModels.PBS_4));
+            ITEMS.register(GCRModules.PBS_4.getSimpleID(), () -> new ModuleItem<>(GCRModules.PBS_4));
     public static final DeferredItem<Item> DTK1_COMPENSATOR_ITEM =
-            ITEMS.register(GCRModels.DTK1_COMPENSATOR.getSimpleID(), () -> new ModuleItem<>(GCRModels.DTK1_COMPENSATOR));
+            ITEMS.register(GCRModules.DTK1_COMPENSATOR.getSimpleID(), () -> new ModuleItem<>(GCRModules.DTK1_COMPENSATOR));
+    public static final DeferredItem<Item> DTKP_545_ITEM =
+            ITEMS.register(GCRModules.DTKP_545.getSimpleID(), () -> new ModuleItem<>(GCRModules.DTKP_545));
 
 
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
-            ITEMS.register(GCRModels.KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModels.KAC_FORWARD_GRIP));
+            ITEMS.register(GCRModules.KAC_FORWARD_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_FORWARD_GRIP));
     public static final DeferredItem<Item> RK_6_GRIP_ITEM =
-            ITEMS.register(GCRModels.RK_2_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModels.RK_2_GRIP));
+            ITEMS.register(GCRModules.RK_2_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.RK_2_GRIP));
     public static final DeferredItem<Item> M203_ITEM =
-            ITEMS.register(GCRModels.M203.getSimpleID(), () -> new ModuleItem<>(GCRModels.M203));
+            ITEMS.register(GCRModules.M203.getSimpleID(), () -> new ModuleItem<>(GCRModules.M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
-            ITEMS.register(GCRModels.URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModels.URGI_BARREL));
+            ITEMS.register(GCRModules.URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModules.URGI_BARREL));
 
 
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.URGI_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.URGI_HANDGUARD));
+            ITEMS.register(GCRModules.URGI_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.URGI_HANDGUARD));
     public static final DeferredItem<Item> CAR_15_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.CAR_15_HANDGUARD));
+            ITEMS.register(GCRModules.CAR_15_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.CAR_15_HANDGUARD));
     public static final DeferredItem<Item> KAC_RAS_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.KAC_RAS_HANDGUARD));
+            ITEMS.register(GCRModules.KAC_RAS_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_RAS_HANDGUARD));
     public static final DeferredItem<Item> DANIEL_DEFENSE_RIS_II_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.DANIEL_DEFENSE_RIS_II_HANDGUARD));
+            ITEMS.register(GCRModules.DANIEL_DEFENSE_RIS_II_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.DANIEL_DEFENSE_RIS_II_HANDGUARD));
     public static final DeferredItem<Item> AK_POLYMER_HANDGUARD_LOWER_ITEM =
-            ITEMS.register(GCRModels.AK_POLYMER_HANDGUARD_LOWER.getSimpleID(), () -> new ModuleItem<>(GCRModels.AK_POLYMER_HANDGUARD_LOWER));
+            ITEMS.register(GCRModules.AK_POLYMER_HANDGUARD_LOWER.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_POLYMER_HANDGUARD_LOWER));
     public static final DeferredItem<Item> AK_POLYMER_HANDGUARD_UPPER_ITEM =
-            ITEMS.register(GCRModels.AK_POLYMER_HANDGUARD_UPPER.getSimpleID(), () -> new ModuleItem<>(GCRModels.AK_POLYMER_HANDGUARD_UPPER));
+            ITEMS.register(GCRModules.AK_POLYMER_HANDGUARD_UPPER.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_POLYMER_HANDGUARD_UPPER));
     public static final DeferredItem<Item> B10_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.B10_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.B10_HANDGUARD));
+            ITEMS.register(GCRModules.B10_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.B10_HANDGUARD));
     public static final DeferredItem<Item> B19_HANDGUARD_ITEM =
-            ITEMS.register(GCRModels.B19_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModels.B19_HANDGUARD));
+            ITEMS.register(GCRModules.B19_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.B19_HANDGUARD));
     public static final DeferredItem<Item> B10_MOUNT_RAIL_ITEM =
-            ITEMS.register(GCRModels.B10_MOUNT_RAIL.getSimpleID(), () -> new ModuleItem<>(GCRModels.B10_MOUNT_RAIL));
+            ITEMS.register(GCRModules.B10_MOUNT_RAIL.getSimpleID(), () -> new ModuleItem<>(GCRModules.B10_MOUNT_RAIL));
     public static final DeferredItem<Item> B13_BRACKET_ITEM =
-            ITEMS.register(GCRModels.B13_BRACKET.getSimpleID(), () -> new ModuleItem<>(GCRModels.B13_BRACKET));
+            ITEMS.register(GCRModules.B13_BRACKET.getSimpleID(), () -> new ModuleItem<>(GCRModules.B13_BRACKET));
 
 
 
     public static final DeferredItem<Item> VORTEX_RAZOR_RED_DOT_ITEM =
-            ITEMS.register(GCRModels.VORTEX_RAZOR_RED_DOT.getSimpleID(), () -> new ModuleItem<>(GCRModels.VORTEX_RAZOR_RED_DOT));
+            ITEMS.register(GCRModules.VORTEX_RAZOR_RED_DOT.getSimpleID(), () -> new ModuleItem<>(GCRModules.VORTEX_RAZOR_RED_DOT));
     public static final DeferredItem<Item> EOTECH_EXPS3_ITEM =
-            ITEMS.register(GCRModels.EOTECH_EXPS3.getSimpleID(), () -> new ModuleItem<>(GCRModels.EOTECH_EXPS3));
+            ITEMS.register(GCRModules.EOTECH_EXPS3.getSimpleID(), () -> new ModuleItem<>(GCRModules.EOTECH_EXPS3));
     public static final DeferredItem<Item> PEQ_15_ITEM =
-            ITEMS.register(GCRModels.PEQ_15.getSimpleID(), () -> new ModuleItem<>(GCRModels.PEQ_15));
+            ITEMS.register(GCRModules.PEQ_15.getSimpleID(), () -> new ModuleItem<>(GCRModules.PEQ_15));
 
     public static final DeferredItem<Item> DUSTCOVER_6P34_ITEM =
-            ITEMS.register(GCRModels.DUSTCOVER_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModels.DUSTCOVER_6P34));
+            ITEMS.register(GCRModules.DUSTCOVER_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModules.DUSTCOVER_6P34));
     public static final DeferredItem<Item> PDC_DUSTCOVER_ITEM =
-            ITEMS.register(GCRModels.PDC_DUSTCOVER.getSimpleID(), () -> new ModuleItem<>(GCRModels.PDC_DUSTCOVER));
+            ITEMS.register(GCRModules.PDC_DUSTCOVER.getSimpleID(), () -> new ModuleItem<>(GCRModules.PDC_DUSTCOVER));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB =
             CREATIVE_MODE_TABS.register("gun",
@@ -273,6 +258,7 @@ public class GCR {
                                 output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(AK74_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(PBS_4_ITEM.get());
+                                output.accept(DTKP_545_ITEM.get());
                                 output.accept(DTK1_COMPENSATOR_ITEM.get());
 
                                 output.accept(CAR_15_HANDGUARD_ITEM.get());

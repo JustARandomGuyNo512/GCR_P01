@@ -127,9 +127,9 @@ public class ClientTestingResources {
 
         // 非常规注册示例：带 Viewer、Display 以及 Controller 初始化的复杂对象
         ModelRegistrationManager.registerModel(
-                GCRModels.M4A1, "model_assets/gltf/m4a1_main.gltf", "model_assets/gltf/m4a1_main.png", true,
+                GCRModules.M4A1, "model_assets/gltf/m4a1_main.gltf", "model_assets/gltf/m4a1_main.png", true,
                 meshData -> {
-                    ARMainViewer viewer = new ARMainViewer((AR) GCRModels.M4A1);
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.M4A1);
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "BULLET_SHELL", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
@@ -163,9 +163,9 @@ public class ClientTestingResources {
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.AK74M, "model_assets/gltf/ak74m.gltf", "model_assets/gltf/ak74m.png", true,
+                GCRModules.AK74M, "model_assets/gltf/ak74m.gltf", "model_assets/gltf/ak74m.png", true,
                 meshData -> {
-                    AKViewer viewer = new AKViewer((AK) GCRModels.AK74M);
+                    AKViewer viewer = new AKViewer((AK) GCRModules.AK74M);
                     AKModel model = new AKModel(
                             meshData,
                             new BulletShellDisplay(
@@ -202,9 +202,9 @@ public class ClientTestingResources {
 
         // 如果需要取消 M203 的延迟编译，将 immediateCompile 设为 false 即可
         ModelRegistrationManager.registerModel(
-                GCRModels.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
+                GCRModules.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
                 meshData -> {
-                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCRModels.M203), new MuzzleFlashRenderer(
+                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCRModules.M203), new MuzzleFlashRenderer(
                             new MuzzleEntry("no1", "MUZZLE_FLASH", "",
                                     3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
                                     1.8f, CommonMuzzleSmokeEffects.COMMON,
@@ -221,111 +221,116 @@ public class ClientTestingResources {
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.STANAG_MAG_30R, 4, "gcr:ar_mag_30r"))
+                GCRModules.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.STANAG_MAG_30R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.PMAG_40R, "model_assets/gltf/pmag_40r.gltf", "model_assets/gltf/pmag_40r.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.PMAG_40R, 4, "gcr:ar_mag_30r"))
+                GCRModules.PMAG_40R, "model_assets/gltf/pmag_40r.gltf", "model_assets/gltf/pmag_40r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.PMAG_40R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.SUREFIRE_MAG_60R, 4, "gcr:ar_mag_30r"))
+                GCRModules.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.SUREFIRE_MAG_60R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.USGI_MAG_20R, "model_assets/gltf/usgi_mag_20r.gltf", "model_assets/gltf/usgi_mag_20r.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.USGI_MAG_20R, 4, "gcr:ar_mag_30r"))
+                GCRModules.USGI_MAG_20R, "model_assets/gltf/usgi_mag_20r.gltf", "model_assets/gltf/usgi_mag_20r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.USGI_MAG_20R, 4, "gcr:ar_mag_30r"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.MAG_6L18, "model_assets/gltf/6l18.gltf", "model_assets/gltf/6l18.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.MAG_6L18, 6, "gcr:6l23"))
+                GCRModules.MAG_6L18, "model_assets/gltf/6l18.gltf", "model_assets/gltf/6l18.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L18, 6, "gcr:6l23"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.MAG_6L23, "model_assets/gltf/6l23.gltf", "model_assets/gltf/6l23.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.MAG_6L23, 6, "gcr:6l23"))
+                GCRModules.MAG_6L23, "model_assets/gltf/6l23.gltf", "model_assets/gltf/6l23.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L23, 6, "gcr:6l23"))
         );
 
         ModelRegistrationManager.registerModel(
-                GCRModels.MAG_6L31, "model_assets/gltf/6l31.gltf", "model_assets/gltf/6l31.png", true,
-                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModels.MAG_6L31, 6, "gcr:6l23"))
+                GCRModules.MAG_6L31, "model_assets/gltf/6l31.gltf", "model_assets/gltf/6l31.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L31, 6, "gcr:6l23"))
         );
 
 
 
         // 常规单行注册
-        ModelRegistrationManager.registerModel(GCRModels.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
                 new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/m4_profile_fsb_barrel.png"))
         );
-        ModelRegistrationManager.registerModel(GCRModels.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
                 new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/a2_flash_hider.png"))
         );
-        ModelRegistrationManager.registerModel(GCRModels.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
                 new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
                         .modifyHeatSensitive(3f)
         );
-        ModelRegistrationManager.registerModel(GCRModels.AR15_MUZZLE_BRAKE, "model_assets/gltf/ar15_muzzle_brake.gltf", "model_assets/gltf/ar15_muzzle_brake.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.AR15_MUZZLE_BRAKE, "model_assets/gltf/ar15_muzzle_brake.gltf", "model_assets/gltf/ar15_muzzle_brake.png", true, d ->
                 new MuzzleModel(d, 3.6f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ar15_muzzle_brake.png"))
         );
-        ModelRegistrationManager.registerModel(GCRModels.AK74_MUZZLE_BRAKE, "model_assets/gltf/ak74_muzzle_brake.gltf", "model_assets/gltf/ak74_muzzle_brake.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.AK74_MUZZLE_BRAKE, "model_assets/gltf/ak74_muzzle_brake.gltf", "model_assets/gltf/ak74_muzzle_brake.png", true, d ->
                 new MuzzleModel(d, 3.9f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74_muzzle_brake.png"))
         );
-        ModelRegistrationManager.registerModel(GCRModels.PBS_4, "model_assets/gltf/pbs4.gltf", "model_assets/gltf/pbs4.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.PBS_4, "model_assets/gltf/pbs4.gltf", "model_assets/gltf/pbs4.png", true, d ->
                 new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/pbs4.png"))
                         .modifyHeatSensitive(3f)
         );
-        ModelRegistrationManager.registerModel(GCRModels.DTK1_COMPENSATOR, "model_assets/gltf/dtk1_compensator.gltf", "model_assets/gltf/dtk1_compensator.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.DTKP_545, "model_assets/gltf/dtkp_545.gltf", "model_assets/gltf/dtkp_545.png", true, d ->
+                new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtkp_545.png"))
+                        .modifyHeatSensitive(3f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.DTK1_COMPENSATOR, "model_assets/gltf/dtk1_compensator.gltf", "model_assets/gltf/dtk1_compensator.png", true, d ->
                 new MuzzleModel(d, 4f, CommonMuzzleFlashes.AK_COMPENSATOR, 3.2f, CommonMuzzleSmokeEffects.COMMON,  3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtk1_compensator.png"))
         );
-        ModelRegistrationManager.registerModel(GCRModels.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
-        ModelRegistrationManager.registerModel(GCRModels.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.MOE_CARBINE_STOCK, "model_assets/gltf/moe_carbine_stock.gltf", "model_assets/gltf/moe_carbine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.STOCK_6P34, "model_assets/gltf/6p34_stock.gltf", "model_assets/gltf/6p34_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.DUSTCOVER_6P34, "model_assets/gltf/6p34_dustcover.gltf", "model_assets/gltf/6p34_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.PDC_DUSTCOVER, "model_assets/gltf/pdc_dustcover.gltf", "model_assets/gltf/pdc_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MOE_CARBINE_STOCK, "model_assets/gltf/moe_carbine_stock.gltf", "model_assets/gltf/moe_carbine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.STOCK_6P34, "model_assets/gltf/6p34_stock.gltf", "model_assets/gltf/6p34_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.DUSTCOVER_6P34, "model_assets/gltf/6p34_dustcover.gltf", "model_assets/gltf/6p34_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.PDC_DUSTCOVER, "model_assets/gltf/pdc_dustcover.gltf", "model_assets/gltf/pdc_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
-        ModelRegistrationManager.registerModel(GCRModels.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.AK_POLYMER_GRIP, "model_assets/gltf/ak_polymer_grip.gltf", "model_assets/gltf/ak_polymer_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.MOE_GRIP, "model_assets/gltf/moe_grip.gltf", "model_assets/gltf/moe_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_GRIP, "model_assets/gltf/ak_polymer_grip.gltf", "model_assets/gltf/ak_polymer_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MOE_GRIP, "model_assets/gltf/moe_grip.gltf", "model_assets/gltf/moe_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
 
-        ModelRegistrationManager.registerModel(GCRModels.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
-        ModelRegistrationManager.registerModel(GCRModels.KAC_FOLDING_SIGHT_FAR, "model_assets/gltf/kac_folding_sight_far.gltf", "model_assets/gltf/kac_folding_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_FAR, "model_assets/gltf/kac_folding_sight_far.gltf", "model_assets/gltf/kac_folding_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
 
-        ModelRegistrationManager.registerModel(GCRModels.CANTED_RAIL, "model_assets/gltf/canted_rail.gltf", "model_assets/gltf/canted_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);
-        ModelRegistrationManager.registerModel(GCRModels.DANIEL_DEFENSE_RIS_II_HANDGUARD, "model_assets/gltf/daniel_defense_ris_ii.gltf", "model_assets/gltf/daniel_defense_ris_ii.png", true, SplitARHandguardModel::new);
-        ModelRegistrationManager.registerModel(GCRModels.KAC_FORWARD_GRIP, "model_assets/gltf/kac_forward_grip.gltf", "model_assets/gltf/kac_forward_grip.png", true, MLokFitGripModel::new);
-        ModelRegistrationManager.registerModel(GCRModels.RK_2_GRIP, "model_assets/gltf/rk_2_grip.gltf", "model_assets/gltf/rk_2_grip.png", true, MLokFitGripModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.CANTED_RAIL, "model_assets/gltf/canted_rail.gltf", "model_assets/gltf/canted_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.DANIEL_DEFENSE_RIS_II_HANDGUARD, "model_assets/gltf/daniel_defense_ris_ii.gltf", "model_assets/gltf/daniel_defense_ris_ii.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FORWARD_GRIP, "model_assets/gltf/kac_forward_grip.gltf", "model_assets/gltf/kac_forward_grip.png", true, MLokFitGripModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.RK_2_GRIP, "model_assets/gltf/rk_2_grip.gltf", "model_assets/gltf/rk_2_grip.png", true, MLokFitGripModel::new);
 
-        ModelRegistrationManager.registerModel(GCRModels.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.AK_POLYMER_HANDGUARD_LOWER, "model_assets/gltf/ak_polymer_handguard_lower.gltf", "model_assets/gltf/ak_polymer_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.B10_HANDGUARD, "model_assets/gltf/b10_handguard.gltf", "model_assets/gltf/b10_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.B19_HANDGUARD, "model_assets/gltf/b19_handguard.gltf", "model_assets/gltf/b19_handguard.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.B10_MOUNT_RAIL, "model_assets/gltf/b10_mount_rail.gltf", "model_assets/gltf/b10_mount_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModels.B13_BRACKET, "model_assets/gltf/b13_bracket.gltf", "model_assets/gltf/b13_bracket.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_LOWER, "model_assets/gltf/ak_polymer_handguard_lower.gltf", "model_assets/gltf/ak_polymer_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B10_HANDGUARD, "model_assets/gltf/b10_handguard.gltf", "model_assets/gltf/b10_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B19_HANDGUARD, "model_assets/gltf/b19_handguard.gltf", "model_assets/gltf/b19_handguard.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B10_MOUNT_RAIL, "model_assets/gltf/b10_mount_rail.gltf", "model_assets/gltf/b10_mount_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B13_BRACKET, "model_assets/gltf/b13_bracket.gltf", "model_assets/gltf/b13_bracket.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
-        ModelRegistrationManager.registerModel(GCRModels.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->
+        ModelRegistrationManager.registerModel(GCRModules.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->
                 new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/urgi_barrel.png"))
         );
 
-        ModelRegistrationManager.registerModel(GCRModels.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
-        ModelRegistrationManager.registerModel(GCRModels.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
+        ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
 
 
         BulletShellModel shell_5_56x45 = new BulletShellModel(
@@ -342,14 +347,14 @@ public class ClientTestingResources {
         );
 
 
-        ModelRegistrationManager.registerModel(GCRModels.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 0.06875f));
+        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 0.06875f));
 
-        ModelRegistrationManager.registerModel(GCRModels.EOTECH_EXPS3, "model_assets/gltf/eotech_exps3.gltf", "model_assets/gltf/eotech_exps3.png", true, d -> new RedDotModel(d, GCR.RL("eotech_exps3"), GCR.RL("textures/sight/crosshair/eotech_exps3.png"), 0.045f));
+        ModelRegistrationManager.registerModel(GCRModules.EOTECH_EXPS3, "model_assets/gltf/eotech_exps3.gltf", "model_assets/gltf/eotech_exps3.png", true, d -> new RedDotModel(d, GCR.RL("eotech_exps3"), GCR.RL("textures/sight/crosshair/eotech_exps3.png"), 0.045f));
 
 
         ModelRegistrationManager.registerModel(
-                GCRModels.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
-                d -> new PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCRModels.PEQ_15)));
+                GCRModules.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
+                d -> new PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCRModules.PEQ_15)));
 
 
         BufferedPlayerArmModel.init();

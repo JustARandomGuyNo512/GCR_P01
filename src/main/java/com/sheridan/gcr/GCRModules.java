@@ -1,38 +1,10 @@
 package com.sheridan.gcr;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.logging.LogUtils;
-import com.sheridan.gcr.client.GunEffectManager;
-import com.sheridan.gcr.client.KeyBinds;
-import com.sheridan.gcr.client.events.ClientEvents;
-import com.sheridan.gcr.client.events.ControllerEvents;
-import com.sheridan.gcr.client.events.RenderEvents;
-import com.sheridan.gcr.client.events.TestEvents;
 import com.sheridan.gcr.client.recoil.RecoilController;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.client.recoil.RecoilImpulse;
 import com.sheridan.gcr.client.recoil.VisualRecoilMix;
-import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
-import com.sheridan.gcr.client.render.entity.BulletRenderer;
-import com.sheridan.gcr.client.render.entity.M433Renderer;
-import com.sheridan.gcr.client.render.events.GuiEvents;
-import com.sheridan.gcr.client.render.fx.*;
-import com.sheridan.gcr.client.render.fx.particles.ModParticles;
-import com.sheridan.gcr.client.render.fx.particles.ember.EmberParticle;
-import com.sheridan.gcr.client.render.fx.particles.explosion.FlashParticle;
-import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentParticle;
-import com.sheridan.gcr.client.render.fx.particles.explosion.SparkParticle;
-import com.sheridan.gcr.client.screen.containers.ModContainers;
-import com.sheridan.gcr.common.CommonEvents;
-import com.sheridan.gcr.common.Commons;
-import com.sheridan.gcr.common.GunHeatHandler;
-import com.sheridan.gcr.components.ModComponents;
-import com.sheridan.gcr.data.ModData;
-import com.sheridan.gcr.data.PlayerStatusEvents;
-import com.sheridan.gcr.entity.ModEntities;
 import com.sheridan.gcr.items.DisplayData;
-import com.sheridan.gcr.items.GunItem;
-import com.sheridan.gcr.items.ModuleItem;
 import com.sheridan.gcr.modularSys.*;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
@@ -46,55 +18,16 @@ import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.impl.*;
 import com.sheridan.gcr.modularSys.slot.*;
-import com.sheridan.gcr.modularSys.util.io.PivotMapLoader;
-import com.sheridan.gcr.modularSys.util.io.VoxelLoader;
-import com.sheridan.gcr.network.c2s.*;
-import com.sheridan.gcr.network.s2c.*;
-import com.sheridan.gcr.sound.ModSounds;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import org.slf4j.Logger;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 
 /** Gun and attachment module definitions. */
-public final class GCRModels {
+public final class GCRModules {
 
-    private GCRModels() {
+    private GCRModules() {
     }
 
     public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f, 1.0f,
@@ -203,6 +136,7 @@ public final class GCRModels {
     public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
     public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f).addTags("muzzle", "ak", "5.45x39");
     public static final IModular DTK1_COMPENSATOR = new Muzzle(RL( "dtk1_compensator"), 0.06f, 0.22f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular DTKP_545 = new Muzzle(RL( "dtkp_545"), 0.58f, 0.19f, 0.065f, IGun.FIRE_SOUND_SUPPRESSED, -0.4f, 1.85f).addTags("muzzle", "ak", "5.45x39");
 
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(

@@ -18,6 +18,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 
 import javax.annotation.Nullable;
@@ -287,14 +288,17 @@ public class BufferedBatchSingleMeshModel {
             GL31.glUniformBlockBinding(shaderProgramId, blockIndex, UBO_BINDING_POINT);
             lastKnownProgramId = shaderProgramId;
         }
-        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
+        //GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
         return true;
     }
 
     protected void uploadUbo() {
+        //重新绑定ubo buffer base以解决某些intel老旧集成显卡的ubo访问问题，也许可以解决问题。。。
+        GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, 0);
         GL15.glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
         GL15.glBufferSubData(GL31.GL_UNIFORM_BUFFER, 0, boneStatusUboBuffer);
         GL15.glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
+        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
     }
 
     protected boolean updateCompatType() {

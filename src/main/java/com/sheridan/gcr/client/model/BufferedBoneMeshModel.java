@@ -245,6 +245,7 @@ public class BufferedBoneMeshModel {
         uboId = glGenBuffers();
         int bufferSizeInFloats = MAX_BONES * UBO_ELEMENT_SIZE;
         long bufferSizeInBytes = (long)bufferSizeInFloats * Float.BYTES;
+
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
         glBufferData(GL31.GL_UNIFORM_BUFFER, bufferSizeInBytes, GL_DYNAMIC_DRAW);
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
@@ -455,14 +456,17 @@ public class BufferedBoneMeshModel {
             GL31.glUniformBlockBinding(shaderProgramId, blockIndex, UBO_BINDING_POINT);
             lastKnownProgramId = shaderProgramId;
         }
-        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
+
         return true;
     }
 
     public void uploadUbo() {
+        //重新绑定ubo buffer base以解决某些intel老旧集成显卡的ubo访问问题，也许可以解决问题。。。
+        GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, 0);
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
         glBufferSubData(GL31.GL_UNIFORM_BUFFER, 0, boneStatusUboBuffer);
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
+        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
     }
 
     protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {}

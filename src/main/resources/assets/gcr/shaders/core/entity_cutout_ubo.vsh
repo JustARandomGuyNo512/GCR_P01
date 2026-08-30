@@ -15,7 +15,7 @@ struct GcrBoneData {
     mat4 PacketNormalLightVisible;
 };
 
-layout (std140) uniform GcrBoneUBO {
+layout (std140, binding = 0) uniform GcrBoneUBO {
     GcrBoneData bones[128];
 };
 
