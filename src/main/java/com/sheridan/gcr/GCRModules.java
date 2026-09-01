@@ -78,7 +78,7 @@ public final class GCRModules {
             RL( "m203"), 1.36f,
             new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
             new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
-            3.3f, 2.45f, 60f, 20f, 40f, 140f,
+            3.3f, 2.45f, 10f, 12f, 5f, 140f,
             0.4f, 4f, 4)
             .addTags("under_barrel", "sub_weapon", "ar");
 

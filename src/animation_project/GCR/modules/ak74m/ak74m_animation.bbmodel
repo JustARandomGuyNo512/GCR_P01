@@ -158559,7 +158559,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "body",
@@ -159479,7 +159479,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "INNER_R",
@@ -165664,7 +165664,7 @@
 			"override": false,
 			"length": 1.44,
 			"snapping": 100,
-			"selected": true,
+			"selected": false,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -172822,7 +172822,7 @@
 			"override": false,
 			"length": 3.94,
 			"snapping": 100,
-			"selected": false,
+			"selected": true,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -174689,7 +174689,7 @@
 							"time": 0,
 							"color": -1,
 							"uniform": true,
-							"interpolation": "step"
+							"interpolation": "linear"
 						},
 						{
 							"channel": "scale",
@@ -174704,7 +174704,22 @@
 							"time": 0.61,
 							"color": -1,
 							"uniform": true,
-							"interpolation": "step"
+							"interpolation": "linear"
+						},
+						{
+							"channel": "scale",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "faae5f6f-4f09-da66-eb00-dc8d469780a0",
+							"time": 0.54,
+							"color": -1,
+							"uniform": true,
+							"interpolation": "linear"
 						}
 					]
 				},
