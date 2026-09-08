@@ -45366,8 +45366,31 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
+		},
+		{
+			"name": "MUZZLE_FLASH",
+			"uuid": "13bceddc-0fc9-8cca-d202-a96ed2b727e2",
+			"export": true,
+			"locked": false,
+			"scope": 0,
+			"selected": false,
+			"_static": {
+				"properties": {},
+				"temp_data": {}
+			},
+			"origin": [0, -8.3, -20],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"visibility": true,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -45383,7 +45406,7 @@
 				},
 				{
 					"uuid": "f2406fd7-d0d2-6cc7-c82e-c21aa5ca31e6",
-					"isOpen": true,
+					"isOpen": false,
 					"children": [
 						{
 							"uuid": "d7f177b5-3c52-d5ef-a08c-49268b699aea",
@@ -45427,6 +45450,11 @@
 							]
 						}
 					]
+				},
+				{
+					"uuid": "13bceddc-0fc9-8cca-d202-a96ed2b727e2",
+					"isOpen": true,
+					"children": []
 				}
 			]
 		}
