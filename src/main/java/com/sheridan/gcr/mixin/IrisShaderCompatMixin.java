@@ -268,12 +268,8 @@ public class IrisShaderCompatMixin {
             uniforms += "uniform float MuzzleFlashRadius;\n";
         }
 
-        if (!vsh.contains("struct GcrBoneData {mat4 TransMat;mat4 PacketNormalLightVisible;};")) {
-            uniforms += "struct GcrBoneData {mat4 TransMat;mat4 PacketNormalLightVisible;};\n";
-        }
-
-        if (!vsh.contains("layout (std140) uniform GcrBoneUBO {GcrBoneData gcrBones[128];};")) {
-            uniforms += "layout (std140) uniform GcrBoneUBO {GcrBoneData gcrBones[128];};\n";
+        if (!vsh.contains("layout (std140) uniform GcrBoneUBO {vec4 gcrBoneData[1024];};")) {
+            uniforms += "layout (std140) uniform GcrBoneUBO {vec4 gcrBoneData[1024];};\n";
         }
 
         if (!vsh.contains("ivec2 gcrMixedLightmap")) {
@@ -323,20 +319,22 @@ public class IrisShaderCompatMixin {
                 gcrUV0 = iris_UV0;
                 float gcrMuzzleLightContributionRes = 0.0;
                 if (gcrDoTransformOverride == 1) {
-                    int boneId = iris_UV1.x;
-                    GcrBoneData data = gcrBones[boneId];
+                    int boneId = clamp(iris_UV1.x, 0, 127);
+                    int gcrBoneBase = boneId * 8;
+                    mat4 gcrTransMat = mat4(gcrBoneData[gcrBoneBase], gcrBoneData[gcrBoneBase + 1], gcrBoneData[gcrBoneBase + 2], gcrBoneData[gcrBoneBase + 3]);
+                    mat4 gcrNormalLightVisible = mat4(gcrBoneData[gcrBoneBase + 4], gcrBoneData[gcrBoneBase + 5], gcrBoneData[gcrBoneBase + 6], gcrBoneData[gcrBoneBase + 7]);
                 
-                    bool visible = data.PacketNormalLightVisible[3][2] > 0.5;
+                    bool visible = gcrNormalLightVisible[3][2] > 0.5;
                 
-                    gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal;
+                    gcrTransformedNormal = mat3(gcrNormalLightVisible) * iris_Normal;
                     gcrTransformedNormal = normalize(gcrTransformedNormal);
-                    gcrTransformedPos = data.TransMat * gcrTransformedPos;
+                    gcrTransformedPos = gcrTransMat * gcrTransformedPos;
                     
                     if (!visible) {
                          gcrTransformedPos.xyz = vec3(1e20);
                     }
                 
-                    gcrMixedLightmap = ivec2(data.PacketNormalLightVisible[3][0], data.PacketNormalLightVisible[3][1]);
+                    gcrMixedLightmap = ivec2(gcrNormalLightVisible[3][0], gcrNormalLightVisible[3][1]);
                     gcrOverrideOverlay = ivec2(0, 10);
 
                     if (MuzzleFlashIntensity > 0.0) {
@@ -357,7 +355,7 @@ public class IrisShaderCompatMixin {
         String[] split = program.split("\n");
         for (int i = 0; i < split.length; i++) {
             if (!(split[i].startsWith("in") ||
-                    "gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal".equals(split[i]) ||
+                    "gcrTransformedNormal = mat3(gcrNormalLightVisible) * iris_Normal".equals(split[i]) ||
                     "gcrTransformedNormal = iris_Normal;".equals(split[i]))) {
                 split[i] = split[i].replaceAll("\\biris_Normal\\b(?!\\w)", "gcrTransformedNormal");
             }
@@ -396,12 +394,8 @@ public class IrisShaderCompatMixin {
             uniforms += "uniform int gcrDoTransformOverride;\n";
         }
 
-        if (!vsh.contains("struct GcrBoneData {mat4 TransMat;mat4 PacketNormalLightVisible;};")) {
-            uniforms += "struct GcrBoneData {mat4 TransMat;mat4 PacketNormalLightVisible;};\n";
-        }
-
-        if (!vsh.contains("layout (std140) uniform GcrBoneUBO {GcrBoneData gcrBones[128];};")) {
-            uniforms += "layout (std140) uniform GcrBoneUBO {GcrBoneData gcrBones[128];};\n";
+        if (!vsh.contains("layout (std140) uniform GcrBoneUBO {vec4 gcrBoneData[1024];};")) {
+            uniforms += "layout (std140) uniform GcrBoneUBO {vec4 gcrBoneData[1024];};\n";
         }
 
         if (!vsh.contains("ivec2 gcrMixedLightmap")) {
@@ -442,21 +436,23 @@ public class IrisShaderCompatMixin {
                 gcrMixedLightmap = iris_UV2;
                 
                 if (gcrDoTransformOverride == 1) {
-                    int boneId = iris_UV1.x;
-                    GcrBoneData data = gcrBones[boneId];
+                    int boneId = clamp(iris_UV1.x, 0, 127);
+                    int gcrBoneBase = boneId * 8;
+                    mat4 gcrTransMat = mat4(gcrBoneData[gcrBoneBase], gcrBoneData[gcrBoneBase + 1], gcrBoneData[gcrBoneBase + 2], gcrBoneData[gcrBoneBase + 3]);
+                    mat4 gcrNormalLightVisible = mat4(gcrBoneData[gcrBoneBase + 4], gcrBoneData[gcrBoneBase + 5], gcrBoneData[gcrBoneBase + 6], gcrBoneData[gcrBoneBase + 7]);
                 
-                    bool visible = data.PacketNormalLightVisible[3][2] > 0.5;
+                    bool visible = gcrNormalLightVisible[3][2] > 0.5;
 
                 
-                    gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal;
+                    gcrTransformedNormal = mat3(gcrNormalLightVisible) * iris_Normal;
                     gcrTransformedNormal = normalize(gcrTransformedNormal);
-                    gcrTransformedPos = data.TransMat * gcrTransformedPos;
+                    gcrTransformedPos = gcrTransMat * gcrTransformedPos;
                     
                     if (!visible) {
                          gcrTransformedPos.xyz = vec3(1e20);
                     }
                 
-                    gcrMixedLightmap = ivec2(data.PacketNormalLightVisible[3][0], data.PacketNormalLightVisible[3][1]);
+                    gcrMixedLightmap = ivec2(gcrNormalLightVisible[3][0], gcrNormalLightVisible[3][1]);
                     gcrOverrideOverlay = ivec2(0, 10);
                 }
                 
@@ -466,7 +462,7 @@ public class IrisShaderCompatMixin {
         String[] split = program.split("\n");
         for (int i = 0; i < split.length; i++) {
             if (!(split[i].startsWith("in") ||
-                    "gcrTransformedNormal = mat3(data.PacketNormalLightVisible) * iris_Normal".equals(split[i]) ||
+                    "gcrTransformedNormal = mat3(gcrNormalLightVisible) * iris_Normal".equals(split[i]) ||
                     "gcrTransformedNormal = iris_Normal;".equals(split[i]))) {
                 split[i] = split[i].replaceAll("\\biris_Normal\\b(?!\\w)", "gcrTransformedNormal");
             }

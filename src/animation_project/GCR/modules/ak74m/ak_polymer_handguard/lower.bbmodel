@@ -20,11 +20,11 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-24.3, -37.8, 26.5],
+			"origin": [-24.3, -37.8, 27.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": false,
+			"visibility": true,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -105,7 +105,7 @@
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": false,
+			"visibility": true,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -8255,9 +8255,9 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -8278,7 +8278,7 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8294,17 +8294,17 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -85.8, 26.5],
+			"origin": [-26.3, -85.8, 27.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "L_MALE_PIVOT",
@@ -8317,14 +8317,14 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -37.8, 26.5],
+			"origin": [-26.3, -37.8, 27.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8347,7 +8347,7 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8370,7 +8370,7 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": false,
+			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8384,7 +8384,7 @@
 				"c2170a8d-4348-b120-4a52-672042948ff5",
 				{
 					"uuid": "fe5cd228-4ca7-1a98-d0d1-a9ae0083ce81",
-					"isOpen": false,
+					"isOpen": true,
 					"children": [
 						{
 							"uuid": "04c49c4b-09c2-5672-1f00-defc581b35ae",

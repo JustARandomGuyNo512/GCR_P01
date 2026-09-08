@@ -58,6 +58,7 @@ public class BufferedBoneMeshModel {
      * 渲染工具
      * */
     protected FloatBuffer boneStatusUboBuffer;
+    private final BoneUniformBuffer boneUbo = new BoneUniformBuffer();
 
     // UBO 的 OpenGL ID
     private int uboId = -1;
@@ -167,17 +168,18 @@ public class BufferedBoneMeshModel {
             this.uvs[(vertexTail + i) * 2] = vertex.u;
             this.uvs[(vertexTail + i) * 2 + 1] = vertex.v;
         }
-        this.boneIndices[entry.getKey().index] = vertexTail;
+        int rangeIndex = entry.getKey().index * 2;
+        this.boneIndices[rangeIndex] = vertexTail;
         vertexTail += vertices.size();
-        this.boneIndices[entry.getKey().index + 1] = vertexTail;
+        this.boneIndices[rangeIndex + 1] = vertexTail;
         return vertexTail;
     }
 
     private BoneRenderStatus createBoneRenderStatus(Bone bone, int vertexTail) {
         return new BoneRenderStatus(
                 bone.index,
-                this.boneIndices[bone.index],
-                this.boneIndices[bone.index + 1]);
+                this.boneIndices[bone.index * 2],
+                this.boneIndices[bone.index * 2 + 1]);
     }
 
     public Bone getBone(String name) {
@@ -208,7 +210,9 @@ public class BufferedBoneMeshModel {
         PoseStack poseStack = new PoseStack();
         poseStack.setIdentity();
         compileVertexToBuffer(rawBuilder, poseStack.last());
-        checkOrCreateUBO();
+        if (!boneUbo.create(renderableBoneStatusList.size())) {
+            throw new IllegalStateException("GCR requires <= 128 renderable bones and a 16 KiB uniform block");
+        }
         MeshData rawData = rawBuilder.build();
         if (rawData != null) {
             if (type.sortOnUpload()) {
@@ -268,8 +272,8 @@ public class BufferedBoneMeshModel {
         int boneIndex = 0;
         for (BoneRenderStatus status : renderableBoneStatusList) {
             Bone bone = IndexToBone.get(status.boneIndex);
-            int vertexStart = boneIndices[bone.index];
-            int vertexEnd = boneIndices[bone.index + 1];
+            int vertexStart = boneIndices[bone.index * 2];
+            int vertexEnd = boneIndices[bone.index * 2 + 1];
             renderingVertexCount += bone.vertexCount;
             for (int i = vertexStart; i < vertexEnd; i++) {
                 int posIndex = i * 3;
@@ -300,6 +304,7 @@ public class BufferedBoneMeshModel {
     }
     protected void _release() {
         if (RenderSystem.isOnRenderThread()) {
+            boneUbo.close();
             if (uboId != -1) {
                 GL15.glDeleteBuffers(uboId);
                 uboId = -1;
@@ -402,16 +407,14 @@ public class BufferedBoneMeshModel {
 
     protected void renderInner(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
         afterUniformLoaded(shader, isFirstPerson, isShadowPass, partialTicks);
-        draw(vertexCount, 0);
+        draw(renderableBoneStatusList.stream().mapToInt(status -> status.vertexCount).sum(), 0);
     }
 
     public void prepareUbo() {
+        boneUbo.beginWrite();
         for (BoneRenderStatus status : renderableBoneStatusList) {
-            loadMat4(status.pose.pose());
-            loadMat3(status.pose.normal());
-            loadLightAndVisible(status);
+            boneUbo.putBone(status.pose, status.lightmapUV, status.visible);
         }
-        boneStatusUboBuffer.flip();
     }
 
     public static boolean isCurrentSupportGcrRender() {
@@ -440,6 +443,8 @@ public class BufferedBoneMeshModel {
     }
 
     public boolean checkShaderUbo(int shaderProgramId) {
+        return boneUbo.bindProgram(shaderProgramId);
+        /*
         if (uboId == -1) {
             return false;
         }
@@ -457,16 +462,18 @@ public class BufferedBoneMeshModel {
             lastKnownProgramId = shaderProgramId;
         }
 
-        return true;
+        return true; */
     }
 
     public void uploadUbo() {
+        boneUbo.uploadAndBind();
+        /*
         //重新绑定ubo buffer base以解决某些intel老旧集成显卡的ubo访问问题，也许可以解决问题。。。
         GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, 0);
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
         glBufferSubData(GL31.GL_UNIFORM_BUFFER, 0, boneStatusUboBuffer);
         glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
-        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId);
+        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId); */
     }
 
     protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {}

@@ -10,13 +10,8 @@ in ivec2 UV1;
 in ivec2 UV2;//not used
 in vec3 Normal;
 
-struct GcrBoneData {
-    mat4 TransMat;
-    mat4 PacketNormalLightVisible;
-};
-
-layout (std140, binding = 0) uniform GcrBoneUBO {
-    GcrBoneData bones[128];
+layout (std140) uniform GcrBoneUBO {
+    vec4 gcrBoneData[1024];
 };
 
 uniform sampler2D Sampler1;
@@ -41,24 +36,26 @@ out vec2 texCoord0;
 out vec3 muzzleLightContribution;
 
 void main() {
-    int boneId = UV1.x;
-    GcrBoneData data = bones[boneId];
+    int boneId = clamp(UV1.x, 0, 127);
+    int base = boneId * 8;
+    mat4 transMat = mat4(gcrBoneData[base], gcrBoneData[base + 1], gcrBoneData[base + 2], gcrBoneData[base + 3]);
+    mat4 normalLightVisible = mat4(gcrBoneData[base + 4], gcrBoneData[base + 5], gcrBoneData[base + 6], gcrBoneData[base + 7]);
 
 
-    bool visible = data.PacketNormalLightVisible[3][2] > 0.5;
+    bool visible = normalLightVisible[3][2] > 0.5;
     if (!visible) {
         gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
         return;
     }
 
 
-    mat3 normalTrans = mat3(data.PacketNormalLightVisible);
+    mat3 normalTrans = mat3(normalLightVisible);
     vec3 transformedNormal = normalTrans * Normal;
     transformedNormal = normalize(transformedNormal);
-    vec4 transformedPos = data.TransMat * vec4(Position, 1.0);
+    vec4 transformedPos = transMat * vec4(Position, 1.0);
 
 
-    ivec2 light = ivec2(data.PacketNormalLightVisible[3][0], data.PacketNormalLightVisible[3][1]);
+    ivec2 light = ivec2(normalLightVisible[3][0], normalLightVisible[3][1]);
     gl_Position = ProjMat * ModelViewMat * transformedPos;
 
 

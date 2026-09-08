@@ -97,7 +97,7 @@ public class ModularModel extends BufferedBoneMeshModel implements IModularModel
                 return;
             }
             if (progress < 0.1f) {
-                progress = progress >= 0.05f ? 0 : (0.05f - progress) * 20f;
+                progress = progress >= 0.04f ? 0 : (0.04f - progress) * 25f;
                 float r = Client.WEAPON_STATUS.getMuzzleFlashRadius();
                 if (Client.isUsingIrisShader) {
                     r *= 0.25f;
