@@ -51,10 +51,10 @@ public class AnimationEventBus {
                 eventContext.setEventRenderNode(node);
                 eventContext.setStates(node.getStates());
                 registry.callback.onTriggered(eventContext);
+                controller.clearNode();
                 if (eventContext.isCanceled()) {
                     break;
                 }
-                controller.clearNode();
             }
         }
     }

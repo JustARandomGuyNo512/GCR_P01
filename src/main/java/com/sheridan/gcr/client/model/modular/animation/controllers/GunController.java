@@ -32,7 +32,7 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
             MAIN.play(anim(name).coverState());
         });
 
-        subscribe(EventType.RELOAD_SUB_WEAPON, 0, (context) -> {
+        subscribe(EventType.RELOAD_SUB_WEAPON, 10, (context) -> {
             String name = context.getParam("animation_name");
             MAIN.play(anim(name).coverState());
         });
@@ -43,10 +43,12 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
             }
         });
 
-        subscribe(EventType.CHECK_SUB_WEAPON, 0, (context) -> {
+        subscribe(EventType.CHECK_SUB_WEAPON, 10, (context) -> {
             if (isTrackClear(MAIN)) {
                 String animationName = context.getParam("animation_name");
                 CHECK.play(anim(animationName));
+            } else {
+                context.cancel();
             }
         });
 

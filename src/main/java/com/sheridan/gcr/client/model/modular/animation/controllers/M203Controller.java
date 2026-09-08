@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.model.modular.animation.controllers;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.modular.IModularModel;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.Callback;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.modules.M203Model;
 import net.neoforged.api.distmarker.Dist;
