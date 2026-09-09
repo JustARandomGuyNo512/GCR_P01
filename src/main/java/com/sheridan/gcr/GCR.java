@@ -116,6 +116,8 @@ public class GCR {
             ITEMS.register(GCRModules.MOE_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.MOE_GRIP));
     public static final DeferredItem<Item> AK_POLYMER_GRIP_ITEM =
             ITEMS.register(GCRModules.AK_POLYMER_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_POLYMER_GRIP));
+    public static final DeferredItem<Item> RK9_GRIP_ITEM =
+            ITEMS.register(GCRModules.RK9_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.RK9_GRIP));
 
 
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
@@ -242,6 +244,7 @@ public class GCR {
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(MOE_GRIP_ITEM.get());
                                 output.accept(AK_POLYMER_GRIP_ITEM.get());
+                                output.accept(RK9_GRIP_ITEM.get());
 
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());

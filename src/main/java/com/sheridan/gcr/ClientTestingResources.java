@@ -339,6 +339,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_GRIP, "model_assets/gltf/ak_polymer_grip.gltf", "model_assets/gltf/ak_polymer_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.MOE_GRIP, "model_assets/gltf/moe_grip.gltf", "model_assets/gltf/moe_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.RK9_GRIP, "model_assets/gltf/rk9_grip.gltf", "model_assets/gltf/rk9_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
 
         ModelRegistrationManager.registerModel(GCRModules.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));

@@ -48,7 +48,11 @@ public final class GCRModules {
             .addTags("rear_grip", "ar");
 
     public static final IModular AK_POLYMER_GRIP = new RiflePistolGrip(
-            RL( "ak_polymer_grip"), 0.08f, 0.08f, 0.13f, 0.05f)
+            RL( "ak_polymer_grip"), 0.08f, 0.08f, 0.13f, 0.06f)
+            .addTags("rear_grip", "ak");
+
+    public static final IModular RK9_GRIP = new RiflePistolGrip(
+            RL( "rk9_grip"), 0.08f, 0.1f, 0.15f, 0.13f)
             .addTags("rear_grip", "ak");
 
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f, 1.0f,
