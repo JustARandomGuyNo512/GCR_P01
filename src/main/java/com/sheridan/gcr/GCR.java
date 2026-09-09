@@ -145,6 +145,8 @@ public class GCR {
             ITEMS.register(GCRModules.MOE_CARBINE_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.MOE_CARBINE_STOCK));
     public static final DeferredItem<Item> STOCK_6P34_ITEM =
             ITEMS.register(GCRModules.STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModules.STOCK_6P34));
+    public static final DeferredItem<Item> PT1_STOCK_ITEM =
+            ITEMS.register(GCRModules.PT1_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.PT1_STOCK));
 
 
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
@@ -254,6 +256,7 @@ public class GCR {
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(MOE_CARBINE_STOCK_ITEM.get());
                                 output.accept(STOCK_6P34_ITEM.get());
+                                output.accept(PT1_STOCK_ITEM.get());
 
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());

@@ -135,6 +135,7 @@ public final class GCRModules {
     public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
     public static final IModular MOE_CARBINE_STOCK = new Stock(RL( "moe_carbine_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
     public static final IModular STOCK_6P34 = new Stock(RL( "6p34_stock"), 0.3f, 0.18f, 0.18f).addTags("stock", "ak");
+    public static final IModular PT1_STOCK = new Stock(RL( "pt1_stock"), 0.48f, 0.2f, 0.2f).addTags("stock", "ak");
 
 
     public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar", "5.56x45");
