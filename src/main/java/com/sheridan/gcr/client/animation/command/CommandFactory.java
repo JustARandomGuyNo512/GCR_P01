@@ -41,5 +41,6 @@ public class CommandFactory {
         INSTANCE.registerCommandProvider("show_msg", ShowMsgCommand::new);
         INSTANCE.registerCommandProvider("show_mag_ammo_left", ShowMagAmmoLeftCommand::new);
         INSTANCE.registerCommandProvider("shadow_node_render", ShadowNodeRender::new);
+        INSTANCE.registerCommandProvider("show_gp25_grenade_left", ShowGP25GrenadeLeft::new);
     }
 }

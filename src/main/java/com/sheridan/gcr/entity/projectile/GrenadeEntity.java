@@ -45,6 +45,7 @@ public class GrenadeEntity extends Entity{
     Predicate<Entity> GENERIC_TARGETS = (input) -> input instanceof LivingEntity && !input.isSpectator() && input.isAlive();
     public LivingEntity shooter;
     int bounced = 0;
+    public int modelType;
     float explodeRadius;
 
     public GrenadeEntity(EntityType<? extends Entity> pEntityType, Level pLevel) {
@@ -68,6 +69,10 @@ public class GrenadeEntity extends Entity{
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
         this.explodeRadius = explodeRadius;
+    }
+
+    public void setModelType(int modelType) {
+        this.modelType = modelType;
     }
 
     public void shootFromRotation(LivingEntity pShooter, float pX, float pY, float pZ, float pVelocity, float pInaccuracy, float explodeRadius) {
@@ -395,7 +400,7 @@ public class GrenadeEntity extends Entity{
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity entity) {
         return new ClientboundAddEntityPacket(
                 this.getId(), this.getUUID(), this.getX(), this.getY(), this.getZ(), this.getXRot(),
-                this.getYRot(), this.getType(), 0, this.getDeltaMovement(), this.getYHeadRot()
+                this.getYRot(), this.getType(), modelType, this.getDeltaMovement(), this.getYHeadRot()
         );
     }
 
@@ -407,6 +412,7 @@ public class GrenadeEntity extends Entity{
         double d2 = packet.getZ();
         this.setPos(d0, d1, d2);
         this.noCulling = true;
+        this.modelType = packet.getData();
     }
 }
 

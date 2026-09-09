@@ -6,6 +6,7 @@ import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
 import com.sheridan.gcr.client.model.modular.*;
 import com.sheridan.gcr.client.model.modular.animation.controllers.AKController;
 import com.sheridan.gcr.client.model.modular.animation.controllers.ARMainController;
+import com.sheridan.gcr.client.model.modular.animation.controllers.GP25Controller;
 import com.sheridan.gcr.client.model.modular.animation.controllers.M203Controller;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationController;
 import com.sheridan.gcr.client.model.modular.modules.*;
@@ -26,6 +27,7 @@ import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
 import com.sheridan.gcr.modularSys.modules.views.IFlashLightView;
+import com.sheridan.gcr.modularSys.modules.views.IGP25View;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -81,7 +83,11 @@ public class ClientTestingResources {
                         Map.entry("remove_stuck", "ak74m_remove_stuck"),
                         Map.entry("remove_stuck_empty", "ak74m_remove_stuck_empty"),
                         Map.entry("check_chamber", "ak74m_check_chamber"),
-                        Map.entry("check_chamber_simple", "ak74m_check_chamber_simple")
+                        Map.entry("check_chamber_simple", "ak74m_check_chamber_simple"),
+                        Map.entry("reload_grenade", "ak74m_reload_grenade_gp25"),
+                        Map.entry("reload_grenade.G", "ak74m_reload_grenade_gp25.g"),
+                        Map.entry("check_grenade.G", "ak74m_check_grenade_gp25.g"),
+                        Map.entry("check_grenade", "ak74m_check_grenade_gp25")
                 )
         );
         // 弹匣状态动画
@@ -121,6 +127,13 @@ public class ClientTestingResources {
                         "empty", "m203_empty",
                         "base", "m203_base",
                         "fired", "m203_fired")
+        );
+
+        // GP25 状态动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/gp25.states.json",
+                Map.of("empty", "gp25_empty",
+                        "base", "gp25_base")
         );
 
         // ==================== 2. 模型注册与自定义 Lambda 逻辑 ====================
@@ -190,7 +203,9 @@ public class ClientTestingResources {
                             "check_chamber_simple", "gcr:ak74m_check_chamber_simple",
                             "remove_stuck", "gcr:ak74m_remove_stuck",
                             "remove_stuck_empty", "gcr:ak74m_remove_stuck_empty",
-                            "check_mag", "gcr:ak74m_check_mag"
+                            "check_mag", "gcr:ak74m_check_mag",
+                            "reload_grenade", "gcr:ak74m_reload_grenade_gp25",
+                            "check_grenade", "gcr:ak74m_check_grenade_gp25"
                     ));
                     model.bindController(controller);
                     model.callInitAnimation();
@@ -204,7 +219,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
                 meshData -> {
-                    M203Model testM203Model = new M203Model(meshData, new TestM203Viewer((IM203View) GCRModules.M203), new MuzzleFlashRenderer(
+                    M203Model testM203Model = new M203Model(meshData, new M203Viewer((IM203View) GCRModules.M203), new MuzzleFlashRenderer(
                             new MuzzleEntry("no1", "MUZZLE_FLASH", "",
                                     3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
                                     1.8f, CommonMuzzleSmokeEffects.COMMON,
@@ -217,6 +232,25 @@ public class ClientTestingResources {
                     testM203Model.callInitTrack();
                     testM203Model.callInitEventSubscriptions();
                     return testM203Model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.GP25, "model_assets/gltf/gp25.gltf", "model_assets/gltf/gp25.png", true,
+                meshData -> {
+                    GP25Model testGP25Model = new GP25Model(meshData, new GP25Viewer((IGP25View) GCRModules.GP25), new MuzzleFlashRenderer(
+                            new MuzzleEntry("no1", "MUZZLE_FLASH", "",
+                                    3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
+                                    1.8f, CommonMuzzleSmokeEffects.COMMON,
+                                    1.5f)
+                    )
+                    );
+                    IAnimationController<?> controller = new GP25Controller();
+                    testGP25Model.bindController(controller);
+                    testGP25Model.callInitAnimation();
+                    testGP25Model.callInitTrack();
+                    testGP25Model.callInitEventSubscriptions();
+                    return testGP25Model;
                 }
         );
 

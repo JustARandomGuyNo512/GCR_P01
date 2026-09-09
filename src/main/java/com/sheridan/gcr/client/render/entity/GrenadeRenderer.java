@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.sheridan.gcr.client.render.entity.model.GP25;
 import com.sheridan.gcr.client.render.entity.model.M433;
 import com.sheridan.gcr.entity.projectile.GrenadeEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,14 +16,18 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
-public class M433Renderer extends EntityRenderer<GrenadeEntity> {
-    public M433Renderer(EntityRendererProvider.Context context) {
+public class GrenadeRenderer extends EntityRenderer<GrenadeEntity> {
+    public GrenadeRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GrenadeEntity entity) {
-        return M433.TEXTURE;
+        if (entity.modelType == 0) {
+            return M433.TEXTURE;
+        } else {
+            return GP25.TEXTURE;
+        }
     }
 
     @Override
@@ -43,7 +48,12 @@ public class M433Renderer extends EntityRenderer<GrenadeEntity> {
                         entity.getXRot()
                 )
         ));
-        M433.INSTANCE.render(poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+        if (entity.modelType == 0) {
+            M433.INSTANCE.render(poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+        } else {
+            GP25.INSTANCE.render(poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+        }
+
         poseStack.popPose();
     }
 }

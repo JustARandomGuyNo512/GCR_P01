@@ -9,7 +9,7 @@ import com.sheridan.gcr.client.events.ControllerEvents;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.delayed.DelayedRenderTaskHandler;
 import com.sheridan.gcr.client.render.entity.BulletRenderer;
-import com.sheridan.gcr.client.render.entity.M433Renderer;
+import com.sheridan.gcr.client.render.entity.GrenadeRenderer;
 import com.sheridan.gcr.client.render.events.GuiEvents;
 import com.sheridan.gcr.client.render.fx.*;
 import com.sheridan.gcr.client.render.fx.particles.ModParticles;
@@ -171,6 +171,8 @@ public class GCR {
             ITEMS.register(GCRModules.M203.getSimpleID(), () -> new ModuleItem<>(GCRModules.M203));
     public static final DeferredItem<Item> URGI_BARREL_ITEM =
             ITEMS.register(GCRModules.URGI_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModules.URGI_BARREL));
+    public static final DeferredItem<Item> GP25_ITEM =
+            ITEMS.register(GCRModules.GP25.getSimpleID(), () -> new ModuleItem<>(GCRModules.GP25));
 
 
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
@@ -276,6 +278,7 @@ public class GCR {
                                 output.accept(KAC_FORWARD_GRIP_ITEM.get());
                                 output.accept(RK_6_GRIP_ITEM.get());
                                 output.accept(M203_ITEM.get());
+                                output.accept(GP25_ITEM.get());
                                 output.accept(VORTEX_RAZOR_RED_DOT_ITEM.get());
                                 output.accept(EOTECH_EXPS3_ITEM.get());
                                 output.accept(PEQ_15_ITEM.get());
@@ -573,7 +576,7 @@ public class GCR {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.BULLET.get(), BulletRenderer::new);
-            event.registerEntityRenderer(ModEntities.GRENADE.get(), M433Renderer::new);
+            event.registerEntityRenderer(ModEntities.GRENADE.get(), GrenadeRenderer::new);
         }
     }
 }

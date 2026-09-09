@@ -11,11 +11,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Map;
 
-public class M203ReloadTask extends GunTask<IGun> {
+public class SubWeaponReloadTask extends GunTask<IGun> {
     private final int sendPacketDelay;
     private final String nodeId;
     private final String gunId;
-    public M203ReloadTask(ItemStack itemStack, IGun gun, int lengthInTicks, int sendPacketDelay,String nodeId, String gunId) {
+    public SubWeaponReloadTask(ItemStack itemStack, IGun gun, int lengthInTicks, int sendPacketDelay, String nodeId, String gunId) {
         super(itemStack, gun, lengthInTicks);
         this.sendPacketDelay = sendPacketDelay;
         this.nodeId = nodeId;

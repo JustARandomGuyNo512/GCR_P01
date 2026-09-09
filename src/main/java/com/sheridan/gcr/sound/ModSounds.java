@@ -20,6 +20,7 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> AR_CHARGE_FORWARD = registerSound("ar_charge_forward", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_CLOSE = registerSound("m203_close", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_FIRE = registerSound("m203_fire", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> GP25_FIRE = registerSound("gp25_fire", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_OPEN = registerSound("m203_open", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_SHELL_INSERT = registerSound("m203_shell_insert", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> M203_SHELL_OUT = registerSound("m203_shell_out", "gcr");
@@ -32,6 +33,7 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> AR_BOLT_LOCK = registerSound("ar_bolt_lock", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_SHELL_IN = registerSound("ar_shell_in", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AR_STUCK_REMOVE = registerSound("ar_stuck_remove", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> GP25_LOAD_GRENADE = registerSound("gp25_load_grenade", "gcr");
 
     public static DeferredHolder<SoundEvent, SoundEvent> AK74M_BOLT_BACK = registerSound("ak74m_boltback", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AK74M_BOLT_FORWARD = registerSound("ak74m_boltforward", "gcr");

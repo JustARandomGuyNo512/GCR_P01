@@ -14,7 +14,7 @@ import com.sheridan.gcr.modularSys.Direction;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
-import com.sheridan.gcr.modularSys.modules.views.IM203View;
+import com.sheridan.gcr.modularSys.modules.views.IGP25View;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.other.CheckingTask;
 import com.sheridan.gcr.modularSys.task.reload.SubWeaponReloadTask;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IM203View {
+public class GP25 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerModular, IStateModular, IGP25View {
     private final IVoxelHandler voxelHandler;
     private final AdditionalPropModifier modifier;
 
@@ -59,7 +59,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
     protected float explodeRadius;
 
 
-    public M203(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
+    public GP25(ResourceLocation id, float weight, IVoxelHandler voxelHandler, AdditionalPropModifier modifier,
                 float reloadLengthInSeconds, float reloadSendPacketDelayInSeconds,
                 float impulseZ, float impulsePitch, float impulseYaw, float impulseRoll,
                 float spread, float velocity, float explodeRadius) {
@@ -119,7 +119,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         if (nodeStatesTag == null) {
             return;
         }
-        if (subWeapon instanceof M203) {
+        if (subWeapon instanceof GP25) {
             CHAMBER_STATUS.set(CHAMBER_LOADED, nodeStatesTag);
             gun.notifyDataChanged(itemStack);
         }
@@ -175,12 +175,12 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         Level level = player.level();
 
         GrenadeEntity grenade = new GrenadeEntity(ModEntities.GRENADE.get(), level);
+        grenade.setModelType(1);
         grenade.shootFromRotation(player, pitch, yaw, 0.0F, velocity, spread, explodeRadius);
         level.addFreshEntity(grenade);
-        grenade.setModelType(0);
-        CHAMBER_STATUS.set(CHAMBER_FIRED, nodeStatesTag);
+        CHAMBER_STATUS.set(CHAMBER_EMPTY, nodeStatesTag);
         int latency = player.connection.latency();
-        ModSounds.sound(3F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.M203_FIRE.get());
+        ModSounds.sound(3F, (float) (0.9f + Math.random() * 0.1f), player, ModSounds.GP25_FIRE.get());
         // 广播开火事件
         BroadcastLivingFirePacket firePacket = new BroadcastLivingFirePacket(
                 player.getId(),
@@ -220,7 +220,7 @@ public class M203 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         float gunKickYaw = recoilUpdater.getGunKickYaw();
         PacketDistributor.sendToServer(new SubWeaponFirePacket(gunId, nodeId, gunKickPitch, gunKickYaw));
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
-        CHAMBER_STATUS.set(CHAMBER_FIRED, states);
+        CHAMBER_STATUS.set(CHAMBER_EMPTY, states);
     }
 
 

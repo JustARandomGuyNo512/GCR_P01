@@ -96321,7 +96321,7 @@
 			"primary_selected": false
 		},
 		{
-			"name": "BARREL",
+			"name": "UNDER_BARREL",
 			"uuid": "77ffe965-d1e4-1968-6f63-ec606e96ba93",
 			"export": true,
 			"locked": false,

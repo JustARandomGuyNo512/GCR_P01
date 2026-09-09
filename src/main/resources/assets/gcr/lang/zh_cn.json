@@ -102,6 +102,8 @@
   "gcr.ani.mag_ammo_left_half": "还剩一半左右",
   "gcr.ani.mag_ammo_left_three_quarters": "还剩大约75%",
   "gcr.ani.mag_ammo_left_almost_full": "几乎满的",
+  "gcr.ani.gp25_empty": "似乎是空的",
+  "gcr.ani.gp25_loaded": "有的兄弟,有的!",
   "gcr.overlay.stuck": "卡住了",
   "gcr.overlay.require_mag": "缺少弹匣!",
 
@@ -153,5 +155,7 @@
   "gcr:6p34_dustcover": "6P34 防尘盖",
   "gcr:pdc_dustcover": "PDC 防尘盖",
   "gcr:b13_bracket": "B13 导轨支架",
-  "gcr:dtk1_compensator": "DTK-1 制退器"
+  "gcr:dtk1_compensator": "DTK-1 制退器",
+  "gcr:m203": "M203榴弹发射器",
+  "gcr:gp25": "GP-25榴弹发射器"
 }

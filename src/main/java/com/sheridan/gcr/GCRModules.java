@@ -82,6 +82,14 @@ public final class GCRModules {
             0.4f, 4f, 4)
             .addTags("under_barrel", "sub_weapon", "ar");
 
+    public static final IModular GP25 = new GP25(
+            RL( "gp25"), 1.5f,
+            new VoxelHandler(RL("common/voxel_shapes/gp25.voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.1f, 0.1f, -0.03f, -0.05f),
+            3f, 1.8f, 12f, 14f, 6f, 125f,
+            0.5f, 3f, 4.4f)
+            .addTags("under_barrel", "sub_weapon", "ak");
+
     public static final IModular A2_CARRY_HANDLE = new IronSight(
             RL( "a2_carry_handle"),
             new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"), true, true),
@@ -438,6 +446,7 @@ public final class GCRModules {
             .addSlot(new SingleFixedSlot("DUSTCOVER").setFilter(SlotFilters.hasAllTags("ak", "dustcover")))
             .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("ak", "muzzle", "5.45x39")))
             .addSlot(new SingleFixedSlot("MOUNT").setFilter(SlotFilters.hasAllTags("ak", "mount")))
+            .addSlot(new SingleFixedSlot("UNDER_BARREL").setFilter(SlotFilters.hasAllTags("under_barrel", "ak")))
             .setDefaultModuleInitHandler(workspace -> {
                 Unit root = workspace.getRootUnit();
                 workspace.addChild(root, "MUZZLE", AK74_MUZZLE_BRAKE.getID());

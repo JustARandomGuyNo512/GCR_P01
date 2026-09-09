@@ -6,8 +6,8 @@ import com.sheridan.gcr.client.model.modular.state.StateViewer;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 
-public class TestM203Viewer extends StateViewer<IM203View> {
-    public TestM203Viewer(IM203View view) {
+public class M203Viewer extends StateViewer<IM203View> {
+    public M203Viewer(IM203View view) {
         super(view);
     }
 

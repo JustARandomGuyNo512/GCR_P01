@@ -27,5 +27,8 @@
   "ak74m_fire_suppressed": {"sounds": ["gcr:ak/ak74m_fire_suppressed" ]},
 
   "btn": {"sounds": ["gcr:generic/btn" ]},
-  "gun_stuck": {"sounds": ["gcr:generic/gun_stuck" ]}
+  "gun_stuck": {"sounds": ["gcr:generic/gun_stuck" ]},
+
+  "gp25_fire": {"sounds": ["gcr:gp25/gp25_fire" ]},
+  "gp25_load_grenade": {"sounds": ["gcr:gp25/gp25_load_grenade" ]}
 }
