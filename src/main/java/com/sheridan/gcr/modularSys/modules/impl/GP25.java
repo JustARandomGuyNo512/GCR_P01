@@ -212,7 +212,7 @@ public class GP25 extends SubWeapon implements IVoxelHandlerModule, IArmHandlerM
         }
         IRecoilUpdater recoilUpdater = RecoilHandler.INSTANCE.getRecoilUpdater();
         recoilUpdater.applyImpulse(-impulseZ, impulsePitch, impulseYaw, 0, 0, impulseRoll);
-        SoundEvent soundEvent = ModSounds.M203_FIRE.get();
+        SoundEvent soundEvent = ModSounds.GP25_FIRE.get();
         ModSounds.sound(1, 1, player, soundEvent);
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, nodeId, System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.nanoTime();
