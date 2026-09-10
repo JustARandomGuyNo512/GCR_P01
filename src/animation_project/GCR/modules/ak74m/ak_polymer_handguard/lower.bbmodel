@@ -20,7 +20,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-24.3, -37.8, 27.5],
+			"origin": [-24.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -8294,7 +8294,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -85.8, 27.5],
+			"origin": [-26.3, -85.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -8317,7 +8317,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -37.8, 27.5],
+			"origin": [-26.3, -37.8, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
