@@ -51,4 +51,6 @@ public interface IAnimationController<T extends IModularModel> {
     boolean isTrackClear(Track<?> track);
 
     boolean areTracksClear(String... trackNames);
+
+    ModuleRenderContext getUsingContext();
 }

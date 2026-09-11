@@ -21,7 +21,7 @@ public abstract class AnimationController<T extends IModularModel> implements IA
     protected final Map<String, Track<T>> trackMap = new HashMap<>();
     protected final Map<String, AnimationDef> animationPool = new HashMap<>();
     protected final List<EventRegistry> eventRegistries = new ArrayList<>();
-    private ModuleRenderContext tempContext = null;
+    private volatile ModuleRenderContext tempContext = null;
 
     @Override
     public void firstPersonSubscriptions(T model) {
@@ -141,6 +141,11 @@ public abstract class AnimationController<T extends IModularModel> implements IA
     @Override
     public void onUsingContext(ModuleRenderContext context) {
         this.tempContext = context;
+    }
+
+    @Override
+    public ModuleRenderContext getUsingContext() {
+        return tempContext;
     }
 
     @Override
