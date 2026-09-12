@@ -107,6 +107,9 @@
   "gcr.overlay.stuck": "卡住了",
   "gcr.overlay.require_mag": "缺少弹匣!",
 
+  "gcr.message.gun_data_reset": "数据版本更新时出现了不可解决的错误，服务器已重置数据并返还了部分模块（$count 个）",
+  "gcr.message.gun_data_pruned": "数据版本更新后，该武器上有部分模块已不再合法，服务器已将其移除并返还了 $count 个模块",
+
   "death.attack.custom_explosion": "你炸了",
 
   "gcr:m4a1": "M4A1",

@@ -34140,7 +34140,7 @@
 			"mirror_uv": false,
 			"visibility": false,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -34348,7 +34348,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
-			"primary_selected": true
+			"primary_selected": false
 		}
 	],
 	"outliner": [
@@ -34359,7 +34359,7 @@
 				"c863e6d9-3042-2c88-fb53-bdf08e868bab",
 				{
 					"uuid": "fe5cd228-4ca7-1a98-d0d1-a9ae0083ce81",
-					"isOpen": false,
+					"isOpen": true,
 					"children": [
 						{
 							"uuid": "04c49c4b-09c2-5672-1f00-defc581b35ae",

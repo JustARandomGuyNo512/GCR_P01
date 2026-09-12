@@ -62,12 +62,6 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
         slotProvider.loadFromJson(jsonObject.getAsJsonObject("slots"));
     }
 
-    @Override
-    protected @NotNull CompoundTag getInitialDataTag() {
-        return super.getInitialDataTag();
-    }
-
-
     public SlottedGunMainPart setDefaultModuleInitHandler(Consumer<IWorkSpace> handler) {
         this.onModuleTreeInit = handler;
         return this;

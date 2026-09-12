@@ -53,7 +53,11 @@ public interface IBuilder {
 
     ICollisionHandler getCollisionHandler();
 
-    void init(ListTag data);
+    /**
+     * 使用data的数据进行初始化，！！！并清空data！！！
+     *
+     * */
+    void initAndClear(ListTag data);
 
     IAccessor getAccessor();
 

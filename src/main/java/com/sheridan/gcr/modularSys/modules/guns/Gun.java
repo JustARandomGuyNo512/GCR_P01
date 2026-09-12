@@ -54,6 +54,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -72,6 +73,17 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     private final List<IFireMode<?>> fireModes;
     private final Map<String, IFireMode<?>> fireModeMap;
     private final SplittableRandom random = new SplittableRandom((long) (Math.random() * 100000));
+
+    /**
+     * 预计算的 InitialDataTag 母本，与当前 {@link Gun} 实例（即当前枪械物品）绑定。
+     *
+     * <p>由启动阶段通过 {@link #warmUpInitialDataTag(String)} 填充；只有 {@code volatile}
+     * 写入、内容一经生成便不再改动。{@code null} 表示尚未预热。</p>
+     */
+    private volatile @Nullable CompoundTag cachedInitialDataTag;
+
+    /** 生成重入保护：生成过程本身若间接读回 InitialDataTag，必须直接生成而不是取缓存。 */
+    private boolean generatingInitialDataTag;
 
     public Gun(ResourceLocation id, BaseProperties baseProperties, DisplayData displayData, RecoilData recoilData, List<IFireMode<?>> fireModes) {
         super(id, true, baseProperties.weight.getDefault(), Direction.NONE);
@@ -546,8 +558,87 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         }
     }
 
+    /**
+     * 取该枪械的初始数据模板。
+     *
+     * <p>优先返回启动阶段预热好的缓存；缓存不可用时按原逻辑现算（并顺手补上缓存），
+     * 保证行为与改造前一致。缓存生成失败在预热阶段会直接崩游戏，详见
+     * {@link #warmUpInitialDataTag(String)}。</p>
+     *
+     * <p>返回的是缓存的<b>副本</b>：调用方（{@code checkAndGetRaw} 等）拿到的引用会被写进
+     * {@code CUSTOM_DATA} 并被原地修改，直接交出母本会让同一款枪的所有 ItemStack 共享同一个
+     * CompoundTag。</p>
+     */
     @NotNull
-    protected CompoundTag getInitialDataTag() {
+    protected final CompoundTag getInitialDataTag() {
+        if (generatingInitialDataTag) {
+            //生成过程中的间接回读：直接用正在构造的那一份，避免递归
+            return generateInitialDataTag();
+        }
+        CompoundTag cached = cachedInitialDataTag;
+        if (cached == null) {
+            //缓存缺失（例如预热之后又发生了资源重载）：补算，不静默返回半成品
+            GCR.LOGGER.warn("InitialDataTag cache miss for gun {}, generating on demand", id);
+            cached = generateInitialDataTag();
+            cachedInitialDataTag = cached;
+        }
+        return cached.copy();
+    }
+
+    /**
+     * 启动阶段预热：生成并缓存 InitialDataTag 母本。
+     *
+     * <p>成功与失败都会打日志，日志里带上端（client/dedicated_server）、枪械 id 与实现类、
+     * 耗时，以及生成出来的整份数据。生成过程中的任何异常都会带上枪械 id 重新抛出，
+     * 由调用方在启动阶段中断游戏——避免游戏中途才发现数据错误，导致存档数据被写坏。</p>
+     *
+     * @param gunId 该枪械在 {@code ModuleRegister} 中的注册 id，仅用于日志与异常信息
+     * @throws IllegalStateException 生成失败时抛出，内含枪械 id 与原始异常
+     */
+    public void warmUpInitialDataTag(@NotNull String gunId) {
+        String side = FMLEnvironment.dist.isClient() ? "client" : "dedicated_server";
+        long startedAt = System.nanoTime();
+        CompoundTag generated;
+        try {
+            generatingInitialDataTag = true;
+            generated = generateInitialDataTag();
+        } catch (Exception e) {
+            GCR.LOGGER.error("""
+                    ================================================================================
+                    FATAL: failed to generate initial data tag for gun '{}' ({}) on {}.
+                    This gun's item data would be corrupted at runtime, so startup is aborted.
+                    ================================================================================""", gunId, getClass().getName(), side, e);
+            throw new IllegalStateException(
+                    "Failed to generate InitialDataTag for gun " + gunId + " (" + getClass().getName() + ")", e);
+        } finally {
+            generatingInitialDataTag = false;
+        }
+        cachedInitialDataTag = generated;
+        if (GCR.LOGGER.isInfoEnabled()) {
+            //参数化日志的 toString 是在调用点求值的，先判级别再拼字符串，避免无谓开销
+            GCR.LOGGER.info("""
+                    [InitialDataTag] precomputed on {} | gun={} ({}) | took {} ms | size={} bytes\n{}""",
+                    side, gunId, getClass().getName(), (System.nanoTime() - startedAt) / 1_000_000L,
+                    generated.sizeInBytes(), generated);
+        }
+    }
+
+    /**
+     * 丢弃已预热的缓存，供资源重载后重新预热使用。
+     *
+     * <p>清空与随后的重新预热必须成对调用（见 {@code GCR#reWarmUpGunInitialData}），
+     * 否则窗口期内 {@link #getInitialDataTag()} 会退化成按需现算并打日志。</p>
+     */
+    public void clearInitialDataTagCache() {
+        cachedInitialDataTag = null;
+    }
+
+    /**
+     * 真正生成 InitialDataTag 的母本。这是唯一允许构建初始数据的地方，
+     * 外部一律经过 {@link #getInitialDataTag()} 取副本。
+     */
+    @NotNull
+    protected CompoundTag generateInitialDataTag() {
         CompoundTag dataModel = new CompoundTag();
         dataModel.putString(IDENTITY_ID_KEY, NONE);
         dataModel.putInt(MODIFY_ID_KEY, -1);

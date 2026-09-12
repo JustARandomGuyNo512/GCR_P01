@@ -107,6 +107,9 @@
   "gcr.overlay.stuck": "Jam",
   "gcr.overlay.require_mag": "Need a mag!",
 
+  "gcr.message.gun_data_reset": "An unrecoverable error occurred while updating weapon data. The server has reset this weapon's data and returned $count module(s).",
+  "gcr.message.gun_data_pruned": "Some modules on this weapon are no longer valid after the data update. The server removed them and returned $count module(s).",
+
   "death.attack.custom_explosion": "KABOOM!!!",
 
   "gcr:m4a1": "M4A1",

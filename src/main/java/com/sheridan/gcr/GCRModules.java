@@ -424,8 +424,8 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             5.3f, 10f,
-                            5.5f, 5.5f,
-                            15, 13,
+                            5.2f, 5.2f,
+                            16, 13,
                             0.15f, 0.6f,200.0f),
                     new RecoilController(
                             350f, 40f,
@@ -438,8 +438,8 @@ public final class GCRModules {
                             12f),
                     new VisualRecoilMix(
                             0.5f, 25.5f, 28, 1.5f, 0.9f, 1.6f,
-                            0.65f, 60f, 0.47f, 1.25f,  2.5f,
-                            0.011f, 0.35f
+                            0.66f, 60f, 0.47f, 1.25f,  2.5f,
+                            0.01f, 0.35f
                     )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))

@@ -69,7 +69,7 @@ public class CommitModuleTreePacket implements CustomPacketPayload, IPacket<Comm
                 ListTag originalModules = gunItem.getGun().getModulesTag(mainHandItem);
                 try {
                     IBuilder builder = new Builder();
-                    builder.init(packet.data);
+                    builder.initAndClear(packet.data);
                     List<ValidateResult> commit = builder.commit();
                     boolean hasError = false;
                     for (ValidateResult result : commit) {

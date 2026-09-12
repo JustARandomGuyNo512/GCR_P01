@@ -92,7 +92,7 @@ public class GunModifyContext {
             builder = new Builder();
             IGun gun = gunItem.getGun();
             ListTag modulesTag = gun.getModulesTag(itemStack).copy();
-            builder.init(modulesTag);
+            builder.initAndClear(modulesTag);
             validateResult = builder.checkWorkspace(true);
             if (validateResult.isCommitAllowed()) {
                 builder.commit();

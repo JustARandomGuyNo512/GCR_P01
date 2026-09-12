@@ -226,7 +226,7 @@ public class Builder implements IBuilder{
     }
 
     @Override
-    public void init(ListTag data) {
+    public void initAndClear(ListTag data) {
         if (data.isEmpty()) {
             return;
         }

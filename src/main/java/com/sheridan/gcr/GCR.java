@@ -29,6 +29,7 @@ import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
 import com.sheridan.gcr.modularSys.*;
 import com.sheridan.gcr.modularSys.modules.*;
+import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.util.io.PivotMapLoader;
@@ -62,6 +63,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -72,6 +74,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 import java.util.Collection;
+import java.util.Map;
 
 
 @Mod(GCR.MODID)
@@ -337,6 +340,17 @@ public class GCR {
         System.out.println("server started!");
     }
 
+    /**
+     * 服务端在专用服务器上真正可用的最早时机：此时 Minecraft 的注册已完成，
+     * 数据包（含 GCR 的 pivot/voxel 资源）已经通过 {@link #onAddReloadListeners} 注册的
+     * reload listener 装载完毕。在这里预热枪械初始数据缓存，任何生成失败都会当场崩溃，
+     * 而不是等到玩家实际用枪时才发现数据错误。
+     */
+    @SubscribeEvent
+    public void onServerAboutToStart(ServerAboutToStartEvent event) {
+        warmUpGunInitialData();
+    }
+
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         Commons.onServerStarted(event);
@@ -346,6 +360,49 @@ public class GCR {
     public void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PivotMapLoader.getServer());
         event.addListener(VoxelLoader.getServer());
+        //资源重载会重新填充 pivot/voxel，缓存的初始数据可能基于旧资源，必须重建
+        reWarmUpGunInitialData();
+    }
+
+    /**
+     * 为所有已注册的枪械物品预热 InitialDataTag 缓存。
+     *
+     * <p>生成失败不吞异常：{@link Gun#warmUpInitialDataTag} 会带上枪械 id 抛出，
+     * 在这里直接冲出启动流程让游戏崩溃——枪械初始数据写坏的代价是存档数据被污染甚至锁死，
+     * 必须在启动阶段就暴露出来。</p>
+     *
+     * <p>客户端与服务端都会调用：两侧各自持有独立的 {@link Gun} 实例与资源，
+     * 且两侧的 public 渲染/预览路径确实会自行构造 ItemStack 数据。</p>
+     */
+    public static void warmUpGunInitialData() {
+        String side = FMLEnvironment.dist.isClient() ? "client" : "dedicated_server";
+        long startedAt = System.nanoTime();
+        int warmed = 0;
+        for (Map.Entry<String, IModular> entry : ModuleRegister.all().entrySet()) {
+            if (entry.getValue() instanceof Gun gun) {
+                gun.warmUpInitialDataTag(entry.getKey());
+                warmed++;
+            }
+        }
+        long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000L;
+        if (warmed == 0) {
+            //注册表里一把枪都没有，多半是模块注册还没跑完就被调用了
+            LOGGER.warn("Precomputed initial data tags on {}, but no gun module was found "
+                    + "(ModuleRegister has {} module(s))", side, ModuleRegister.all().size());
+            return;
+        }
+        LOGGER.info("Precomputed initial data tags for {} gun module(s) on {} in {} ms",
+                warmed, side, elapsedMs);
+    }
+
+    /** 资源重载后重新预热：先整体清空再重建，失败同样当场抛出。 */
+    private static void reWarmUpGunInitialData() {
+        for (IModular modular : ModuleRegister.all().values()) {
+            if (modular instanceof Gun gun) {
+                gun.clearInitialDataTagCache();
+            }
+        }
+        warmUpGunInitialData();
     }
 
     private void doAfterRegistryCallback(FMLLoadCompleteEvent event) {
@@ -552,6 +609,9 @@ public class GCR {
             ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
             PivotMapLoader.getClient().trigger(resourceManager, false);
             VoxelLoader.getClient().trigger(resourceManager, false);
+
+            //客户端侧的建模资源已经就绪，预热枪械初始数据缓存；生成失败直接崩溃
+            warmUpGunInitialData();
 
             RenderSystem.recordRenderCall(MuzzleFlashEnvShader::init);
             RenderSystem.recordRenderCall(FabulousMergeDepthShader::init);
