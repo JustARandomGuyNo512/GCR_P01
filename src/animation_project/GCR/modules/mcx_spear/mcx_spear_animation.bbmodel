@@ -143467,7 +143467,7 @@
 		},
 		{
 			"name": "camera",
-			"position": [-15, 11.3, 36.5],
+			"position": [-15.5, 11, 35.2],
 			"rotation": [0, 0, 0],
 			"fov": 70,
 			"aspect_ratio": [16, 9],
@@ -143478,7 +143478,7 @@
 			"locked": false,
 			"scope": 0,
 			"type": "camera",
-			"uuid": "5908ddc0-0581-f4a1-6fe3-3b7015e73ad2"
+			"uuid": "7d9d26c8-757c-1ccb-19e3-8783c982c961"
 		}
 	],
 	"groups": [
@@ -143723,7 +143723,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-15, 11.3, 36.5],
+			"origin": [-15.5, 11, 35.2],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144124,7 +144124,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "INNER_L",
@@ -144879,7 +144879,7 @@
 				{
 					"uuid": "0263c57f-928c-2783-6ee6-6babae532681",
 					"isOpen": true,
-					"children": ["5908ddc0-0581-f4a1-6fe3-3b7015e73ad2"]
+					"children": ["7d9d26c8-757c-1ccb-19e3-8783c982c961"]
 				},
 				{
 					"uuid": "270a7715-c4eb-9a28-e84d-9eea699ee60c",
@@ -144890,6 +144890,325 @@
 		}
 	],
 	"textures": [],
+	"animations": [
+		{
+			"uuid": "46f1b767-cfcf-ce4b-bae7-9d3ae3a7c94e",
+			"name": "shoot",
+			"loop": "once",
+			"override": false,
+			"length": 0,
+			"snapping": 100,
+			"selected": true,
+			"group_name": "",
+			"scope": 0,
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"animators": {
+				"cdee4c7e-ffe3-284e-09e3-d818945b0dac": {
+					"name": "main",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"7c09dbca-bec0-5c4c-9bdb-78ec1a5a50cc": {
+					"name": "charger_1",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"e7418a09-97e6-5929-d784-c2f7cf64ecb9": {
+					"name": "bolt",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"34579123-f258-cd06-05db-4c66dc3c71ec": {
+					"name": "charger_2",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"63ed12c8-7416-8497-404e-e287815ea0cb": {
+					"name": "handle",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"d27e0e7f-2d53-e557-a7f2-0b81fa5d86dd": {
+					"name": "mag_release",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"b74b72ed-c5f2-21e8-9031-9762fe69cfb9": {
+					"name": "bolt_release",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"5997408e-21d7-2363-e1a8-3f4e895d57ec": {
+					"name": "safety",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"0fc516f5-8663-2b4e-8287-fc32561a5de9": {
+					"name": "root",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"9cef87c4-1c33-3cd9-9f8c-91d8c47c3e74": {
+					"name": "global",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"0263c57f-928c-2783-6ee6-6babae532681": {
+					"name": "camera",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"270a7715-c4eb-9a28-e84d-9eea699ee60c": {
+					"name": "HAND_ROT_PIVOT",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"50bbcb93-977b-39d1-35e3-080747e7d6fb": {
+					"name": "body",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"7d714ecf-dfd3-b85d-53e2-7ceca398969b": {
+					"name": "reloading",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"0d5ba29a-c2cc-33cf-4275-9983e182731d": {
+					"name": "lock",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"4c080c0c-13b3-dfa0-1b51-ef10401b61f3": {
+					"name": "REAR_GRIP",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"8b637d82-d163-ec2e-d67b-c7dbf0a1e2c9": {
+					"name": "BARREL",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"4f48db6a-bc90-8875-ff0d-b6da0e2b6d4a": {
+					"name": "STOCK",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"7870c956-06d4-d90a-5e58-d7d64561ba4d": {
+					"name": "SCOPE",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"d6ba8e37-c69e-d88d-e3ae-e4611f20c43a": {
+					"name": "MAG",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"75885966-bb7a-b576-afee-6a945b2f262d": {
+					"name": "HANDGUARD",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"21e96be9-74d8-f937-4b8c-4b10a8ceb1bc": {
+					"name": "RIGHT_ARM",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"1ca667cf-33ad-cb3c-b056-0a222b69d478": {
+					"name": "INNER_R",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"a9f38b9e-fea2-d9f0-4462-2019e2cd71c7": {
+					"name": "R_MALE",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"94ba2d9d-a445-d4e4-83ae-aa7e3fddc673": {
+					"name": "R_MALE_PIVOT",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"0ed77ccc-2036-d451-2da7-33c4cd8df0d0": {
+					"name": "R_SLIM",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"00157835-859d-5fa5-66d9-4f769d652dcd": {
+					"name": "R_SLIM_PIVOT",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"9929ac05-1560-9132-bed3-69208477be13": {
+					"name": "LEFT_ARM",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"c05e2d69-0e3a-a903-f059-dd0153f6015b": {
+					"name": "INNER_L",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"cf0bd47a-c0f9-f18e-b064-4c431f00dc20": {
+					"name": "L_MALE",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"b0723eee-2ac5-8e53-ff4a-cedb27c265b2": {
+					"name": "L_MALE_PIVOT",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"408489a5-4453-b088-3673-6cabd1486932": {
+					"name": "L_SLIM",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"7f0e9292-125c-497f-3697-4e1eda79ed4c": {
+					"name": "L_SLIM_PIVOT",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"a8345aa9-6c24-3329-cbf0-56d7ab36cd8c": {
+					"name": "ammo",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"1a174618-2198-a621-45dc-de1ca8f8f71f": {
+					"name": "shell",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"9935ea4e-9baa-07ee-3602-7421a9a17c8d": {
+					"name": "root2",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"00ef29dc-1217-c5f0-70db-fb96d8a9df3b": {
+					"name": "root3",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"a9aaf6d9-4c64-c851-0a41-208777bd658c": {
+					"name": "MUZZLE",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"f6034a7c-7bf5-fb32-e490-c601792bea36": {
+					"name": "MUZZLE_FLASH",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"8df956be-67c5-ec62-fa3c-d99e9a067eae": {
+					"name": "root4",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"024b5bac-d4c4-3c07-cfdf-07eddf47e9b8": {
+					"name": "ammo1",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"6d6f6e84-b8bb-7b25-dbbf-f7053b5f6355": {
+					"name": "ammo2",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"b6589e22-b9ee-c40f-558d-e53d8a9a0d68": {
+					"name": "ammo3",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"9d34230d-4359-a210-7c55-140c2b8a066f": {
+					"name": "ammo4",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"99420935-faf9-c94f-df3d-5154e8939c0b": {
+					"name": "ammo5",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"e84c2462-f53e-082b-f0a5-5ee0c87e02ea": {
+					"name": "ammo6",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"fe4c1d98-6aed-a0fe-b68e-be7aeb7dacf0": {
+					"name": "holder",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"591aa823-1d78-3fa2-6bd3-404c5ed373f9": {
+					"name": "root5",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"812327fc-7d82-7e2a-8e66-80bd5776160c": {
+					"name": "STOCK2",
+					"type": "bone",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				},
+				"7d9d26c8-757c-1ccb-19e3-8783c982c961": {
+					"name": "camera",
+					"type": "camera",
+					"rotation_global": false,
+					"quaternion_interpolation": false
+				}
+			}
+		}
+	],
 	"export_options": {
 		"gltf": {
 			"encoding": "ascii",
