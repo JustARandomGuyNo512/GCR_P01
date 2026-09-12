@@ -71449,7 +71449,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-25.5, -41.7, 4.5],
+			"origin": [-27.5, -40.7, 2.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -71530,7 +71530,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-25.5, -41.7, 4.5],
+			"origin": [-27.5, -40.7, 2.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -143801,7 +143801,7 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -144114,8 +144114,8 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-25.5, -41.7, 4.5],
-			"rotation": [110.2897, -54.97094, 31.64217],
+			"origin": [-27.5, -40.7, 2.5],
+			"rotation": [105.18221, -58.07812, 34.70145],
 			"color": 0,
 			"children": [],
 			"reset": false,
@@ -144123,8 +144123,8 @@
 			"mirror_uv": false,
 			"visibility": true,
 			"autouv": 0,
-			"isOpen": false,
-			"primary_selected": false
+			"isOpen": true,
+			"primary_selected": true
 		},
 		{
 			"name": "INNER_L",
@@ -144137,7 +144137,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-25.5, -89.7, 4.5],
+			"origin": [-27.5, -88.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144160,7 +144160,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -89.7, 4.5],
+			"origin": [-29.5, -88.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144183,7 +144183,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -41.7, 4.5],
+			"origin": [-29.5, -40.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144206,7 +144206,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-25.5, -89.7, 4.5],
+			"origin": [-27.5, -88.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144229,7 +144229,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-25.5, -41.7, 4.5],
+			"origin": [-27.5, -40.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -144786,7 +144786,7 @@
 						},
 						{
 							"uuid": "7d714ecf-dfd3-b85d-53e2-7ceca398969b",
-							"isOpen": false,
+							"isOpen": true,
 							"children": [
 								{
 									"uuid": "d6ba8e37-c69e-d88d-e3ae-e4611f20c43a",
@@ -144838,7 +144838,7 @@
 								},
 								{
 									"uuid": "9929ac05-1560-9132-bed3-69208477be13",
-									"isOpen": false,
+									"isOpen": true,
 									"children": [
 										{
 											"uuid": "c05e2d69-0e3a-a903-f059-dd0153f6015b",
