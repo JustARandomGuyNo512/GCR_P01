@@ -37,10 +37,12 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LightLayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -344,8 +346,20 @@ public class DefaultGunRenderer implements IGunRenderer {
                         cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack),
                         cachedFPContext, () -> renderFirstPerson(cachedFPContext));
     }
-
+    protected void rawLight(FirstPersonRenderContext context) {
+        float v = Client.distFromLastShoot();
+        if (v < 0.03f) {
+            float particleTick = context.partialTicks;
+            LivingEntity entity = context.entity;
+            int blockLight = entity.isOnFire() ? 15 :
+                    entity.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(entity.getEyePosition(particleTick)));
+            int lightInc = Client.WEAPON_STATUS.isSuppressed ? 3 : 4;
+            context.light = LightTexture.pack((int) Math.min(15, blockLight + Math.min(lightInc, v * 200)), entity.level().getBrightness(LightLayer.SKY,
+                    BlockPos.containing(entity.getEyePosition(particleTick))));
+        }
+    }
     protected void renderFirstPerson(FirstPersonRenderContext context) {
+        rawLight(context);
         context.calcPose();
         if (context.renderMode) {
             Bone camera = context.root.model.getBone("camera");

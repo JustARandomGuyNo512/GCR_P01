@@ -20,6 +20,7 @@ import com.sheridan.gcr.modularSys.modules.IArmHandlerModular;
 import com.sheridan.gcr.modularSys.modules.IInteractiveModular;
 import com.sheridan.gcr.modularSys.modules.ISight;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.modularSys.modules.impl.Muzzle;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.ListTag;
@@ -85,6 +86,8 @@ public class WeaponStatus {
     private float weight;
     private float heat;
     private float lastHeat;
+
+    public boolean isSuppressed = false;
 
     private float cantedAdsIncSpeedFactor = 1;
     private float cantedAdsDecSpeedFactor = 1;
@@ -319,6 +322,7 @@ public class WeaponStatus {
         aimingSpeed = gun.getAimingSpeed(itemStack);
         ListTag modulesTag = gun.getModulesTag(itemStack);
         root = Node.read(modulesTag);
+        final boolean[] Suppressed = {true};
         if (root != null) {
             updateRenderNodes();
             root.dfs(node -> {
@@ -331,8 +335,12 @@ public class WeaponStatus {
                 if (node.getModule() instanceof IInteractiveModular modular) {
                     interactiveModules.add(Pair.of(modular, node));
                 }
+                if (Suppressed[0] && node.getModule() instanceof Muzzle muzzle && !muzzle.isSuppressor()) {
+                    Suppressed[0] = false;
+                }
             });
         }
+        isSuppressed = Suppressed[0];
     }
 
     private void updateRenderNodes() {

@@ -142,14 +142,14 @@ public final class GCRModules {
     public static final IModular PT1_STOCK = new Stock(RL( "pt1_stock"), 0.48f, 0.2f, 0.2f).addTags("stock", "ak");
 
 
-    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f).addTags("muzzle", "ar", "5.56x45");
-    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.48f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f).addTags("muzzle", "ar", "5.56x45");
-    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f, false).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.48f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f, true).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ar", "5.56x45");
 
-    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
-    public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f).addTags("muzzle", "ak", "5.45x39");
-    public static final IModular DTK1_COMPENSATOR = new Muzzle(RL( "dtk1_compensator"), 0.06f, 0.22f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f).addTags("muzzle", "ak", "5.45x39");
-    public static final IModular DTKP_545 = new Muzzle(RL( "dtkp_545"), 0.58f, 0.19f, 0.065f, IGun.FIRE_SOUND_SUPPRESSED, -0.4f, 1.85f).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f, true).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular DTK1_COMPENSATOR = new Muzzle(RL( "dtk1_compensator"), 0.06f, 0.22f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular DTKP_545 = new Muzzle(RL( "dtkp_545"), 0.58f, 0.19f, 0.065f, IGun.FIRE_SOUND_SUPPRESSED, -0.4f, 1.85f, true).addTags("muzzle", "ak", "5.45x39");
 
 
     public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
