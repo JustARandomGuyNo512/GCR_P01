@@ -245,6 +245,7 @@ public class ClientTestingResources {
                                     1.5f)
                     )
                     );
+                    testGP25Model.setTestAlpha(0.15f);
                     IAnimationController<?> controller = new GP25Controller();
                     testGP25Model.bindController(controller);
                     testGP25Model.callInitAnimation();

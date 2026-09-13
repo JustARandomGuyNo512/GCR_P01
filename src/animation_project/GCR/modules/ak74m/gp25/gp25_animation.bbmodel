@@ -20,7 +20,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-20.9, -36.2, 44.6],
+			"origin": [-19.9, -35.2, 45.6],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -7684,7 +7684,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-20.9, -36.2, 44.6],
+			"origin": [-19.9, -35.2, 45.6],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -45206,7 +45206,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "LEFT_ARM",
@@ -45219,7 +45219,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-20.9, -36.2, 44.6],
+			"origin": [-19.9, -35.2, 45.6],
 			"rotation": [115.47884, -35.57816, 7.96156],
 			"color": 0,
 			"children": [],
@@ -45229,7 +45229,7 @@
 			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "INNER_L",
@@ -45242,7 +45242,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-20.9, -84.2, 44.6],
+			"origin": [-19.9, -83.2, 45.6],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -45265,7 +45265,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-22.9, -84.2, 44.6],
+			"origin": [-21.9, -83.2, 45.6],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -45288,7 +45288,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-22.9, -36.2, 44.6],
+			"origin": [-21.9, -35.2, 45.6],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -45311,7 +45311,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-20.9, -84.2, 44.6],
+			"origin": [-19.9, -83.2, 45.6],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -45334,7 +45334,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-20.9, -36.2, 44.6],
+			"origin": [-19.9, -35.2, 45.6],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -45501,7 +45501,7 @@
 			"override": false,
 			"length": 1,
 			"snapping": 100,
-			"selected": true,
+			"selected": false,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
