@@ -90,9 +90,8 @@ public class RecoilUpdater implements IRecoilUpdater {
             return;
         }
         float dt = (float) timeDist;
-        float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
         float aimingFactor = Client.WEAPON_STATUS.getAimingProgress();
-        float recoilControlRatio = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;
+        float recoilControlRatio = Client.WEAPON_STATUS.getRecoilControl();
         aimingFactor *= aimingFactor;
 
         float control = Math.max(0, recoilControlRatio);
@@ -176,13 +175,10 @@ public class RecoilUpdater implements IRecoilUpdater {
             return;
         }
 
-        float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
-        float stability = Client.WEAPON_STATUS.getStability() * playerDynamicFactor;
         float impulseVal = Client.WEAPON_STATUS.getImpulse();
-        float recoilControl = Client.WEAPON_STATUS.getRecoilControl() * playerDynamicFactor;
-
-        float stableFactor = 1.0f / stability;
-        float recoilControlFactor = 1.0f / recoilControl;
+        float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
+        float stableFactor = 1.0f / (Client.WEAPON_STATUS.getStability() * playerDynamicFactor);
+        float recoilControlFactor = 1.0f / Client.WEAPON_STATUS.getRecoilControl();
         float recoilHeatRes = getRecoilHeat();
 
         float delta = Math.min(distFromLastShoot(), 1.0f) * 20f;
@@ -220,7 +216,6 @@ public class RecoilUpdater implements IRecoilUpdater {
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
         }
-
         float adsShakeFactor = 1 - aimingFactor * (0.9f + RANDOM.nextFloat() * 0.08f);
 
         float rollVelocityImpulse = rawShakeRoll * shakeFactor * adsShakeFactor;
