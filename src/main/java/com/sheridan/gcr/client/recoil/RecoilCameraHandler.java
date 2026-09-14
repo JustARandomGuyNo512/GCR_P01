@@ -10,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.apache.commons.compress.archivers.sevenz.CLI;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 
 @OnlyIn(Dist.CLIENT)
@@ -130,8 +132,12 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
         if (updater != null) {
             float timeDis = updater.distFromLastShoot();
             float currentShake = updater.getCamShakeZ();
+            float aimingProgress = Client.getAimingProgress(partialTicks);
+            float rotX = (float) Utils.dampedOscillation(timeDis, currentShake * 0.4f * (1 - aimingProgress * 0.75f), 80, 0.35f, QUARTER_PI);
             float rotZ = (float) Utils.dampedOscillation(timeDis, currentShake, 40, 0.25f, QUARTER_PI);
-            poseStack.mulPose(Axis.ZP.rotation(rotZ));
+            float transZ = (float) Utils.dampedOscillation(timeDis, Math.abs(currentShake) * (1.5f - aimingProgress), 50F, 0.35f, QUARTER_PI * 2);
+            poseStack.mulPose(new Quaternionf().rotateXYZ(rotX, 0, rotZ));
+            poseStack.translate(0, 0, transZ);
         }
     }
 

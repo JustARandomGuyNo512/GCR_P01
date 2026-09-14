@@ -1,6 +1,8 @@
 package com.sheridan.gcr.client;
 
+//import com.sheridan.gcr.client.recoil.IRecoilCameraHandler;
 //import com.sheridan.gcr.client.recoil.IRecoilUpdater;
+//import com.sheridan.gcr.client.recoil.RecoilCameraHandler;
 //import com.sheridan.gcr.client.recoil.RecoilHandler;
 //import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 //import com.sheridan.gcr.client.render.IGlobalAnimationHandler;
@@ -21,8 +23,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ClassHotReloader {
-//    private static final Path SOURCE_FILE_PATH = Paths.get("C:\\Users\\tjy13\\IdeaProjects\\GunsCraft_Reforged\\src\\main\\java\\com\\sheridan\\gcr\\client\\recoil\\RecoilUpdater.java");
-//    private static final String FULL_CLASS_NAME = "com.sheridan.gcr.client.recoil.RecoilUpdater";
+//    private static final Path SOURCE_FILE_PATH = Paths.get("C:\\Users\\tjy13\\IdeaProjects\\GunsCraft_Reforged\\src\\main\\java\\com\\sheridan\\gcr\\client\\recoil\\RecoilCameraHandler.java");
+//    private static final String FULL_CLASS_NAME = "com.sheridan.gcr.client.recoil.RecoilCameraHandler";
 //
 //    public static void reload() {
 //        try {
@@ -59,8 +61,8 @@ public class ClassHotReloader {
 //                Class<?> reloadedClass = classLoader.loadClass(FULL_CLASS_NAME);
 //
 //                Object newInstance = reloadedClass.getDeclaredConstructor().newInstance();
-//                IRecoilUpdater newHandlerInstance = (IRecoilUpdater) newInstance;
-//                RecoilHandler.INSTANCE.setRecoilUpdater(newHandlerInstance);
+//                IRecoilCameraHandler newHandlerInstance = (IRecoilCameraHandler) newInstance;
+//                RecoilCameraHandler._debugReloadInstance(newHandlerInstance);
 //
 //
 //                sendMessageToPlayer("成功热重载");

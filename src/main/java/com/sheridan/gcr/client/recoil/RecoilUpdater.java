@@ -242,7 +242,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float camImpactRandomYaw = totalRandYaw * camRandomScale;
         float camImpactRandomPitch = randPitchCam * camRandomScale;
 
-        this.camShake = 1e-4f * shakeRoll;
+        this.camShake = 1e-4f * shakeRoll * Math.signum(localYaw);
 
         applyCamImpulse(camImpact, camImpactRandomPitch, camImpactRandomYaw, recoilControlFactor, aimingFactor);
         randomSeed = RANDOM.nextFloat();
