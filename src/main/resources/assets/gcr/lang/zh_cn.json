@@ -162,5 +162,6 @@
   "gcr:b13_bracket": "B13 导轨支架",
   "gcr:dtk1_compensator": "DTK-1 制退器",
   "gcr:m203": "M203榴弹发射器",
-  "gcr:gp25": "GP-25榴弹发射器"
+  "gcr:gp25": "GP-25榴弹发射器",
+  "gcr:ar_stock_adapter_ak74m": "AR 后托适配器(ak74m)"
 }

@@ -162,5 +162,6 @@
   "gcr:b13_bracket": "B13 Bracket",
   "gcr:dtk1_compensator": "DTK-1 Compensator",
   "gcr:m203": "M203 Grenade Launcher",
-  "gcr:gp25": "GP-25 Grenade Launcher"
+  "gcr:gp25": "GP-25 Grenade Launcher",
+  "gcr:ar_stock_adapter_ak74m": "AR Stock Adapter(ak74m)"
 }
