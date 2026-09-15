@@ -6,12 +6,14 @@ import com.sheridan.gcr.client.animation.io.BedrockAnimationLoader;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
 import com.sheridan.gcr.client.model.modular.IModularModel;
-import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
 import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.modularSys.IModular;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -19,6 +21,24 @@ import java.util.function.Function;
 public class ModelRegistrationManager {
     // 存储需要延迟执行的编译任务
     private static final List<Runnable> DEFERRED_COMPILE_TASKS = new ArrayList<>();
+
+    // 每个模块的模型“配方”：记录注册时用到的文件路径与工厂 Lambda，
+    // 这样热重载单个模块时可以重新读文件、重跑同一段 Lambda 逻辑。
+    private static final Map<IModular, ModelRecipe<?>> MODEL_RECIPES = new LinkedHashMap<>();
+
+    /**
+     * 一个模块模型的重建配方。
+     *
+     * @param modelPath gltf 资源位置
+     * @param texturePath 网格纹理资源位置
+     * @param modelFactory 注册时使用的工厂 Lambda（可重复执行，内部状态每次都重新创建）
+     */
+    public record ModelRecipe<T extends IModularModel>(
+            ResourceLocation modelPath,
+            ResourceLocation texturePath,
+            Function<MeshModelData, T> modelFactory
+    ) {
+    }
 
     /**
      * 统一模型注册方法
@@ -35,26 +55,66 @@ public class ModelRegistrationManager {
             boolean immediateCompile,
             Function<MeshModelData, T> modelFactory
     ) {
+        IModular module = (IModular) registryKey;
+        ResourceLocation modelPath = GCR.RL("gcr", gltfPath);
+        ResourceLocation texture = GCR.RL("gcr", texturePath);
+
         // 1. 加载模型资产
-        MeshModelData meshModelData = GltfModelLoader.loadModel(GCR.RL("gcr", gltfPath));
+        MeshModelData meshModelData = GltfModelLoader.loadModel(modelPath);
 
         // 2. 运用用户自定义的 Lambda 逻辑生成模型实例
         T model = modelFactory.apply(meshModelData);
 
         // 3. 注册到系统的 ModuleModelRegister
-        ModuleModelRegister.register((IModular) registryKey, model);
+        ModuleModelRegister.register(module, model);
 
-        // 4. 根据参数决定是否自动生成延迟编译任务
+        // 4. 记录重建配方，供热重载按模块重建
+        MODEL_RECIPES.put(module, new ModelRecipe<>(modelPath, texture, modelFactory));
+
+        // 5. 根据参数决定是否自动生成延迟编译任务
         if (immediateCompile) {
-            DEFERRED_COMPILE_TASKS.add(() -> {
-                model.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", texturePath)));
-            });
+            DEFERRED_COMPILE_TASKS.add(() -> model.compile(RenderTypes.getMeshCutOut(texture)));
         }
 
         return model;
     }
 
+    /** 该模块是否登记过可重建的模型配方。 */
+    public static boolean hasRecipe(IModular module) {
+        return MODEL_RECIPES.containsKey(module);
+    }
 
+    /** 模块模型用到的 gltf 资源位置；没有配方时返回 null。 */
+    @Nullable
+    public static ResourceLocation getModelPath(IModular module) {
+        ModelRecipe<?> recipe = MODEL_RECIPES.get(module);
+        return recipe == null ? null : recipe.modelPath();
+    }
+
+    /** 模块模型用到的纹理资源位置；没有配方时返回 null。 */
+    @Nullable
+    public static ResourceLocation getModelTexture(IModular module) {
+        ModelRecipe<?> recipe = MODEL_RECIPES.get(module);
+        return recipe == null ? null : recipe.texturePath();
+    }
+
+    /**
+     * 按登记好的配方重新读取 gltf 并重新执行注册时的 Lambda。
+     *
+     * <p>只负责“重新装载”，不注册、不编译：调用方需要自行处理旧模型的释放与新模型的注册。</p>
+     *
+     * @return 新建的模型实例；该模块没有配方时返回 null
+     */
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static IModularModel createModel(IModular module) {
+        ModelRecipe<IModularModel> recipe = (ModelRecipe<IModularModel>) MODEL_RECIPES.get(module);
+        if (recipe == null) {
+            return null;
+        }
+        MeshModelData meshModelData = GltfModelLoader.loadModel(recipe.modelPath());
+        return recipe.modelFactory().apply(meshModelData);
+    }
 
     public static void addDeferredCompileTask(Runnable task) {
         DEFERRED_COMPILE_TASKS.add(task);

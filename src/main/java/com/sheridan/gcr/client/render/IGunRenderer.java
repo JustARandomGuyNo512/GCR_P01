@@ -51,4 +51,12 @@ public interface IGunRenderer {
     long getCurrFPRenderTimeStampNano();
 
     PoseStack getEnvDisturbance();
+
+    /**
+     * 丢弃内部缓存的渲染树/动画事件总线等与模型实例绑定的状态。
+     *
+     * <p>客户端模型热重载会重建全部模型实例，调用本方法可以保证后续渲染立刻使用新模型，
+     * 而不是继续引用已经释放的旧模型。</p>
+     */
+    void invalidateRenderCache();
 }

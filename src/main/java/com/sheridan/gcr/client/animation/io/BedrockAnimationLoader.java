@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.animation.io;
 import com.google.gson.*;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.aiStuff.DevAssetResolver;
 import com.sheridan.gcr.client.animation.AnimationChannel;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.Keyframe;
@@ -17,6 +18,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -44,14 +46,18 @@ public class BedrockAnimationLoader {
         AtomicReference<Map<String, AnimationDef>> resultRef = new AtomicReference<>(new HashMap<>());
         try {
             ResourceManager manager = Minecraft.getInstance().getResourceManager();
-            manager.getResource(location).ifPresent(res -> {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(res.open(), StandardCharsets.UTF_8))) {
+            // 开发环境下优先读取源目录，热重载时才拿得到刚刚保存的动画 json
+            try (InputStream stream = DevAssetResolver.openOrNull(location, manager)) {
+                if (stream == null) {
+                    GCR.LOGGER.error("Animation resource not found: {}", location);
+                    return resultRef.get();
+                }
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
                     StringBuilder stringBuilder = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
                         stringBuilder.append(line);
                     }
-                    reader.close();
                     String json = stringBuilder.toString();
                     JsonObject jsonObject = GSON_INSTANCE.fromJson(json, JsonObject.class);
                     JsonObject animations = jsonObject.getAsJsonObject("animations");
@@ -70,11 +76,8 @@ public class BedrockAnimationLoader {
                         }
                     }
                     resultRef.set(animationsMap);
-                } catch (Exception e) {
-                    GCR.LOGGER.error("Error parsing {}: {}", location, e.getMessage());
-                    e.printStackTrace();
                 }
-            });
+            }
         } catch (Exception e) {
             GCR.LOGGER.error("Error loading resource {}: {}", location, e.getMessage());
             e.printStackTrace();

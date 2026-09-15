@@ -5,6 +5,7 @@ import com.jme3.anim.Joint;
 import com.jme3.anim.SkinningControl;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
+import com.jme3.asset.ModelKey;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -33,6 +34,20 @@ public class GltfModelLoader {
         assetManager = new DesktopAssetManager();
         assetManager.registerLoader(GltfLoaderProxy.class, "gltf", "glb");
         assetManager.registerLocator("", GltfAssetsLocator.class);
+    }
+
+    /**
+     * 只清掉某个 gltf 的模型缓存。
+     *
+     * <p>{@link AssetManager} 会按 {@link com.jme3.asset.AssetKey} 缓存已加载的 gltf，
+     * 热重载某个模块时如果不先删掉对应的缓存条目，{@code loadModel} 会直接返回上一次解析出来的旧模型。</p>
+     */
+    public static void clearModelCache(ResourceLocation location) {
+        if (assetManager == null || location == null) {
+            return;
+        }
+        // loadModel(String) 内部使用 ModelKey，缓存键必须与之一致
+        assetManager.deleteFromCache(new ModelKey(location.toString()));
     }
 
     /**

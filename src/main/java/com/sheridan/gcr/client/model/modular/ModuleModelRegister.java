@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.model.modular;
 import com.sheridan.gcr.modularSys.IModular;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,20 @@ public class ModuleModelRegister {
         ID_TO_MODEL.put(id, model);
         MODULE_TO_MODEL.put(module, model);
         return true;
+    }
+
+    /**
+     * 移除某个模块的模型并返回被移除的实例，供热重载释放旧模型。
+     *
+     * @return 该模块原本登记的模型；没有登记过则返回 null
+     */
+    @Nullable
+    public static IModularModel remove(IModular module) {
+        IModularModel removed = MODULE_TO_MODEL.remove(module);
+        if (removed != null) {
+            ID_TO_MODEL.remove(module.getID(), removed);
+        }
+        return removed;
     }
 
     public static void visitAll(Consumer<IModularModel> visitor) {

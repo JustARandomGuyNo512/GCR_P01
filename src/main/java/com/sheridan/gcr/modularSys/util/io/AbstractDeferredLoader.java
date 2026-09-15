@@ -2,6 +2,7 @@ package com.sheridan.gcr.modularSys.util.io;
 
 import com.google.gson.Gson;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.aiStuff.DevAssetResolver;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
@@ -23,15 +24,17 @@ public abstract class AbstractDeferredLoader<T> {
     @Nullable
     public T load(ResourceLocation location, ResourceManager manager) {
         try {
-            return manager.getResource(location).map(res -> {
-                try (InputStream in = res.open()) {
-                    String jsonStr = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                    return readJsonStr(jsonStr);
-                } catch (Exception e) {
-                    GCR.LOGGER.error("Error parsing {}: {}", location, e.getMessage());
+            // 开发环境下优先读取 src/main/resources，热重载后才能看到刚修改的 pivot/voxel 数据
+            try (InputStream in = DevAssetResolver.openOrNull(location, manager)) {
+                if (in == null) {
                     return null;
                 }
-            }).orElse(null);
+                String jsonStr = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                return readJsonStr(jsonStr);
+            } catch (Exception e) {
+                GCR.LOGGER.error("Error parsing {}: {}", location, e.getMessage());
+                return null;
+            }
         } catch (Exception e) {
             GCR.LOGGER.error("Error loading resource {}: {}", location, e.getMessage());
             return null;

@@ -309,6 +309,22 @@ public class DefaultGunRenderer implements IGunRenderer {
         bulletShellHandlerNodeID = "";
     }
 
+    /**
+     * 让所有缓存了模型/渲染树的状态失效，下一次渲染会重新从 {@link com.sheridan.gcr.client.model.modular.ModuleModelRegister}
+     * 取模型。热重载替换模型实例后必须调用，否则会继续绘制已经被释放的旧模型。
+     */
+    @Override
+    public void invalidateRenderCache() {
+        clearCache();
+        if (models != null) {
+            models.clear();
+        }
+        lastFPModifyID = -1;
+        lastFPIdentityID = null;
+        lastUsingSightID = null;
+        delayedEvents.clear();
+    }
+
     private void newFirstPersonContextInit() {
         animationEventBus = new AnimationEventBus();
 

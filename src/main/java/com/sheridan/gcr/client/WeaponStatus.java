@@ -355,6 +355,24 @@ public class WeaponStatus {
         }
     }
 
+    /**
+     * 丢弃所有缓存了模型实例的状态（模块节点、渲染树、当前瞄具等）。
+     *
+     * <p>客户端模型热重载会重建全部模型，调用本方法后下一个 tick 会因为 identityID 变化而重新
+     * 构建模块树与渲染树；在此之前渲染侧会自行用新的注册表重建渲染树，不会引用旧模型。</p>
+     */
+    public void invalidateModelCache() {
+        identityID = null;
+        modifyID = 0;
+        root = null;
+        renderRoot = null;
+        activeSight = null;
+        IDToNodes.clear();
+        IDToModels.clear();
+        interactiveModules.clear();
+        flatRenderNodeMap.clear();
+    }
+
     public IGun getGun() {
         return gun;
     }

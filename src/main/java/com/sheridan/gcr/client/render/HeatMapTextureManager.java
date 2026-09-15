@@ -1,15 +1,14 @@
 package com.sheridan.gcr.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.sheridan.gcr.client.aiStuff.DevSimpleTexture;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.lwjgl.BufferUtils;
@@ -39,7 +38,8 @@ public class HeatMapTextureManager {
                 return;
             }
 
-            SimpleTexture texture = new SimpleTexture(path);
+            // 开发环境下用 DevSimpleTexture，热重载时才能直接从源目录读到新的热力图
+            DevSimpleTexture texture = new DevSimpleTexture(path);
 
             textureManager.register(path, texture);
 
@@ -53,6 +53,25 @@ public class HeatMapTextureManager {
             });
         });
         RenderSystem.recordRenderCall(HeatMapTextureManager::initEmptyTexture);
+    }
+
+    /**
+     * 重新从磁盘读取一张已经登记过的热力图纹理（模型热重载使用）。
+     *
+     * <p>只有启动时被 {@link #handleTextureLoad()} 记录进缓存的路径才需要处理：
+     * 重新注册纹理并同步缓存，避免 {@link #getTexId(ResourceLocation)} 拿到已经释放的旧纹理对象。</p>
+     */
+    public static void reloadCachedTexture(ResourceLocation path) {
+        if (path == null || !CACHE.containsKey(path)) {
+            return;
+        }
+        AbstractTexture texture = DevSimpleTexture.registerFromDisk(path);
+        CACHE.put(path, texture);
+
+        RenderSystem.recordRenderCall(() -> {
+            RenderSystem.bindTexture(texture.getId());
+            texture.setFilter(true, false);
+        });
     }
 
     public static int getTexId(ResourceLocation heatMapTexPath) {
