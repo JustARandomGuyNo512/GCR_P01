@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class EmptySlotProvider implements ISlotProvider{
+public final class EmptySlotProvider implements ISlotProvider{
     public static final EmptySlotProvider INSTANCE = new EmptySlotProvider();
 
     @Override
