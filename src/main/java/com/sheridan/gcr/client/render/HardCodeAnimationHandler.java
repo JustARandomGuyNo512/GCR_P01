@@ -117,9 +117,6 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         txPre = 0;
         tyPre = 0;
         tzPre = 0;
-        if (Client.isAiming()) {
-            finalApplyPost(poseStack, aimingProgress, 0);
-        }
     }
     float sprintingStartSwing = -114514f;
     private void calcSprinting(float partialTicks, IGun gun, Player player) {
@@ -184,9 +181,9 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     private void calcIdle() {
         float idle = idleProgress * 1.5f;
         float f = 1 - aimingProgress * 0.75f;
-        float sin = Mth.sin(idle);
-        float cos = Mth.cos(idle * 0.5f);
-        rxPre += Mth.sin(idleProgress * 0.75f) * 0.005f * idleScale * f;
+        float sin = (float) Math.sin(idle);
+        float cos = (float) Math.cos(idle * 0.5f);
+        rxPre += (float) (Math.sin(idleProgress * 0.75f) * 0.005f * idleScale * f);
         ryPost += cos * 0.009f * idleScale * f;
         txPre -= cos * 0.005f * idleScale * f;
         tyPre += sin * 0.011f * idleScale * f;
