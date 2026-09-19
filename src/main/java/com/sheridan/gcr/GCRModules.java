@@ -19,6 +19,7 @@ import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.modules.impl.*;
 import com.sheridan.gcr.modularSys.slot.*;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -96,7 +97,8 @@ public final class GCRModules {
 
     public static final IModular A2_CARRY_HANDLE = new IronSight(
             RL( "a2_carry_handle"),
-            new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"), true, true),
+            new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"))
+                    .setCustomBoundaryCollisionConfig((slot) -> slot.hasTag("ar_sight") ? Pair.of(true, true) : Pair.of(false, false)),
             0.1f, true).addTags("sight", "iron_sight", "upper", "on_rail");
 
 
@@ -371,7 +373,7 @@ public final class GCRModules {
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
             .addSlot(new ReplaceOnlySlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
-            .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f)
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f, "ar_sight")
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
             .setDefaultModuleInitHandler(workspace -> {
                 Unit root = workspace.getRootUnit();

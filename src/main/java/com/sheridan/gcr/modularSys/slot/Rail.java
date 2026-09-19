@@ -42,7 +42,7 @@ public class Rail extends Slot implements IRail {
             if (handler == null) {
                 return Pair.of(false, false);
             }
-            Pair<Boolean, Boolean> ignore = handler.ignoreBoundaryCollision();
+            Pair<Boolean, Boolean> ignore = handler.ignoreBoundaryCollision(this);
             Matrix4f childPos = new Matrix4f(slotPose);
             childPos.translate(0, 0, child.getZOffset());
             float rearEndZ = originOffset * length;
