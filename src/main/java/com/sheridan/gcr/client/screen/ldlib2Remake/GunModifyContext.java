@@ -52,6 +52,12 @@ public class GunModifyContext {
     private static final ResourceLocation SLOT_BOUNDARY = GCR.RL(GCR.MODID, "textures/gui/screen/slot_boundary.png");
 
     private static final Vector3f OUT_SCREEN = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
+
+    /** 判断导轨朝向时沿导轨采样的距离（单位：方块） */
+    private static final float RAIL_DIRECTION_SAMPLE_STEP = 0.05f;
+    /** 导轨在屏幕上的最小水平位移（像素），低于该值认为水平方向无法判断 */
+    private static final float RAIL_DIRECTION_MIN_SCREEN_DELTA = 0.5f;
+
     public ItemStack itemStack;
     public IGun gun;
     public ModuleRenderNode renderRoot;
@@ -83,6 +89,15 @@ public class GunModifyContext {
     private int lastMutateId;
 
     private boolean collisionDirty = false;
+
+    /**
+     * 导轨移动方向：
+     * +1 表示 scrollbar 值增大时模块在屏幕上向右移动，可以直接映射；
+     * -1 表示模块在屏幕上向左移动，需要把 scrollbar 的值反转后再映射到导轨上。
+     */
+    private int railScrollSign = 1;
+    /** 模型姿态变化导致导轨方向翻转时置位，等待 tick 中重新同步 scrollbar 的位置 */
+    private boolean railScrollResyncPending = false;
 
     public GunModifyContext(ItemStack itemStack) {
         if (itemStack.getItem() instanceof GunItem gunItem) {
@@ -193,6 +208,8 @@ public class GunModifyContext {
             }
         }));
 
+        updateRailScrollSign();
+
         context.getRoot().dfsTravel(n -> {
             Node node = renderNodeToNode.get(n);
             if (node == null) {
@@ -266,13 +283,18 @@ public class GunModifyContext {
     }
 
 
-    public void trySetSelectedNodePos(float progress) {
-        if (selectedNode == null || selectedNode.isFixedPosition()) {
+    /**
+     * scrollbar 的值 -> 模块在导轨上的位置。
+     * 模型被旋转后模块在屏幕上的移动方向会和 scrollbar 滑块相反，
+     * 这里根据当前视角下导轨的朝向决定是否需要把值反转。
+     */
+    public void trySetSelectedNodePos(float scrollValue) {
+        if (selectedNode == null || selectedNode.isFixedPosition() || selectedRenderNode == null) {
             return;
         }
         if (selectedNode.getBelongsToSlot() instanceof IRail rail) {
             float originalPos = selectedRenderNode.z;
-            rail.setChildPosition(selectedNode.getUnit(), accessor, progress);
+            rail.setChildPosition(selectedNode.getUnit(), accessor, scrollValueToRailPos(scrollValue));
             selectedRenderNode.z = selectedNode.getUnit().getZOffset();
             if (Math.abs(originalPos - selectedRenderNode.z) >= 1e-5) {
                 treeModified = true;
@@ -280,6 +302,68 @@ public class GunModifyContext {
                 builder.getWorkspace().increaseMutateId();
             }
         }
+    }
+
+    /** 导轨上的归一化位置 -> scrollbar 的值（与 {@link #scrollValueToRailPos} 互为逆运算） */
+    public float railPosToScrollValue(float railPos) {
+        return railScrollSign >= 0 ? railPos : 1f - railPos;
+    }
+
+    /** scrollbar 的值 -> 导轨上的归一化位置 */
+    public float scrollValueToRailPos(float scrollValue) {
+        return railScrollSign >= 0 ? scrollValue : 1f - scrollValue;
+    }
+
+    /** 模型姿态变化使导轨方向翻转时返回 true，调用方需要重新同步 scrollbar 的位置 */
+    public boolean consumeRailScrollResync() {
+        boolean pending = railScrollResyncPending;
+        railScrollResyncPending = false;
+        return pending;
+    }
+
+    /**
+     * 根据当前渲染出的槽位姿态更新导轨的移动方向。
+     * 槽位骨骼的局部 +Z 是模块移动的正方向，而导轨位置增大时模块向局部 -Z 移动，
+     * 所以采样两点比较它们在屏幕上的水平位移即可得到方向和 scrollbar 是否一致。
+     */
+    private void updateRailScrollSign() {
+        if (selectedNode == null || selectedNode.isFixedPosition()) {
+            return;
+        }
+        if (!(selectedNode.getBelongsToSlot() instanceof IRail)) {
+            return;
+        }
+        SlotInstance slot = selectedNode.getBelongsTo();
+        if (slot == null) {
+            return;
+        }
+        Matrix4f slotPose = slotRenderPos.get(slot);
+        if (slotPose == null) {
+            return;
+        }
+        int sign = computeRailScrollSign(slotPose, selectedNode.getUnit().getZOffset());
+        if (sign != 0 && sign != railScrollSign) {
+            railScrollSign = sign;
+            railScrollResyncPending = true;
+        }
+    }
+
+    /**
+     * 返回 +1 表示导轨位置增大时模块在屏幕上向右移动，-1 表示向左移动，0 表示无法判断。
+     */
+    private int computeRailScrollSign(Matrix4f slotPose, float zOffset) {
+        Matrix4f from = new Matrix4f(slotPose).translate(0, 0, zOffset);
+        Matrix4f to = new Matrix4f(slotPose).translate(0, 0, zOffset - RAIL_DIRECTION_SAMPLE_STEP);
+        Vector3f fromScreen = getScreenPos(from);
+        Vector3f toScreen = getScreenPos(to);
+        if (fromScreen == OUT_SCREEN || toScreen == OUT_SCREEN) {
+            return 0;
+        }
+        float deltaX = toScreen.x - fromScreen.x;
+        if (Math.abs(deltaX) < RAIL_DIRECTION_MIN_SCREEN_DELTA) {
+            return 0;
+        }
+        return deltaX > 0 ? 1 : -1;
     }
     public void renderComponents(GuiGraphics guiGraphics) {
         renderNodeIcons(guiGraphics);
@@ -413,7 +497,7 @@ public class GunModifyContext {
             return false;
         }
         for (Pair<SlotInstance, Vector3f> pair : slotScreenPos.values()) {
-            if (pair.getLeft().isHidden()) {
+            if (pair.getLeft().isHidden() || isSlotOccupied(pair.getLeft())) {
                 continue;
             }
             Vector3f pos = pair.getValue();
@@ -460,7 +544,7 @@ public class GunModifyContext {
 
         if (renderSlotIcon) {
             for (Pair<SlotInstance, Vector3f> pair : slotScreenPos.values()) {
-                if (pair.getLeft().isHidden()) {
+                if (pair.getLeft().isHidden() || isSlotOccupied(pair.getLeft())) {
                     continue;
                 }
                 Vector3f pos = pair.getValue();
@@ -475,10 +559,16 @@ public class GunModifyContext {
         }
     }
 
+    /**
+     * 槽位已经被占满（不能再放入模块）。
+     * 占满的槽位不再渲染也不可点击，避免玩家误以为还能继续添加模块。
+     */
+    public boolean isSlotOccupied(SlotInstance slot) {
+        return getWorkSpace().getNodes(slot).size() >= slot.getSlot().maxCapacity();
+    }
+
     private ResourceLocation getSlotIcon(SlotInstance slot) {
-        int i = slot.getSlot().maxCapacity();
-        int size = getWorkSpace().getNodes(slot).size();
-        boolean occupied = size >= i;
+        boolean occupied = isSlotOccupied(slot);
         return slot == selectedSlot ?
                 occupied ? SLOT_OCCUPIED_SELECTED : SLOT_EMPTY_SELECTED
                 :

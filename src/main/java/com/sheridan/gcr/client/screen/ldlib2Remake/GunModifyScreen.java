@@ -40,6 +40,13 @@ import java.util.Optional;
 public class GunModifyScreen extends Screen {
     private static final ResourceLocation SELECTED_ITEM_SLOT = GCR.RL(GCR.MODID, "textures/gui/component/selected_slot.png");
 
+    private static final float MIN_MODEL_SCALE = 0.5f;
+    private static final float MAX_MODEL_SCALE = 2.5f;
+    /** 缩放按钮每次变化的量 */
+    private static final float MODEL_ZOOM_STEP = 0.2f;
+    /** 鼠标滚轮每一格的缩放量 */
+    private static final float MODEL_WHEEL_ZOOM_STEP = 0.1f;
+
     private GunModifyContext context;
     private NoLogChatComponent validateMsg;
     private boolean isDraggingModel = false;
@@ -174,6 +181,10 @@ public class GunModifyScreen extends Screen {
         handleMsgLog();
         if (context != null) {
             context.onTick();
+            if (context.consumeRailScrollResync()) {
+                // 模型姿态改变后导轨在屏幕上的方向可能翻转，把 scrollbar 重新对齐到模块的实际位置
+                syncScrollerToSelectedNode();
+            }
             Node selectedNode = context.getSelectedNode();
             if (selectedNode != null && selectedNode.getBelongsTo() != null) {
                 SlotInstance belongsTo = selectedNode.getBelongsTo();
@@ -322,13 +333,33 @@ public class GunModifyScreen extends Screen {
     }
 
     public void zoomInModel() {
-        modelScale += 0.2f;
-        modelScale = Mth.clamp(modelScale, 0.5f, 2.5f);
+        modelScale += MODEL_ZOOM_STEP;
+        modelScale = Mth.clamp(modelScale, MIN_MODEL_SCALE, MAX_MODEL_SCALE);
     }
 
     public void zoomOutModel() {
-        modelScale -= 0.2f;
-        modelScale = Mth.clamp(modelScale, 0.5f, 2.5f);
+        modelScale -= MODEL_ZOOM_STEP;
+        modelScale = Mth.clamp(modelScale, MIN_MODEL_SCALE, MAX_MODEL_SCALE);
+    }
+
+    /**
+     * 鼠标滚轮缩放模型，鼠标位于 UI 控件上（例如滚动条、搜索框）时交给控件处理。
+     */
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (needUpdate) {
+            return false;
+        }
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        if (scrollY == 0) {
+            return false;
+        }
+        modelScale = Mth.clamp(
+                modelScale + (scrollY > 0 ? MODEL_WHEEL_ZOOM_STEP : -MODEL_WHEEL_ZOOM_STEP),
+                MIN_MODEL_SCALE, MAX_MODEL_SCALE);
+        return true;
     }
 
     public void removeSelectedModule() {
@@ -424,7 +455,8 @@ public class GunModifyScreen extends Screen {
             SlotInstance selectedSlot = node == null ? slot : node.getBelongsTo();
             if (node != null && node.getBelongsToSlot() instanceof IRail rail && !node.isFixedPosition()) {
                 GunModifyUI.setScrollComponentsVisible(true);
-                GunModifyUI.setScrollPos(rail.getNormalizedChildPosition(node.getUnit()));
+                // 导轨位置需要按当前视角下的移动方向转换成 scrollbar 的值
+                GunModifyUI.setScrollPos(context.railPosToScrollValue(rail.getNormalizedChildPosition(node.getUnit())));
             } else {
                 GunModifyUI.setScrollComponentsVisible(false);
             }
@@ -464,8 +496,22 @@ public class GunModifyScreen extends Screen {
             Node selectedNode = context.getSelectedNode();
             if (selectedNode.getBelongsToSlot() instanceof IRail rail) {
                 float normalizedOriginOffest = rail.getNormalizedOriginOffest();
-                GunModifyUI.setScrollPos(normalizedOriginOffest);
+                GunModifyUI.setScrollPos(context.railPosToScrollValue(normalizedOriginOffest));
             }
+        }
+    }
+
+    /** 把 scrollbar 的位置同步成当前所选模块在导轨上的位置 */
+    private void syncScrollerToSelectedNode() {
+        if (context == null) {
+            return;
+        }
+        Node selectedNode = context.getSelectedNode();
+        if (selectedNode != null
+                && selectedNode.getBelongsToSlot() instanceof IRail rail
+                && !selectedNode.isFixedPosition()) {
+            GunModifyUI.setScrollComponentsVisible(true);
+            GunModifyUI.setScrollPos(context.railPosToScrollValue(rail.getNormalizedChildPosition(selectedNode.getUnit())));
         }
     }
 
