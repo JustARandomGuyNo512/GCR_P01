@@ -90,14 +90,9 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
     }
 
     private void finalApplyPost(PoseStack poseStack, float rScale, float tScale) {
-        if (rScale < 1e-5 && tScale < 1e-5) {
-            return;
-        }
         float f = 1 - aimingProgress * 0.3f;
         f *= rScale;
-        if (tScale > 1e-5) {
-            poseStack.translate(txPost * tScale, tyPost * tScale, tzPost * tScale);
-        }
+        poseStack.translate(txPost * tScale, tyPost * tScale, tzPost * tScale);
         poseStack.mulPose(new Quaternionf().rotateXYZ(rxPost * f, ryPost * f, rzPost * f * f));
         rxPost = 0;
         ryPost = 0;
@@ -118,6 +113,10 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         txPre = 0;
         tyPre = 0;
         tzPre = 0;
+        if (aimingProgress != 0) {
+            f = aimingProgress * 0.7f;
+            poseStack.mulPose(new Quaternionf().rotateXYZ(rxPost * f, ryPost * f, rzPost * f * f));
+        }
     }
     float sprintingStartSwing = -114514f;
     long lastShake = 0;
@@ -132,7 +131,6 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
             if (!SprintingHandler.INSTANCE.isSprinting() && sprintingProgress < 0.1f) {
                 if (System.currentTimeMillis() - lastShake > 1000) {
                     lastShake = System.currentTimeMillis();
-                    System.out.println("sss");
                 }
             }
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
