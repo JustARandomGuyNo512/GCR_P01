@@ -335,7 +335,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.DUSTCOVER_6P34, "model_assets/gltf/6p34_dustcover.gltf", "model_assets/gltf/6p34_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.PDC_DUSTCOVER, "model_assets/gltf/pdc_dustcover.gltf", "model_assets/gltf/pdc_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.PT1_STOCK, "model_assets/gltf/pt1_stock.gltf", "model_assets/gltf/pt1_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModules.AR_STOCK_ADAPTER_AK74M, "model_assets/gltf/ar_stock_adapter_ak74m.gltf", "model_assets/gltf/ar_stock_adapter_ak74m.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AR_STOCK_ADAPTER_TYPE1, "model_assets/gltf/ar_stock_adapter_type1.gltf", "model_assets/gltf/ar_stock_adapter_type1.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
         ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
@@ -368,6 +368,7 @@ public class ClientTestingResources {
         );
 
         ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCRModules.ELCAN, "model_assets/gltf/elcan.gltf", "model_assets/gltf/elcan.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.19f, 2f, 0.6f, 1f, 1.5f, 1.9f, GCR.RL("textures/sight/crosshair/elcan.png")));
         ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
 
 

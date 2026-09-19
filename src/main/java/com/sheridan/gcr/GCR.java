@@ -101,6 +101,8 @@ public class GCR {
 
     public static final DeferredItem<Item> ACOG_ITEM =
             ITEMS.register(GCRModules.ACOG.getSimpleID(), () -> new ModuleItem<>(GCRModules.ACOG));
+    public static final DeferredItem<Item> ELCAN_ITEM =
+            ITEMS.register(GCRModules.ELCAN.getSimpleID(), () -> new ModuleItem<>(GCRModules.ELCAN));
     public static final DeferredItem<Item> VORTEX_RAZOR_HD_ITEM =
             ITEMS.register(GCRModules.VORTEX_RAZOR_HD.getSimpleID(), () -> new ModuleItem<>(GCRModules.VORTEX_RAZOR_HD));
     public static final DeferredItem<Item> CANTED_RAIL_ITEM =
@@ -152,8 +154,8 @@ public class GCR {
             ITEMS.register(GCRModules.STOCK_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModules.STOCK_6P34));
     public static final DeferredItem<Item> PT1_STOCK_ITEM =
             ITEMS.register(GCRModules.PT1_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.PT1_STOCK));
-    public static final DeferredItem<Item> AR_STOCK_ADAPTER_AK74M_ITEM =
-            ITEMS.register(GCRModules.AR_STOCK_ADAPTER_AK74M.getSimpleID(), () -> new ModuleItem<>(GCRModules.AR_STOCK_ADAPTER_AK74M));
+    public static final DeferredItem<Item> AR_STOCK_ADAPTER_TYPE1_ITEM =
+            ITEMS.register(GCRModules.AR_STOCK_ADAPTER_TYPE1.getSimpleID(), () -> new ModuleItem<>(GCRModules.AR_STOCK_ADAPTER_TYPE1));
 
 
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
@@ -240,6 +242,7 @@ public class GCR {
                             .icon(() -> ACOG_ITEM.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(ACOG_ITEM.get());
+                                output.accept(ELCAN_ITEM.get());
                                 output.accept(VORTEX_RAZOR_HD_ITEM.get());
                                 output.accept(CANTED_RAIL_ITEM.get());
                                 output.accept(A2_CARRY_HANDLE_ITEM.get());
@@ -265,7 +268,7 @@ public class GCR {
                                 output.accept(MOE_CARBINE_STOCK_ITEM.get());
                                 output.accept(STOCK_6P34_ITEM.get());
                                 output.accept(PT1_STOCK_ITEM.get());
-                                output.accept(AR_STOCK_ADAPTER_AK74M_ITEM.get());
+                                output.accept(AR_STOCK_ADAPTER_TYPE1_ITEM.get());
 
                                 output.accept(A2_FLASH_HINDER_ITEM.get());
                                 output.accept(SOCOM_RC2_ITEM.get());

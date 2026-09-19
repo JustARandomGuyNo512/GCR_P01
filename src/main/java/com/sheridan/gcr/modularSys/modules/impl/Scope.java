@@ -30,6 +30,7 @@ public class Scope extends AttachmentModule implements IVoxelHandlerModule, ISco
     protected float maxRate;
     protected float minRate;
     protected float zoomSensitivity;
+    protected boolean adjustable = true;
 
     public Scope(ResourceLocation id, IVoxelHandler voxelHandler, float weight, float adsSpeedModifier, float minRate, float maxRate, float zoomSensitivity) {
         super(id, false, weight, Direction.UPPER);
@@ -38,6 +39,15 @@ public class Scope extends AttachmentModule implements IVoxelHandlerModule, ISco
         this.maxRate = maxRate;
         this.minRate = minRate;
         this.zoomSensitivity = zoomSensitivity;
+    }
+
+    public boolean isAdjustable() {
+        return adjustable;
+    }
+
+    public Scope setAdjustable(boolean adjustable) {
+        this.adjustable = adjustable;
+        return this;
     }
 
     @Override
@@ -105,6 +115,9 @@ public class Scope extends AttachmentModule implements IVoxelHandlerModule, ISco
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean onMouseScroll(double mx, double my, double deltaX, double deltaY, String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
+        if (!isAdjustable()) {
+            return false;
+        }
         WeaponStatus status = Client.WEAPON_STATUS;
         if (status.isAiming() && Minecraft.getInstance().screen == null) {
             CompoundTag states = gun.getNodeStatesTag(itemStack, thisNodeId);
@@ -121,6 +134,9 @@ public class Scope extends AttachmentModule implements IVoxelHandlerModule, ISco
     @OnlyIn(Dist.CLIENT)
     @Override
     public void onClientTick(String thisNodeId, Unit unit, IGun gun, ItemStack itemStack) {
+        if (!isAdjustable()) {
+            return;
+        }
         if (totalDelta == 0) {
             return;
         }
@@ -138,9 +154,16 @@ public class Scope extends AttachmentModule implements IVoxelHandlerModule, ISco
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        String replace = Component.translatable("tooltip.prop.magnification").getString()
-                .replace("$min", String.format("%.2f", minRate))
-                .replace("$max", String.format("%.2f", maxRate));
-        tooltipComponents.add(Component.translatable(replace));
+        if (isAdjustable()) {
+            String replace = Component.translatable("tooltip.prop.magnification").getString()
+                    .replace("$min", String.format("%.2f", minRate))
+                    .replace("$max", String.format("%.2f", maxRate));
+            tooltipComponents.add(Component.translatable(replace));
+        } else {
+            String replace = Component.translatable("tooltip.prop.magnification").getString()
+                    .replace("$min", String.format("%.2f", minRate))
+                    .replace("- $max", "");
+            tooltipComponents.add(Component.translatable(replace));
+        }
     }
 }

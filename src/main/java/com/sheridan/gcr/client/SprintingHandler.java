@@ -56,9 +56,13 @@ public class SprintingHandler{
         return inSprinting;
     }
 
+    public float getExitSpeed() {
+        return exitSpeed;
+    }
+
     private boolean shouldEnterSprinting(LocalPlayer player) {
         if (!player.isSprinting()) {
-            return false;
+            exitSprinting(20);
         }
         boolean allowSprinting = GunTaskHandler.INSTANCE.allowSprinting();
         if (!allowSprinting || Client.isAiming()) {

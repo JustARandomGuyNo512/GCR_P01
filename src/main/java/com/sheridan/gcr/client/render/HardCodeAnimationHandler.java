@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.items.DisplayData;
@@ -119,6 +120,7 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         tzPre = 0;
     }
     float sprintingStartSwing = -114514f;
+    long lastShake = 0;
     private void calcSprinting(float partialTicks, IGun gun, Player player) {
         DisplayData displayData = gun.getDisplayData();
         if (displayData == null) {
@@ -127,6 +129,12 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
         float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress(partialTicks);
 
         if (sprintingProgress != 0) {
+            if (!SprintingHandler.INSTANCE.isSprinting() && sprintingProgress < 0.1f) {
+                if (System.currentTimeMillis() - lastShake > 1000) {
+                    lastShake = System.currentTimeMillis();
+                    System.out.println("sss");
+                }
+            }
             float smooth = sprintingProgress * sprintingProgress * (3f - 2f * sprintingProgress);
             float easeIn = sprintingProgress * sprintingProgress;
 
@@ -169,6 +177,15 @@ public class HardCodeAnimationHandler implements IGlobalAnimationHandler {
 
         } else {
             sprintingStartSwing = -114514f;
+        }
+        long l = System.currentTimeMillis();
+        long dist = l - lastShake;
+        if (dist < 3000) {
+            float exitSpeed = SprintingHandler.INSTANCE.getExitSpeed();
+            float weight = Client.WEAPON_STATUS.getWeight();
+            float omega = Mth.clamp((235 / weight) * exitSpeed, 6.5f, 15f);
+            float shakeZ = (float) Utils.dampedOscillation(dist * 0.001f, exitSpeed * 0.4f, omega, 0.6f, PI * 0.5f);
+            rzPost += shakeZ;
         }
     }
 

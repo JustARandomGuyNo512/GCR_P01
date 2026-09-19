@@ -119,8 +119,14 @@ public final class GCRModules {
     public static final IModular ACOG = new Scope(
             RL( "acog"),
             new VoxelHandler(RL("common/voxel_shapes/acog_voxel.geo.json")),
-            0.3f, 1.0f, 1.5f, 4f, 0.15f
-            ).addTags("sight", "scope", "upper", "on_rail");
+            0.3f, 1.0f, 4f, 4f, 0.15f
+            ).setAdjustable(false).addTags("sight", "scope", "upper", "on_rail");
+
+    public static final IModular ELCAN = new Scope(
+            RL( "elcan"),
+            new VoxelHandler(RL("common/voxel_shapes/elcan_voxel.geo.json")),
+            0.7f, 1.0f, 1.5f, 6f, 0.15f
+    ).addTags("sight", "scope", "upper", "on_rail");
 
     public static final IModular VORTEX_RAZOR_HD = new Scope(
             RL( "vortex_razor_hd"),
@@ -140,8 +146,8 @@ public final class GCRModules {
     public static final IModular MOE_CARBINE_STOCK = new Stock(RL( "moe_carbine_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
     public static final IModular STOCK_6P34 = new Stock(RL( "6p34_stock"), 0.3f, 0.18f, 0.18f).addTags("stock", "ak");
     public static final IModular PT1_STOCK = new Stock(RL( "pt1_stock"), 0.48f, 0.2f, 0.2f).addTags("stock", "ak");
-    public static final IModular AR_STOCK_ADAPTER_AK74M = new StockAdapter(RL( "ar_stock_adapter_ak74m"), 0.15f,
-            new SlotProvider(RL( "common/pivot_maps/ar_stock_adapter_ak74m.pivot.geo.json"))
+    public static final IModular AR_STOCK_ADAPTER_TYPE1 = new StockAdapter(RL( "ar_stock_adapter_type1"), 0.15f,
+            new SlotProvider(RL( "common/pivot_maps/ar_stock_adapter_type1.pivot.geo.json"))
                     .addSlot(
                             new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar"))
                     )
