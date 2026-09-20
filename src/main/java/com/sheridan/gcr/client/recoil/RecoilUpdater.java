@@ -348,6 +348,11 @@ public class RecoilUpdater implements IRecoilUpdater {
             }
         }
 
+        IRecoilCameraHandler instance = RecoilCameraHandler.getInstance();
+        if (instance != null) {
+            instance.applyGunModelTransform(poseStack, aiming, particleTicks, recoilHeatRes, model);
+        }
+
         Bone handRotPivot = model.getHandRotPivot();
         poseStack.translate(shakeX, shakeY * 0.5f, handRotPivot.z);
         poseStack.mulPose(new Quaternionf().rotateXYZ(

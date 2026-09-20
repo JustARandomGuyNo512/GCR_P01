@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.model.modular.IGunModel;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -139,6 +140,11 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
             poseStack.mulPose(new Quaternionf().rotateXYZ(rotX, 0, rotZ));
             poseStack.translate(0, 0, transZ);
         }
+    }
+
+    public void applyGunModelTransform(PoseStack poseStack, boolean aiming, float particleTicks, float recoilHeatRes, IGunModel model) {
+        float up = getUp();
+
     }
 
     @Override
