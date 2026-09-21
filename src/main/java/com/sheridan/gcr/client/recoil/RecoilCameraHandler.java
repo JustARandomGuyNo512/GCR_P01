@@ -1,7 +1,6 @@
 package com.sheridan.gcr.client.recoil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.apache.commons.compress.archivers.sevenz.CLI;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 
