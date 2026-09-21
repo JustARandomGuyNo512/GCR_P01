@@ -1,7 +1,5 @@
 package com.sheridan.gcr.client.model.modular.animation.controllers;
 
-import com.sheridan.gcr.Client;
-import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.animation.AnimationDef;
@@ -10,15 +8,9 @@ import com.sheridan.gcr.client.animation.SingleAnimationSequence;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.modules.AKModel;
-import com.sheridan.gcr.client.model.modular.modules.ARMainModel;
 import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
-import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
-import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.views.AKView;
-import com.sheridan.gcr.modularSys.modules.views.ARView;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

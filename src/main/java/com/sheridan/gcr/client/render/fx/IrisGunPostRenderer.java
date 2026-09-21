@@ -9,7 +9,6 @@ import com.sheridan.gcr.client.render.delayed.Stage;
 import com.sheridan.gcr.client.render.delayed.Task;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.GunItem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;

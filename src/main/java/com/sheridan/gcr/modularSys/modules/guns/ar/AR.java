@@ -15,10 +15,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public class AR extends SlottedGunMainPart implements ARView {
     protected Bool BOLT_LOCKED = new Bool("bolt_locked");

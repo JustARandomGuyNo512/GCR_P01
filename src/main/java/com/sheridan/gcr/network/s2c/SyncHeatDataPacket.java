@@ -1,6 +1,5 @@
 package com.sheridan.gcr.network.s2c;
 
-import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.network.Codec;
 import com.sheridan.gcr.network.IPacket;

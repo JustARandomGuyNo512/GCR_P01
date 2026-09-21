@@ -2,7 +2,6 @@ package com.sheridan.gcr.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sheridan.gcr.client.aiStuff.DevSimpleTexture;
-import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;

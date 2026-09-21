@@ -4,14 +4,9 @@ import com.sheridan.gcr.modularSys.Direction;
 import com.sheridan.gcr.modularSys.builder.IWriteableAccessor;
 import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.FoldingIronSightVoxelHandler;
-import com.sheridan.gcr.modularSys.modules.ISight;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandlerModule;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 public class FoldingFarIronSight extends AttachmentModule implements IVoxelHandlerModule {
     private final FoldingIronSightVoxelHandler voxelHandler;

@@ -2,16 +2,11 @@ package com.sheridan.gcr.modularSys.fire;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
-import com.sheridan.gcr.modularSys.modules.IAmmoSource;
-import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
-import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
-import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.Mth;

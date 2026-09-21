@@ -7,8 +7,6 @@ import com.sheridan.gcr.client.model.modular.state.StaticState;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
-import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.views.AKView;
 

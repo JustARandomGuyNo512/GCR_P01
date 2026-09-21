@@ -1,6 +1,6 @@
 package com.sheridan.gcr.modularSys.modules.impl;
 
-import com.sheridan.gcr.modularSys.modules.*;
+import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
 import com.sheridan.gcr.modularSys.modules.views.IM203View;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;

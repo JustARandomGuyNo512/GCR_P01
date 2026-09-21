@@ -14,8 +14,6 @@ import com.sheridan.gcr.modularSys.modules.views.AKView;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-import java.util.List;
-
 @OnlyIn(Dist.CLIENT)
 public class AKModel extends ArmHandlerModel<AKView> implements IBulletShellHandlerModel<AKView>, ISightModel, IGunModel, IMuzzleFlashRendererModel  {
     private final AssaultRifleBulletShellHandler bulletShellHandler;

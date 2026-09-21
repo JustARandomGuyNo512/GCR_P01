@@ -1,9 +1,8 @@
 package com.sheridan.gcr.client.model.modular.modules;
 
-import com.sheridan.gcr.client.model.Bone;
 import com.sheridan.gcr.client.model.MeshModelData;
-import com.sheridan.gcr.client.model.modular.*;
-import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.model.modular.ISightModel;
+import com.sheridan.gcr.client.model.modular.ModularModel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

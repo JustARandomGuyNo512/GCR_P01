@@ -11,7 +11,9 @@ import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ZenitcoUpperHandguard extends SlotProviderVoxelModule{
     static List<String> allSuitable = null;

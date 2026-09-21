@@ -1,15 +1,12 @@
 package com.sheridan.gcr.client;
 
 import com.sheridan.gcr.client.recoil.IRecoilCameraHandler;
-import com.sheridan.gcr.client.recoil.IRecoilUpdater;
 import com.sheridan.gcr.client.recoil.RecoilCameraHandler;
-import com.sheridan.gcr.client.recoil.RecoilHandler;
-import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
-import com.sheridan.gcr.client.render.IGlobalAnimationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
 import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

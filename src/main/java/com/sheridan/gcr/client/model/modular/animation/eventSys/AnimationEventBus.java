@@ -1,10 +1,8 @@
 package com.sheridan.gcr.client.model.modular.animation.eventSys;
 
-import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Triple;

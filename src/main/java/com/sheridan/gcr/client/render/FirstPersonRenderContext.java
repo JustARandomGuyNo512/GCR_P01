@@ -15,7 +15,6 @@ import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellRenderer;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +22,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
 
 import java.util.*;
 

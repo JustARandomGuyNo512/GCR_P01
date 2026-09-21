@@ -9,7 +9,6 @@ import com.sheridan.gcr.client.animation.command.MaskMagAmmo;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
-import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.GunTask;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.GunReloadPacket;

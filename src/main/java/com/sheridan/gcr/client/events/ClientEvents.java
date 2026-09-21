@@ -7,7 +7,6 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.animation.AnimationHandler;
-import com.sheridan.gcr.client.model.modular.ModularModel;
 import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.Shaders;

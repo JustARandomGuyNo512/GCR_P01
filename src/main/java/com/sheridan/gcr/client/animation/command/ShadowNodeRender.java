@@ -5,13 +5,11 @@ import com.sheridan.gcr.client.animation.IAnimated;
 import com.sheridan.gcr.client.animation.IAnimationSequence;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ShadowNodeRender extends Command{

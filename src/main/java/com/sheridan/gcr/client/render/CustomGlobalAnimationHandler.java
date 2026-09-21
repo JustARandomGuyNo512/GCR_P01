@@ -3,7 +3,6 @@ package com.sheridan.gcr.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
