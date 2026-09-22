@@ -50,13 +50,14 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         ClientGunStuckCache.get().projectToNbt(stack, gun);
         boolean stuck = ClientGunStuckCache.get().isStuck(stack, gun);
         if (stuck) {
-            if (!removeStuckTaskSent) {
-                IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
-                if (task != null) {
-                    GunTaskHandler.INSTANCE.setTask(task);
-                }
-                removeStuckTaskSent = true;
+
+            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
+            if (task != null) {
+
+                GunTaskHandler.INSTANCE.setTask(task);
             }
+
+
             return FireControl.EXIT_FIRE_STATE;
         }
         stuckMsgNoticed = false;
@@ -128,6 +129,7 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         if (stuck) {
             // 必须在发包之前登记预测：回执可能瞬间返回，先登记才能保证配对成功。
             ClientGunStuckCache.get().onLocalJam(gunId, shootId);
+
         }
         sendPacket(shootId, stuck, gunId);
         gun.clientShoot(player, stack);
