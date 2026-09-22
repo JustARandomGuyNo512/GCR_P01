@@ -416,7 +416,8 @@ public final class GCRModules {
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
             new BaseProperties(650, 2.4f, 0.2f, 3.3f,
-                    0.0003f, 0.08f,
+                    //0.0003f, 0.08f,
+                    0.3f, 0.3f,
                     1.3f, 4f,
                     30f,
                     0.004f,

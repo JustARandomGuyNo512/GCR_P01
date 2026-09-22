@@ -2,8 +2,11 @@ package com.sheridan.gcr.client.model.modular.animation.controllers;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.model.modular.IModularModel;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.Callback;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.Track;
+import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
+import com.sheridan.gcr.modularSys.modules.views.IGunView;
 
 public abstract class  GunController<T extends IModularModel>  extends AnimationController<T> {
     protected Track<T> MAIN;
@@ -74,5 +77,34 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
                 getTrack("check").clear();
             }
         });
+    }
+
+    /**
+     * 读 {@link EventType#SHOOT} 的卡壳参数。
+     *
+     * <p>开火线程（{@code ClientWeaponLooper}）与渲染线程不是同一个线程，物品 states 是
+     * {@code CompoundTag}（底层 HashMap），渲染线程回读可能滞后甚至读到写入前的旧值。
+     * 因此开火线程会把这一发的判定结果直接塞进事件参数；只有参数缺失（其它派发方）时，
+     * 才退回读 states 以保持兼容。</p>
+     */
+    protected static boolean isShootStuck(Callback.EventContext context, IGunView view) {
+        String param = context.getParam(EventType.PARAM_STUCK);
+        if (param != null) {
+            return Boolean.parseBoolean(param);
+        }
+        return view.stuck(context.getStates());
+    }
+
+    /**
+     * 读 {@link EventType#SHOOT} 的「最后一发」参数：打完后膛内为空、且这把枪装着弹匣。
+     * 与 {@link #isShootStuck} 同理，优先用开火线程算好的参数，缺失时退回读 states。
+     */
+    protected static boolean isShootLastRound(Callback.EventContext context, IGunView view) {
+        String param = context.getParam(EventType.PARAM_LAST_ROUND);
+        if (param != null) {
+            return Boolean.parseBoolean(param);
+        }
+        ReadOnlyTag states = context.getStates();
+        return view.getAmmoLeft(states) == 0 && view.hasMagAttachment(states);
     }
 }

@@ -17,6 +17,7 @@ import com.sheridan.gcr.network.c2s.GunFirePacket;
 import com.sheridan.gcr.network.s2c.GunFireAckPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -56,6 +57,22 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
     Num HEAT_STUCK_RATIO = new Num("heat_stuck_ratio", 1);
 
     void serverShoot(LivingEntity entity, ItemStack itemStack, int shootID, GunFirePacket packet);
+
+    /**
+     * 服务端拒绝了一发开火（已经卡壳 / 膛内没弹 / 客户端上报的枪不是当前主手）。
+     *
+     * <p>必须回执：客户端用它把本地卡壳预测配对解除。没有回执的话，客户端只能等预测超时才
+     * 敢继续射击，切枪造成的“虚假卡壳”也会一直挂在那里。</p>
+     */
+    void serverShootRejected(ServerPlayer player, ItemStack itemStack, int shootID);
+
+    /**
+     * 服务端把枪械当前的卡壳状态推给客户端。
+     *
+     * <p>用于开火之外的卡壳变化（清障、排障）：客户端在自认为卡壳时不会开火，
+     * 所以不能指望下一次开火的回执来解除故障。</p>
+     */
+    void syncStuck(ServerPlayer player, ItemStack itemStack);
 
     void fullSyncFromServer(ItemStack itemStack, CompoundTag data);
 

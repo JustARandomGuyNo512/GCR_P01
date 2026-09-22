@@ -561,6 +561,15 @@ public class GCR {
             );
 
             registrar.playBidirectional(
+                    GunStuckSyncPacket.TYPE,
+                    GunStuckSyncPacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
+
+            registrar.playBidirectional(
                     InitClientGunDataPacket.TYPE,
                     InitClientGunDataPacket.STREAM_CODEC,
                     new DirectionalPayloadHandler<>(

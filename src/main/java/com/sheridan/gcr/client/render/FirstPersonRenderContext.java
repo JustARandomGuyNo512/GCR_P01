@@ -77,6 +77,10 @@ public class FirstPersonRenderContext extends ModuleRenderContext implements IRe
         this.overlay = overlay;
         this.partialTicks = partialTicks;
         this.entity = Minecraft.getInstance().player;
+        updateNodeStates();
+    }
+
+    public void updateNodeStates() {
         CompoundTag states = this.gun.getStatesTag(itemStack);
         for (ModuleRenderNode node : stateViewers) {
             if (states.contains(node.id)) {

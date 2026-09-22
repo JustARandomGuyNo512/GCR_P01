@@ -42,10 +42,11 @@ public class ARMainController extends GunController<ARMainModel> {
 
         subscribe(EventType.SHOOT, 0, (context) -> {
             SingleAnimationSequence animation = shoot;
-            ReadOnlyTag states = context.getStates();
-            if (view.stuck(states)) {
+            // 卡壳/最后一发由开火线程算好随事件参数带过来（见 GunController#isShootStuck），
+            // 不再回读物品 states：开火线程与渲染线程不同，NBT 跨线程读可能滞后。
+            if (isShootStuck(context, view)) {
                 animation = shootStuck;
-            } else if (view.getAmmoLeft(states) == 0 && view.hasMagAttachment(states)) {
+            } else if (isShootLastRound(context, view)) {
                 animation = shootLast;
             }
             SHOOT.play(animation.prepare());

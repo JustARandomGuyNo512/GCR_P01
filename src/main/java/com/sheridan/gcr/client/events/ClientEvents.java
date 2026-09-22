@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.animation.AnimationHandler;
 import com.sheridan.gcr.client.render.GunPoseHandler;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
 import com.sheridan.gcr.client.render.Shaders;
+import com.sheridan.gcr.client.stuck.ClientGunStuckCache;
 import com.sheridan.gcr.events.LivingFireEvent;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
@@ -54,9 +56,23 @@ public class ClientEvents {
             Client.getGunRenderer().tick(player);
             HardCodeAnimationHandler.getInstance().clientTick(player);
             DrawHolsterHandler.get().tick(player, player.getMainHandItem(), player.getInventory().selected);
+            // 客户端卡壳缓存：超时的本地预测自愈 + 把信念投影回手持枪的 states。
+            // 换维度不会中断它（同一把枪、同一个 identityID），只有断线才清空。
+            ClientGunStuckCache.get().tick(player);
         }
         Client.LOCK.unlock();
         //ModularModel.debugHeat = Math.max(0, ModularModel.debugHeat - 0.005f);
+    }
+
+    /**
+     * 断线时清空客户端卡壳缓存。
+     *
+     * <p>真实卡壳由服务端保存在物品数据里，重进后随背包同步回来，既有 NBT 读取路径照常显示；
+     * 反向把本地预测带过连接边界才是危险的——那个预测可能永远等不到确认，就变成跨存档的虚假卡壳。</p>
+     */
+    @SubscribeEvent
+    public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        ClientGunStuckCache.get().clearAll();
     }
 
     public static void registerCustomVanillaShader(RegisterShadersEvent event) {

@@ -6,6 +6,7 @@ import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.AnimationRegister;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
+import com.sheridan.gcr.client.stuck.ClientGunStuckCache;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
 import com.sheridan.gcr.modularSys.task.IGunTask;
@@ -56,7 +57,11 @@ public class ARRemoveStuckTask extends RemoveStuckTask<AR>{
     public void onTick(Player player) {
         super.onTick(player);
         if (tick == sendPacketDelay) {
-            PacketDistributor.sendToServer(new RemoveStuckPacket());
+            String gunId = gun.getIdentityID(itemStack);
+            PacketDistributor.sendToServer(new RemoveStuckPacket(gunId));
+            // 清障请求已经发出：本地预测（服务端从未确认过的卡壳）可以立刻作废；
+            // 已确认的卡壳等服务端回执，避免“刚清完又卡上”的抖动。
+            ClientGunStuckCache.get().onLocalClearRequested(gunId);
         }
     }
 
