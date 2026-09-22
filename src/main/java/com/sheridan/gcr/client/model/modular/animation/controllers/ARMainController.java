@@ -4,7 +4,6 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.KeyframeAnimator;
-import com.sheridan.gcr.client.animation.SingleAnimationSequence;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.modules.ARMainModel;
@@ -18,11 +17,6 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class ARMainController extends GunController<ARMainModel> {
-    private SingleAnimationSequence shoot;
-    private SingleAnimationSequence shootLast;
-    private SingleAnimationSequence shootStuck;
-
-    private AnimationDef thirdPersonShoot;
     private Consumer<ARMainController> animationRegister;
 
     public ARMainController(Consumer<ARMainController> animationRegister) {
@@ -34,21 +28,15 @@ public class ARMainController extends GunController<ARMainModel> {
         super.firstPersonSubscriptions(model);
         ARView view = model.getView();
 
-        shoot = new SingleAnimationSequence(anim("shoot").coverState());
-        shootLast = new SingleAnimationSequence(anim("shoot_last").coverState());
-        shootStuck = new SingleAnimationSequence(anim("shoot_stuck").coverState());
-
-        thirdPersonShoot = anim("shoot").animation;
-
         subscribe(EventType.SHOOT, 0, (context) -> {
-            SingleAnimationSequence animation = shoot;
+            String clip = "shoot";
             ReadOnlyTag states = context.getStates();
             if (view.stuck(states)) {
-                animation = shootStuck;
+                clip = "shoot_stuck";
             } else if (view.getAmmoLeft(states) == 0 && view.hasMagAttachment(states)) {
-                animation = shootLast;
+                clip = "shoot_last";
             }
-            SHOOT.play(animation.prepare());
+            SHOOT.play(anim(clip).coverState());
         });
 
 
@@ -73,7 +61,10 @@ public class ARMainController extends GunController<ARMainModel> {
                 context.currentRenderNode().id
         );
         if (startTime != -1) {
-            KeyframeAnimator.animate(model, thirdPersonShoot, startTime, 0.9f);
+            AnimationDef shoot = animDef("shoot", startTime);
+            if (shoot != null) {
+                KeyframeAnimator.animate(model, shoot, startTime, 0.9f);
+            }
         }
     }
 

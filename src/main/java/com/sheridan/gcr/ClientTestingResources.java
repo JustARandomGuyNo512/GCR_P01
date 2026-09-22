@@ -42,7 +42,7 @@ public class ClientTestingResources {
     public static void init(FMLClientSetupEvent event) {
         // ==================== 1. 动画整合与批量注册 ====================
         // 主武器动画
-        ModelRegistrationManager.loadAndRegisterAnimations(
+        ModelRegistrationManager.loadAndRegisterGunAnimations(
                 "model_assets/animation/m4a1_main.animation.json",
                 Map.ofEntries(
                         Map.entry("check_mag", "m4a1_check_mag"),
@@ -65,10 +65,11 @@ public class ClientTestingResources {
                         Map.entry("remove_stuck_empty", "m4a1_remove_stuck_empty"),
                         Map.entry("check_chamber", "m4a1_check_chamber"),
                         Map.entry("check_chamber_simple", "m4a1_check_chamber_simple")
-                )
+                ),
+                "m4a1"
         );
 
-        ModelRegistrationManager.loadAndRegisterAnimations(
+        ModelRegistrationManager.loadAndRegisterGunAnimations(
                 "model_assets/animation/ak74m.animation.json",
                 Map.ofEntries(
                         Map.entry("check_mag", "ak74m_check_mag"),
@@ -88,7 +89,8 @@ public class ClientTestingResources {
                         Map.entry("reload_grenade.G", "ak74m_reload_grenade_gp25.g"),
                         Map.entry("check_grenade.G", "ak74m_check_grenade_gp25.g"),
                         Map.entry("check_grenade", "ak74m_check_grenade_gp25")
-                )
+                ),
+                "ak74m"
         );
         // 弹匣状态动画
         ModelRegistrationManager.loadAndRegisterAnimations(
@@ -116,9 +118,10 @@ public class ClientTestingResources {
                 )
         );
         // 全局动画
-        ModelRegistrationManager.loadAndRegisterAnimations(
+        ModelRegistrationManager.loadAndRegisterGunAnimations(
                 "model_assets/animation/ar.global.animation.json",
-                Map.of("holster", "ar_holster", "draw", "ar_draw")
+                Map.of("holster", "ar_holster", "draw", "ar_draw"),
+                "ar"
         );
         // M203 状态动画
         ModelRegistrationManager.loadAndRegisterAnimations(

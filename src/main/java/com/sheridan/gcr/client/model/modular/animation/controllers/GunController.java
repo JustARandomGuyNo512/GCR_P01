@@ -28,12 +28,12 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
 
         subscribe(EventType.RELOAD, 0, (context) -> {
             String name = context.getParam("animation_name");
-            MAIN.play(anim(name).coverState());
+            MAIN.play(animExact(name).coverState());
         });
 
         subscribe(EventType.RELOAD_SUB_WEAPON, 10, (context) -> {
             String name = context.getParam("animation_name");
-            MAIN.play(anim(name).coverState());
+            MAIN.play(animExact(name).coverState());
         });
 
         subscribe(EventType.CHECK_MAG, 0, (context) -> {

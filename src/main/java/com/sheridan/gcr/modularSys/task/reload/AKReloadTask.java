@@ -1,10 +1,7 @@
 package com.sheridan.gcr.modularSys.task.reload;
 
 import com.sheridan.gcr.Client;
-import com.sheridan.gcr.GCR;
-import com.sheridan.gcr.Utils;
-import com.sheridan.gcr.client.animation.AnimationDef;
-import com.sheridan.gcr.client.animation.AnimationRegister;
+import com.sheridan.gcr.client.animation.AnimationVariants;
 import com.sheridan.gcr.client.animation.command.MaskMagAmmo;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
@@ -28,6 +25,8 @@ import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class AKReloadTask extends GunTask<AK> {
+    private static final String GUN_PREFIX = "ak74m";
+    private String category;
     private String animationName;
     private IAmmoSource magAttachment;
     public int sendPacketDelay;
@@ -47,25 +46,22 @@ public class AKReloadTask extends GunTask<AK> {
         int ammoLeft = gun.getGunAmmoLeft(itemStack);
 
         if (ammoLeft > 0) {
-            animationName = "mag_reload";
+            category = AnimationVariants.MAG_RELOAD;
         } else {
-            animationName = "mag_reload_empty";
+            category = AnimationVariants.MAG_RELOAD_EMPTY;
         }
 
+        AnimationVariants.Pick pick = AnimationVariants.pick(GUN_PREFIX, category);
+        animationName = pick.animationName();
         Map<String, Float> taskTimers = gun.baseProperties.taskTimers;
-        String sendPacketDelayKey = animationName + "_length";
-        sendPacketDelay = Utils.secondToTick(taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
+        this.length = pick.lengthTicks();
+        sendPacketDelay = pick.sendPacketDelayTicks(GUN_PREFIX, taskTimers);
         magAttachment = gun.getMagAttachment(itemStack);
-        //TODO:将task长度写入属性中而不是根据动画名字推算
-        AnimationDef animationDef = AnimationRegister.get(GCR.RL("ak74m_" + animationName));
-        if (animationDef != null) {
-            this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.1f), sendPacketDelay);
-        }
     }
 
     @Override
     public boolean equals(IGunTask<?> other) {
-        if (!(other instanceof AKReloadTask otherTask) || !Objects.equals(otherTask.animationName, this.animationName)) {
+        if (!(other instanceof AKReloadTask otherTask) || !Objects.equals(otherTask.category, this.category)) {
             return false;
         }
         return super.equals(other);
