@@ -131,6 +131,10 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
         if (updater != null) {
             float timeDis = updater.distFromLastShoot();
             float currentShake = updater.getCamShakeZ();
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && player.isSprinting()) {
+                currentShake *= 1.25f;
+            }
             float aimingProgress = Client.getAimingProgress(partialTicks);
             float rotX = (float) Utils.dampedOscillation(timeDis, currentShake * 0.4f * (1 - aimingProgress * 0.75f), 80, 0.35f, QUARTER_PI);
             float rotZ = (float) Utils.dampedOscillation(timeDis, currentShake, 40, 0.25f, QUARTER_PI);
