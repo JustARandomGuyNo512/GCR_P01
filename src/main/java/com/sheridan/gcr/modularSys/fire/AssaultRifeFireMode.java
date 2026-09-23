@@ -125,6 +125,9 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         if (stuck) {
             // 必须在发包之前登记预测：回执可能瞬间返回，先登记才能保证配对成功。
             ClientGunStuckCache.get().onLocalJam(gunId, shootId);
+            Minecraft.getInstance().gui.setOverlayMessage(
+                    Component.translatable("gcr.overlay.stuck")
+                            .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
         }
         sendPacket(shootId, stuck, gunId);
         gun.clientShoot(player, stack);
@@ -135,9 +138,6 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
                 EventType.PARAM_STUCK, Boolean.toString(stuck),
                 EventType.PARAM_LAST_ROUND, Boolean.toString(lastRound)
         ));
-        Minecraft.getInstance().gui.setOverlayMessage(
-                Component.translatable("gcr.overlay.stuck")
-                        .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
         return stuck ? ClientShot.JAMMED : ClientShot.FIRED;
     }
 
