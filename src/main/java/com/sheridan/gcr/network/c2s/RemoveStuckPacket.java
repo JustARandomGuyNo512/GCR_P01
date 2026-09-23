@@ -54,7 +54,6 @@ public class RemoveStuckPacket implements CustomPacketPayload, IPacket<RemoveStu
             ServerPlayer player = (ServerPlayer) context.player();
             ItemStack target = findGun(player, packet.gunId);
             if (target.isEmpty()) {
-                // 这把枪已经不在玩家身上（丢掉/交给别人），本地预测没有服务端依据，直接放行
                 PacketDistributor.sendToPlayer(player, new GunStuckSyncPacket(packet.gunId, false));
                 return;
             }
@@ -63,7 +62,7 @@ public class RemoveStuckPacket implements CustomPacketPayload, IPacket<RemoveStu
                 gun.removeStuck(target);
                 gun.notifyDataChanged(target);
             }
-            // 无论是否真的解除过都回执：客户端据此结束本地预测，避免“虚假卡壳”滞留
+
             PacketDistributor.sendToPlayer(player, new GunStuckSyncPacket(packet.gunId, gun.isStuck(target)));
         });
     }

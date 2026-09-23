@@ -53,9 +53,6 @@ public class AKRemoveStuckTask extends RemoveStuckTask<AK>{
         if (tick == sendPacketDelay) {
             String gunId = gun.getIdentityID(itemStack);
             PacketDistributor.sendToServer(new RemoveStuckPacket(gunId));
-            // 清障请求已经发出：本地预测（服务端从未确认过的卡壳）可以立刻作废；
-            // 已确认的卡壳等服务端回执，避免“刚清完又卡上”的抖动。
-            //ClientGunStuckCache.get().onLocalClearRequested(gunId);
         }
     }
 

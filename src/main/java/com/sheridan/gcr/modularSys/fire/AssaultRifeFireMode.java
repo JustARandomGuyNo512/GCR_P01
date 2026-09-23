@@ -39,8 +39,6 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         super(name);
     }
 
-    boolean stuckMsgNoticed = false;
-    //boolean removeStuckTaskSent = false;
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -56,15 +54,9 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
                     GunTaskHandler.INSTANCE.setTask(task);
                 }
             }
-            if (!stuckMsgNoticed) {
-                Minecraft.getInstance().gui.setOverlayMessage(
-                        Component.translatable("gcr.overlay.stuck")
-                                .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
-                stuckMsgNoticed = true;
-            }
+
             return FireControl.EXIT_FIRE_STATE;
         }
-        stuckMsgNoticed = false;
         //removeStuckTaskSent = false;
         int ammoLeft = gun.getGunAmmoLeft(stack);
         return ammoLeft > 0 ? FireControl.ALLOW_FIRE : FireControl.EXIT_FIRE_STATE;
@@ -143,6 +135,9 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
                 EventType.PARAM_STUCK, Boolean.toString(stuck),
                 EventType.PARAM_LAST_ROUND, Boolean.toString(lastRound)
         ));
+        Minecraft.getInstance().gui.setOverlayMessage(
+                Component.translatable("gcr.overlay.stuck")
+                        .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
         return stuck ? ClientShot.JAMMED : ClientShot.FIRED;
     }
 

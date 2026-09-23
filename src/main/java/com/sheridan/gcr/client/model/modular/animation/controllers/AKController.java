@@ -45,6 +45,7 @@ public class AKController extends GunController<AKModel> {
             // 不再回读物品 states：开火线程与渲染线程不同，NBT 跨线程读可能滞后。
             if (isShootStuck(context, view)) {
                 animation = shootStuck;
+                System.out.println("shoot stuck");
             } else if (isShootLastRound(context, view)) {
                 animation = shootLast;
             }
