@@ -69,6 +69,7 @@ public final class GCRModules {
     public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
     public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
     public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
+    public static final IModular PMAG_30R = new Mag(RL( "pmag_30r"), 0.16f, 30).addTags("mag", "ar", "5.56x45");
 
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");

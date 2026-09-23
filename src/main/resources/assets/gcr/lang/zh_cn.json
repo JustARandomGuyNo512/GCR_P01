@@ -132,6 +132,7 @@
   "gcr:m4_profile_fsb_barrel": "M4 Profile FSB 枪管",
   "gcr:stanag_mag_30r": "STANAG 30发弹匣",
   "gcr:pmag_40r": "PMAG 40发弹匣",
+  "gcr:pmag_30r": "PMAG 30发弹匣",
   "gcr:surefire_mag_60r": "SureFire 60发弹匣",
   "gcr:usgi_mag_20r": "USGI 20发弹匣",
   "gcr:6l18": "6L18 45发弹匣",

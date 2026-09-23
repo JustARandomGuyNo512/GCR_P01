@@ -266,6 +266,11 @@ public class ClientTestingResources {
         );
 
         ModelRegistrationManager.registerModel(
+                GCRModules.PMAG_30R, "model_assets/gltf/pmag_30r.gltf", "model_assets/gltf/pmag_30r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.PMAG_30R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
                 GCRModules.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
                 meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.SUREFIRE_MAG_60R, 4, "gcr:ar_mag_30r"))
         );

@@ -40,7 +40,7 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
     }
 
     boolean stuckMsgNoticed = false;
-    boolean removeStuckTaskSent = false;
+    //boolean removeStuckTaskSent = false;
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -50,18 +50,22 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         ClientGunStuckCache.get().projectToNbt(stack, gun);
         boolean stuck = ClientGunStuckCache.get().isStuck(stack, gun);
         if (stuck) {
-
-            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
-            if (task != null) {
-
-                GunTaskHandler.INSTANCE.setTask(task);
+            if (!GunTaskHandler.INSTANCE.hasTask()) {
+                IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
+                if (task != null) {
+                    GunTaskHandler.INSTANCE.setTask(task);
+                }
             }
-
-
+            if (!stuckMsgNoticed) {
+                Minecraft.getInstance().gui.setOverlayMessage(
+                        Component.translatable("gcr.overlay.stuck")
+                                .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
+                stuckMsgNoticed = true;
+            }
             return FireControl.EXIT_FIRE_STATE;
         }
         stuckMsgNoticed = false;
-        removeStuckTaskSent = false;
+        //removeStuckTaskSent = false;
         int ammoLeft = gun.getGunAmmoLeft(stack);
         return ammoLeft > 0 ? FireControl.ALLOW_FIRE : FireControl.EXIT_FIRE_STATE;
     }
@@ -129,7 +133,6 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
         if (stuck) {
             // 必须在发包之前登记预测：回执可能瞬间返回，先登记才能保证配对成功。
             ClientGunStuckCache.get().onLocalJam(gunId, shootId);
-
         }
         sendPacket(shootId, stuck, gunId);
         gun.clientShoot(player, stack);
@@ -140,12 +143,6 @@ public abstract class AssaultRifeFireMode<T extends SlottedGunMainPart> extends 
                 EventType.PARAM_STUCK, Boolean.toString(stuck),
                 EventType.PARAM_LAST_ROUND, Boolean.toString(lastRound)
         ));
-        if (!stuckMsgNoticed) {
-            Minecraft.getInstance().gui.setOverlayMessage(
-                    Component.translatable("gcr.overlay.stuck")
-                            .setStyle(Style.EMPTY.withColor(Color.RED.getRGB())), false);
-            stuckMsgNoticed = true;
-        }
         return stuck ? ClientShot.JAMMED : ClientShot.FIRED;
     }
 
