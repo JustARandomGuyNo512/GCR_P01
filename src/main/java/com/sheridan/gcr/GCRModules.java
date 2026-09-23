@@ -115,7 +115,13 @@ public final class GCRModules {
 
     public static final IModular KAC_FOLDING_SIGHT_REAR = new FoldingRearIronSight(
             RL( "kac_folding_sight_rear"),
-            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json"), true, false),
+            (FoldingIronSightVoxelHandler) new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json"))
+                    .setCustomBoundaryCollisionConfig((slot) -> {
+                        if (slot.hasTag("allow_ignore_rear_IS_collide")) {
+                            return Pair.of(true, false);
+                        }
+                        return Pair.of(false, false);
+                    }),
             0.01f,
             false,
             1.0f
@@ -377,7 +383,7 @@ public final class GCRModules {
             .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
             .addSlot(new ReplaceOnlySlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
-            .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f, "ar_sight")
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f, "ar_sight", "allow_ignore_rear_IS_collide")
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
             .setDefaultModuleInitHandler(workspace -> {
                 Unit root = workspace.getRootUnit();
@@ -406,7 +412,7 @@ public final class GCRModules {
             0.025f,
             new SlotProvider(RL( "common/pivot_maps/pdc_dustcover_pivot.geo.json"))
                     .addSlot(
-                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -16.5f)
+                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -16.5f, "allow_ignore_rear_IS_collide")
                             .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))
                     ),
             new VoxelHandler(RL("common/voxel_shapes/pdc_dustcover_voxel.geo.json")))

@@ -15,6 +15,10 @@ public class FoldingIronSightVoxelHandler extends VoxelHandler {
         super(voxelAssetPath, ignoreBoundaryCollisionRear, ignoreBoundaryCollisionFar);
     }
 
+    public FoldingIronSightVoxelHandler(ResourceLocation voxelAssetPath) {
+        this(voxelAssetPath, false, false);
+    }
+
     @Override
     public void setVoxelIfNull(MultiVoxel voxel) {
         super.setVoxelIfNull(voxel);
