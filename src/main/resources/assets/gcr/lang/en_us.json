@@ -115,6 +115,7 @@
   "gcr:m4a1": "M4A1",
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
+  "gcr:mcx_spear": "MCX Spear",
 
   "gcr:acog": "ACOG Scope",
   "gcr:vortex_razor_hd": "Vortex Razor HD Scope",
@@ -131,6 +132,7 @@
   "gcr:m4_profile_fsb_barrel": "M4 Profile FSB Barrel",
   "gcr:stanag_mag_30r": "STANAG 30R Mag",
   "gcr:pmag_40r": "PMAG 40R Mag",
+  "gcr:pmag_30r": "PMAG 30R Mag",
   "gcr:surefire_mag_60r": "SureFire 60R Mag",
   "gcr:usgi_mag_20r": "USGI 20R Mag",
   "gcr:6l18": "6L18 45R Mag",

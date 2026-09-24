@@ -33,6 +33,7 @@ import com.sheridan.gcr.modularSys.task.other.RemoveStuckTask;
 import com.sheridan.gcr.network.c2s.GunFirePacket;
 import com.sheridan.gcr.network.s2c.BroadcastLivingFirePacket;
 import com.sheridan.gcr.network.s2c.GunFireAckPacket;
+import com.sheridan.gcr.network.s2c.GunStuckSyncPacket;
 import com.sheridan.gcr.sound.ModSounds;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -180,7 +181,8 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                     getIdentityID(itemStack),
                     getAmmoLeft(itemStack),
                     shootID,
-                    isStuck(itemStack)
+                    isStuck(itemStack),
+                    true
             );
             PacketDistributor.sendToPlayer(
                     player,
@@ -197,6 +199,31 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         PacketDistributor.sendToPlayersTrackingEntity(
                 shooter,
                 firePacket
+        );
+    }
+
+    @Override
+    public void serverShootRejected(ServerPlayer player, ItemStack itemStack, int shootID) {
+        // 拒绝意味着客户端对弹药/卡壳的本地预测至少有一项是错的，把物品数据标脏让容器同步
+        // 把服务端权威状态整份推回客户端，顺手修掉客户端本地多扣的那一发。
+        notifyDataChanged(itemStack);
+        PacketDistributor.sendToPlayer(
+                player,
+                new GunFireAckPacket(
+                        getIdentityID(itemStack),
+                        getAmmoLeft(itemStack),
+                        shootID,
+                        isStuck(itemStack),
+                        false
+                )
+        );
+    }
+
+    @Override
+    public void syncStuck(ServerPlayer player, ItemStack itemStack) {
+        PacketDistributor.sendToPlayer(
+                player,
+                new GunStuckSyncPacket(getIdentityID(itemStack), isStuck(itemStack))
         );
     }
 

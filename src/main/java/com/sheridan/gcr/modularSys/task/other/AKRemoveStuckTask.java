@@ -6,6 +6,7 @@ import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.AnimationRegister;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
+import com.sheridan.gcr.client.stuck.ClientGunStuckCache;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import com.sheridan.gcr.network.c2s.RemoveStuckPacket;
@@ -50,7 +51,8 @@ public class AKRemoveStuckTask extends RemoveStuckTask<AK>{
     public void onTick(Player player) {
         super.onTick(player);
         if (tick == sendPacketDelay) {
-            PacketDistributor.sendToServer(new RemoveStuckPacket());
+            String gunId = gun.getIdentityID(itemStack);
+            PacketDistributor.sendToServer(new RemoveStuckPacket(gunId));
         }
     }
 

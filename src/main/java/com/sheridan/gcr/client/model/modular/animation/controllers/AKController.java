@@ -4,6 +4,7 @@ import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.KeyframeAnimator;
+import com.sheridan.gcr.client.animation.SingleAnimationSequence;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.modules.AKModel;
@@ -17,6 +18,10 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class AKController extends GunController<AKModel> {
+    private SingleAnimationSequence shoot;
+    private SingleAnimationSequence shootLast;
+    private SingleAnimationSequence shootStuck;
+    private AnimationDef thirdPersonShoot;
     private Consumer<AKController> animationRegister;
 
     public AKController(Consumer<AKController> animationRegister) {
@@ -28,15 +33,22 @@ public class AKController extends GunController<AKModel> {
         super.firstPersonSubscriptions(model);
         AKView view = model.getView();
 
+        shoot = new SingleAnimationSequence(animExact("shoot").coverState());
+        shootLast = new SingleAnimationSequence(animExact("shoot_last").coverState());
+        shootStuck = new SingleAnimationSequence(animExact("shoot_stuck").coverState());
+
+        thirdPersonShoot = animExact("shoot").animation;
+
         subscribe(EventType.SHOOT, 0, (context) -> {
-            String clip = "shoot";
-            ReadOnlyTag states = context.getStates();
-            if (view.stuck(states)) {
-                clip = "shoot_stuck";
-            } else if (view.getAmmoLeft(states) == 0 && view.hasMagAttachment(states)) {
-                clip = "shoot_last";
+            SingleAnimationSequence animation = shoot;
+            // 卡壳/最后一发由开火线程算好随事件参数带过来（见 GunController#isShootStuck），
+            // 不再回读物品 states：开火线程与渲染线程不同，NBT 跨线程读可能滞后。
+            if (isShootStuck(context, view)) {
+                animation = shootStuck;
+            } else if (isShootLastRound(context, view)) {
+                animation = shootLast;
             }
-            SHOOT.play(anim(clip).coverState());
+            SHOOT.play(animation.prepare());
         });
 
 
@@ -65,10 +77,7 @@ public class AKController extends GunController<AKModel> {
                 context.currentRenderNode().id
         );
         if (startTime != -1) {
-            AnimationDef shoot = animDef("shoot", startTime);
-            if (shoot != null) {
-                KeyframeAnimator.animate(model, shoot, startTime, 0.9f);
-            }
+            KeyframeAnimator.animate(model, thirdPersonShoot, startTime, 0.9f);
         }
     }
 

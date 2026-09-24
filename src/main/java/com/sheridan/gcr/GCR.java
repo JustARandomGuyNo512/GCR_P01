@@ -137,6 +137,8 @@ public class GCR {
             ITEMS.register(GCRModules.SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(GCRModules.SUREFIRE_MAG_60R));
     public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
             ITEMS.register(GCRModules.USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModules.USGI_MAG_20R));
+    public static final DeferredItem<Item> PMAG_30R_ITEM =
+            ITEMS.register(GCRModules.PMAG_30R.getSimpleID(), () -> new ModuleItem<>(GCRModules.PMAG_30R));
 
 
     public static final DeferredItem<Item> MAG_6L18_ITEM =
@@ -260,6 +262,7 @@ public class GCR {
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
+                                output.accept(PMAG_30R_ITEM.get());
                                 output.accept(SUREFIRE_MAG_60R_ITEM.get());
                                 output.accept(USGI_MAG_20R_ITEM.get());
                                 output.accept(MAG_6L18_ITEM.get());
@@ -554,6 +557,15 @@ public class GCR {
             registrar.playBidirectional(
                     GunFireAckPacket.TYPE,
                     GunFireAckPacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
+
+            registrar.playBidirectional(
+                    GunStuckSyncPacket.TYPE,
+                    GunStuckSyncPacket.STREAM_CODEC,
                     new DirectionalPayloadHandler<>(
                             (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)

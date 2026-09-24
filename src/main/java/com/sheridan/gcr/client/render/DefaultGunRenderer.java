@@ -86,8 +86,12 @@ public class DefaultGunRenderer implements IGunRenderer {
     private static final Quaternionf TMP_INV_CAM_ROT = new Quaternionf();
 
     private final Vector3f currCameraRot = new Vector3f();
-    private final List<EventType> delayedEvents = new ArrayList<>();
+    private final List<DelayedEvent> delayedEvents = new ArrayList<>();
     private long fpRenderTimeStamp = 0;
+
+    /** FP 上下文尚未建立时排队的事件：参数必须一起排队，否则带参数的事件（如 SHOOT 的卡壳标记）会被丢掉。 */
+    private record DelayedEvent(EventType type, @Nullable Map<String, String> params) {
+    }
 
     public static PoseStack TEST_STACK = new PoseStack();
 
@@ -145,8 +149,8 @@ public class DefaultGunRenderer implements IGunRenderer {
                     Client.getGunRenderer().dispatchAnimationEvent(EventType.DRAW);
                     DrawHolsterHandler.get().shouldDispatchDraw = false;
                 }
-                for (EventType eventType : delayedEvents) {
-                    dispatchAnimationEvent(eventType);
+                for (DelayedEvent delayed : delayedEvents) {
+                    dispatchAnimationEvent(delayed.type(), delayed.params());
                 }
                 delayedEvents.clear();
                 renderFirstPerson(context);
@@ -425,11 +429,7 @@ public class DefaultGunRenderer implements IGunRenderer {
 
     @Override
     public void dispatchAnimationEvent(EventType eventType) {
-        if (cachedFPContext != null) {
-            animationEventBus.dispatch(eventType, cachedFPContext, null);
-        } else {
-            delayedEvents.add(eventType);
-        }
+        dispatchAnimationEvent(eventType, (Map<String, String>) null);
     }
 
     @Override
@@ -438,21 +438,22 @@ public class DefaultGunRenderer implements IGunRenderer {
             dispatchAnimationEvent(eventType);
             return;
         }
-        if (cachedFPContext == null) {
-            return;
-        }
         int size = params.length - (params.length % 2);
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i < size; i += 2) {
             map.put(params[i], params[i + 1]);
         }
-        animationEventBus.dispatch(eventType, cachedFPContext, map);
+        dispatchAnimationEvent(eventType, map);
     }
 
     @Override
     public void dispatchAnimationEvent(EventType eventType, @Nullable Map<String, String> params) {
         if (cachedFPContext != null) {
             animationEventBus.dispatch(eventType, cachedFPContext, params);
+        } else {
+            // 上下文还没建好（这一枪发生在第一帧渲染之前）：连参数一起排队，
+            // 否则带参数的事件会被静默丢掉——卡壳那一发就播不出 shoot_stuck 了。
+            delayedEvents.add(new DelayedEvent(eventType, params));
         }
     }
 

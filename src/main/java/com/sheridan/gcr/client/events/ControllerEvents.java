@@ -8,6 +8,7 @@ import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.screen.DebugDisplayDataAdjustScreen;
 import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyUI;
+import com.sheridan.gcr.client.stuck.ClientGunStuckCache;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.builder.Node;
 import com.sheridan.gcr.modularSys.builder.Unit;
@@ -78,7 +79,7 @@ public class ControllerEvents {
                 }
             }
             if (KeyBinds.RELOAD.isDown()) {
-                if (gunModule.isStuck(itemStack)) {
+                if (ClientGunStuckCache.get().isStuck(itemStack, gunModule)) {
                     IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                     if (task != null) {
                         GunTaskHandler.INSTANCE.setTask(task);
@@ -99,6 +100,8 @@ public class ControllerEvents {
                 }
             }
             if (KeyBinds.REMOVE_STUCK.isDown()) {
+                // 先投影：容器同步可能把本地写入的卡壳冲掉，而任务系统读的是物品 states
+                ClientGunStuckCache.get().projectToNbt(itemStack, gunModule);
                 IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                 if (task != null) {
                     GunTaskHandler.INSTANCE.setTask(task);
