@@ -132,6 +132,15 @@ public class GunPoseHandler {
         Arrays.fill(toRot, 0);
     }
 
+    /** Fast start, slow finish. The stock is in the shoulder before the sight is aligned. */
+    private static float easeOutQuad(float t) {
+        return 1f - (1f - t) * (1f - t);
+    }
+
+    private static float smoothstep(float t) {
+        return t * t * (3f - 2f * t);
+    }
+
     private void lerp(float progress, float[] from, float[] to, float[] out) {
         out[0] = from[0] + (to[0] - from[0]) * progress;
         out[1] = from[1] + (to[1] - from[1]) * progress;
@@ -156,16 +165,24 @@ public class GunPoseHandler {
             float[] pos = getCurrentPos(switchProgress);
             float[] rot = getCurrentRot(switchProgress);
 
+            float t = Mth.clamp(aimingProgress, 0f, 1f);
+            // Stock rotation leads; the sight translation follows and eases in.
+            float rotT = easeOutQuad(t);
+            float posT = smoothstep(t);
+            float liftT = Mth.lerp(0.35f, rotT, posT);
+            // Peaks while the stock is seating, and is zero at hip and on the sight.
+            float raise = Mth.sin(t * Mth.PI) * (1f - t);
+
             rotQuat.rotateXYZ(
-                    Mth.lerp(aimingProgress, fpTrans[3], rot[0]),
-                    Mth.lerp(aimingProgress, fpTrans[4], rot[1]),
-                    Mth.lerp(aimingProgress, fpTrans[5], rot[2]));
+                    Mth.lerp(rotT, fpTrans[3], rot[0]) - raise * 0.07f,
+                    Mth.lerp(rotT, fpTrans[4], rot[1]) + raise * 0.025f,
+                    Mth.lerp(rotT, fpTrans[5], rot[2]) + raise * 0.11f);
 
             poseStack.mulPose(rotQuat);
             poseStack.translate(
-                    Mth.lerp(aimingProgress, fpTrans[0], pos[0]),
-                    Mth.lerp(aimingProgress * aimingProgress, fpTrans[1], pos[1]),
-                    Mth.lerp(aimingProgress, fpTrans[2], pos[2]));
+                    Mth.lerp(posT, fpTrans[0], pos[0]) + raise * 0.012f,
+                    Mth.lerp(liftT, fpTrans[1], pos[1]) - raise * 0.028f,
+                    Mth.lerp(posT, fpTrans[2], pos[2]) + raise * 0.018f);
 
             poseStack.scale(fpTrans[6], fpTrans[7], fpTrans[8]);
 

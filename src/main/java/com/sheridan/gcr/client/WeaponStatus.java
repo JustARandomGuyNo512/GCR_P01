@@ -201,7 +201,9 @@ public class WeaponStatus {
         aimingProgressLast = aimingProgress;
         if (Client.RIGHT_BUTTON_PRESSED.get()) {
             if (aimingProgress < 1) {
-                aimingProgress = Math.min(1, aimingProgress + aimingSpeed * cantedAdsIncSpeedFactor);
+                // Quick raise into the shoulder, then a slower settle onto the sight.
+                float settle = Mth.lerp(aimingProgress, 1.25f, 0.75f);
+                aimingProgress = Math.min(1, aimingProgress + aimingSpeed * cantedAdsIncSpeedFactor * settle);
             }
             float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress();
             float sprinting = 1 - sprintingProgress * sprintingProgress;
