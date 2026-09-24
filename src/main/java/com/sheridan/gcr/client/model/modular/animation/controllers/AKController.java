@@ -33,11 +33,11 @@ public class AKController extends GunController<AKModel> {
         super.firstPersonSubscriptions(model);
         AKView view = model.getView();
 
-        shoot = new SingleAnimationSequence(animExact("shoot").coverState());
-        shootLast = new SingleAnimationSequence(animExact("shoot_last").coverState());
-        shootStuck = new SingleAnimationSequence(animExact("shoot_stuck").coverState());
+        shoot = new SingleAnimationSequence(anim("shoot").coverState());
+        shootLast = new SingleAnimationSequence(anim("shoot_last").coverState());
+        shootStuck = new SingleAnimationSequence(anim("shoot_stuck").coverState());
 
-        thirdPersonShoot = animExact("shoot").animation;
+        thirdPersonShoot = anim("shoot").animation;
 
         subscribe(EventType.SHOOT, 0, (context) -> {
             SingleAnimationSequence animation = shoot;
