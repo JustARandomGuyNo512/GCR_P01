@@ -170,5 +170,7 @@
   "gcr:ar_stock_adapter_type1": "AR Stock Adapter Type 1",
   "gcr:elcan": "Elcan Scope",
   "gcr:magpul_mbus_pro_sight_far": "Magpul MBUS Pro Front Sight",
-  "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro Rear Sight"
+  "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro Rear Sight",
+
+  "block.gcaa.vending_machine": "Vending Machine"
 }

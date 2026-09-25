@@ -170,5 +170,7 @@
   "gcr:ar_stock_adapter_type1": "AR 后托适配器 Type 1",
   "gcr:elcan": "Elcan 瞄准镜",
   "gcr:magpul_mbus_pro_sight_far": "Magpul MBUS Pro 准星",
-  "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro 照门"
+  "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro 照门",
+
+  "block.gcaa.vending_machine": "自动售货机"
 }
