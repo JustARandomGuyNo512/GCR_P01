@@ -115,6 +115,10 @@ public class GCR {
             ITEMS.register(GCRModules.KAC_FOLDING_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_FOLDING_SIGHT_REAR));
     public static final DeferredItem<Item> KAC_FOLDING_SIGHT_FAR_ITEM =
             ITEMS.register(GCRModules.KAC_FOLDING_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.KAC_FOLDING_SIGHT_FAR));
+    public static final DeferredItem<Item> MAGPUL_MBUS_PRO_SIGHT_REAR_ITEM =
+            ITEMS.register(GCRModules.MAGPUL_MBUS_PRO_SIGHT_REAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAGPUL_MBUS_PRO_SIGHT_REAR));
+    public static final DeferredItem<Item> MAGPUL_MBUS_PRO_SIGHT_FAR_ITEM =
+            ITEMS.register(GCRModules.MAGPUL_MBUS_PRO_SIGHT_FAR.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAGPUL_MBUS_PRO_SIGHT_FAR));
 
 
     public static final DeferredItem<Item> A2_PISTOL_GRIP_ITEM =
@@ -252,6 +256,8 @@ public class GCR {
                                 output.accept(A2_CARRY_HANDLE_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_REAR_ITEM.get());
                                 output.accept(KAC_FOLDING_SIGHT_FAR_ITEM.get());
+                                output.accept(MAGPUL_MBUS_PRO_SIGHT_REAR_ITEM.get());
+                                output.accept(MAGPUL_MBUS_PRO_SIGHT_FAR_ITEM.get());
 
                                 output.accept(A2_PISTOL_GRIP_ITEM.get());
                                 output.accept(MOE_GRIP_ITEM.get());

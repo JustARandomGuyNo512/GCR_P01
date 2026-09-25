@@ -109,23 +109,32 @@ public final class GCRModules {
     public static final IModular KAC_FOLDING_SIGHT_FAR = new FoldingFarIronSight(
             RL( "kac_folding_sight_far"),
             false,
-            0.01f,
+            0.013f,
             new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_far_voxel.geo.json"), false, false))
             .addTags("sight", "iron_sight", "upper", "on_rail");
 
     public static final IModular KAC_FOLDING_SIGHT_REAR = new FoldingRearIronSight(
             RL( "kac_folding_sight_rear"),
-            (FoldingIronSightVoxelHandler) new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json"))
-                    .setCustomBoundaryCollisionConfig((slot) -> {
-                        if (slot.hasTag("allow_ignore_rear_IS_collide")) {
-                            return Pair.of(true, false);
-                        }
-                        return Pair.of(false, false);
-                    }),
-            0.01f,
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json")),
+            0.015f,
             false,
             1.0f
             ).addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular MAGPUL_MBUS_PRO_SIGHT_FAR = new FoldingFarIronSight(
+            RL( "magpul_mbus_pro_sight_far"),
+            false,
+            0.01f,
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/magpul_mbus_pro_sight_far_voxel.geo.json"), false, false))
+            .addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular MAGPUL_MBUS_PRO_SIGHT_REAR = new FoldingRearIronSight(
+            RL( "magpul_mbus_pro_sight_rear"),
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/magpul_mbus_pro_sight_rear_voxel.geo.json")),
+            0.01f,
+            false,
+            1.0f
+    ).addTags("sight", "iron_sight", "upper", "on_rail");
 
 
     public static final IModular ACOG = new Scope(

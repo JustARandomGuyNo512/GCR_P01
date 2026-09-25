@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "gcr:item/magpul_mbus_pro_sight_far"
+
+  }
+}

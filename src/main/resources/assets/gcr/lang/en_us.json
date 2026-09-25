@@ -168,5 +168,7 @@
   "gcr:m203": "M203 Grenade Launcher",
   "gcr:gp25": "GP-25 Grenade Launcher",
   "gcr:ar_stock_adapter_type1": "AR Stock Adapter Type 1",
-  "gcr:elcan": "Elcan Scope"
+  "gcr:elcan": "Elcan Scope",
+  "gcr:magpul_mbus_pro_sight_far": "Magpul MBUS Pro Front Sight",
+  "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro Rear Sight"
 }

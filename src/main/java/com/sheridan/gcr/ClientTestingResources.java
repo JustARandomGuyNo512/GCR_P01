@@ -351,6 +351,8 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
         ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_FAR, "model_assets/gltf/kac_folding_sight_far.gltf", "model_assets/gltf/kac_folding_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_MBUS_PRO_SIGHT_REAR, "model_assets/gltf/magpul_mbus_pro_sight_rear.gltf", "model_assets/gltf/magpul_mbus_pro_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_MBUS_PRO_SIGHT_FAR, "model_assets/gltf/magpul_mbus_pro_sight_far.gltf", "model_assets/gltf/magpul_mbus_pro_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
 
         ModelRegistrationManager.registerModel(GCRModules.CANTED_RAIL, "model_assets/gltf/canted_rail.gltf", "model_assets/gltf/canted_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);

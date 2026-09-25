@@ -5,6 +5,7 @@ import com.sheridan.gcr.modularSys.builder.Unit;
 import com.sheridan.gcr.modularSys.modules.FoldingIronSightVoxelHandler;
 import com.sheridan.gcr.modularSys.modules.ISight;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +14,12 @@ import java.util.function.Predicate;
 public class FoldingRearIronSight extends Sight{
     public FoldingRearIronSight(ResourceLocation id, FoldingIronSightVoxelHandler voxelHandler, float weight, boolean fixedPosition, float adsSpeedModifier) {
         super(id, voxelHandler, weight, fixedPosition, adsSpeedModifier);
+        voxelHandler.setCustomBoundaryCollisionConfig((slot) -> {
+            if (slot.hasTag("allow_ignore_rear_IS_collide")) {
+                return Pair.of(true, false);
+            }
+            return Pair.of(false, false);
+        });
     }
 
     @Override

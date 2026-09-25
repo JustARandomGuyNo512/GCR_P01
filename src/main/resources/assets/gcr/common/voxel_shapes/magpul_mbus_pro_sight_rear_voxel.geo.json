@@ -1,0 +1,41 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.m4a1_main",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 1.5,
+				"visible_bounds_offset": [0, 0.25, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "fold",
+					"parent": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-1.9, 0, 2.5], "size": [3.8, 1.6, 4.7], "uv": [3, 3]},
+						{"origin": [-2.9, -0.1, 4.1], "size": [1.6, 1.8, 1.8], "uv": [16, 3]},
+						{"origin": [-2.5, -1, -1.5], "size": [5, 2.5, 4], "uv": [-4, -1]}
+					]
+				},
+				{
+					"name": "normal",
+					"parent": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-2.5, -1, -1.5], "size": [5, 2.5, 4], "uv": [-4, -1]},
+						{"origin": [-2.9, 3.2, 0.7], "size": [1, 1.8, 1.8], "uv": [16, 3]},
+						{"origin": [-1.9, 1.5, 0.8], "size": [3.8, 4.7, 1.6], "uv": [5, 5]}
+					]
+				}
+			]
+		}
+	]
+}
