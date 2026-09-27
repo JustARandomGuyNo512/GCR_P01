@@ -60,8 +60,6 @@ public class WeaponStatus {
     private String identityID;
     private int modifyID;
     private IFireMode<?> fireMode;
-    /** 旧口径的冷却步数（整数个 5ms），只保留给外部调用方。 */
-    private int fireDelay;
     /**
      * 当前枪械每一发的精确间隔（纳秒），由 RPM 直接换算。
      *
@@ -168,10 +166,8 @@ public class WeaponStatus {
             this.fireMode = gun.getFireMode(itemStack);
             if (fireMode != null) {
                 int rpm = fireMode.modifyRpm(gun.getRpm(itemStack));
-                fireDelay = rpm > 0 ? IFireMode.rpmToDelay(rpm) : 0;
                 fireIntervalNanos = IFireMode.rpmToIntervalNanos(rpm);
             } else {
-                fireDelay = 0;
                 fireIntervalNanos = 0L;
             }
             int lastModifyID = gun.getModifyID(itemStack);
@@ -467,10 +463,6 @@ public class WeaponStatus {
 
     public IFireMode<?> getPrevFireMode() {
         return fireMode;
-    }
-
-    public int getFireDelayTick() {
-        return isHoldingGun ? fireDelay : 1;
     }
 
     public boolean isHoldingGun() {
