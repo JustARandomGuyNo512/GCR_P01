@@ -316,7 +316,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         if (data != null) {
             VisualRecoilMix mix = data.getVisualRecoilMix();
             if (mix != null) {
-                if (distFromLastShoot < 1.5f) {
+                if (distFromLastShoot < 3f) {
                     float f1 = Mth.lerp(aimingProgress, 1, mix.shakeAdsScaleFactor());
 
                     float o1 = Mth.lerp(aimingProgress, 1, mix.backAdsOmegaFactor());
