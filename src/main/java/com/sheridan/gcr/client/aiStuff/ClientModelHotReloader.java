@@ -85,7 +85,7 @@ public final class ClientModelHotReloader {
 
         reloading = true;
         long startedAt = System.nanoTime();
-        // 武器线程（500Hz 的 ClientWeaponLooper）会并发读取注册表，替换模型期间必须与它互斥
+        // 武器线程（ClientWeaponLooper）会并发读取注册表，替换模型期间必须与它互斥
         Client.LOCK.lock();
         try {
             resetModel(module);

@@ -724,7 +724,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float baseDamage = baseProperties.baseDamage.value;
 
         tooltipComponents.addAll(List.of(
-                Component.literal(baseProperties.rpm.getFullName() + ": " + getCurrentRpm(rpm)),
+                Component.literal(baseProperties.rpm.getFullName() + ": " + rpm),
                 Component.literal(baseProperties.recoilControl.getFullName()  + ": " + String.format("%.2f", recoilControl)),
                 Component.literal(baseProperties.stability.getFullName() + ": " + String.format("%.2f", stability)),
                 Component.literal(baseProperties.weight.getFullName() + ": " + String.format("%.2f", currentWeight)),
@@ -739,13 +739,6 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         tooltipComponents.add(Component.literal(msg).setStyle(Style.EMPTY.withColor(Color.GRAY.getRGB())));
     }
 
-    public static int getCurrentRpm(int rawRpm) {
-        if (rawRpm <= 0) {
-            return 0;
-        }
-        int ticksPerShot = (int) Math.ceil(12000.0 / rawRpm);
-        return (int) Math.ceil(12000.0 / ticksPerShot);
-    }
 
     @Override
     public IArmHandlerModular getLeftArmHolding(ItemStack itemStack) {

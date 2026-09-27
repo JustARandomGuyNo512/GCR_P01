@@ -381,7 +381,7 @@ public final class GCRModules {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(860, 1.15f, 0.18f, 3.5f,
+            new BaseProperties(850, 1.15f, 0.18f, 3.5f,
                     0.00075f, 0.1f,
                     1.3f, 4f,
                     30f,
@@ -410,8 +410,8 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             6.5f, 11.25f,
-                            3.5f, 3.5f,
-                            19, 16,
+                            4f, 4f,
+                            19.5f, 16.5f,
                             0.11f, 0.5f, 160.0f),
                     new RecoilController(
                             350f, 40f,
@@ -453,7 +453,7 @@ public final class GCRModules {
             RL( "ak24"),
             RL( "common/pivot_maps/ak24_main.pivot.geo.json"),
 
-            new BaseProperties(751, 1.15f, 0.18f, 3.5f,
+            new BaseProperties(750, 1.15f, 0.18f, 3.5f,
                     0.0005f, 0.08f,
                     1.3f, 4f,
                     30f,
@@ -483,7 +483,7 @@ public final class GCRModules {
                     new RecoilImpulse(
                             7f, 12f,
                             4.5f, 4.5f,
-                            22, 18,
+                            21, 17,
                             0.11f, 0.5f, 180.0f),
                     new RecoilController(
                             355f, 40f,
@@ -555,7 +555,7 @@ public final class GCRModules {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(670, 2.4f, 0.2f, 3.3f,
+            new BaseProperties(650, 2.4f, 0.2f, 3.3f,
                     0.0003f, 0.08f,
                     1.3f, 4f,
                     30f,
@@ -581,8 +581,8 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             5.3f, 10.5f,
-                            5.2f, 5.2f,
-                            16, 13,
+                            5.5f, 5.5f,
+                            18, 15f,
                             0.15f, 0.6f,200.0f),
                     new RecoilController(
                             350f, 40f,

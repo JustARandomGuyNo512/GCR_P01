@@ -67,7 +67,7 @@ public final class ClientGunStuckCache {
      * 一条卡壳记录。
      *
      * <p>字段全部 {@code volatile}：写入来自客户端主线程（回执/同步/tick），读取却可能发生在
-     * 500Hz 的开火线程上（{@code ClientWeaponLooper}），必须保证可见性。</p>
+     * 开火线程上（{@code ClientWeaponLooper}），必须保证可见性。</p>
      */
     private static final class Entry {
         /** 当前信念：这把枪是不是卡壳。 */

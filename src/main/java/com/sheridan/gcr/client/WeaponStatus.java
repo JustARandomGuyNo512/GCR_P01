@@ -60,8 +60,23 @@ public class WeaponStatus {
     private String identityID;
     private int modifyID;
     private IFireMode<?> fireMode;
+    /** 旧口径的冷却步数（整数个 5ms），只保留给外部调用方。 */
     private int fireDelay;
-    public int fireCount;
+    /**
+     * 当前枪械每一发的精确间隔（纳秒），由 RPM 直接换算。
+     *
+     * <p>开火线程用它排下一发的绝对时刻，{@code volatile} 是因为后座力 / 动画推进也在这个线程上，
+     * 会无条件读到它。</p>
+     */
+    private volatile long fireIntervalNanos;
+    /**
+     * 开火线程的无锁预检：主线程每 tick 刷新，为 {@code true} 时表示「现在去抢锁试一发毫无意义」。
+     *
+     * <p>只是个便宜的近似（允许短暂过期），真正的判定仍然在 {@link Client#handleClientShoot} 里持锁进行；
+     * 初值 {@code false} 是故意的——预检失效时宁可多抢一次锁，也不能让枪彻底打不响。</p>
+     */
+    private volatile boolean fireBlocked;
+    public volatile int fireCount;
     public volatile long lastShoot;
     public float aimingSpeed;
 
@@ -152,7 +167,12 @@ public class WeaponStatus {
             }
             this.fireMode = gun.getFireMode(itemStack);
             if (fireMode != null) {
-                fireDelay = IFireMode.rpmToDelay(fireMode.modifyRpm(gun.getRpm(itemStack)));
+                int rpm = fireMode.modifyRpm(gun.getRpm(itemStack));
+                fireDelay = rpm > 0 ? IFireMode.rpmToDelay(rpm) : 0;
+                fireIntervalNanos = IFireMode.rpmToIntervalNanos(rpm);
+            } else {
+                fireDelay = 0;
+                fireIntervalNanos = 0L;
             }
             int lastModifyID = gun.getModifyID(itemStack);
             if (!reInitModules && !Objects.equals(lastModifyID, modifyID)) {
@@ -261,8 +281,56 @@ public class WeaponStatus {
         return Math.clamp(baseSpeed, 0.1f, 0.4f);
     }
 
+    /**
+     * 换算不出来时的兜底射速（600 RPM）。
+     *
+     * <p>宁可慢一点，也不能因为某个模块返回了 0 RPM 就变成每 2ms 一发的怪物。</p>
+     */
+    private static final long FALLBACK_FIRE_INTERVAL_NANOS = 100_000_000L;
+
+    /**
+     * 每一发的精确间隔（纳秒），恒为正数。开火时间轴以它排下一发的绝对时刻。
+     */
+    public long getFireIntervalNanos() {
+        long interval = fireIntervalNanos;
+        return interval > 0L ? interval : FALLBACK_FIRE_INTERVAL_NANOS;
+    }
+
+    /**
+     * 每一发的间隔（秒）。后座力回落与动画节奏都用它，因此同样走精确值。
+     */
     public float getFireInterval() {
-        return fireDelay * 0.005f;
+        return getFireIntervalNanos() * 1e-9f;
+    }
+
+    /**
+     * 无需持锁的开火预检：为 {@code true} 时开火线程连枪都不用碰。
+     *
+     * <p>只是近似值（主线程每 tick 刷新一次），判断失误最多多抢一次锁，不影响正确性。</p>
+     */
+    public boolean isFireBlocked() {
+        return fireBlocked;
+    }
+
+    /**
+     * 刷新 {@link #fireBlocked}。由客户端主线程在 tick 末尾调用。
+     *
+     * <p>只镜像 {@link Client#handleClientShoot} 在进入开火流程<b>之前</b>、且<b>没有副作用</b>的
+     * 两种早退：根本没拿枪、拔枪动画没结束。别把冲刺 / 换弹也塞进来——那两种状态是在
+     * {@code IFireMode#clientIntentToFire} 里处理的，顺手还会做「按扳机就退出冲刺」「任务挡着就把
+     * 扳机状态清掉」这类副作用，跳过它们会改变手感和行为。</p>
+     */
+    public void updateFireBlocked() {
+        boolean blocked = !isHoldingGun || DrawHolsterHandler.get().getEquipProgress() < 1f;
+        if (fireBlocked == blocked) {
+            return;
+        }
+        fireBlocked = blocked;
+        // 挡着的东西刚让开（拔枪动画结束 / 重新拿上枪）而扳机还按着：
+        // 立刻叫醒开火线程，别让它等到下一个周期才续上。
+        if (!blocked && Client.LEFT_BUTTON_PRESSED.get()) {
+            ClientWeaponLooper.wake();
+        }
     }
 
     public float getStability() {
@@ -393,6 +461,8 @@ public class WeaponStatus {
         muzzleFlashIntensity = 0;
         heat = 0;
         lastHeat = 0;
+        fireIntervalNanos = 0L;
+        fireBlocked = true;
     }
 
     public IFireMode<?> getPrevFireMode() {

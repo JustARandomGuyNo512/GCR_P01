@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.events;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.ClassHotReloader;
+import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.client.SprintingHandler;
@@ -178,6 +179,8 @@ public class ControllerEvents {
             if (action == 1) {//press
                 if (btn == 0) {//left
                     Client.LEFT_BUTTON_PRESSED.set(true);
+                    // 立刻叫醒武器线程，让第一发不用等它的下一个周期
+                    ClientWeaponLooper.wake();
                 } else if (btn == 1) {//right
                     if (adsDelay <= 0) {
                         boolean pressed = Client.RIGHT_BUTTON_PRESSED.get();
