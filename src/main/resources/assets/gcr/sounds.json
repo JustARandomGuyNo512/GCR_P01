@@ -30,5 +30,8 @@
   "gun_stuck": {"sounds": ["gcr:generic/gun_stuck" ]},
 
   "gp25_fire": {"sounds": ["gcr:gp25/gp25_fire" ]},
-  "gp25_load_grenade": {"sounds": ["gcr:gp25/gp25_load_grenade" ]}
+  "gp25_load_grenade": {"sounds": ["gcr:gp25/gp25_load_grenade" ]},
+
+  "ak24_fire": {"sounds": ["gcr:ak24/ak24_fire" ]},
+  "ak24_fire_suppressed": {"sounds": ["gcr:ak24/ak24_fire_suppressed" ]}
 }

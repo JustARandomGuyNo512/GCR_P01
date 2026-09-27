@@ -171,6 +171,11 @@
   "gcr:elcan": "Elcan Scope",
   "gcr:magpul_mbus_pro_sight_far": "Magpul MBUS Pro Front Sight",
   "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro Rear Sight",
+  "gcr:ak24a_barrel": "AK24A Barrel",
+  "gcr:ak24a_handguard": "AK24A Handguard",
+  "gcr:ctr_stock": "CTR Stock",
+  "gcr:sako_arg_grip": "Sako Arg Grip",
+  "gcr:ase_flash_hider": "ASE Flash Hider",
 
   "block.gcaa.vending_machine": "Vending Machine"
 }

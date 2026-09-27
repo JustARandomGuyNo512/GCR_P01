@@ -8,6 +8,7 @@ import com.sheridan.gcr.modularSys.MultiVoxel;
 import com.sheridan.gcr.modularSys.Voxel;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandler;
 import com.sheridan.gcr.modularSys.modules.IVoxelHandlerModule;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.phys.AABB;
@@ -43,7 +44,10 @@ public class VoxelLoader extends AbstractDeferredLoader<MultiVoxel> implements R
         System.out.println("VOXEL >> " + modular);
         IVoxelHandler handler = modular.getHandler();
         if (handler != null) {
-            super.putTask(handler.getAssetPath(), res -> res.ifPresent(handler::setVoxelIfNull));
+            ResourceLocation assetPath = handler.getAssetPath();
+            if (assetPath != null) {
+                super.putTask(assetPath, res -> res.ifPresent(handler::setVoxelIfNull));
+            }
         }
     }
 

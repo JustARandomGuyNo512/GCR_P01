@@ -7,10 +7,7 @@ import com.sheridan.gcr.modularSys.ISlotProvider;
 import com.sheridan.gcr.modularSys.ISlotProviderModular;
 import com.sheridan.gcr.modularSys.ModuleRegister;
 import com.sheridan.gcr.modularSys.SlotProvider;
-import com.sheridan.gcr.modularSys.builder.IBuilder;
-import com.sheridan.gcr.modularSys.builder.IWorkSpace;
-import com.sheridan.gcr.modularSys.builder.ShadowNode;
-import com.sheridan.gcr.modularSys.builder.Unit;
+import com.sheridan.gcr.modularSys.builder.*;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
@@ -26,11 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class SlottedGunMainPart extends Gun implements ISlotProviderModular, ISlottedGun {
     private final ISlotProvider slotProvider;
-    private Consumer<IWorkSpace> onModuleTreeInit;
+    private BiConsumer<IWorkSpace, IWriteableAccessor> onModuleTreeInit;
 
     public SlottedGunMainPart(ResourceLocation id, ResourceLocation pivotMapPath, BaseProperties baseDataModule, DisplayData displayData, RecoilData recoilData, List<IFireMode<?>> fireModes) {
         super(id, baseDataModule, displayData, recoilData, fireModes);
@@ -60,7 +58,7 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
         slotProvider.loadFromJson(jsonObject.getAsJsonObject("slots"));
     }
 
-    public SlottedGunMainPart setDefaultModuleInitHandler(Consumer<IWorkSpace> handler) {
+    public SlottedGunMainPart setDefaultModuleInitHandler(BiConsumer<IWorkSpace, IWriteableAccessor> handler) {
         this.onModuleTreeInit = handler;
         return this;
     }
@@ -69,7 +67,8 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
     protected void onModuleTreeInit(IWorkSpace workspace, IBuilder builder) {
         super.onModuleTreeInit(workspace, builder);
         if (onModuleTreeInit != null) {
-            onModuleTreeInit.accept(workspace);
+            IWriteableAccessor writeableAccessor = builder.getWriteableAccessor();
+            onModuleTreeInit.accept(workspace, writeableAccessor);
         }
     }
 

@@ -49,6 +49,11 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> BTN = registerSound("btn", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> GUN_STUCK = registerSound("gun_stuck", "gcr");
 
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE = registerSound("ak24_fire", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE_SUPPRESSED = registerSound("ak24_fire_suppressed", "gcr");
+
+
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return registerSound(name, GCR.MODID);
     }

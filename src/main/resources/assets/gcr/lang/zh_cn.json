@@ -171,6 +171,11 @@
   "gcr:elcan": "Elcan 瞄准镜",
   "gcr:magpul_mbus_pro_sight_far": "Magpul MBUS Pro 准星",
   "gcr:magpul_mbus_pro_sight_rear": "Magpul MBUS Pro 照门",
+  "gcr:ak24a_barrel": "AK24A 枪管",
+  "gcr:ak24a_handguard": "AK24A 护木",
+  "gcr:ctr_stock": "CTR 枪托",
+  "gcr:sako_arg_grip": "Sako Arg 握把",
+  "gcr:ase_flash_hider": "ASE 消焰器",
 
   "block.gcaa.vending_machine": "自动售货机"
 }
