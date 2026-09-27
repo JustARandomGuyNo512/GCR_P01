@@ -208,6 +208,8 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     float getCurrHeat(ItemStack itemStack, long now);
 
+    float getCurrBaseDamage(ItemStack itemStack);
+
     void setCurrHeat(ItemStack itemStack, float heat, long heatLastUpdate, long lastShootTime);
 
     void updateHeat(ItemStack itemStack, float heatInc, long time, boolean setLastShootTime);

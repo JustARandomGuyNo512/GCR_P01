@@ -162,7 +162,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
         bullet.setPos(pos);
-        bullet.setBaseDamage(baseProperties.baseDamage.value);
+        bullet.setBaseDamage(getCurrBaseDamage(itemStack));
         Vec3 velocity = dir.scale(speed);
 
         bullet.setDeltaMovement(velocity);
@@ -721,7 +721,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float faultRate = getStuckRate(stack) * 100f;
         float agility = getAgility(stack);
         float impulse = getImpulseRatio(stack) * 100f;
-        float baseDamage = baseProperties.baseDamage.value;
+        float baseDamage = getCurrBaseDamage(stack);
 
         tooltipComponents.addAll(List.of(
                 Component.literal(baseProperties.rpm.getFullName() + ": " + rpm),
@@ -739,6 +739,11 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         tooltipComponents.add(Component.literal(msg).setStyle(Style.EMPTY.withColor(Color.GRAY.getRGB())));
     }
 
+    @Override
+    public float getCurrBaseDamage(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.baseDamage.get(pick);
+    }
 
     @Override
     public IArmHandlerModular getLeftArmHolding(ItemStack itemStack) {
