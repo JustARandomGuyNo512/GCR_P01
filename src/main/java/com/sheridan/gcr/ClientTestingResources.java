@@ -425,6 +425,11 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak24a_barrel.png"))
         );
 
+        ModelRegistrationManager.registerModel(GCRModules.AK24B_BARREL, "model_assets/gltf/ak24b_barrel.gltf", "model_assets/gltf/ak24b_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak24b_barrel.png"))
+        );
+
         ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
         ModelRegistrationManager.registerModel(GCRModules.ELCAN, "model_assets/gltf/elcan.gltf", "model_assets/gltf/elcan.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.19f, 2f, 0.6f, 1f, 1.5f, 1.9f, GCR.RL("textures/sight/crosshair/elcan.png")));
         ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));

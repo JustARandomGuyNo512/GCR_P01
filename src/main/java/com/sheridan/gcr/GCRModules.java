@@ -71,10 +71,16 @@ public final class GCRModules {
             new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45", "ar");
 
-    public static final IModular AK24A_BARREL = new ARBarrel(RL( "ak24a_barrel"), 0.78f, 0.075f, 1.0f,
+    public static final IModular AK24A_BARREL = new ARBarrel(RL( "ak24a_barrel"), 0.78f, 0.075f, 1.0f, 0.08f, 0.05f, -0.05f, -0.05f,
             new SlotProvider(RL( "common/pivot_maps/ak24a_barrel.pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
             new VoxelHandler(RL("common/voxel_shapes/ak24a_barrel.voxel.geo.json"))
+    ).addTags("barrel", "5.56x45", "ak24");
+
+    public static final IModular AK24B_BARREL = new ARBarrel(RL( "ak24b_barrel"), 0.9f, 0.1f, 1.0f,
+            new SlotProvider(RL( "common/pivot_maps/ak24b_barrel.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
+            new VoxelHandler(RL("common/voxel_shapes/ak24b_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45", "ak24");
 
     public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
@@ -375,7 +381,7 @@ public final class GCRModules {
             RL( "m4a1"),
             RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
 
-            new BaseProperties(850, 1.15f, 0.18f, 3.5f,
+            new BaseProperties(860, 1.15f, 0.18f, 3.5f,
                     0.00075f, 0.1f,
                     1.3f, 4f,
                     30f,
@@ -404,13 +410,13 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             6.5f, 11.25f,
-                            4f, 4f,
-                            20, 17,
+                            3.5f, 3.5f,
+                            19, 16,
                             0.11f, 0.5f, 160.0f),
                     new RecoilController(
                             350f, 40f,
                             145.0f, 11.5f,
-                            210.0f, 9f,
+                            220.0f, 9.5f,
                             145.0f, 14.5f,
                             900.0f, 18f,
                             2.0f, 1.25f,
@@ -447,7 +453,7 @@ public final class GCRModules {
             RL( "ak24"),
             RL( "common/pivot_maps/ak24_main.pivot.geo.json"),
 
-            new BaseProperties(800, 1.15f, 0.18f, 3.5f,
+            new BaseProperties(751, 1.15f, 0.18f, 3.5f,
                     0.0005f, 0.08f,
                     1.3f, 4f,
                     30f,
@@ -475,13 +481,13 @@ public final class GCRModules {
 
             new RecoilData(
                     new RecoilImpulse(
-                            7f, 11.75f,
+                            7f, 12f,
                             4.5f, 4.5f,
                             22, 18,
                             0.11f, 0.5f, 180.0f),
                     new RecoilController(
                             355f, 40f,
-                            150.0f, 11.8f,
+                            150.0f, 11.5f,
                             220.0f, 9f,
                             145.0f, 14.5f,
                             930.0f, 18.5f,
@@ -549,7 +555,7 @@ public final class GCRModules {
             RL( "ak74m"),
             RL( "common/pivot_maps/ak74m_pivot.geo.json"),
 
-            new BaseProperties(650, 2.4f, 0.2f, 3.3f,
+            new BaseProperties(670, 2.4f, 0.2f, 3.3f,
                     0.0003f, 0.08f,
                     1.3f, 4f,
                     30f,
@@ -574,7 +580,7 @@ public final class GCRModules {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            5.3f, 10f,
+                            5.3f, 10.5f,
                             5.2f, 5.2f,
                             16, 13,
                             0.15f, 0.6f,200.0f),
@@ -588,8 +594,8 @@ public final class GCRModules {
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.5f, 25.5f, 28, 1.5f, 0.9f, 1.6f,
-                            0.66f, 60f, 0.47f, 1.25f,  2.5f,
+                            0.55f, 25.5f, 29, 1.5f, 0.9f, 1.6f,
+                            0.7f, 61f, 0.47f, 1.25f,  2.5f,
                             0.01f, 0.35f
                     )
             ),

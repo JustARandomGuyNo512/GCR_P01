@@ -210,6 +210,8 @@ public class GCR {
             ITEMS.register(GCRModules.AK24A_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK24A_BARREL));
     public static final DeferredItem<Item> GP25_ITEM =
             ITEMS.register(GCRModules.GP25.getSimpleID(), () -> new ModuleItem<>(GCRModules.GP25));
+    public static final DeferredItem<Item> AK24B_BARREL_ITEM =
+            ITEMS.register(GCRModules.AK24B_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK24B_BARREL));
 
 
     public static final DeferredItem<Item> URGI_HANDGUARD_ITEM =
@@ -289,6 +291,7 @@ public class GCR {
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
                                 output.accept(URGI_BARREL_ITEM.get());
                                 output.accept(AK24A_BARREL_ITEM.get());
+                                output.accept(AK24B_BARREL_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
                                 output.accept(PMAG_30R_ITEM.get());

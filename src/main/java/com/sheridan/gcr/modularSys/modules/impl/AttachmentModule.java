@@ -32,6 +32,9 @@ public class AttachmentModule extends Module {
         tooltipComponents.add(Component.literal(weight));
         for (List<PropModifier> list : modifiers.values()) {
             for (PropModifier modifier : list) {
+                if (Math.abs(modifier.value) <= 1e-5f) {
+                    continue;
+                }
                 tooltipComponents.add(Component.literal(modifier.getTooltipMsg()));
             }
         }
