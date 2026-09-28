@@ -177,20 +177,23 @@ public final class ClientWeaponLooper implements Runnable {
             firePrecise = false;
             return;
         }
+
         if (nextFireNanos < 0L) {
-            // 扳机刚按下：第一发不排队
             nextFireNanos = now;
             firePrecise = true;
         }
+
         long remaining = nextFireNanos - now;
+
         if (remaining > (firePrecise ? spinNanos : 0L)) {
-            // 还早，交给 sleepUntil 继续睡
             return;
         }
+
         if (firePrecise) {
             spinUntil(nextFireNanos);
         }
-        fireOnce(System.nanoTime());
+
+        fireOnce();
     }
 
     /**
@@ -212,24 +215,36 @@ public final class ClientWeaponLooper implements Runnable {
      * 而不是以 {@code now}（本发的实际时刻）为基准。哪怕这一次晚了 1ms，下一发就会相应地早 1ms，
      * 时间轴整体不会漂移。</p>
      */
-    private void fireOnce(long now) {
+    private void fireOnce() {
         long planned = nextFireNanos;
         long interval = attemptShoot();
+        long shootEnd = System.nanoTime();
         if (interval <= 0L) {
-            // 这一发没打出去：短暂重试，而不是把整个射击间隔耗掉，条件一解除就能续上
-            nextFireNanos = now + RETRY_WAIT_NANOS;
+            // 本次没有真正开火。
+            // 从任务结束时刻开始计算重试等待，避免 attemptShoot 本身的耗时
+            // 让重试时间缩短。
+            nextFireNanos = shootEnd + RETRY_WAIT_NANOS;
             firePrecise = false;
             return;
         }
+        // 正常情况下：
+        //
+        //   下一发 = 上一发计划时刻 + 射击间隔
+        //
+        // 因此 attemptShoot() 的执行耗时不会累计到射击周期中。
         long next = planned + interval;
-        if (next <= now) {
-            // 晚了不止一个间隔（长卡顿 / GC）：丢掉补不回来的那几发，把节拍重新对齐到现在，
-            // 避免停顿之后连着喷一串
-            next = now + interval;
+
+        // 如果 attemptShoot() 本身执行太久，以至于已经超过了下一发
+        // 的计划时刻，则丢掉已经无法按时补回的这一发，从任务结束时刻
+        // 重新建立完整的射击周期。
+        if (next <= shootEnd) {
+            next = shootEnd + interval;
         }
+
         nextFireNanos = next;
         firePrecise = true;
     }
+
 
     /**
      * 真正开火，全部共享状态都在 {@link Client#handleClientShoot} 的锁里读写。
