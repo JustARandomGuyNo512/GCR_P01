@@ -54,7 +54,7 @@ public final class GCRModules {
             .addTags("rear_grip", "ar");
 
     public static final IModular SAKO_ARG_GRIP = new RiflePistolGrip(
-            RL( "sako_arg_grip"), 0.12f, 0.12f, 0.1f, 0.07f)
+            RL( "sako_arg_grip"), 0.12f, 0.09f, 0.07f, 0.07f)
             .addTags("rear_grip", "ar");
 
     public static final IModular AK_POLYMER_GRIP = new RiflePistolGrip(
@@ -485,7 +485,7 @@ public final class GCRModules {
                             7f, 12f,
                             5f, 5f,
                             21, 17,
-                            0.11f, 0.5f, 180.0f),
+                            0.12f, 0.45f, 180.0f),
                     new RecoilController(
                             355f, 40f,
                             150.0f, 11.5f,
