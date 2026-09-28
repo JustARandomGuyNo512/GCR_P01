@@ -178,6 +178,8 @@ public class GCR {
             ITEMS.register(GCRModules.AR_STOCK_ADAPTER_TYPE1.getSimpleID(), () -> new ModuleItem<>(GCRModules.AR_STOCK_ADAPTER_TYPE1));
     public static final DeferredItem<Item> CTR_STOCK_ITEM =
             ITEMS.register(GCRModules.CTR_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.CTR_STOCK));
+    public static final DeferredItem<Item> MAGPUL_SL_M_STOCK_ITEM =
+            ITEMS.register(GCRModules.MAGPUL_SL_M_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAGPUL_SL_M_STOCK));
 
 
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
@@ -304,6 +306,7 @@ public class GCR {
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
                                 output.accept(MOE_CARBINE_STOCK_ITEM.get());
                                 output.accept(CTR_STOCK_ITEM.get());
+                                output.accept(MAGPUL_SL_M_STOCK_ITEM.get());
 
                                 output.accept(STOCK_6P34_ITEM.get());
                                 output.accept(PT1_STOCK_ITEM.get());

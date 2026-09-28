@@ -383,6 +383,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.PT1_STOCK, "model_assets/gltf/pt1_stock.gltf", "model_assets/gltf/pt1_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AR_STOCK_ADAPTER_TYPE1, "model_assets/gltf/ar_stock_adapter_type1.gltf", "model_assets/gltf/ar_stock_adapter_type1.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.CTR_STOCK, "model_assets/gltf/ctr_stock.gltf", "model_assets/gltf/ctr_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_SL_M_STOCK, "model_assets/gltf/magpul_sl_m_stock.gltf", "model_assets/gltf/magpul_sl_m_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
         ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));

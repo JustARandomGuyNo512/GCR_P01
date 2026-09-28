@@ -49,7 +49,6 @@ public class GunEffectManager {
         if (player != null) {
             Level level = player.level();
 
-            // 使用 removeIf 一句话搞定，安全高效
             EFFECT_TIMESTAMPS.keySet().removeIf(entityId -> level.getEntity(entityId) == null);
         }
         updateDelay = 0;

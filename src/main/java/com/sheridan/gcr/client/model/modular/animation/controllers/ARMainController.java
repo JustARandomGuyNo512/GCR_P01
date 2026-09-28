@@ -68,6 +68,9 @@ public class ARMainController extends GunController<ARMainModel> {
 
     @Override
     public void customThirdPersonAnimation(ARMainModel model, ModuleRenderContext context) {
+        if (context.entity == null) {
+            return;
+        }
         long startTime = GunEffectManager.getEffectTimestamp(
                 context.entity.getId(),
                 GunEffect.SHOOT,

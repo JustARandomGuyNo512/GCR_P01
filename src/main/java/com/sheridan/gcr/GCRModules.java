@@ -192,6 +192,7 @@ public final class GCRModules {
                     )
     ).addTags("stock", "ak");
     public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.249f, 0.17f, 0.16f).addTags("stock", "ar");
+    public static final IModular MAGPUL_SL_M_STOCK = new Stock(RL( "magpul_sl_m_stock"), 0.23f, 0.15f, 0.15f).addTags("stock", "ar");
 
 
 

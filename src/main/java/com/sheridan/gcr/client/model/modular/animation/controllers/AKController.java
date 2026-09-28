@@ -72,6 +72,9 @@ public class AKController extends GunController<AKModel> {
 
     @Override
     public void customThirdPersonAnimation(AKModel model, ModuleRenderContext context) {
+        if (context.entity == null) {
+            return;
+        }
         long startTime = GunEffectManager.getEffectTimestamp(
                 context.entity.getId(),
                 GunEffect.SHOOT,
