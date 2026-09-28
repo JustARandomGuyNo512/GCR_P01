@@ -483,7 +483,7 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             7f, 12f,
-                            4.5f, 4.5f,
+                            5f, 5f,
                             21, 17,
                             0.11f, 0.5f, 180.0f),
                     new RecoilController(
@@ -581,9 +581,9 @@ public final class GCRModules {
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            5.3f, 10.5f,
+                            5.4f, 10.5f,
                             5.5f, 5.5f,
-                            18, 15f,
+                            17, 14f,
                             0.15f, 0.6f,200.0f),
                     new RecoilController(
                             350f, 40f,
@@ -595,7 +595,7 @@ public final class GCRModules {
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.55f, 25.5f, 29, 1.5f, 0.9f, 1.6f,
+                            0.55f, 25.5f, 29.6f, 1.5f, 0.9f, 1.6f,
                             0.7f, 61f, 0.47f, 1.25f,  2.5f,
                             0.01f, 0.35f
                     )

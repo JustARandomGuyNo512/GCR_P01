@@ -195,7 +195,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float torqueImpulseX = (float) (rotLever * impulseZ * (impulse.torquePitchStart() + recoilHeatRes * (1 - impulse.torquePitchStart())) * (0.9f + 0.2f * Math.random()));
 
         float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
-                (2.8f - aimingFactor * 2.65f) *
+                (2.9f - aimingFactor * 2.75f) *
                 stableFactor * Math.sqrt(impulseVal));
         impulseZ *= (float) (0.8f + 0.4f * Math.random());
 
@@ -431,11 +431,11 @@ public class RecoilUpdater implements IRecoilUpdater {
     }
 
     private float randomNoiseX(float seed) {
-        return noise1DX.sample(seed) + (RANDOM.nextFloat() * 0.5f - 0.25f);
+        return noise1DX.sample(seed) + (RANDOM.nextFloat() * 0.2f - 0.1f);
     }
 
     private float randomNoiseY(float seed) {
-        return noise1DY.sample(seed) + (RANDOM.nextFloat() * 0.5f - 0.25f);
+        return noise1DY.sample(seed) + (RANDOM.nextFloat() * 0.2f - 0.1f);
     }
 
 

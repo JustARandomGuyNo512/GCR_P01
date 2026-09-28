@@ -82085,7 +82085,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -1, 12.5],
+			"origin": [0, -1, 13.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -82094,7 +82094,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "LEFT_ARM",
