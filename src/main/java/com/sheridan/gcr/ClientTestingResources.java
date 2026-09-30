@@ -115,6 +115,19 @@ public class ClientTestingResources {
                         "empty", "6l23_empty"
                 )
         );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/spear_20r_mag.states.json",
+                Map.of(
+                        "full_1", "spear_20r_mag_full_1",
+                        "full_2", "spear_20r_mag_full_2",
+                        "left_1", "spear_20r_mag_left_1",
+                        "left_2", "spear_20r_mag_left_2",
+                        "left_3", "spear_20r_mag_left_3",
+                        "left_4", "spear_20r_mag_left_4",
+                        "left_5", "spear_20r_mag_left_5",
+                        "empty", "spear_20r_mag_empty"
+                )
+        );
         // 全局动画
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/ar.global.animation.json",
@@ -180,6 +193,42 @@ public class ClientTestingResources {
                 GCRModules.AK24, "model_assets/gltf/ak24_main.gltf", "model_assets/gltf/ak24_main.png", true,
                 meshData -> {
                     ARMainViewer viewer = new ARMainViewer((AR) GCRModules.AK24);
+                    ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
+                            "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
+                            10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
+                    ), viewer);
+
+                    IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
+                            "check_mag", "gcr:m4a1_check_mag",
+                            //"reload_grenade", "gcr:m4a1_reload_grenade_m203",
+                            //"check_grenade", "gcr:m4a1_check_grenade_m203",
+                            ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
+                            ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
+                            "mag_reload", "gcr:m4a1_mag_reload",
+                            "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
+                            "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
+                            "check_chamber", "gcr:m4a1_check_chamber",
+                            "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
+                            "shoot", "gcr:m4a1_shoot",
+                            "shoot_last", "gcr:m4a1_shoot_last",
+                            "shoot_stuck", "gcr:m4a1_shoot_stuck",
+                            "remove_stuck", "gcr:m4a1_remove_stuck",
+                            "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.MCX_SPEAR, "model_assets/gltf/mcx_spear_main.gltf", "model_assets/gltf/mcx_spear_main.png", true,
+                meshData -> {
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.MCX_SPEAR);
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
@@ -332,7 +381,10 @@ public class ClientTestingResources {
                 meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L31, 6, "gcr:6l23"))
         );
 
-
+        ModelRegistrationManager.registerModel(
+                GCRModules.SPEAR_MAG_20R, "model_assets/gltf/spear_20r_mag.gltf", "model_assets/gltf/spear_20r_mag.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.SPEAR_MAG_20R, 6, "gcr:spear_20r_mag"))
+        );
 
         // 常规单行注册
         ModelRegistrationManager.registerModel(GCRModules.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
@@ -347,10 +399,19 @@ public class ClientTestingResources {
                 new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ase_flash_hider.png"))
         );
+        ModelRegistrationManager.registerModel(GCRModules.CLUTCH_LOK_QD_FLASH_HIDER, "model_assets/gltf/clutch_lok_qd_flash_hider.gltf", "model_assets/gltf/clutch_lok_qd_flash_hider.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.75f, CommonMuzzleSmokeEffects.COMMON,  2.8f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/clutch_lok_qd_flash_hider.png"))
+        );
         ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
                 new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
                         .modifyHeatSensitive(3f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.SLX_SUPPRESSOR, "model_assets/gltf/slx_suppressor.gltf", "model_assets/gltf/slx_suppressor.png", true, d ->
+                new MuzzleModel(d, 2.65f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.4f, CommonMuzzleSmokeEffects.COMMON,  1.1f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/slx_suppressor.png"))
+                        .modifyHeatSensitive(2.8f)
         );
         ModelRegistrationManager.registerModel(GCRModules.AR15_MUZZLE_BRAKE, "model_assets/gltf/ar15_muzzle_brake.gltf", "model_assets/gltf/ar15_muzzle_brake.png", true, d ->
                 new MuzzleModel(d, 3.6f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f)
@@ -384,6 +445,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.AR_STOCK_ADAPTER_TYPE1, "model_assets/gltf/ar_stock_adapter_type1.gltf", "model_assets/gltf/ar_stock_adapter_type1.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.CTR_STOCK, "model_assets/gltf/ctr_stock.gltf", "model_assets/gltf/ctr_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.MAGPUL_SL_M_STOCK, "model_assets/gltf/magpul_sl_m_stock.gltf", "model_assets/gltf/magpul_sl_m_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MCX_STOCK_TUBE, "model_assets/gltf/mcx_stock_tube.gltf", "model_assets/gltf/mcx_stock_tube.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
         ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
@@ -391,6 +453,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.MOE_GRIP, "model_assets/gltf/moe_grip.gltf", "model_assets/gltf/moe_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.RK9_GRIP, "model_assets/gltf/rk9_grip.gltf", "model_assets/gltf/rk9_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.SAKO_ARG_GRIP, "model_assets/gltf/sako_arg_grip.gltf", "model_assets/gltf/sako_arg_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MCX_M400_GRIP, "model_assets/gltf/mcx_m400_grip.gltf", "model_assets/gltf/mcx_m400_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
 
 
         ModelRegistrationManager.registerModel(GCRModules.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
@@ -407,6 +470,8 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(GCRModules.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AK24A_HANDGUARD, "model_assets/gltf/ak24a_handguard.gltf", "model_assets/gltf/ak24a_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_HANDGUARD, "model_assets/gltf/spear_handguard.gltf", "model_assets/gltf/spear_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.3f));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_LT_HANDGUARD, "model_assets/gltf/spear_lt_handguard.gltf", "model_assets/gltf/spear_lt_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.3f));
 
         ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_LOWER, "model_assets/gltf/ak_polymer_handguard_lower.gltf", "model_assets/gltf/ak_polymer_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
@@ -429,6 +494,11 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(GCRModules.AK24B_BARREL, "model_assets/gltf/ak24b_barrel.gltf", "model_assets/gltf/ak24b_barrel.png", true, d ->
                 new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak24b_barrel.png"))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.SIG_FURY_BARREL, "model_assets/gltf/sig_fury_barrel.gltf", "model_assets/gltf/sig_fury_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f)
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/sig_fury_barrel.png"))
         );
 
         ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));

@@ -138,7 +138,7 @@ public class RecoilCameraHandler implements IRecoilCameraHandler {
             float aimingProgress = Client.getAimingProgress(partialTicks);
             float rotX = (float) Utils.dampedOscillation(timeDis, currentShake * 0.4f * (1 - aimingProgress * 0.75f), 80, 0.35f, QUARTER_PI);
             float rotZ = (float) Utils.dampedOscillation(timeDis, currentShake, 40, 0.25f, QUARTER_PI);
-            float transZ = (float) Utils.dampedOscillation(timeDis, Math.abs(currentShake) * (1.5f - aimingProgress), 50F, 0.35f, QUARTER_PI * 2);
+            float transZ = (float) Utils.dampedOscillation(timeDis, Math.abs(currentShake) * (1.2f - aimingProgress), 50F, 0.35f, QUARTER_PI * 2);
             poseStack.mulPose(new Quaternionf().rotateXYZ(rotX, 0, rotZ));
             poseStack.translate(0, 0, transZ);
         }

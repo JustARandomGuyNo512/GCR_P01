@@ -83,7 +83,7 @@
   "tooltip.util.flashlight": "按$key来开启/关闭战术电筒",
   "tooltip.util.gun_modify": "按$key来打开枪械改装工具",
 
-  "gcr:prop.base.rpm": "每分钟射速",
+  "gcr:prop.base.rpm": "每分钟肘击次数",
   "gcr:prop.base.recoil_control": "后坐力控制",
   "gcr:prop.base.stability": "射击稳定性",
   "gcr:prop.base.weight": "重量",
@@ -92,7 +92,7 @@
   "gcr:prop.base.agility": "敏捷度",
   "gcr:prop.base.impulse": "后坐力",
   "gcr:prop.base.aiming_speed": "瞄准速度",
-  "gcr:prop.base.base_damage": "基础伤害",
+  "gcr:prop.base.base_damage": "肘击力度",
   "gcr:prop.base.stuck_rate": "故障概率",
   "gcr:prop.base.max_stuck_rate": "最大故障概率",
 
@@ -178,6 +178,14 @@
   "gcr:ase_flash_hider": "ASE 消焰器",
   "gcr:ak24b_barrel": "AK24B 枪管",
   "gcr:magpul_sl_m_stock": "Magpul SL-M 枪托",
+  "gcr:clutch_lok_qd_flash_hider": "克苏鲁 LOK QD 消焰器",
+  "gcr:mcx_m400_grip": "MCX M400 握把",
+  "gcr:spear_lt_handguard": "MCX Spear LT 护木",
+  "gcr:spear_handguard": "MCX Spear 护木",
+  "gcr:sig_fury_barrel": "Sig Fury 枪管",
+  "gcr:mcx_stock_tube": "MCX 托芯",
+  "gcr:spear_mag_20r": "MCX Spear 20发弹匣",
+  "gcr:slx_suppressor": "SLX 消音器",
 
   "block.gcaa.vending_machine": "自动售货机"
 }

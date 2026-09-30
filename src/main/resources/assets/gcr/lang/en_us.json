@@ -178,6 +178,14 @@
   "gcr:ase_flash_hider": "ASE Flash Hider",
   "gcr:ak24b_barrel": "AK24B Barrel",
   "gcr:magpul_sl_m_stock": "Magpul SL-M Stock",
+  "gcr:clutch_lok_qd_flash_hider": "Clutch LOK QD Flash Hider",
+  "gcr:mcx_m400_grip": "MCX M400 Grip",
+  "gcr:spear_lt_handguard": "MCX Spear LT Handguard",
+  "gcr:spear_handguard": "MCX Spear Handguard",
+  "gcr:sig_fury_barrel": "Sig Fury Barrel",
+  "gcr:mcx_stock_tube": "MCX Stock Tube",
+  "gcr:spear_mag_20r": "MCX Spear 20R Mag",
+  "gcr:slx_suppressor": "SLX Suppressor",
 
   "block.gcaa.vending_machine": "Vending Machine"
 }

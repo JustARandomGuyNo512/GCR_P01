@@ -7814,7 +7814,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-17, -31.9, 28.5],
+			"origin": [-17.4, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -7895,7 +7895,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-19, -31.9, 28.5],
+			"origin": [-19.4, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -7982,6 +7982,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -7993,7 +7994,6 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8005,6 +8005,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -8016,7 +8017,6 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8028,6 +8028,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -8039,7 +8040,6 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8051,6 +8051,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -8062,7 +8063,6 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8074,21 +8074,21 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-17, -31.9, 28.5],
+			"origin": [-16.4, -30.9, 32.5],
 			"rotation": [120.6474, -33.9828, 4.5524],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "INNER_L",
@@ -8097,18 +8097,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-17, -79.9, 28.5],
-			"rotation": [0, 0, 0],
+			"origin": [-17.4, -78.9, 32.5],
+			"rotation": [-0.94752, 0.01698, 1.99848],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8120,18 +8120,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19, -79.9, 28.5],
+			"origin": [-19.4, -78.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8143,18 +8143,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19, -31.9, 28.5],
+			"origin": [-19.4, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8166,21 +8166,21 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19, -79.9, 28.5],
+			"origin": [-19.4, -78.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "L_SLIM_PIVOT",
@@ -8189,18 +8189,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19, -31.9, 28.5],
+			"origin": [-19.4, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8306,7 +8306,8 @@
 			"scale": 16,
 			"embed_textures": false,
 			"armature": true,
-			"animations": false
+			"animations": false,
+			"merge_armature": false
 		}
 	}
 }

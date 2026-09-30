@@ -20,7 +20,7 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-24.3, -37.8, 26.5],
+			"origin": [-24.7, -37.3, 26.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -101,7 +101,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-24.3, -37.8, 26.5],
+			"origin": [-24.7, -37.3, 26.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -8221,6 +8221,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -8232,7 +8233,6 @@
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8244,21 +8244,21 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -37.8, 26.5],
+			"origin": [-24.7, -37.3, 26.5],
 			"rotation": [105.24631, -59.44804, 40.72684],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "INNER_L",
@@ -8267,21 +8267,21 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -85.8, 26.5],
-			"rotation": [0, 0, -1],
+			"origin": [-24.7, -85.3, 26.5],
+			"rotation": [-0.99999, -0.9824, 0.0173],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "L_MALE",
@@ -8290,18 +8290,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -85.8, 26.5],
+			"origin": [-26.7, -85.3, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8313,18 +8313,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-26.3, -37.8, 26.5],
+			"origin": [-26.7, -37.3, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8336,18 +8336,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -85.8, 26.5],
+			"origin": [-24.7, -85.3, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
@@ -8359,18 +8359,18 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-24.3, -37.8, 26.5],
+			"origin": [-24.7, -37.3, 26.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
 			"reset": false,
 			"shade": true,
 			"mirror_uv": false,
-			"visibility": true,
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
@@ -8510,7 +8510,8 @@
 			"scale": 16,
 			"embed_textures": false,
 			"armature": true,
-			"animations": false
+			"animations": false,
+			"merge_armature": false
 		}
 	}
 }

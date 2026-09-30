@@ -1,0 +1,43 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.m4a1_main",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 1,
+				"visible_bounds_height": 1,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "RAIL_GRIP",
+					"parent": "root",
+					"pivot": [0, -4.2528, 10.17215]
+				},
+				{
+					"name": "RAIL_UPPER",
+					"parent": "root",
+					"pivot": [0, 7.1741, 0.8287]
+				},
+				{
+					"name": "RAIL_LEFT",
+					"parent": "root",
+					"pivot": [3.6926, -0.96195, 4.1226],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "RAIL_RIGHT",
+					"parent": "root",
+					"pivot": [-3.6926, -0.9619, 4.1226],
+					"rotation": [0, 0, 90]
+				}
+			]
+		}
+	]
+}
