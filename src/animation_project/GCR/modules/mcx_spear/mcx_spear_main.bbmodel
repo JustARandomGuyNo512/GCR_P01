@@ -20,11 +20,11 @@
 		{
 			"name": "Object_17",
 			"color": 0,
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -6684,11 +6684,11 @@
 		{
 			"name": "Object_21",
 			"color": 0,
-			"origin": [0, 0.5, 0],
+			"origin": [0, 1.5, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -9139,11 +9139,11 @@
 		{
 			"name": "Object_56",
 			"color": 0,
-			"origin": [0, -7.6, -10],
+			"origin": [0, -6.6, -10],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -11132,11 +11132,11 @@
 		{
 			"name": "Object_52",
 			"color": 0,
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -12640,11 +12640,11 @@
 		{
 			"name": "Object_29",
 			"color": 0,
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -15078,11 +15078,11 @@
 		{
 			"name": "Object_23",
 			"color": 0,
-			"origin": [0, -9.979, 6.0004],
+			"origin": [0, -8.979, 6.0004],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -16277,11 +16277,11 @@
 		{
 			"name": "Object_27",
 			"color": 0,
-			"origin": [0, -7.6, -10],
+			"origin": [0, -6.6, -10],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -18142,11 +18142,11 @@
 		{
 			"name": "Object_21_selection",
 			"color": 0,
-			"origin": [0, 0.5, 0],
+			"origin": [0, 1.5, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -18923,11 +18923,11 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [8.5, -23, 47],
+			"origin": [8.5, -22, 47],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -19004,11 +19004,11 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [8.5, -23, 47],
+			"origin": [8.5, -22, 47],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -19085,11 +19085,11 @@
 		{
 			"name": "Object_9_selection_selection",
 			"color": 0,
-			"origin": [0, -3.6683, -26.075],
+			"origin": [0, -2.6683, -26.075],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -21912,7 +21912,7 @@
 		{
 			"name": "Object_9_selection_selection",
 			"color": 0,
-			"origin": [0, -3.6683, -26.075],
+			"origin": [0, -2.6683, -26.075],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
@@ -24319,11 +24319,11 @@
 		{
 			"name": "cube_selection_selection",
 			"color": 0,
-			"origin": [-27.5, -40.7, 2.5],
+			"origin": [-27.5, -39.7, 2.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -24400,11 +24400,11 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-27.5, -40.7, 2.5],
+			"origin": [-27.5, -39.7, 2.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -24481,11 +24481,11 @@
 		{
 			"name": "Object_46_selection",
 			"color": 0,
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -83724,11 +83724,11 @@
 		{
 			"name": "Object_21_selection",
 			"color": 0,
-			"origin": [0, 0.5, 0],
+			"origin": [0, 1.5, 0],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": true,
-			"visibility": true,
+			"visibility": false,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -84511,7 +84511,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -84534,12 +84534,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84557,12 +84557,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84580,12 +84580,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0, 0],
+			"origin": [0, 1, 0],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84603,12 +84603,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-3.4162, -2.9, -16.6793],
+			"origin": [-3.4162, -1.9, -16.6793],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84626,12 +84626,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -11, -5],
+			"origin": [0, -10, -5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84649,12 +84649,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-2.8542, -7.6313, -4.6152],
+			"origin": [-2.8542, -6.6313, -4.6152],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84672,12 +84672,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -9.979, 6.0004],
+			"origin": [0, -8.979, 6.0004],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84695,7 +84695,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -84718,7 +84718,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -84741,12 +84741,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -0.5, 13.5],
+			"origin": [0, 0, 13.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84764,12 +84764,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 0.5, 0],
+			"origin": [0, 1.5, 0],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84787,7 +84787,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -84810,12 +84810,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-1.7, 2.5, 15.7],
+			"origin": [-1.7, 3.5, 15.7],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84833,12 +84833,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -15.9141, 6.8597],
+			"origin": [0, -14.9141, 6.8597],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84856,12 +84856,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -3.6683, -32],
+			"origin": [0, -2.6683, -32],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84879,12 +84879,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -1.1622, 21.6987],
+			"origin": [0, -0.1622, 21.6987],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84902,12 +84902,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 4.1741, 0],
+			"origin": [0, 5.1741, 0],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84916,7 +84916,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": false,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "MAG",
@@ -84925,12 +84925,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -20, -13],
+			"origin": [0, -19, -13],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84948,12 +84948,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -3, -55],
+			"origin": [0, -2, -55],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -84971,12 +84971,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [8.5, -23, 47],
+			"origin": [8.5, -22, 47],
 			"rotation": [96.30962, 7.38542, 10.08453],
 			"color": 0,
 			"children": [],
@@ -84994,12 +84994,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [8.5, -71, 47],
+			"origin": [8.5, -70, 47],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85017,12 +85017,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [10.5, -71, 47],
+			"origin": [10.5, -70, 47],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85040,12 +85040,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [10.5, -23, 47],
+			"origin": [10.5, -22, 47],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85063,12 +85063,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [8.5, -71, 47],
+			"origin": [8.5, -70, 47],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85086,12 +85086,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [8.5, -23, 47],
+			"origin": [8.5, -22, 47],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85109,12 +85109,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -3.6683, -26.075],
+			"origin": [0, -2.6683, -26.075],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85122,7 +85122,7 @@
 			"shade": true,
 			"mirror_uv": false,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -85137,7 +85137,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -3.6683, -26.075],
+			"origin": [0, -2.6683, -26.075],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85145,7 +85145,7 @@
 			"shade": true,
 			"mirror_uv": false,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -85155,12 +85155,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -40.7, 2.5],
+			"origin": [-27.5, -39.7, 2.5],
 			"rotation": [105.18221, -58.07812, 34.70145],
 			"color": 0,
 			"children": [],
@@ -85178,12 +85178,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -88.7, 2.5],
+			"origin": [-27.5, -87.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85201,12 +85201,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-29.5, -88.7, 2.5],
+			"origin": [-29.5, -87.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85224,12 +85224,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-29.5, -40.7, 2.5],
+			"origin": [-29.5, -39.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85247,12 +85247,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -88.7, 2.5],
+			"origin": [-27.5, -87.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85270,12 +85270,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-27.5, -40.7, 2.5],
+			"origin": [-27.5, -39.7, 2.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85293,12 +85293,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-15.4, 11.25, 36],
+			"origin": [-15.4, 12.25, 36],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85316,12 +85316,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [1.7, 2.5, 15.7],
+			"origin": [1.7, 3.5, 15.7],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85339,12 +85339,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [1.9, -2.6, -8.5],
+			"origin": [1.9, -1.6, -8.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85362,12 +85362,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 11, 31],
+			"origin": [0, 12, 31],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85385,12 +85385,12 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": true,
+			"visibility": false,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 12, 21],
+			"origin": [0, 13, 21],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85471,12 +85471,12 @@
 										"aae7c2f2-33f0-bed3-68e2-66367f77dca2",
 										{
 											"uuid": "a8345aa9-6c24-3329-cbf0-56d7ab36cd8c",
-											"isOpen": false,
+											"isOpen": true,
 											"children": ["c4470ae3-3ec6-5675-78b0-f0b34cbdd755"]
 										},
 										{
 											"uuid": "1a174618-2198-a621-45dc-de1ca8f8f71f",
-											"isOpen": false,
+											"isOpen": true,
 											"children": ["353ddabb-a282-89b7-f481-576d3d9748d7"]
 										},
 										{

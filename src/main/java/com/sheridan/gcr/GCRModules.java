@@ -377,7 +377,7 @@ public final class GCRModules {
             (RL( "spear_lt_handguard"),
                     0.235f, 0.025f,
                     new SlotProvider(RL( "common/pivot_maps/spear_lt_handguard_pivot.geo.json"))
-                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 20.237f, 10.1722f, -9.786f, 17.0692f, 6.897f, 4)
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.237f, 11.1722f, -8.786f, 18.0692f, 6.897f, 4)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
                                             SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
                                     )))
@@ -390,14 +390,14 @@ public final class GCRModules {
                             .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 29.5227f, 4.1226f, -8.7348f, 24.40655f, 6.76135f, 5)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
                     EmptyVoxelHandler.INSTANCE,
-                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.15f,0.12f, 0.07f)
+                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.155f,0.12f, 0.07f)
             ).addTags("handguard", "mcx_spear");
 
     public static final IModular SPEAR_HANDGUARD = new Handguard
             (RL( "spear_handguard"),
                     0.27f, 0.025f,
                     new SlotProvider(RL( "common/pivot_maps/spear_handguard_pivot.geo.json"))
-                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.2412f, 10.8839f, -15.4961f, 17.64515f, 6.76125f, 5)
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.2412f + 0.4f, 10.8839f + 0.4f, -15.4961f + 0.4f, 17.64515f + 0.4f, 6.76125f, 5)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
                                             SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
                                     )))
@@ -410,7 +410,7 @@ public final class GCRModules {
                             .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 29.5227f, 4.1226f, -15.4961f, 24.40655f, 6.7613f, 6)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
                     EmptyVoxelHandler.INSTANCE,
-                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.15f,0.12f, 0.07f)
+                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.14f,0.1f, 0.06f)
             ).addTags("handguard", "mcx_spear");
 
     public static final IModular B13_BRACKET = new SlotProviderVoxelModule(
@@ -595,7 +595,7 @@ public final class GCRModules {
             RL( "mcx_spear"),
             RL( "common/pivot_maps/mcx_spear_main_pivot.geo.json"),
 
-            new BaseProperties(800, 1.8f, 0.18f, 3f,
+            new BaseProperties(800, 1.8f, 0.19f, 2.9f,
                     0.00055f, 0.09f,
                     1.2f, 5f,
                     30f,
@@ -613,33 +613,33 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.024998f, -7.23125f, -22.099998f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.725f, -7.55625f, -22.8f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
                     .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -11.5f, -12.500004f, 5, -16.911613f, 46.547535f, 35.338047f, 0.15f, 0.15f, 0.15f)
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
 
             new RecoilData(
                     new RecoilImpulse(
-                            9.5f, 13f,
-                            8f, 8f,
-                            20f, 21f,
-                            0.6f, 0.35f, 205.0f),
+                            9f, 13.5f,
+                            7.5f, 7.5f,
+                            19f, 22f,
+                            0.5f, 0.4f, 200.0f),
                     new RecoilController(
-                            350f, 42f,
-                            150.0f, 15f,
-                            232.0f, 8.5f,
-                            148.0f, 15f,
-                            930.0f, 18.5f,
+                            360f, 41f,
+                            155.0f, 15f,
+                            235.0f, 9f,
+                            148.0f, 15.5f,
+                            920.0f, 18.5f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.42f, 26, 29, 1.6f, 0.9f, 1.6f,
+                            0.5f, 27, 30, 1.55f, 0.9f, 1.6f,
                             0.62f, 66f, 0.47f, 1.2f,  2.5f,
-                            0.0125f, 0.35f
+                            0.012f, 0.35f
                     )
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
@@ -657,7 +657,7 @@ public final class GCRModules {
                     workspace.addChild(handguard, "RAIL_UPPER", KAC_FOLDING_SIGHT_FAR.getID()).ifPresent(farSight -> {
                         accessor.getBelongsTo(farSight).ifPresent(slotInstance -> {
                             if (slotInstance.getSlot() instanceof Rail rail) {
-                                rail.setChildPosition(farSight, accessor, 0.85f);
+                                rail.setChildPosition(farSight, accessor, 0.65f);
                             }
                         });
                     });

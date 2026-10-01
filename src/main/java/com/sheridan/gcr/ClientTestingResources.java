@@ -230,7 +230,7 @@ public class ClientTestingResources {
                 meshData -> {
                     ARMainViewer viewer = new ARMainViewer((AR) GCRModules.MCX_SPEAR);
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
-                            "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
+                            "SHELL_THROW", GCR.RL("shell_6_8x51"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
                     ), viewer);
 
@@ -470,8 +470,8 @@ public class ClientTestingResources {
 
         ModelRegistrationManager.registerModel(GCRModules.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AK24A_HANDGUARD, "model_assets/gltf/ak24a_handguard.gltf", "model_assets/gltf/ak24a_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
-        ModelRegistrationManager.registerModel(GCRModules.SPEAR_HANDGUARD, "model_assets/gltf/spear_handguard.gltf", "model_assets/gltf/spear_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.3f));
-        ModelRegistrationManager.registerModel(GCRModules.SPEAR_LT_HANDGUARD, "model_assets/gltf/spear_lt_handguard.gltf", "model_assets/gltf/spear_lt_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.3f));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_HANDGUARD, "model_assets/gltf/spear_handguard.gltf", "model_assets/gltf/spear_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.32f));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_LT_HANDGUARD, "model_assets/gltf/spear_lt_handguard.gltf", "model_assets/gltf/spear_lt_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.32f));
 
         ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_LOWER, "model_assets/gltf/ak_polymer_handguard_lower.gltf", "model_assets/gltf/ak_polymer_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
         ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
@@ -512,13 +512,18 @@ public class ClientTestingResources {
         BulletShellModel shell_5_45x39 = new BulletShellModel(
                 GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.gltf")),
                 GCR.RL("shell_5_45x39"));
+        BulletShellModel shell_6_8x51 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_6_8x51.gltf")),
+                GCR.RL("shell_6_8x51"));
         ModelRegistrationManager.addDeferredCompileTask(() ->
                 shell_5_56x45.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.png")))
         );
         ModelRegistrationManager.addDeferredCompileTask(() ->
                 shell_5_45x39.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.png")))
         );
-
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_6_8x51.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_6_8x51.png")))
+        );
 
         ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 0.06875f));
 

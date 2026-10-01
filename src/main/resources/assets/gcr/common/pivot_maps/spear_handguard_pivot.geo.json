@@ -18,7 +18,7 @@
 				{
 					"name": "RAIL_GRIP",
 					"parent": "root",
-					"pivot": [0, -4.2268, 10.88385]
+					"pivot": [0, -4.2268, 11.18385]
 				},
 				{
 					"name": "RAIL_UPPER",
