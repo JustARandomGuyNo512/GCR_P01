@@ -66,7 +66,7 @@ public final class GCRModules {
             .addTags("rear_grip", "ak");
 
     public static final IModular MCX_M400_GRIP = new RiflePistolGrip(
-            RL( "mcx_m400_grip"), 0.08f, 0.08f, 0.15f, 0.11f)
+            RL( "mcx_m400_grip"), 0.08f, 0.08f, 0.15f, 0.1f)
             .addTags("rear_grip", "ar");
 
     public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f, 1.0f,
@@ -87,7 +87,7 @@ public final class GCRModules {
             new VoxelHandler(RL("common/voxel_shapes/ak24b_barrel_voxel.geo.json"))
     ).addTags("barrel", "5.56x45", "ak24");
 
-    public static final IModular SIG_FURY_BARREL = new ARBarrel(RL( "sig_fury_barrel"), 1.15f, 0.1f, 1.0f,
+    public static final IModular SIG_FURY_BARREL = new ARBarrel(RL( "sig_fury_barrel"), 1f, 0.1f, 1.0f,
             new SlotProvider(RL( "common/pivot_maps/sig_fury_barrel_pivot.geo.json"))
                     .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "mcx_spear"))),
             EmptyVoxelHandler.INSTANCE
@@ -205,7 +205,7 @@ public final class GCRModules {
     ).addTags("stock", "ak");
     public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.249f, 0.17f, 0.16f).addTags("stock", "ar");
     public static final IModular MAGPUL_SL_M_STOCK = new Stock(RL( "magpul_sl_m_stock"), 0.23f, 0.15f, 0.15f).addTags("stock", "ar");
-    public static final IModular MCX_STOCK_TUBE = new StockAdapter(RL( "mcx_stock_tube"), 0.16f,
+    public static final IModular MCX_STOCK_TUBE = new StockAdapter(RL( "mcx_stock_tube"), 0.1f,
             new SlotProvider(RL( "common/pivot_maps/mcx_stock_tube_pivot.geo.json"))
                     .addSlot(
                             new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar"))
@@ -375,7 +375,7 @@ public final class GCRModules {
 
     public static final IModular SPEAR_LT_HANDGUARD = new Handguard
             (RL( "spear_lt_handguard"),
-                    0.235f, 0.025f,
+                    0.2f, 0.025f,
                     new SlotProvider(RL( "common/pivot_maps/spear_lt_handguard_pivot.geo.json"))
                             .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.237f, 11.1722f, -8.786f, 18.0692f, 6.897f, 4)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
@@ -395,7 +395,7 @@ public final class GCRModules {
 
     public static final IModular SPEAR_HANDGUARD = new Handguard
             (RL( "spear_handguard"),
-                    0.27f, 0.025f,
+                    0.22f, 0.025f,
                     new SlotProvider(RL( "common/pivot_maps/spear_handguard_pivot.geo.json"))
                             .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.2412f + 0.4f, 10.8839f + 0.4f, -15.4961f + 0.4f, 17.64515f + 0.4f, 6.76125f, 5)
                                     .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
@@ -625,21 +625,21 @@ public final class GCRModules {
                     new RecoilImpulse(
                             9f, 13.5f,
                             7.5f, 7.5f,
-                            19f, 22f,
-                            0.5f, 0.4f, 200.0f),
+                            20f, 22f,
+                            0.4f, 0.4f, 205.0f),
                     new RecoilController(
                             360f, 41f,
                             155.0f, 15f,
-                            235.0f, 9f,
-                            148.0f, 15.5f,
-                            920.0f, 18.5f,
+                            230.0f, 9f,
+                            145.0f, 15f,
+                            910.0f, 18.5f,
                             2.0f, 1.25f,
                             2.5f, 2f,
-                            12f),
+                            13f),
                     new VisualRecoilMix(
                             0.5f, 27, 30, 1.55f, 0.9f, 1.6f,
-                            0.62f, 66f, 0.47f, 1.2f,  2.5f,
-                            0.012f, 0.35f
+                            0.62f, 65f, 0.48f, 1.2f,  2.5f,
+                            0.013f, 0.35f
                     )
             ),
             List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))

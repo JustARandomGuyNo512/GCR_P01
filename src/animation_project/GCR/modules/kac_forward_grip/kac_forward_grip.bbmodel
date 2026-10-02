@@ -7895,7 +7895,7 @@
 		{
 			"name": "cube",
 			"color": 0,
-			"origin": [-19.4, -30.9, 32.5],
+			"origin": [-20, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
@@ -8080,7 +8080,7 @@
 				"temp_data": {}
 			},
 			"origin": [-16.4, -30.9, 32.5],
-			"rotation": [120.6474, -33.9828, 4.5524],
+			"rotation": [119.6474, -33.9828, 4.5524],
 			"color": 0,
 			"children": [],
 			"reset": false,
@@ -8088,7 +8088,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "INNER_L",
@@ -8171,7 +8171,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19.4, -78.9, 32.5],
+			"origin": [-20, -78.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -8194,7 +8194,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [-19.4, -30.9, 32.5],
+			"origin": [-20, -30.9, 32.5],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
