@@ -133,7 +133,7 @@ public final class GCRModules {
             RL( "a2_carry_handle"),
             new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"))
                     .setCustomBoundaryCollisionConfig((slot) -> slot.hasTag("ar_sight") ? Pair.of(true, true) : Pair.of(false, false)),
-            0.1f, true).addTags("sight", "iron_sight", "upper", "on_rail");
+            0.1f, true);
 
 
     public static final IModular KAC_FOLDING_SIGHT_FAR = new FoldingFarIronSight(
@@ -471,14 +471,14 @@ public final class GCRModules {
             new RecoilData(
                     new RecoilImpulse(
                             6.5f, 11.25f,
-                            4f, 4f,
+                            4.2f, 4.2f,
                             19.5f, 16.5f,
                             0.11f, 0.5f, 160.0f),
                     new RecoilController(
                             350f, 40f,
                             145.0f, 11.5f,
                             220.0f, 9.5f,
-                            145.0f, 14.5f,
+                            145.0f, 14.2f,
                             900.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
@@ -496,7 +496,8 @@ public final class GCRModules {
             .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
             .addSlot(new ReplaceOnlySlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
             .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f, "ar_sight", "allow_ignore_rear_IS_collide")
-                            .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
+                            .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail").or(SlotFilters.modular("gcr:a2_carry_handle"))
+                            ))
             .setDefaultModuleInitHandler((workspace, accessor) -> {
                 Unit root = workspace.getRootUnit();
                 workspace.addChild(root, "BARREL", M4_PROFILE_FSB_BARREL.getID()).ifPresent(barrel -> {
@@ -714,7 +715,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.325f, -22.75f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.525f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
