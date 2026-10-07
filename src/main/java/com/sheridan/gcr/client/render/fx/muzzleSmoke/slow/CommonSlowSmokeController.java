@@ -49,7 +49,7 @@ public class CommonSlowSmokeController implements ISlowSmokeController {
      * 这里让每个 task 的位置沿 z 错开一点；偏移只往枪口前方（-Z）走，
      * 这样烟雾不会被推到火焰前面去盖住火焰。
      */
-    private float zRandom = 0.1f;
+    private float zRandom = 0.25f;
 
     // ── 透明度：前期不变，后半段加速淡出 ───────────────────────────────
     private float startAlpha = 1f;

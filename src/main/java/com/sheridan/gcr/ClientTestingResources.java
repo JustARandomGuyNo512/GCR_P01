@@ -404,8 +404,8 @@ public class ClientTestingResources {
         );
         ModelRegistrationManager.registerModel(GCRModules.CLUTCH_LOK_QD_FLASH_HIDER, "model_assets/gltf/clutch_lok_qd_flash_hider.gltf", "model_assets/gltf/clutch_lok_qd_flash_hider.png", true, d ->
                 new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.75f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
-                        // 1 秒的小烟团：controller 决定它怎么炸开、往前冲多远、怎么淡出
-                        new SlowSmokeEntry(0.9f, 1f, new CommonSlowSmokeController().setTravel(1f), CommonSlowSmokeEffects.COMMON))
+
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/clutch_lok_qd_flash_hider.png"))
         );
         ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
