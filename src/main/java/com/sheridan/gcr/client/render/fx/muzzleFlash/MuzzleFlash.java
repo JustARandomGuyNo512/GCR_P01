@@ -3,8 +3,10 @@ package com.sheridan.gcr.client.render.fx.muzzleFlash;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import java.util.HashMap;
@@ -53,7 +55,14 @@ public class MuzzleFlash {
         this.rotation = 0;
     }
 
-    public void render(PoseStack.Pose pose, MultiBufferSource bufferSource, float scale, long startTime, boolean isFirstPerson, int light) {
+    /**
+     * 渲染枪口火焰
+     *
+     * @return 实际写入的 {@link RenderType}，没有画则返回 null
+     *         （调用方拿到后可以立即 {@code bufferSource.endBatch(renderType)}，保证绘制顺序 = 排序顺序）
+     */
+    @Nullable
+    public RenderType render(PoseStack.Pose pose, MultiBufferSource bufferSource, float scale, long startTime, boolean isFirstPerson, int light) {
         if (!textures.isEmpty()) {
             long timeDis = System.currentTimeMillis() - startTime;
             boolean muzzleFlashNotEnded = timeDis <= length;
@@ -70,8 +79,9 @@ public class MuzzleFlash {
                     }
                 }
                 int index = RANDOM.nextInt(muzzleFlashTexture.getCount());
-                muzzleFlashTexture.render(index, renderPose, bufferSource, isFirstPerson);
+                return muzzleFlashTexture.render(index, renderPose, bufferSource, isFirstPerson);
             }
         }
+        return null;
     }
 }

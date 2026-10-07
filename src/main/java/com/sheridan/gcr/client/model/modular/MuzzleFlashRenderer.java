@@ -13,10 +13,14 @@ import com.sheridan.gcr.client.render.delayed.Task;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.MuzzleFlash;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.MuzzleSmokeTask;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmoke;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeEntry;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -37,6 +41,11 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     public static final List<Triple<MuzzleEntry, PoseStack.Pose, Long>> MUZZLE_FLASH_QUEUE = new ArrayList<>();
     public static final Map<String, SmokeTasks> MUZZLE_SMOKE_TASKS = new HashMap<>();
     public static final int MAX_SMOKE_EFFECT_TASKS = 5;
+    /** slow smoke 的 task 队列，key 与 fast smoke 区分开 */
+    public static final Map<String, SlowSmokeTasks> SLOW_MUZZLE_SMOKE_TASKS = new HashMap<>();
+    /** 每个枪口最多同时保留多少个 slow smoke task（双向队列上限） */
+    public static final int MAX_SLOW_SMOKE_TASKS = 8;
+    private static final String SLOW_SMOKE_ID_SUFFIX = ":slow_smoke";
     private static final Vector3f DISTANCE_SORTING = new Vector3f();
     private static final List<RenderEntry> UNIFIED_RENDER_QUEUE = new ArrayList<>();
     // 对象池，避免每帧 new RenderEntry
@@ -44,14 +53,18 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
 
     private static final class RenderEntry {
         float z;
-        byte type; // 0 = smoke, 1 = flash
+        byte type; // 0 = fast smoke, 1 = flash, 2 = slow smoke
         MuzzleSmokeTask smokeTask;
+        SlowSmokeTask slowSmokeTask;
         MuzzleEntry muzzleEntry;
         PoseStack.Pose bonePose;
         long startTime;
 
         void setSmoke(float z, MuzzleSmokeTask task) {
             this.z = z; this.type = 0; this.smokeTask = task;
+        }
+        void setSlowSmoke(float z, SlowSmokeTask task) {
+            this.z = z; this.type = 2; this.slowSmokeTask = task;
         }
         void setFlash(float z, MuzzleEntry entry, PoseStack.Pose pose, long time) {
             this.z = z; this.type = 1; this.muzzleEntry = entry; this.bonePose = pose; this.startTime = time;
@@ -69,6 +82,17 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         public Deque<MuzzleSmokeTask> queue;
 
         public SmokeTasks(long lastCall) {
+            this.lastCall = lastCall;
+            queue = new ArrayDeque<>();
+        }
+    }
+
+    public static class SlowSmokeTasks{
+        public long lastCall;
+        /** 双向队列，最多 {@link #MAX_SLOW_SMOKE_TASKS} 个，新的从头部进，最老的从尾部丢 */
+        public Deque<SlowSmokeTask> queue;
+
+        public SlowSmokeTasks(long lastCall) {
             this.lastCall = lastCall;
             queue = new ArrayDeque<>();
         }
@@ -156,10 +180,47 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                         }
                     }
                 }
+                SlowSmokeEntry smokeEntry = entry.getSlowSmokeEntry();
+                // 贴图集合既可以挂在 MuzzleEntry 上，也可以直接挂在它自己的 SlowSmokeEntry 上
+                SlowSmoke slowSmoke = entry.getSlowSmoke() != null
+                        ? entry.getSlowSmoke()
+                        : (smokeEntry == null ? null : smokeEntry.getSlowSmoke());
+                if (slowSmoke != null && smokeEntry != null) {
+                    String id = context.currentRenderNode().id + entry.getName() + SLOW_SMOKE_ID_SUFFIX;
+                    SlowSmokeTasks tasks = SLOW_MUZZLE_SMOKE_TASKS.get(id);
+                    if (tasks == null) {
+                        // 时间戳可能已经过期（GunEffectManager 会一直保留最后一次射击的时间），
+                        // 这种时候不要再补一个已经淡出完的 task
+                        if (!slowSmoke.isExpired(startTime, smokeEntry)) {
+                            tasks = new SlowSmokeTasks(startTime);
+                            // SlowSmokeTask 内部会复制射击那一刻的矩阵位置
+                            tasks.queue.addFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
+                            SLOW_MUZZLE_SMOKE_TASKS.put(id, tasks);
+                        }
+                    } else if (tasks.lastCall != startTime) {
+                        // 队列有上限，超出时先丢掉最老的那一次
+                        if (tasks.queue.size() >= MAX_SLOW_SMOKE_TASKS) {
+                            tasks.queue.pollLast();
+                        }
+                        tasks.queue.offerFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
+                        tasks.lastCall = startTime;
+                    }
+                }
             } else if (context.isThirdPerson()) {
                 entry.getMuzzleFlash().render(bonePose, context.bufferSource, entry.getScale(), startTime, false, LightTexture.FULL_BRIGHT);
             }
         }
+    }
+
+    /**
+     * 统一的半透明排序键：{@code key = -pose 平移的 z}。
+     * <p>
+     * 这个姿态空间里 -Z 是枪口前方（远离相机），所以 key 越大 = 离相机越远。
+     * 所有特效（fast smoke / slow smoke / muzzle flash）都用同一个约定，
+     * 排序时按 key 降序（由远到近）画，这是半透明的标准绘制顺序。
+     */
+    private static float sortKey(PoseStack.Pose pose) {
+        return -pose.pose().getTranslation(DISTANCE_SORTING).z;
     }
 
     public static void renderAllFirstPerson(MultiBufferSource bufferSource) {
@@ -177,7 +238,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                         it.remove();
                         continue;
                     }
-                    float z = -task.pose.pose().getTranslation(DISTANCE_SORTING).z;
+                    float z = sortKey(task.pose);
                     RenderEntry re = acquireEntry();
                     re.setSmoke(z, task);
                     UNIFIED_RENDER_QUEUE.add(re);
@@ -189,10 +250,35 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
             }
         }
 
+        // ── 1.5 收集 Slow Smoke ──────────────────────────────────────────
+        if (!SLOW_MUZZLE_SMOKE_TASKS.isEmpty()) {
+            Iterator<Map.Entry<String, SlowSmokeTasks>> slowMapIt = SLOW_MUZZLE_SMOKE_TASKS.entrySet().iterator();
+            while (slowMapIt.hasNext()) {
+                SlowSmokeTasks tasks = slowMapIt.next().getValue();
+
+                Iterator<SlowSmokeTask> it = tasks.queue.iterator();
+                while (it.hasNext()) {
+                    SlowSmokeTask task = it.next();
+                    if (task.isFinished()) {
+                        it.remove();
+                        continue;
+                    }
+                    // 用烟雾推进后的位置作为排序键，和 flash / fast smoke 一起做 z 轴半透明排序
+                    RenderEntry re = acquireEntry();
+                    re.setSlowSmoke(task.sortDepth(), task);
+                    UNIFIED_RENDER_QUEUE.add(re);
+                }
+
+                if (tasks.queue.isEmpty()) {
+                    slowMapIt.remove();
+                }
+            }
+        }
+
         // ── 2. 收集 Flash ────────────────────────────────────────────────
         for (Triple<MuzzleEntry, PoseStack.Pose, Long> pair : MUZZLE_FLASH_QUEUE) {
             PoseStack.Pose bonePose = pair.getMiddle();
-            float z = -bonePose.pose().getTranslation(DISTANCE_SORTING).z;
+            float z = sortKey(bonePose);
             RenderEntry re = acquireEntry();
             re.setFlash(z, pair.getLeft(), bonePose, pair.getRight());
             UNIFIED_RENDER_QUEUE.add(re);
@@ -204,16 +290,29 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
         }
 
         // ── 4. 渲染 ──────────────────────────────────────────────────────
+        // 每画完一条就把它的批次立刻发出去：
+        // MC 的 BufferSource 只在"切换到另一个渲染类型"时才会把上一批发出去，
+        // 缓存/复用同一个 RenderType 时批次会被合并或延后，导致 GPU 的绘制顺序和这里的 z 排序不一致。
+        // 显式 endBatch(type) 之后，绘制顺序严格等于排序顺序（且类型会从 startedBuilders 里移除，不会越积越多）。
         for (RenderEntry re : UNIFIED_RENDER_QUEUE) {
+            RenderType usedType = null;
             if (re.type == 0) {
                 re.smokeTask.handleRender(bufferSource);
+                usedType = re.smokeTask.lastRenderType();
+            } else if (re.type == 2) {
+                re.slowSmokeTask.handleRender(bufferSource);
+                usedType = re.slowSmokeTask.lastRenderType();
             } else {
-                re.muzzleEntry.getMuzzleFlash()
+                usedType = re.muzzleEntry.getMuzzleFlash()
                         .render(re.bonePose, bufferSource, re.muzzleEntry.getScale(),
                                 re.startTime, true, LightTexture.FULL_BRIGHT);
             }
+            if (usedType != null && bufferSource instanceof MultiBufferSource.BufferSource batched) {
+                batched.endBatch(usedType);
+            }
             // 归还对象池
             re.smokeTask = null;
+            re.slowSmokeTask = null;
             re.muzzleEntry = null;
             re.bonePose = null;
             ENTRY_POOL.offer(re);

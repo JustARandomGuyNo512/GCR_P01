@@ -614,7 +614,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.725f, -7.55625f, -22.8f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.725f, -7.45625f, -22.8f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -633,13 +633,13 @@ public final class GCRModules {
                             155.0f, 15f,
                             230.0f, 9f,
                             145.0f, 15f,
-                            910.0f, 18.5f,
+                            910.0f, 19f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             13f),
                     new VisualRecoilMix(
                             0.5f, 27, 30, 1.55f, 0.9f, 1.6f,
-                            0.62f, 65f, 0.48f, 1.2f,  2.5f,
+                            0.625f, 65f, 0.48f, 1.2f,  2.5f,
                             0.013f, 0.35f
                     )
             ),
@@ -715,7 +715,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.525f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)

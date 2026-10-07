@@ -19,6 +19,9 @@ import com.sheridan.gcr.client.render.RenderTypes;
 import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.CommonMuzzleFlashes;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.CommonMuzzleSmokeEffects;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.CommonSlowSmokeController;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.CommonSlowSmokeEffects;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeEntry;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
@@ -400,7 +403,9 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ase_flash_hider.png"))
         );
         ModelRegistrationManager.registerModel(GCRModules.CLUTCH_LOK_QD_FLASH_HIDER, "model_assets/gltf/clutch_lok_qd_flash_hider.gltf", "model_assets/gltf/clutch_lok_qd_flash_hider.png", true, d ->
-                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.75f, CommonMuzzleSmokeEffects.COMMON,  2.8f)
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.75f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                        // 1 秒的小烟团：controller 决定它怎么炸开、往前冲多远、怎么淡出
+                        new SlowSmokeEntry(0.9f, 1f, new CommonSlowSmokeController().setTravel(1f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/clutch_lok_qd_flash_hider.png"))
         );
         ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
@@ -409,7 +414,9 @@ public class ClientTestingResources {
                         .modifyHeatSensitive(3f)
         );
         ModelRegistrationManager.registerModel(GCRModules.SLX_SUPPRESSOR, "model_assets/gltf/slx_suppressor.gltf", "model_assets/gltf/slx_suppressor.png", true, d ->
-                new MuzzleModel(d, 2.65f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.4f, CommonMuzzleSmokeEffects.COMMON,  1.1f)
+                new MuzzleModel(d, 2.65f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.4f, CommonMuzzleSmokeEffects.COMMON,  1.1f,
+
+                        new SlowSmokeEntry(1.8f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/slx_suppressor.png"))
                         .modifyHeatSensitive(2.8f)
         );

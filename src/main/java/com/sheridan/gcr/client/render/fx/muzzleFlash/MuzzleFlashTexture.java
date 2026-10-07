@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -30,7 +31,12 @@ public class MuzzleFlashTexture {
         return count;
     }
 
-    public void render(int index, PoseStack.Pose pose, MultiBufferSource buffer, boolean isFirstPerson) {
+    /**
+     * @return 实际写入的 {@link RenderType}，没有画则返回 null
+     *         （调用方拿到后可以立即 {@code bufferSource.endBatch(renderType)}，保证绘制顺序 = 排序顺序）
+     */
+    @Nullable
+    public RenderType render(int index, PoseStack.Pose pose, MultiBufferSource buffer, boolean isFirstPerson) {
         if (index >= 0 && index < count) {
             VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
             if (!isFirstPerson) {
@@ -41,7 +47,9 @@ public class MuzzleFlashTexture {
             if (isFirstPerson) {
                 draw(pose, 0, 0, 0, 0, vertexConsumer, index);
             }
+            return renderType;
         }
+        return null;
     }
 
     private void draw(PoseStack.Pose pose,int axis, float rx, float ry, float tz, VertexConsumer vertexConsumer, int index) {

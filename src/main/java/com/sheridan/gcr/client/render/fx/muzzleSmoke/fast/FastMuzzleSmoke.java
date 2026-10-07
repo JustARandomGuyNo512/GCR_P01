@@ -4,11 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.sheridan.gcr.client.render.RenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
@@ -41,10 +43,18 @@ public class FastMuzzleSmoke {
         return randomRotate;
     }
 
-    public void render(long lastShoot, PoseStack.Pose pose, MultiBufferSource bufferSource, int randomSeed, int light) {
+    /**
+     * 渲染这一帧的烟雾
+     *
+     * @return 实际写入的 {@link RenderType}，没有画则返回 null
+     *         （调用方拿到后可以立即 {@code bufferSource.endBatch(renderType)}，保证绘制顺序 = 排序顺序）
+     */
+    @Nullable
+    public RenderType render(long lastShoot, PoseStack.Pose pose, MultiBufferSource bufferSource, int randomSeed, int light) {
         long timeDist = System.currentTimeMillis() - lastShoot;
         if (timeDist < length) {
-            VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderTypes.getMuzzleFlash(texture));
+            RenderType renderType = RenderTypes.getMuzzleFlash(texture);
+            VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
             float progress = (float) timeDist / length;
             float size = Mth.lerp(progress, this.size, this.spread) * (0.833333333333333333f + randomSeed % 50 / 300f);
             float alpha = Mth.lerp(progress, alphas.x, alphas.y);
@@ -57,7 +67,9 @@ public class FastMuzzleSmoke {
             }
             pose.pose().scale(size, size, 1);
             draw(pose.pose(), vertexConsumer, alpha, column, index, light);
+            return renderType;
         }
+        return null;
     }
 
     protected void draw(Matrix4f matrix, VertexConsumer vertexConsumer, float alpha, int column, int index, int light) {
