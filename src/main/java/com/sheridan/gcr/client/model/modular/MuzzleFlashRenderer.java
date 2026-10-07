@@ -44,7 +44,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     /** slow smoke 的 task 队列，key 与 fast smoke 区分开 */
     public static final Map<String, SlowSmokeTasks> SLOW_MUZZLE_SMOKE_TASKS = new HashMap<>();
     /** 每个枪口最多同时保留多少个 slow smoke task（双向队列上限） */
-    public static final int MAX_SLOW_SMOKE_TASKS = 8;
+    public static final int MAX_SLOW_SMOKE_TASKS = 12;
     private static final String SLOW_SMOKE_ID_SUFFIX = ":slow_smoke";
     private static final Vector3f DISTANCE_SORTING = new Vector3f();
     private static final List<RenderEntry> UNIFIED_RENDER_QUEUE = new ArrayList<>();

@@ -39,8 +39,6 @@ public class SlowSmokeTask {
     private static final Vector3f SCRATCH_SORT = new Vector3f();
     /** 视角变换用的临时量：当前相机朝向 / 朝向差 */
     private static final Quaternionf SCRATCH_CAM_ROT = new Quaternionf();
-    private static final Quaternionf SCRATCH_VIEW_DELTA = new Quaternionf();
-    private static final Vector3f SCRATCH_CAM_POS = new Vector3f();
 
     /** 射击那一刻的矩阵位置副本 */
     private final PoseStack.Pose pose;
@@ -53,7 +51,6 @@ public class SlowSmokeTask {
     private final int light;
     /** 射击那一刻的相机朝向（相机 → 世界）与它的逆 */
     private final Quaternionf spawnCameraRotation;
-    private final Quaternionf spawnCameraRotationInverse;
     /** 射击那一刻的相机位置 */
     private final Vec3 spawnCameraPos;
     /** 射击那一刻烟雾在世界里的位置（枪口局部位置转到世界方向后加上相机位置） */
@@ -89,7 +86,6 @@ public class SlowSmokeTask {
         // 记下射击那一刻的视角姿态：之后靠它把烟雾的位置固定在世界坐标里
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         this.spawnCameraRotation = new Quaternionf(camera.rotation());
-        this.spawnCameraRotationInverse = new Quaternionf(camera.rotation()).conjugate();
         this.spawnCameraPos = camera.getPosition();
 
         // 枪口局部位置 → 世界坐标
