@@ -312,7 +312,9 @@ public class ClientTestingResources {
                             new MuzzleEntry("no1", "MUZZLE_FLASH", "",
                                     3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
                                     1.8f, CommonMuzzleSmokeEffects.COMMON,
-                                    1.5f)
+                                    1.5f).withSlowSmokeEntry(
+                                    new SlowSmokeEntry(1.5f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON)
+                            )
                             )
                     );
                     IAnimationController<?> controller = new M203Controller();
@@ -332,6 +334,9 @@ public class ClientTestingResources {
                                     3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
                                     1.8f, CommonMuzzleSmokeEffects.COMMON,
                                     1.5f)
+                                    .withSlowSmokeEntry(
+                                            new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON)
+                                    )
                     )
                     );
                     testGP25Model.setTestAlpha(0.15f);
@@ -412,13 +417,13 @@ public class ClientTestingResources {
         );
         ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
                 new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f,
-                        new SlowSmokeEntry(1.8f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
                         .modifyHeatSensitive(3f)
         );
         ModelRegistrationManager.registerModel(GCRModules.SLX_SUPPRESSOR, "model_assets/gltf/slx_suppressor.gltf", "model_assets/gltf/slx_suppressor.png", true, d ->
                 new MuzzleModel(d, 2.65f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.4f, CommonMuzzleSmokeEffects.COMMON,  1.1f,
-                        new SlowSmokeEntry(1.8f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        new SlowSmokeEntry(1.5f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/slx_suppressor.png"))
                         .modifyHeatSensitive(2.8f)
         );
@@ -434,13 +439,13 @@ public class ClientTestingResources {
         );
         ModelRegistrationManager.registerModel(GCRModules.PBS_4, "model_assets/gltf/pbs4.gltf", "model_assets/gltf/pbs4.png", true, d ->
                 new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f,
-                        new SlowSmokeEntry(1.8f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/pbs4.png"))
                         .modifyHeatSensitive(3f)
         );
         ModelRegistrationManager.registerModel(GCRModules.DTKP_545, "model_assets/gltf/dtkp_545.gltf", "model_assets/gltf/dtkp_545.png", true, d ->
                 new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f,
-                        new SlowSmokeEntry(1.8f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtkp_545.png"))
                         .modifyHeatSensitive(3f)
         );

@@ -44,7 +44,7 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
     /** slow smoke 的 task 队列，key 与 fast smoke 区分开 */
     public static final Map<String, SlowSmokeTasks> SLOW_MUZZLE_SMOKE_TASKS = new HashMap<>();
     /** 每个枪口最多同时保留多少个 slow smoke task（双向队列上限） */
-    public static final int MAX_SLOW_SMOKE_TASKS = 12;
+    public static final int MAX_SLOW_SMOKE_TASKS = 10;
     private static final String SLOW_SMOKE_ID_SUFFIX = ":slow_smoke";
     private static final Vector3f DISTANCE_SORTING = new Vector3f();
     private static final List<RenderEntry> UNIFIED_RENDER_QUEUE = new ArrayList<>();
@@ -181,29 +181,28 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
                     }
                 }
                 SlowSmokeEntry smokeEntry = entry.getSlowSmokeEntry();
-                // 贴图集合既可以挂在 MuzzleEntry 上，也可以直接挂在它自己的 SlowSmokeEntry 上
-                SlowSmoke slowSmoke = entry.getSlowSmoke() != null
-                        ? entry.getSlowSmoke()
-                        : (smokeEntry == null ? null : smokeEntry.getSlowSmoke());
-                if (slowSmoke != null && smokeEntry != null) {
-                    String id = context.currentRenderNode().id + entry.getName() + SLOW_SMOKE_ID_SUFFIX;
-                    SlowSmokeTasks tasks = SLOW_MUZZLE_SMOKE_TASKS.get(id);
-                    if (tasks == null) {
-                        // 时间戳可能已经过期（GunEffectManager 会一直保留最后一次射击的时间），
-                        // 这种时候不要再补一个已经淡出完的 task
-                        if (!slowSmoke.isExpired(startTime, smokeEntry)) {
-                            tasks = new SlowSmokeTasks(startTime);
-                            // SlowSmokeTask 内部会复制射击那一刻的矩阵位置
-                            tasks.queue.addFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
-                            SLOW_MUZZLE_SMOKE_TASKS.put(id, tasks);
+                if (smokeEntry != null) {
+                    SlowSmoke slowSmoke = smokeEntry.getSlowSmoke();
+                    if (slowSmoke != null) {
+                        String id = context.currentRenderNode().id + entry.getName() + SLOW_SMOKE_ID_SUFFIX;
+                        SlowSmokeTasks tasks = SLOW_MUZZLE_SMOKE_TASKS.get(id);
+                        if (tasks == null) {
+                            // 时间戳可能已经过期（GunEffectManager 会一直保留最后一次射击的时间），
+                            // 这种时候不要再补一个已经淡出完的 task
+                            if (!slowSmoke.isExpired(startTime, smokeEntry)) {
+                                tasks = new SlowSmokeTasks(startTime);
+                                // SlowSmokeTask 内部会复制射击那一刻的矩阵位置
+                                tasks.queue.addFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
+                                SLOW_MUZZLE_SMOKE_TASKS.put(id, tasks);
+                            }
+                        } else if (tasks.lastCall != startTime) {
+                            // 队列有上限，超出时先丢掉最老的那一次
+                            if (tasks.queue.size() >= MAX_SLOW_SMOKE_TASKS) {
+                                tasks.queue.pollLast();
+                            }
+                            tasks.queue.offerFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
+                            tasks.lastCall = startTime;
                         }
-                    } else if (tasks.lastCall != startTime) {
-                        // 队列有上限，超出时先丢掉最老的那一次
-                        if (tasks.queue.size() >= MAX_SLOW_SMOKE_TASKS) {
-                            tasks.queue.pollLast();
-                        }
-                        tasks.queue.offerFirst(slowSmoke.createTask(bonePose, startTime, smokeEntry, context.light));
-                        tasks.lastCall = startTime;
                     }
                 }
             } else if (context.isThirdPerson()) {
