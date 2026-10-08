@@ -110,7 +110,7 @@ public class ScopeModel extends AbstractScopeModel{
             renderRearLensOnly = true;
             renderingVertexCount = 1;
             rearLensBone.renderStatus.visible = true;
-            float zOffset = Client.isUsingIrisShader ? -0.0085f : -0.002f;
+            float zOffset = Client.isUsingIrisShader ? -0.01f : -0.002f;
             rearLensBone.renderStatus.pose.pose().translate(0, 0, zOffset);
             RenderType original = getRenderType();
             setRenderType(RenderTypes.getMeshDepthMask(), false);
@@ -157,7 +157,7 @@ public class ScopeModel extends AbstractScopeModel{
                 context.removeLocalStorage(CROSSHAIR_POSE);
                 Bone rearLensBone = getRearLensBone();
                 rearLensBone.renderStatus.pose = rearLensPose.copy();
-                renderRearLensWithStencil(-0.007f);
+                renderRearLensWithStencil(-0.009f);
 
                 GL11.glStencilFunc(GL11.GL_EQUAL, 1, 0xFF);
                 GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
@@ -179,7 +179,7 @@ public class ScopeModel extends AbstractScopeModel{
                 renderCrosshairTexture(crosshairPose, crosshairZPose);
                 //防止光影漏光
                 rearLensBone.renderStatus.pose = rearLensPose.copy();
-                renderRearLensWithStencil(0.0005f);
+                renderRearLensWithStencil(0.0008f);
 
                 copyStencil();
                 clearAndDisableStencil();
