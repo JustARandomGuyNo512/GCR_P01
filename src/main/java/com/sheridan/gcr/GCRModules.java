@@ -619,7 +619,7 @@ public final class GCRModules {
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
                     .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.SPRINTING, -11.5f, -12.500004f, 5, -16.911613f, 46.547535f, 35.338047f, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -11.5f, -12.5f, 5, -16.911613f, 46.547535f, 35.338047f, 0.15f, 0.15f, 0.15f)
                     .setAimingTranslation(0, 0, 0, 0, 0, 0),
 
             new RecoilData(
@@ -629,7 +629,7 @@ public final class GCRModules {
                             20f, 22f,
                             0.4f, 0.4f, 205.0f),
                     new RecoilController(
-                            360f, 41f,
+                            360f, 41.2f,
                             155.0f, 15f,
                             230.0f, 9f,
                             145.0f, 15f,

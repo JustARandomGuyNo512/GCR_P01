@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
@@ -60,6 +61,25 @@ public class RenderTypes extends RenderType  {
                             .setCullState(NO_CULL)
                             .createCompositeState(false)
             ));
+
+    public static final BiFunction<ResourceLocation, Boolean, RenderType> SLOW_MUZZLE_SMOKE = Util.memoize(
+            (p_286156_, p_286157_) -> {
+                RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                        .setTextureState(new RenderStateShard.TextureStateShard(p_286156_, false, false))
+                        .setWriteMaskState(new WriteMaskStateShard(true, false))
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .setLightmapState(LIGHTMAP)
+                        .setOverlayState(OVERLAY)
+                        .createCompositeState(p_286157_);
+                return create("slow_muzzle_smoke", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true, rendertype$compositestate);
+            }
+    );
+
+    public static RenderType getSlowMuzzleSmoke(ResourceLocation location) {
+        return SLOW_MUZZLE_SMOKE.apply(location, true);
+    }
 
     public RenderTypes(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize, boolean affectsCrumbling, boolean sortOnUpload, Runnable setupState, Runnable clearState) {
         super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);

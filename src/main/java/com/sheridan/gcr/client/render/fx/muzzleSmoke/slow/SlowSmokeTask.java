@@ -182,7 +182,7 @@ public class SlowSmokeTask {
         if (alpha <= 0f || size <= 0f) {
             return isFinished();
         }
-        RenderType renderType = RenderTypes.entityTranslucent(texture.location());
+        RenderType renderType = RenderTypes.getSlowMuzzleSmoke(texture.location());
         VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
         render(vertexConsumer, texture, alpha, size);
         lastRenderType = renderType;
