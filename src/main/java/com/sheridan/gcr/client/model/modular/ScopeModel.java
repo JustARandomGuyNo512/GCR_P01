@@ -49,15 +49,14 @@ public class ScopeModel extends AbstractScopeModel{
     private final float shadingInnerFade;
     private final float shadingOuterFade;
     private final float vignettePower;
-    private final float distortionStrength;
-    private final float distortionFalloff;
+    private final Vector3f distortion;
     private final Vector3f glassColor;
     private final float glassMix;
     private final float texMagnification;
 
     public ScopeModel(MeshModelData root, ResourceLocation name,
                       float viewRadius, float shadingSensitivity, float shadingInnerFade,
-                      float shadingOuterFade, float vignettePower, float distortionStrength, float distortionFalloff,
+                      float shadingOuterFade, float vignettePower, Vector3f distortion,
                       Vector3f glassColor, float glassMix, float texMagnification, float crosshairScale,
                       ResourceLocation crosshairTexture) {
         super(root, name, crosshairTexture, crosshairScale);
@@ -66,8 +65,7 @@ public class ScopeModel extends AbstractScopeModel{
         this.shadingInnerFade = shadingInnerFade;
         this.shadingOuterFade = shadingOuterFade;
         this.vignettePower = vignettePower;
-        this.distortionStrength = distortionStrength;
-        this.distortionFalloff = distortionFalloff;
+        this.distortion = new Vector3f(distortion);
         this.glassColor = new Vector3f(glassColor);
         this.glassMix = glassMix;
         this.texMagnification = texMagnification;
@@ -325,8 +323,7 @@ public class ScopeModel extends AbstractScopeModel{
         GL20.glUniform1f(ScopeViewShadingShader.uInnerFadeLoc, shadingInnerFade);
         GL20.glUniform1f(ScopeViewShadingShader.uOuterFadeLoc, shadingOuterFade);
         GL20.glUniform1f(ScopeViewShadingShader.uVignettePowerLoc, vignettePower);
-        GL20.glUniform1f(ScopeViewShadingShader.uDistortionStrengthLoc, distortionStrength);
-        GL20.glUniform1f(ScopeViewShadingShader.uDistortionFalloffLoc, distortionFalloff);
+        GL20.glUniform3f(ScopeViewShadingShader.uDistortionLoc, distortion.x, distortion.y, distortion.z);
         GL20.glUniform3f(ScopeViewShadingShader.uGlassColorLoc, glassColor.x, glassColor.y, glassColor.z);
         GL20.glUniform1f(ScopeViewShadingShader.uGlassMixLoc, glassMix);
         GL20.glUniform1f(ScopeViewShadingShader.uTexMagnificationLoc, texMagnification);

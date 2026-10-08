@@ -12,8 +12,7 @@ uniform float uSensitivity;
 uniform float uInnerFade;
 uniform float uOuterFade;
 uniform float uVignettePower;
-uniform float uDistortionStrength;
-uniform float uDistortionFalloff;
+uniform vec3 uDistortion;
 uniform vec3 uGlassColor;
 uniform float uGlassMix;
 uniform float uTexMagnification;
@@ -27,8 +26,9 @@ void main() {
     vec2 p = texCoord * uResolution - lensCenter;
     float rNorm = length(p) / max(uLensRadius, 1.0);
 
-    float radial = pow(clamp(rNorm, 0.0, 1.0), uDistortionFalloff);
-    vec2 samplePx = lensCenter + p * (1.0 + uDistortionStrength * radial) / uTexMagnification;
+    float r = clamp(rNorm, 0.0, 1.0);
+    float radial = pow(r, max(uDistortion.y * uDistortion.z, 0.001));
+    vec2 samplePx = lensCenter + p * (1.0 + uDistortion.x * radial) / uTexMagnification;
     vec3 scene = texture(uSceneColor, clamp(samplePx / uResolution, vec2(0.0), vec2(1.0))).rgb;
     vec3 glass = mix(scene, scene * uGlassColor, uGlassMix);
 

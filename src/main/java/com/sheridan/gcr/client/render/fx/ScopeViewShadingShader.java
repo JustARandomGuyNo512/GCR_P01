@@ -34,8 +34,7 @@ public class ScopeViewShadingShader {
     public static int uInnerFadeLoc = -1;
     public static int uOuterFadeLoc = -1;
     public static int uVignettePowerLoc = -1;
-    public static int uDistortionStrengthLoc = -1;
-    public static int uDistortionFalloffLoc = -1;
+    public static int uDistortionLoc = -1;
     public static int uGlassColorLoc = -1;
     public static int uGlassMixLoc = -1;
     public static int uSceneColorLoc = -1;
@@ -126,8 +125,7 @@ public class ScopeViewShadingShader {
         uInnerFadeLoc = glGetUniformLocation(programId, "uInnerFade");
         uOuterFadeLoc = glGetUniformLocation(programId, "uOuterFade");
         uVignettePowerLoc = glGetUniformLocation(programId, "uVignettePower");
-        uDistortionStrengthLoc = glGetUniformLocation(programId, "uDistortionStrength");
-        uDistortionFalloffLoc = glGetUniformLocation(programId, "uDistortionFalloff");
+        uDistortionLoc = glGetUniformLocation(programId, "uDistortion");
         uGlassColorLoc = glGetUniformLocation(programId, "uGlassColor");
         uGlassMixLoc = glGetUniformLocation(programId, "uGlassMix");
         uSceneColorLoc = glGetUniformLocation(programId, "uSceneColor");
