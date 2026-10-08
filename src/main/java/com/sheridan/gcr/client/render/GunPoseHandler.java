@@ -8,6 +8,7 @@ import com.sheridan.gcr.client.model.modular.IGunModel;
 import com.sheridan.gcr.client.model.modular.IScopeModel;
 import com.sheridan.gcr.client.model.modular.ISightModel;
 import com.sheridan.gcr.items.DisplayData;
+import com.sheridan.gcr.modularSys.modules.ISight;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -201,14 +202,24 @@ public class GunPoseHandler {
         Map<ModuleRenderNode, Map<String, BoneRenderStatus>> tempPoseMap = context.getRenderStatusMap();
         Map<String, BoneRenderStatus> rootPoseMap = tempPoseMap.get(context.root);
         float farthestZ = -9999;
+        float farthestZSide = -9999;
         if (context.root.model instanceof IGunModel gunModel) {
             String farthestSightZName = gunModel.getFarthestSightZName(context);
-            if (rootPoseMap != null && farthestSightZName != null) {
+            String farthestSideSightZName = gunModel.getFarthestSideSightZName(context);
+            if (rootPoseMap != null && (farthestSightZName != null || farthestSideSightZName != null)) {
                 BoneRenderStatus status = rootPoseMap.get(farthestSightZName);
                 if (status != null) {
                     Matrix4f mat = status.pose.pose();
                     Vector3f translation = mat.getTranslation(new Vector3f());
                     farthestZ = translation.z;
+                }
+                status = rootPoseMap.get(farthestSideSightZName);
+                if (status != null) {
+                    Matrix4f mat = status.pose.pose();
+                    Vector3f translation = mat.getTranslation(new Vector3f());
+                    farthestZSide = translation.z;
+                } else {
+                    farthestZSide = farthestZ;
                 }
             }
         }
@@ -231,7 +242,10 @@ public class GunPoseHandler {
                     Vector3f translation = mat.getTranslation(new Vector3f());
                     Quaternionf q = Utils.extractPureRotation(mat);
                     Vector3f euler = q.getEulerAnglesXYZ(new Vector3f());
-                    float z = Math.max(translation.z, farthestZ);
+                    float z = Math.max(
+                            translation.z,
+                            node.getCustomParam(ISight.ON_SIDE_POSITION) == -1 ? farthestZ : farthestZSide
+                    );
                     scopeRearLensZ = z;
 
                     if (rearLensStatus != null) {

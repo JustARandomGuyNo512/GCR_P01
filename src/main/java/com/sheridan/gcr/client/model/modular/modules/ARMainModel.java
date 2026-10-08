@@ -34,6 +34,11 @@ public class ARMainModel extends ArmHandlerModel<ARView> implements IBulletShell
     }
 
     @Override
+    public String getFarthestSideSightZName(ModuleRenderContext context) {
+        return DEFAULT_FARTHEST_SIDE_SIGHT_Z_NAME;
+    }
+
+    @Override
     public Bone getHandRotPivot() {
         return handHoldPivot;
     }

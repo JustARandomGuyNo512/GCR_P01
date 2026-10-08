@@ -85390,7 +85390,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 13, 21],
+			"origin": [0, 13, 17],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -85400,6 +85400,29 @@
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
+		},
+		{
+			"name": "FARTHEST_SIDE_SIGHT_Z",
+			"uuid": "2c37d0c9-4ba0-d12f-9287-3c57e7467018",
+			"export": true,
+			"locked": false,
+			"scope": 0,
+			"selected": false,
+			"visibility": true,
+			"_static": {
+				"properties": {},
+				"temp_data": {}
+			},
+			"origin": [0, 13, 22.5],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -85487,6 +85510,11 @@
 										{
 											"uuid": "366d33ec-74e9-49d4-3dd6-c05b1bd189b9",
 											"isOpen": false,
+											"children": []
+										},
+										{
+											"uuid": "2c37d0c9-4ba0-d12f-9287-3c57e7467018",
+											"isOpen": true,
 											"children": []
 										}
 									]

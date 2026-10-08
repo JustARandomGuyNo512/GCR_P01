@@ -525,9 +525,9 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/sig_fury_barrel.png"))
         );
 
-        ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.129f, 2f, 0.7f, 1f, 2f, new Vector3f(0.08f, 1f, 5f), new Vector3f(0.27f, 0.59f, 0.93f), 0.25f, 1.1f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
-        ModelRegistrationManager.registerModel(GCRModules.ELCAN, "model_assets/gltf/elcan.gltf", "model_assets/gltf/elcan.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.19f, 2f, 0.6f, 1f, 1.5f, new Vector3f(0.06f, 1f, 5f), new Vector3f(0.27f, 0.59f, 0.93f), 0.25f, 1.1f, 1.9f, GCR.RL("textures/sight/crosshair/elcan.png")));
-        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.156f, 2f, 1f, 1.2f, 2f, new Vector3f(0.07f, 1f, 6f), new Vector3f(0.27f, 0.59f, 0.93f), 0.25f, 1.1f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
+        ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.13f, 2f, 0.7f, 1f, 2f, new Vector3f(0.09f, 1.6f, 7f), new Vector3f(0.35f, 0.61f, 0.8f), 0.25f, 1.15f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCRModules.ELCAN, "model_assets/gltf/elcan.gltf", "model_assets/gltf/elcan.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.19f, 2f, 0.6f, 1f, 1.5f, new Vector3f(0.075f, 1.6f, 4f), new Vector3f(0.27f, 0.65f, 0.85f), 0.25f, 1.15f, 1.9f, GCR.RL("textures/sight/crosshair/elcan.png")));
+        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.16f, 2f, 1f, 1.2f, 2f, new Vector3f(0.04f, 1.5f, 7.5f), new Vector3f(0.27f, 0.50f, 0.93f), 0.25f, 1.15f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
 
 
         BulletShellModel shell_5_56x45 = new BulletShellModel(

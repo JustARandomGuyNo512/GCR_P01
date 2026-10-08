@@ -82039,7 +82039,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, 12, 21],
+			"origin": [0, 12, 17],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -82094,7 +82094,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "LEFT_ARM",
@@ -82371,6 +82371,29 @@
 			"autouv": 0,
 			"isOpen": false,
 			"primary_selected": false
+		},
+		{
+			"name": "FARTHEST_SIDE_SIGHT_Z",
+			"uuid": "91278a5f-e0ec-9a56-565a-16153fd4e350",
+			"export": true,
+			"locked": false,
+			"scope": 0,
+			"selected": false,
+			"visibility": true,
+			"_static": {
+				"properties": {},
+				"temp_data": {}
+			},
+			"origin": [0, 12, 22],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -82483,6 +82506,11 @@
 										},
 										{
 											"uuid": "96684ee7-183c-5c16-c5a0-2f2906b2511e",
+											"isOpen": true,
+											"children": []
+										},
+										{
+											"uuid": "91278a5f-e0ec-9a56-565a-16153fd4e350",
 											"isOpen": true,
 											"children": []
 										},

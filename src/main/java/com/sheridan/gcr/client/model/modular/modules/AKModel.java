@@ -52,6 +52,11 @@ public class AKModel extends ArmHandlerModel<AKView> implements IBulletShellHand
     }
 
     @Override
+    public String getFarthestSideSightZName(ModuleRenderContext context) {
+        return DEFAULT_FARTHEST_SIDE_SIGHT_Z_NAME;
+    }
+
+    @Override
     public Bone getHandRotPivot() {
         return handHoldPivot;
     }

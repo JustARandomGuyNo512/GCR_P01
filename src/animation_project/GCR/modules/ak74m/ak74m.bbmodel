@@ -95490,7 +95490,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "BULLET_SHELL",
@@ -95535,7 +95535,7 @@
 			"shade": true,
 			"mirror_uv": false,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -95604,7 +95604,7 @@
 			"shade": true,
 			"mirror_uv": false,
 			"autouv": 0,
-			"isOpen": false,
+			"isOpen": true,
 			"primary_selected": false
 		},
 		{
@@ -96018,7 +96018,7 @@
 			"shade": true,
 			"mirror_uv": false,
 			"autouv": 0,
-			"isOpen": true,
+			"isOpen": false,
 			"primary_selected": false
 		},
 		{
@@ -96342,6 +96342,29 @@
 			"autouv": 0,
 			"isOpen": true,
 			"primary_selected": false
+		},
+		{
+			"name": "FARTHEST_SIDE_SIGHT_Z",
+			"uuid": "d0855c2c-e1c5-7d0e-fa09-785ab2a3e014",
+			"export": true,
+			"locked": false,
+			"scope": 0,
+			"selected": false,
+			"visibility": true,
+			"_static": {
+				"properties": {},
+				"temp_data": {}
+			},
+			"origin": [0, 6.6, 19],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": true
 		}
 	],
 	"outliner": [
@@ -96360,7 +96383,7 @@
 						},
 						{
 							"uuid": "c275b36a-590e-e806-376d-b295a7a1e995",
-							"isOpen": true,
+							"isOpen": false,
 							"children": [
 								{
 									"uuid": "7e08c55d-a4ef-1969-69ca-2801e40cd536",
@@ -96369,7 +96392,7 @@
 								},
 								{
 									"uuid": "b1b6050d-1990-90c1-cf56-fce39b5f8a8d",
-									"isOpen": true,
+									"isOpen": false,
 									"children": [
 										{
 											"uuid": "f455a8a6-d7cd-b61d-be56-be4aab890066",
@@ -96411,7 +96434,7 @@
 							"children": [
 								{
 									"uuid": "8e688984-9299-f515-66fe-65540b246a3a",
-									"isOpen": false,
+									"isOpen": true,
 									"children": [
 										"70e1a3f4-91f6-b2e7-0ae7-29e0ee699687",
 										{
@@ -96447,6 +96470,11 @@
 										{
 											"uuid": "811f0ebc-f953-d24b-1381-c0f1baa2d796",
 											"isOpen": false,
+											"children": []
+										},
+										{
+											"uuid": "d0855c2c-e1c5-7d0e-fa09-785ab2a3e014",
+											"isOpen": true,
 											"children": []
 										},
 										{
