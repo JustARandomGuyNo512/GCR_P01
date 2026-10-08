@@ -49,10 +49,16 @@ public class ScopeModel extends AbstractScopeModel{
     private final float shadingInnerFade;
     private final float shadingOuterFade;
     private final float vignettePower;
+    private final float distortionStrength;
+    private final float distortionFalloff;
+    private final Vector3f glassColor;
+    private final float glassMix;
+    private final float texMagnification;
 
     public ScopeModel(MeshModelData root, ResourceLocation name,
                       float viewRadius, float shadingSensitivity, float shadingInnerFade,
-                      float shadingOuterFade, float vignettePower, float crosshairScale,
+                      float shadingOuterFade, float vignettePower, float distortionStrength, float distortionFalloff,
+                      Vector3f glassColor, float glassMix, float texMagnification, float crosshairScale,
                       ResourceLocation crosshairTexture) {
         super(root, name, crosshairTexture, crosshairScale);
         this.viewRadius = viewRadius;
@@ -60,6 +66,11 @@ public class ScopeModel extends AbstractScopeModel{
         this.shadingInnerFade = shadingInnerFade;
         this.shadingOuterFade = shadingOuterFade;
         this.vignettePower = vignettePower;
+        this.distortionStrength = distortionStrength;
+        this.distortionFalloff = distortionFalloff;
+        this.glassColor = new Vector3f(glassColor);
+        this.glassMix = glassMix;
+        this.texMagnification = texMagnification;
     }
 
     /**
@@ -299,7 +310,11 @@ public class ScopeModel extends AbstractScopeModel{
         Matrix4f edgeMat = mat.translate(lensRight.mul(viewRadius));
         Vector3f edgePos = Utils.getScreenPos(edgeMat, modelViewMatrix, projectionMatrix, width, height);
         float viewEdge = edgePos.sub(screenPos).length();
+        int sceneColorTexture = ScopeViewShadingShader.captureSceneColor();
+        RenderSystem.activeTexture(GL13.GL_TEXTURE0);
+        RenderSystem.bindTexture(sceneColorTexture);
         GL20.glUseProgram(ScopeViewShadingShader.programId);
+        GL20.glUniform1i(ScopeViewShadingShader.uSceneColorLoc, 0);
         GL20.glUniform2f(ScopeViewShadingShader.uEyeOffsetLoc, offsetX, offsetY);
         GL20.glUniform1f(ScopeViewShadingShader.uEyeDistanceLoc, distance);
         GL20.glUniform2f(ScopeViewShadingShader.uResolutionLoc, width, height);
@@ -310,6 +325,11 @@ public class ScopeModel extends AbstractScopeModel{
         GL20.glUniform1f(ScopeViewShadingShader.uInnerFadeLoc, shadingInnerFade);
         GL20.glUniform1f(ScopeViewShadingShader.uOuterFadeLoc, shadingOuterFade);
         GL20.glUniform1f(ScopeViewShadingShader.uVignettePowerLoc, vignettePower);
+        GL20.glUniform1f(ScopeViewShadingShader.uDistortionStrengthLoc, distortionStrength);
+        GL20.glUniform1f(ScopeViewShadingShader.uDistortionFalloffLoc, distortionFalloff);
+        GL20.glUniform3f(ScopeViewShadingShader.uGlassColorLoc, glassColor.x, glassColor.y, glassColor.z);
+        GL20.glUniform1f(ScopeViewShadingShader.uGlassMixLoc, glassMix);
+        GL20.glUniform1f(ScopeViewShadingShader.uTexMagnificationLoc, texMagnification);
 
         GL30.glBindVertexArray(ScopeViewShadingShader.vaoId);
         GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);

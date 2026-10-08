@@ -1,5 +1,7 @@
 package com.sheridan.gcr.client.render.fx;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.sheridan.gcr.GCR;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +34,33 @@ public class ScopeViewShadingShader {
     public static int uInnerFadeLoc = -1;
     public static int uOuterFadeLoc = -1;
     public static int uVignettePowerLoc = -1;
+    public static int uDistortionStrengthLoc = -1;
+    public static int uDistortionFalloffLoc = -1;
+    public static int uGlassColorLoc = -1;
+    public static int uGlassMixLoc = -1;
+    public static int uSceneColorLoc = -1;
+    public static int uTexMagnificationLoc = -1;
+
+    private static TextureTarget sceneColorTarget;
+
+    public static int captureSceneColor() {
+        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
+        if (sceneColorTarget == null) {
+            sceneColorTarget = new TextureTarget(main.width, main.height, false, true);
+            sceneColorTarget.setFilterMode(GL11.GL_LINEAR);
+        } else if (sceneColorTarget.width != main.width || sceneColorTarget.height != main.height) {
+            sceneColorTarget.resize(main.width, main.height, true);
+            sceneColorTarget.setFilterMode(GL11.GL_LINEAR);
+        }
+
+        GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId);
+        GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, sceneColorTarget.frameBufferId);
+        GL30.glBlitFramebuffer(0, 0, main.width, main.height,
+                0, 0, main.width, main.height, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
+        main.bindWrite(false);
+        return sceneColorTarget.getColorTextureId();
+    }
+
 
     // fullscreen quad
     public static int vaoId = -1;
@@ -97,6 +126,12 @@ public class ScopeViewShadingShader {
         uInnerFadeLoc = glGetUniformLocation(programId, "uInnerFade");
         uOuterFadeLoc = glGetUniformLocation(programId, "uOuterFade");
         uVignettePowerLoc = glGetUniformLocation(programId, "uVignettePower");
+        uDistortionStrengthLoc = glGetUniformLocation(programId, "uDistortionStrength");
+        uDistortionFalloffLoc = glGetUniformLocation(programId, "uDistortionFalloff");
+        uGlassColorLoc = glGetUniformLocation(programId, "uGlassColor");
+        uGlassMixLoc = glGetUniformLocation(programId, "uGlassMix");
+        uSceneColorLoc = glGetUniformLocation(programId, "uSceneColor");
+        uTexMagnificationLoc = glGetUniformLocation(programId, "uTexMagnification");
 
         posLoc = glGetAttribLocation(programId, "Position");
         uvLoc  = glGetAttribLocation(programId, "UV0");
@@ -148,6 +183,7 @@ public class ScopeViewShadingShader {
                 "\nuVignettePowerLoc=" + uVignettePowerLoc +
                 "\nposLoc=" + posLoc +
                 "\nuvLoc=" + uvLoc +
+                "\nuTexMagnification=" + uTexMagnificationLoc +
                 "\n}";
     }
 
