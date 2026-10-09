@@ -2,6 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "GCR: Build Mod",
+      "type": "process",
+      "command": "${workspaceFolder}\\gradlew.bat",
+      "args": [
+        "build"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": "$gradle"
+    },
+    {
       "label": "GCR: Run Client",
       "type": "process",
       "command": "${workspaceFolder}\\gradlew.bat",
