@@ -24,6 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -53,6 +54,7 @@ public class ScopeModel extends AbstractScopeModel{
     private final Vector3f glassColor;
     private final float glassMix;
     private final float texMagnification;
+    private float flashSensitivity = 1f;
 
     public ScopeModel(MeshModelData root, ResourceLocation name,
                       float viewRadius, float shadingSensitivity, float shadingInnerFade,
@@ -72,8 +74,19 @@ public class ScopeModel extends AbstractScopeModel{
     }
 
     /**
+     * 镜内闪光感光强度：0 关闭，1 为默认强度，大于 1 增强。
+     */
+    public ScopeModel setFlashSensitivity(float flashSensitivity) {
+        if (!Float.isFinite(flashSensitivity) || flashSensitivity < 0) {
+            throw new IllegalArgumentException("Flash sensitivity must be finite and non-negative");
+        }
+        this.flashSensitivity = flashSensitivity;
+        return this;
+    }
+
+    /**
      * 没有使用iris的情况下，直接使用深度检测做镜片剔除
-     * */
+     */
     @Override
     public void preFirstPersonRender(FirstPersonRenderContext context) {
         super.preFirstPersonRender(context);
@@ -327,6 +340,26 @@ public class ScopeModel extends AbstractScopeModel{
         GL20.glUniform3f(ScopeViewShadingShader.uGlassColorLoc, glassColor.x, glassColor.y, glassColor.z);
         GL20.glUniform1f(ScopeViewShadingShader.uGlassMixLoc, glassMix);
         GL20.glUniform1f(ScopeViewShadingShader.uTexMagnificationLoc, texMagnification);
+        long lastShoot = Client.WEAPON_STATUS.lastShoot;
+        long elapsedNanos = Client.getGunRenderer().getCurrFPRenderTimeStampNano() - lastShoot;
+        float timeSinceShot = lastShoot != 0 && elapsedNanos >= 0 && elapsedNanos < 120_000_000L
+                ? elapsedNanos * 1e-9f : -1.0f;
+        GL20.glUniform1f(ScopeViewShadingShader.uTimeSinceShotLoc, timeSinceShot);
+        float effectiveFlashSensitivity = 0.0f;
+        float flashYOffset = -0.48f;
+        Vector3f muzzleFlashPos = Client.WEAPON_STATUS.getMuzzleFlashPos();
+        float muzzleFlashIntensity = Client.WEAPON_STATUS.getMuzzleFlashIntensity();
+        if (muzzleFlashPos != null && muzzleFlashIntensity > 0.0f) {
+            float muzzleToLensY = muzzleFlashPos.y - lensPos.y;
+            float muzzleToLensZ = Math.abs(muzzleFlashPos.z - lensPos.z);
+            float distanceAttenuation = 1.0f / (1.0f + muzzleToLensZ * 2.0f);
+            float moduleIntensity = Mth.clamp(muzzleFlashIntensity / 2.5f, 0.0f, 2.0f);
+            effectiveFlashSensitivity = flashSensitivity * moduleIntensity * distanceAttenuation * (1 + (Client.WEAPON_STATUS.shootRandomSeed * 0.2f - 0.1f));
+            flashYOffset += Mth.clamp(muzzleToLensY / Math.max(viewRadius * 8.0f, 0.001f), -0.45f, 0.45f);
+        }
+        GL20.glUniform1f(ScopeViewShadingShader.uTimeSinceShotLoc, timeSinceShot);
+        GL20.glUniform1f(ScopeViewShadingShader.uFlashSensitivityLoc, effectiveFlashSensitivity);
+        GL20.glUniform1f(ScopeViewShadingShader.uFlashYOffsetLoc, flashYOffset);
 
         GL30.glBindVertexArray(ScopeViewShadingShader.vaoId);
         GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);

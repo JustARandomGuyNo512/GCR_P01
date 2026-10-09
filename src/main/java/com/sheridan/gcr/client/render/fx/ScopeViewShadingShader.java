@@ -39,6 +39,9 @@ public class ScopeViewShadingShader {
     public static int uGlassMixLoc = -1;
     public static int uSceneColorLoc = -1;
     public static int uTexMagnificationLoc = -1;
+    public static int uTimeSinceShotLoc = -1;
+    public static int uFlashSensitivityLoc = -1;
+    public static int uFlashYOffsetLoc = -1;
 
     private static TextureTarget sceneColorTarget;
 
@@ -130,6 +133,9 @@ public class ScopeViewShadingShader {
         uGlassMixLoc = glGetUniformLocation(programId, "uGlassMix");
         uSceneColorLoc = glGetUniformLocation(programId, "uSceneColor");
         uTexMagnificationLoc = glGetUniformLocation(programId, "uTexMagnification");
+        uTimeSinceShotLoc = glGetUniformLocation(programId, "uTimeSinceShot");
+        uFlashSensitivityLoc = glGetUniformLocation(programId, "uFlashSensitivity");
+        uFlashYOffsetLoc = glGetUniformLocation(programId, "uFlashYOffset");
 
         posLoc = glGetAttribLocation(programId, "Position");
         uvLoc  = glGetAttribLocation(programId, "UV0");
@@ -182,6 +188,9 @@ public class ScopeViewShadingShader {
                 "\nposLoc=" + posLoc +
                 "\nuvLoc=" + uvLoc +
                 "\nuTexMagnification=" + uTexMagnificationLoc +
+                "\nuTimeSinceShotLoc=" + uTimeSinceShotLoc +
+                "\nuFlashSensitivityLoc=" + uFlashSensitivityLoc +
+                "\nuFlashYOffsetLoc=" + uFlashYOffsetLoc +
                 "\n}";
     }
 

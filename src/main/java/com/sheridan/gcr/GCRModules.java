@@ -638,7 +638,7 @@ public final class GCRModules {
                             2.5f, 2f,
                             13f),
                     new VisualRecoilMix(
-                            0.5f, 27, 30, 1.55f, 0.9f, 1.6f,
+                            0.48f, 27, 30, 1.55f, 0.9f, 1.6f,
                             0.625f, 65f, 0.48f, 1.2f,  2.5f,
                             0.013f, 0.35f
                     )
