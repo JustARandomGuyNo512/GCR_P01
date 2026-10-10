@@ -111,11 +111,13 @@
   "gcr.message.gun_data_pruned": "数据版本更新后，该武器上有部分模块已不再合法，服务器已将其移除并返还了 $count 个模块",
 
   "death.attack.custom_explosion": "你炸了",
+  "death.attack.bullet": "%1$s 被 %2$s 使用 %3$s 击杀",
 
   "gcr:m4a1": "M4A1",
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
   "gcr:mcx_spear": "MCX Spear",
+  "gcr:unknown_gun": "未知枪械",
 
   "gcr:acog": "ACOG 瞄准镜",
   "gcr:vortex_razor_hd": "Vortex Razor HD 瞄准镜",

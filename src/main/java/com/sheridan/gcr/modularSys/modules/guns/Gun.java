@@ -167,6 +167,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
         bullet.setDeltaMovement(velocity);
         bullet.setShooter(shooter);
+        bullet.setGun(this);
         bullet.start();
         level.addFreshEntity(bullet);
         int latency = 0;

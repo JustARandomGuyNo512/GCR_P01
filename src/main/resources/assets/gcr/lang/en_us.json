@@ -111,11 +111,13 @@
   "gcr.message.gun_data_pruned": "Some modules on this weapon are no longer valid after the data update. The server removed them and returned $count module(s).",
 
   "death.attack.custom_explosion": "KABOOM!!!",
+  "death.attack.bullet": "%1$s was killed by %2$s using %3$s",
 
   "gcr:m4a1": "M4A1",
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
   "gcr:mcx_spear": "MCX Spear",
+  "gcr:unknown_gun": "Unknown Gun",
 
   "gcr:acog": "ACOG Scope",
   "gcr:vortex_razor_hd": "Vortex Razor HD Scope",

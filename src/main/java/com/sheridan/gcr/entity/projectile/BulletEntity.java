@@ -1,6 +1,10 @@
 package com.sheridan.gcr.entity.projectile;
 
+import com.sheridan.gcr.damageTypes.ModDamageTypes;
+import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -8,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,7 +23,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,6 +47,7 @@ import org.joml.Vector3f;
 public class BulletEntity extends Entity {
     private long serverBirthTime;
     private LivingEntity shooter;
+    private Gun gun;
     // 新增：命中后先移动到命中点，延迟一帧再真正移除，避免客户端来不及渲染就消失
     private boolean markedForRemoval = false;
     public static final EntityDataAccessor<Vector3f> EXACT_VELOCITY =
@@ -60,6 +66,10 @@ public class BulletEntity extends Entity {
     public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
         this.shooterId = shooter.getId();
+    }
+
+    public void setGun(Gun gun) {
+        this.gun = gun;
     }
 
     private static final Vector3f ZERO_VELOCITY = new Vector3f(0.0F, 0.0F, 0.0F);
@@ -219,9 +229,7 @@ public class BulletEntity extends Entity {
     private void onHitEntity(EntityHitResult hit) {
         Entity target = hit.getEntity();
         target.invulnerableTime = 0;
-        DamageSource damageSource = this.shooter == null ?
-                damageSources().generic() :
-                this.level().damageSources().source(DamageTypes.MOB_PROJECTILE, this.shooter, this);
+        DamageSource damageSource = createBulletDamageSource();
         target.hurt(
                 damageSource,
                 (float) (baseDamage * (0.9f + 0.2f * Math.random()))
@@ -232,6 +240,27 @@ public class BulletEntity extends Entity {
         } else {
             discard();
         }
+    }
+
+    private DamageSource createBulletDamageSource() {
+        Holder<DamageType> bulletType = level().registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(ModDamageTypes.BULLET);
+        Entity causingEntity = shooter == null ? this : shooter;
+        return new DamageSource(bulletType, this, causingEntity) {
+            @Override
+            public Component getLocalizedDeathMessage(LivingEntity victim) {
+                Component gunName = gun == null
+                        ? Component.translatable("gcr:unknown_gun")
+                        : Component.translatable(gun.getID());
+                return Component.translatable(
+                        "death.attack.bullet",
+                        victim.getDisplayName(),
+                        causingEntity.getDisplayName(),
+                        gunName
+                );
+            }
+        };
     }
 
     @Override
