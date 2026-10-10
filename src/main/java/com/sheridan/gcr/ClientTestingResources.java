@@ -275,7 +275,8 @@ public class ClientTestingResources {
                                     "SHELL_THROW", GCR.RL("shell_5_45x39"), 10f, 28f, 30f, 8f, 40f, 0.25f,
                                     10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
                             viewer,
-                            2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f
+                            2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                            new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON)
                     );
                     model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
 
@@ -434,7 +435,7 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ar15_muzzle_brake.png"))
         );
         ModelRegistrationManager.registerModel(GCRModules.AK74_MUZZLE_BRAKE, "model_assets/gltf/ak74_muzzle_brake.gltf", "model_assets/gltf/ak74_muzzle_brake.png", true, d ->
-                new MuzzleModel(d, 3.9f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f,
+                new MuzzleModel(d, 3.9f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3.3f,
                         new SlowSmokeEntry(1.2f, 1.4f, new CommonSlowSmokeController().setTravel(1.3f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74_muzzle_brake.png"))
         );
@@ -451,7 +452,7 @@ public class ClientTestingResources {
                         .modifyHeatSensitive(3f)
         );
         ModelRegistrationManager.registerModel(GCRModules.DTK1_COMPENSATOR, "model_assets/gltf/dtk1_compensator.gltf", "model_assets/gltf/dtk1_compensator.png", true, d ->
-                new MuzzleModel(d, 4f, CommonMuzzleFlashes.AK_COMPENSATOR, 3.2f, CommonMuzzleSmokeEffects.COMMON,  3f,
+                new MuzzleModel(d, 4f, CommonMuzzleFlashes.AK_COMPENSATOR, 3.2f, CommonMuzzleSmokeEffects.COMMON,  3.2f,
                         new SlowSmokeEntry(1.2f, 1.5f, new CommonSlowSmokeController().setTravel(1.3f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtk1_compensator.png"))
         );

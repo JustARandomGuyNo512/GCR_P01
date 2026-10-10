@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
 import com.sheridan.gcr.client.render.fx.muzzleFlash.MuzzleFlash;
 import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.FastMuzzleSmoke;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeEntry;
 import com.sheridan.gcr.modularSys.modules.views.AKView;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -20,13 +21,15 @@ public class AKModel extends ArmHandlerModel<AKView> implements IBulletShellHand
     private final Bone handHoldPivot;
     private final MuzzleFlashRenderer muzzleFlashRenderer;
 
-    public AKModel(MeshModelData root, BulletShellDisplay display, AKViewer viewer, float muzzleFlashScale, MuzzleFlash muzzleFlash, float smokeScale, FastMuzzleSmoke muzzleSmoke, float flashLightIntensity) {
+    public AKModel(MeshModelData root, BulletShellDisplay display, AKViewer viewer, float muzzleFlashScale, MuzzleFlash muzzleFlash, float smokeScale, FastMuzzleSmoke muzzleSmoke, float flashLightIntensity, SlowSmokeEntry slowSmokeEntry) {
         super(root, viewer, GCR.RL("ak"));
         this.bulletShellHandler = new AssaultRifleBulletShellHandler(this, display);
         this.handHoldPivot = getOrThrow(DEFAULT_HAND_ROT_PIVOT_NAME);
         getOrThrow(ISightModel.DEFAULT_BONE_NAME);
         muzzleFlashRenderer = new MuzzleFlashRenderer(
-                new MuzzleEntry("no1", "MUZZLE_FLASH", "MUZZLE", muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity));
+                new MuzzleEntry("no1", "MUZZLE_FLASH", "MUZZLE", muzzleFlashScale, muzzleFlash, smokeScale, muzzleSmoke, flashLightIntensity)
+                        .withSlowSmokeEntry(slowSmokeEntry)
+        );
     }
 
     @Override
