@@ -111,6 +111,8 @@ public class GCR {
             ITEMS.register(GCRModules.AK24.getSimpleID(), () -> new GunItem((AR) GCRModules.AK24));
     public static final DeferredItem<Item> MCX_SPEAR_ITEM =
             ITEMS.register(GCRModules.MCX_SPEAR.getSimpleID(), () -> new GunItem((AR) GCRModules.MCX_SPEAR));
+    public static final DeferredItem<Item> AKMN_ITEM =
+            ITEMS.register(GCRModules.AKMN.getSimpleID(), () -> new GunItem((AK) GCRModules.AKMN));
 
 
     public static final DeferredItem<Item> ACOG_ITEM =
@@ -145,6 +147,8 @@ public class GCR {
             ITEMS.register(GCRModules.SAKO_ARG_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.SAKO_ARG_GRIP));
     public static final DeferredItem<Item> MCX_M400_GRIP_ITEM =
             ITEMS.register(GCRModules.MCX_M400_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.MCX_M400_GRIP));
+    public static final DeferredItem<Item> AK_BAKELITE_GRIP_ITEM =
+            ITEMS.register(GCRModules.AK_BAKELITE_GRIP.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_BAKELITE_GRIP));
 
 
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
@@ -169,7 +173,8 @@ public class GCR {
             ITEMS.register(GCRModules.MAG_6L31.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAG_6L31));
     public static final DeferredItem<Item> SPEAR_MAG_20R_ITEM =
             ITEMS.register(GCRModules.SPEAR_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModules.SPEAR_MAG_20R));
-
+    public static final DeferredItem<Item> AKM_STEEL_MAG_ITEM =
+            ITEMS.register(GCRModules.AKM_STEEL_MAG.getSimpleID(), () -> new ModuleItem<>(GCRModules.AKM_STEEL_MAG));
 
 
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
@@ -188,6 +193,8 @@ public class GCR {
             ITEMS.register(GCRModules.CTR_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.CTR_STOCK));
     public static final DeferredItem<Item> MAGPUL_SL_M_STOCK_ITEM =
             ITEMS.register(GCRModules.MAGPUL_SL_M_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.MAGPUL_SL_M_STOCK));
+    public static final DeferredItem<Item> AKM_STOCK_ITEM =
+            ITEMS.register(GCRModules.AKM_STOCK.getSimpleID(), () -> new ModuleItem<>(GCRModules.AKM_STOCK));
 
 
     public static final DeferredItem<Item> A2_FLASH_HINDER_ITEM =
@@ -210,6 +217,8 @@ public class GCR {
             ITEMS.register(GCRModules.DTK1_COMPENSATOR.getSimpleID(), () -> new ModuleItem<>(GCRModules.DTK1_COMPENSATOR));
     public static final DeferredItem<Item> DTKP_545_ITEM =
             ITEMS.register(GCRModules.DTKP_545.getSimpleID(), () -> new ModuleItem<>(GCRModules.DTKP_545));
+    public static final DeferredItem<Item> AKM_MUZZLE_BRAKE_ITEM =
+            ITEMS.register(GCRModules.AKM_MUZZLE_BRAKE.getSimpleID(), () -> new ModuleItem<>(GCRModules.AKM_MUZZLE_BRAKE));
 
 
     public static final DeferredItem<Item> KAC_FORWARD_GRIP_ITEM =
@@ -256,7 +265,10 @@ public class GCR {
             ITEMS.register(GCRModules.SPEAR_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.SPEAR_HANDGUARD));
     public static final DeferredItem<Item> SPEAR_LT_HANDGUARD_ITEM =
             ITEMS.register(GCRModules.SPEAR_LT_HANDGUARD.getSimpleID(), () -> new ModuleItem<>(GCRModules.SPEAR_LT_HANDGUARD));
-
+    public static final DeferredItem<Item> AK_WOODEN_HANDGUARD_LOWER_ITEM =
+            ITEMS.register(GCRModules.AK_WOODEN_HANDGUARD_LOWER.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_WOODEN_HANDGUARD_LOWER));
+    public static final DeferredItem<Item> AK_WOODEN_HANDGUARD_UPPER_ITEM =
+            ITEMS.register(GCRModules.AK_WOODEN_HANDGUARD_UPPER.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_WOODEN_HANDGUARD_UPPER));
 
 
     public static final DeferredItem<Item> VORTEX_RAZOR_RED_DOT_ITEM =
@@ -270,6 +282,8 @@ public class GCR {
             ITEMS.register(GCRModules.DUSTCOVER_6P34.getSimpleID(), () -> new ModuleItem<>(GCRModules.DUSTCOVER_6P34));
     public static final DeferredItem<Item> PDC_DUSTCOVER_ITEM =
             ITEMS.register(GCRModules.PDC_DUSTCOVER.getSimpleID(), () -> new ModuleItem<>(GCRModules.PDC_DUSTCOVER));
+    public static final DeferredItem<Item> AK_RIBBED_DUSTCOVER_ITEM =
+            ITEMS.register(GCRModules.AK_RIBBED_DUSTCOVER.getSimpleID(), () -> new ModuleItem<>(GCRModules.AK_RIBBED_DUSTCOVER));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GUN_TAB =
             CREATIVE_MODE_TABS.register("gun",
@@ -281,6 +295,7 @@ public class GCR {
                             .displayItems((parameters, output) -> {
                                 output.accept(M4A1_ITEM.get());
                                 output.accept(AK74M_ITEM.get());
+                                output.accept(AKMN_ITEM.get());
                                 output.accept(AK24_ITEM.get());
                                 output.accept(MCX_SPEAR_ITEM.get());
                             }).build());
@@ -308,6 +323,7 @@ public class GCR {
                                 output.accept(SAKO_ARG_GRIP_ITEM.get());
                                 output.accept(MCX_M400_GRIP_ITEM.get());
                                 output.accept(AK_POLYMER_GRIP_ITEM.get());
+                                output.accept(AK_BAKELITE_GRIP_ITEM.get());
                                 output.accept(RK9_GRIP_ITEM.get());
 
                                 output.accept(M4_PROFILE_FSB_BARREL_ITEM.get());
@@ -323,6 +339,7 @@ public class GCR {
                                 output.accept(MAG_6L18_ITEM.get());
                                 output.accept(MAG_6L23_ITEM.get());
                                 output.accept(MAG_6L31_ITEM.get());
+                                output.accept(AKM_STEEL_MAG_ITEM.get());
                                 output.accept(SPEAR_MAG_20R_ITEM.get());
 
                                 output.accept(M4_CARBINE_STOCK_ITEM.get());
@@ -331,6 +348,7 @@ public class GCR {
                                 output.accept(MAGPUL_SL_M_STOCK_ITEM.get());
 
                                 output.accept(STOCK_6P34_ITEM.get());
+                                output.accept(AKM_STOCK_ITEM.get());
                                 output.accept(PT1_STOCK_ITEM.get());
                                 output.accept(AR_STOCK_ADAPTER_TYPE1_ITEM.get());
                                 output.accept(MCX_STOCK_TUBE_ITEM.get());
@@ -342,6 +360,7 @@ public class GCR {
                                 output.accept(SOCOM_RC2_ITEM.get());
                                 output.accept(AR15_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(AK74_MUZZLE_BRAKE_ITEM.get());
+                                output.accept(AKM_MUZZLE_BRAKE_ITEM.get());
                                 output.accept(PBS_4_ITEM.get());
                                 output.accept(DTKP_545_ITEM.get());
                                 output.accept(DTK1_COMPENSATOR_ITEM.get());
@@ -354,6 +373,8 @@ public class GCR {
                                 output.accept(AK24A_HANDGUARD_ITEM.get());
                                 output.accept(AK_POLYMER_HANDGUARD_LOWER_ITEM.get());
                                 output.accept(AK_POLYMER_HANDGUARD_UPPER_ITEM.get());
+                                output.accept(AK_WOODEN_HANDGUARD_LOWER_ITEM.get());
+                                output.accept(AK_WOODEN_HANDGUARD_UPPER_ITEM.get());
                                 output.accept(B10_HANDGUARD_ITEM.get());
                                 output.accept(B19_HANDGUARD_ITEM.get());
                                 output.accept(B10_MOUNT_RAIL_ITEM.get());
@@ -372,6 +393,7 @@ public class GCR {
 
                                 output.accept(DUSTCOVER_6P34_ITEM.get());
                                 output.accept(PDC_DUSTCOVER_ITEM.get());
+                                output.accept(AK_RIBBED_DUSTCOVER_ITEM.get());
                             }).build());
 
     public static ResourceLocation RL(String modId, String path) {

@@ -117,6 +117,8 @@
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
   "gcr:mcx_spear": "MCX Spear",
+  "gcr:akmn": "AKMN",
+
   "gcr:unknown_gun": "未知枪械",
 
   "gcr:acog": "ACOG 瞄准镜",
@@ -163,7 +165,7 @@
   "gcr:vortex_razor_red_dot": "Vortex Razor 红点瞄准器",
   "gcr:peq_15": "PEQ-15",
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense Ris II 护木",
-  "gcr:6p34_dustcover": "6P34 防尘盖",
+  "gcr:6p34_dustcover": "AK 防尘盖",
   "gcr:pdc_dustcover": "PDC 防尘盖",
   "gcr:b13_bracket": "B13 导轨支架",
   "gcr:dtk1_compensator": "DTK-1 制退器",
@@ -188,6 +190,13 @@
   "gcr:mcx_stock_tube": "MCX 托芯",
   "gcr:spear_mag_20r": "MCX Spear 20发弹匣",
   "gcr:slx_suppressor": "SLX 消音器",
+  "gcr:akm_stock": "AKM 枪托",
+  "gcr:akm_muzzle_brake": "AKM 抑制器",
+  "gcr:ak_bakelite_grip": "AKM 酚醛树脂握把",
+  "gcr:ak_ribbed_dustcover": "加强筋防尘盖",
+  "gcr:akm_steel_mag": "AKM 冲压钢制弹匣",
+  "gcr:ak_wooden_handguard_lower": "AKM 木制护木(下)",
+  "gcr:ak_wooden_handguard_upper": "AKM 木制护木(上)",
 
   "block.gcaa.vending_machine": "自动售货机"
 }

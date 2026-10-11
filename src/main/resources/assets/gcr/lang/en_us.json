@@ -117,6 +117,8 @@
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
   "gcr:mcx_spear": "MCX Spear",
+  "gcr:akmn": "AKMN",
+
   "gcr:unknown_gun": "Unknown Gun",
 
   "gcr:acog": "ACOG Scope",
@@ -163,7 +165,7 @@
   "gcr:vortex_razor_red_dot": "Vortex Razor Red Dot",
   "gcr:peq_15": "PEQ-15",
   "gcr:daniel_defense_ris_ii_handguard": "Daniel Defense RIS II Handguard",
-  "gcr:6p34_dustcover": "6P34 Dustcover",
+  "gcr:6p34_dustcover": "AK Dustcover",
   "gcr:pdc_dustcover": "PDC Dustcover",
   "gcr:b13_bracket": "B13 Bracket",
   "gcr:dtk1_compensator": "DTK-1 Compensator",
@@ -188,6 +190,13 @@
   "gcr:mcx_stock_tube": "MCX Stock Tube",
   "gcr:spear_mag_20r": "MCX Spear 20R Mag",
   "gcr:slx_suppressor": "SLX Suppressor",
+  "gcr:akm_stock": "AKM Stock",
+  "gcr:akm_muzzle_brake": "AKM Muzzle Brake",
+  "gcr:ak_bakelite_grip": "AKM Bakelite Grip",
+  "gcr:ak_ribbed_dustcover": "AKM Ribbed Dustcover",
+  "gcr:akm_steel_mag": "AKM Steel Mag",
+  "gcr:ak_wooden_handguard_lower": "AKM Wooden Handguard (Lower)",
+  "gcr:ak_wooden_handguard_upper": "AKM Wooden Handguard (Upper)",
 
   "block.gcaa.vending_machine": "Vending Machine"
 }

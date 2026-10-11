@@ -1,0 +1,138 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"empty": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"bullet_1": {
+					"scale": 0
+				},
+				"holder": {
+					"rotation": [7, 0, 0],
+					"position": [0, 5.5, 1]
+				},
+				"bullet_2": {
+					"scale": 0
+				},
+				"bullet_3": {
+					"scale": 0
+				},
+				"bullet_4": {
+					"scale": 0
+				},
+				"bullet_5": {
+					"scale": 0
+				}
+			}
+		},
+		"full_1": {
+			"animation_length": 1
+		},
+		"full_2": {
+			"loop": true,
+			"animation_length": 1.01,
+			"bones": {
+				"bullet_1": {
+					"rotation": [-6, 0, 0],
+					"position": [1.2, -4.5, -0.4]
+				},
+				"bullet_2": {
+					"rotation": [1, 0, 0],
+					"position": [0, 1.3, 0.1]
+				},
+				"bullet_3": {
+					"position": [0, 1.4, 0.2]
+				},
+				"bullet_4": {
+					"rotation": [1, 0, 0],
+					"position": [0, 1.5, 0.3]
+				},
+				"bullet_5": {
+					"rotation": [2, 0, 0],
+					"position": [0, 1.7, 0.2]
+				}
+			}
+		},
+		"left_1": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"holder": {
+					"rotation": [6, 0, 0],
+					"position": [0, 4.7, 0.9]
+				},
+				"bullet_2": {
+					"scale": 0
+				},
+				"bullet_3": {
+					"scale": 0
+				},
+				"bullet_4": {
+					"scale": 0
+				},
+				"bullet_5": {
+					"scale": 0
+				}
+			}
+		},
+		"left_2": {
+			"loop": true,
+			"animation_length": 0.99,
+			"bones": {
+				"holder": {
+					"rotation": [4, 0, 0],
+					"position": [0, 3.1, 0.6]
+				},
+				"bullet_3": {
+					"scale": 0
+				},
+				"bullet_4": {
+					"scale": 0
+				},
+				"bullet_5": {
+					"scale": 0
+				}
+			}
+		},
+		"left_3": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"holder": {
+					"rotation": [3, 0, 0],
+					"position": [0, 2.35, 0.4]
+				},
+				"bullet_4": {
+					"scale": 0
+				},
+				"bullet_5": {
+					"scale": 0
+				}
+			}
+		},
+		"left_4": {
+			"loop": true,
+			"animation_length": 0.99,
+			"bones": {
+				"holder": {
+					"rotation": [1, 0, 0],
+					"position": [0, 0.75, 0.2]
+				},
+				"bullet_5": {
+					"scale": 0
+				}
+			}
+		},
+		"left_5": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"holder": {
+					"rotation": [1, 0, 0],
+					"position": [0, 0, 0]
+				}
+			}
+		}
+	}
+}
