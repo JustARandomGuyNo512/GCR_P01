@@ -809,7 +809,7 @@ public final class GCRModules {
                     30f,
                     0.004f,
                     0.05f / 60, 8f,
-                    RL("ak74m_fire"),
+                    RL("akmn_fire"),
                     RL("ak74m_fire_suppressed"),
                     Map.of(
                             "mag_reload_length", 2.15f,
@@ -830,19 +830,19 @@ public final class GCRModules {
                     new RecoilImpulse(
                             7f, 11f,
                             6f, 6f,
-                            17.5f, 18.5f,
-                            0.25f, 0.55f,220.0f),
+                            17f, 19f,
+                            0.25f, 0.55f,210.0f),
                     new RecoilController(
-                            360f, 40.8f,
+                            360f, 40.7f,
                             155.0f, 11.6f,
                             210.0f, 8f,
                             155.0f, 14.6f,
-                            880.0f, 19f,
+                            890.0f, 19f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.65f, 26f, 29.5f, 1.6f, 0.9f, 1.6f,
+                            0.65f, 25f, 29.8f, 1.6f, 0.9f, 1.6f,
                             0.8f, 63f, 0.46f, 1.25f,  2.5f,
                             0.0126f, 0.35f
                     )

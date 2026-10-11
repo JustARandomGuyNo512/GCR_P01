@@ -13140,7 +13140,7 @@
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": false,
+			"visibility": true,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -13221,7 +13221,7 @@
 			"rotation": [0, 0, 0],
 			"shading": "flat",
 			"export": false,
-			"visibility": false,
+			"visibility": true,
 			"locked": false,
 			"render_order": "default",
 			"scope": 0,
@@ -18278,8 +18278,8 @@
 				"wVuj6rJL": {
 					"uv": {
 						"VHb2": [71.73069, 8.51528],
-						"lvIs": [54.96987, 7.7835],
-						"cOcq": [71.72609, 8.80038]
+						"cOcq": [71.72609, 8.80038],
+						"lvIs": [54.96987, 7.7835]
 					},
 					"texture": 0,
 					"vertices": ["lvIs", "cOcq", "VHb2"]
@@ -18907,9 +18907,9 @@
 				},
 				"NLMEeMOs": {
 					"uv": {
+						"nLdD": [96.05045, 45.3637],
 						"a525": [96.29975, 45.3637],
-						"D4UG": [95.22975, 45.5349],
-						"nLdD": [96.05045, 45.3637]
+						"D4UG": [95.22975, 45.5349]
 					},
 					"texture": 0,
 					"vertices": ["D4UG", "a525", "nLdD"]
@@ -19160,8 +19160,8 @@
 				"8I3jvTHW": {
 					"uv": {
 						"TbYk": [21.24765, 81.3385],
-						"3klA": [19.22975, 81.5549],
-						"D4UG": [21.77025, 81.5549]
+						"D4UG": [21.77025, 81.5549],
+						"3klA": [19.22975, 81.5549]
 					},
 					"texture": 0,
 					"vertices": ["3klA", "D4UG", "TbYk"]
@@ -20185,9 +20185,9 @@
 				},
 				"j73zXIdj": {
 					"uv": {
+						"cOcq": [11.31924, 97.26725],
 						"nDjB": [11.68076, 97.13133],
-						"ml1Y": [11.38594, 97.42731],
-						"cOcq": [11.31924, 97.26725]
+						"ml1Y": [11.38594, 97.42731]
 					},
 					"texture": 0,
 					"vertices": ["ml1Y", "nDjB", "cOcq"]
@@ -31318,9 +31318,9 @@
 				},
 				"OOubMot1": {
 					"uv": {
+						"D4UG": [112, 20],
 						"PDL7": [112, 20.1836],
-						"FrKP": [111.4344, 20.1836],
-						"D4UG": [112, 20]
+						"FrKP": [111.4344, 20.1836]
 					},
 					"texture": 0,
 					"vertices": ["FrKP", "PDL7", "D4UG"]
@@ -31328,8 +31328,8 @@
 				"v6Bi3ozV": {
 					"uv": {
 						"JqRj": [111.4344, 20],
-						"FrKP": [111.4344, 20.1836],
-						"D4UG": [112, 20]
+						"D4UG": [112, 20],
+						"FrKP": [111.4344, 20.1836]
 					},
 					"texture": 0,
 					"vertices": ["FrKP", "D4UG", "JqRj"]
@@ -38212,9 +38212,9 @@
 				},
 				"6QsQFDzo": {
 					"uv": {
+						"nLdD": [53.853, 73.3637],
 						"0mne": [53.6309, 73.3637],
-						"rWlL": [53.853, 73],
-						"nLdD": [53.853, 73.3637]
+						"rWlL": [53.853, 73]
 					},
 					"texture": 0,
 					"vertices": ["rWlL", "0mne", "nLdD"]
@@ -38266,9 +38266,9 @@
 				},
 				"URWdvWbF": {
 					"uv": {
+						"xZDG": [73.147, 69.3637],
 						"gjrh": [73.147, 69],
-						"3GuD": [73.3691, 69.3637],
-						"xZDG": [73.147, 69.3637]
+						"3GuD": [73.3691, 69.3637]
 					},
 					"texture": 0,
 					"vertices": ["3GuD", "gjrh", "xZDG"]
@@ -41713,9 +41713,9 @@
 				},
 				"Wdu3PVho": {
 					"uv": {
+						"D4UG": [21, 111],
 						"TbYk": [21.5656, 111],
-						"PDL7": [21, 111.1836],
-						"D4UG": [21, 111]
+						"PDL7": [21, 111.1836]
 					},
 					"texture": 0,
 					"vertices": ["PDL7", "TbYk", "D4UG"]
@@ -44072,8 +44072,8 @@
 				"UA636WkR": {
 					"uv": {
 						"3klA": [97.77025, 45.5349],
-						"a525": [96.29975, 45.3637],
-						"D4UG": [95.22975, 45.5349]
+						"D4UG": [95.22975, 45.5349],
+						"a525": [96.29975, 45.3637]
 					},
 					"texture": 0,
 					"vertices": ["a525", "D4UG", "3klA"]
@@ -44719,9 +44719,9 @@
 				},
 				"vrlH3KUi": {
 					"uv": {
+						"nLdD": [96.05045, 45.3637],
 						"rWlL": [96.05045, 45],
-						"a525": [96.29975, 45.3637],
-						"nLdD": [96.05045, 45.3637]
+						"a525": [96.29975, 45.3637]
 					},
 					"texture": 0,
 					"vertices": ["a525", "rWlL", "nLdD"]
@@ -51542,8 +51542,8 @@
 				"16O2nwdL": {
 					"uv": {
 						"nDjB": [11.68064, 97.13138],
-						"VHb2": [11.52049, 97.0652],
-						"cOcq": [11.31924, 97.26725]
+						"cOcq": [11.31924, 97.26725],
+						"VHb2": [11.52049, 97.0652]
 					},
 					"texture": 0,
 					"vertices": ["VHb2", "cOcq", "nDjB"]
@@ -53530,9 +53530,9 @@
 				},
 				"WwuqkRt1": {
 					"uv": {
+						"cOcq": [9.83942, 67.53306],
 						"AqWA": [8.56781, 55.65567],
-						"eDhE": [8.80026, 55.55926],
-						"cOcq": [9.83942, 67.53306]
+						"eDhE": [8.80026, 55.55926]
 					},
 					"texture": 0,
 					"vertices": ["eDhE", "AqWA", "cOcq"]
@@ -53540,8 +53540,8 @@
 				"XfkEvRfC": {
 					"uv": {
 						"upDU": [8.89651, 55.32649],
-						"eDhE": [8.80026, 55.55926],
-						"cOcq": [9.83942, 67.53297]
+						"cOcq": [9.83942, 67.53297],
+						"eDhE": [8.80026, 55.55926]
 					},
 					"texture": 0,
 					"vertices": ["eDhE", "cOcq", "upDU"]
@@ -53765,8 +53765,8 @@
 				"tSXUqfoC": {
 					"uv": {
 						"0DQu": [41.55772, 30.07306],
-						"nDjB": [26.2687, 30.5825],
-						"ml1Y": [26.28129, 31]
+						"ml1Y": [26.28129, 31],
+						"nDjB": [26.2687, 30.5825]
 					},
 					"texture": 0,
 					"vertices": ["nDjB", "ml1Y", "0DQu"]
@@ -58003,9 +58003,9 @@
 				},
 				"FIf6sV79": {
 					"uv": {
+						"ml1Y": [0.09325, 62.99996],
 						"s5dc": [1.43223, 51.12268],
-						"zLTW": [3.56763, 51.12287],
-						"ml1Y": [0.09325, 62.99996]
+						"zLTW": [3.56763, 51.12287]
 					},
 					"texture": 0,
 					"vertices": ["zLTW", "s5dc", "ml1Y"]
@@ -79209,8 +79209,8 @@
 				},
 				"0uzbQfMV": {
 					"uv": {
-						"D4UG": [101.22975, 76.2164],
 						"aXuk": [103.77025, 76.2164],
+						"D4UG": [101.22975, 76.2164],
 						"JqRj": [101.75235, 76]
 					},
 					"texture": 0,
@@ -79614,8 +79614,8 @@
 				},
 				"mnJ225IC": {
 					"uv": {
-						"eSUs": [18.93, 46.5524],
 						"kVp7": [21.07, 46.5524],
+						"eSUs": [18.93, 46.5524],
 						"Kuu4": [21.07, 42.1071]
 					},
 					"texture": 0,
@@ -79849,8 +79849,8 @@
 				"V3y8VKGy": {
 					"uv": {
 						"D4UG": [103.8599, 31.1712],
-						"DvVp": [102.7899, 31],
-						"aXuk": [101.3194, 31.1712]
+						"aXuk": [101.3194, 31.1712],
+						"DvVp": [102.7899, 31]
 					},
 					"texture": 0,
 					"vertices": ["DvVp", "aXuk", "D4UG"]
@@ -79921,8 +79921,8 @@
 				"LfKGb0T0": {
 					"uv": {
 						"K3LE": [88.1652, 74.459],
-						"YZbj": [88.5473, 74.6172],
-						"atmT": [88.9612, 74.3821]
+						"atmT": [88.9612, 74.3821],
+						"YZbj": [88.5473, 74.6172]
 					},
 					"texture": 0,
 					"vertices": ["YZbj", "atmT", "K3LE"]
@@ -79974,18 +79974,18 @@
 				},
 				"npljqr6Y": {
 					"uv": {
+						"4DV2": [21.3651, 46.8475],
 						"LOzC": [22.5405, 49],
-						"w9yQ": [17.4595, 49],
-						"4DV2": [21.3651, 46.8475]
+						"w9yQ": [17.4595, 49]
 					},
 					"texture": 0,
 					"vertices": ["w9yQ", "LOzC", "4DV2"]
 				},
 				"02oaVthc": {
 					"uv": {
-						"w9yQ": [17.4595, 49],
 						"AJMC": [18.6348, 46.8475],
-						"4DV2": [21.3651, 46.8475]
+						"4DV2": [21.3651, 46.8475],
+						"w9yQ": [17.4595, 49]
 					},
 					"texture": 0,
 					"vertices": ["w9yQ", "4DV2", "AJMC"]
@@ -80029,8 +80029,8 @@
 				"4GrV8izf": {
 					"uv": {
 						"jFBg": [88.0388, 74],
-						"K3LE": [88.1652, 74.459],
-						"atmT": [88.9612, 74.3821]
+						"atmT": [88.9612, 74.3821],
+						"K3LE": [88.1652, 74.459]
 					},
 					"texture": 0,
 					"vertices": ["K3LE", "atmT", "jFBg"]
@@ -80181,9 +80181,9 @@
 				},
 				"22N8HbG2": {
 					"uv": {
-						"jFBg": [95.1819, 106.8165],
 						"p2Bx": [94, 107],
-						"atmT": [94.1835, 106.8165]
+						"atmT": [94.1835, 106.8165],
+						"jFBg": [95.1819, 106.8165]
 					},
 					"texture": 0,
 					"vertices": ["jFBg", "atmT", "p2Bx"]
@@ -80191,8 +80191,8 @@
 				"ybnkimMv": {
 					"uv": {
 						"7OPR": [95.3655, 107],
-						"jFBg": [95.1819, 106.8165],
-						"p2Bx": [94, 107]
+						"p2Bx": [94, 107],
+						"jFBg": [95.1819, 106.8165]
 					},
 					"texture": 0,
 					"vertices": ["jFBg", "p2Bx", "7OPR"]
@@ -80226,9 +80226,9 @@
 				},
 				"bjrYjDCP": {
 					"uv": {
+						"DvVp": [102.7899, 31],
 						"xZDG": [103.0392, 31],
-						"D4UG": [103.8599, 31.1712],
-						"DvVp": [102.7899, 31]
+						"D4UG": [103.8599, 31.1712]
 					},
 					"texture": 0,
 					"vertices": ["D4UG", "xZDG", "DvVp"]
@@ -80289,18 +80289,18 @@
 				},
 				"xe1ACrzh": {
 					"uv": {
+						"p2Bx": [99.5835, 27.7509],
 						"7OPR": [98.3219, 27.2283],
-						"FLep": [98.4165, 27],
-						"p2Bx": [99.5835, 27.7509]
+						"FLep": [98.4165, 27]
 					},
 					"texture": 0,
 					"vertices": ["FLep", "7OPR", "p2Bx"]
 				},
 				"1crtJZlN": {
 					"uv": {
-						"FLep": [98.4165, 27],
 						"TTeg": [99.6781, 27.5225],
-						"p2Bx": [99.5835, 27.7509]
+						"p2Bx": [99.5835, 27.7509],
+						"FLep": [98.4165, 27]
 					},
 					"texture": 0,
 					"vertices": ["FLep", "p2Bx", "TTeg"]
@@ -80334,18 +80334,18 @@
 				},
 				"1mbnUOUV": {
 					"uv": {
+						"4DV2": [21.3651, 46.8475],
 						"AJMC": [18.6348, 46.8475],
-						"eSUs": [18.93, 46.5524],
-						"4DV2": [21.3651, 46.8475]
+						"eSUs": [18.93, 46.5524]
 					},
 					"texture": 0,
 					"vertices": ["eSUs", "AJMC", "4DV2"]
 				},
 				"q5aj3bcj": {
 					"uv": {
-						"eSUs": [18.93, 46.5524],
 						"kVp7": [21.07, 46.5524],
-						"4DV2": [21.3651, 46.8475]
+						"4DV2": [21.3651, 46.8475],
+						"eSUs": [18.93, 46.5524]
 					},
 					"texture": 0,
 					"vertices": ["eSUs", "4DV2", "kVp7"]
@@ -80388,18 +80388,18 @@
 				},
 				"MPa4JZSA": {
 					"uv": {
+						"FEXc": [3.1608, 100.8398],
 						"cOcq": [7.8392, 100.8398],
-						"ml1Y": [7.9056, 101],
-						"FEXc": [3.1608, 100.8398]
+						"ml1Y": [7.9056, 101]
 					},
 					"texture": 0,
 					"vertices": ["ml1Y", "cOcq", "FEXc"]
 				},
 				"wdu1xf1m": {
 					"uv": {
-						"ml1Y": [7.9056, 101],
+						"wegX": [3.0944, 101],
 						"FEXc": [3.1608, 100.8398],
-						"wegX": [3.0944, 101]
+						"ml1Y": [7.9056, 101]
 					},
 					"texture": 0,
 					"vertices": ["ml1Y", "FEXc", "wegX"]
@@ -80424,9 +80424,9 @@
 				},
 				"bzt2QRBq": {
 					"uv": {
+						"wegX": [39.66297, 37],
 						"ml1Y": [38.31258, 32.3822],
-						"nHIR": [50.68742, 32.3822],
-						"wegX": [39.66297, 37]
+						"nHIR": [50.68742, 32.3822]
 					},
 					"texture": 0,
 					"vertices": ["nHIR", "ml1Y", "wegX"]
@@ -111280,7 +111280,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -1.5, 10],
+			"origin": [0, -1.5, 11],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],
@@ -111289,7 +111289,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "BULLET_SHELL",
@@ -111942,7 +111942,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -111965,7 +111965,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -111988,7 +111988,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -112011,7 +112011,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -112034,7 +112034,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}
@@ -112057,7 +112057,7 @@
 			"locked": false,
 			"scope": 0,
 			"selected": false,
-			"visibility": false,
+			"visibility": true,
 			"_static": {
 				"properties": {},
 				"temp_data": {}

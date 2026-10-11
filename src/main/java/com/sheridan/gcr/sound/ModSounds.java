@@ -56,7 +56,7 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> MCX_SPEAR_FIRE = registerSound("mcx_spear_fire", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> MCX_SPEAR_FIRE_SUPPRESSED = registerSound("mcx_spear_fire_suppressed", "gcr");
 
-
+    public static DeferredHolder<SoundEvent, SoundEvent> AKMN_FIRE = registerSound("akmn_fire", "gcr");
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return registerSound(name, GCR.MODID);
     }
