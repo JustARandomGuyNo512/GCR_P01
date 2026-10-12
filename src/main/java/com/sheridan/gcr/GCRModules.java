@@ -844,7 +844,7 @@ public final class GCRModules {
                     new VisualRecoilMix(
                             0.65f, 25f, 29.8f, 1.6f, 0.9f, 1.6f,
                             0.81f, 63.3f, 0.46f, 1.25f,  2.5f,
-                            0.013f, 0.35f
+                            0.013f, 0.3f
                     )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))

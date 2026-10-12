@@ -212,7 +212,7 @@ public class RecoilUpdater implements IRecoilUpdater {
         float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement()));
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize);
 
-        float shakeFactor = 1 - Mth.clamp(-zLinear.getDisplacement() * 8, 0, 0.6f + RANDOM.nextFloat() * 0.2f);
+        float shakeFactor = 1 - Mth.clamp(-zLinear.getDisplacement() * 8, 0, 0.5f + RANDOM.nextFloat() * 0.2f);
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
         }
@@ -220,7 +220,7 @@ public class RecoilUpdater implements IRecoilUpdater {
 
         float rollVelocityImpulse = rawShakeRoll * shakeFactor * adsShakeFactor;
         float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
-        float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.025f;
+        float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.026f;
 
 
         zLinear.addVelocity(impulseZ);
