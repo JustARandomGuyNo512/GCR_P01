@@ -35,6 +35,7 @@
   "ak24_fire": {"sounds": ["gcr:ak24/ak24_fire" ]},
   "ak24_fire_suppressed": {"sounds": ["gcr:ak24/ak24_fire_suppressed" ]},
   "akmn_fire": {"sounds": ["gcr:ak/akmn_fire" ]},
+  "akmn_fire_suppressed": {"sounds": ["gcr:ak/akmn_fire_suppressed" ]},
 
   "mcx_spear_fire": {"sounds": ["gcr:mcx_spear/mcx_spear_fire" ]},
   "mcx_spear_fire_suppressed": {"sounds": ["gcr:mcx_spear/mcx_spear_fire_suppressed" ]}

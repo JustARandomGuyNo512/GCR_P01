@@ -30,6 +30,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,12 @@ public class GunModifyScreen extends Screen {
     private float dragStartX;
     private float dragStartY;
     private int msgDelayTick = 0;
+    private boolean inspectionMode = false;
+    private boolean inspectionInteracted = false;
+    private int inspectionHintTicks = 0;
+    private int inspectionMessageTicks = 0;
+    private boolean inspectionRightDown = false;
+    private boolean inspectionLeftDown = false;
 
     private ModularUI ui;
 
@@ -177,6 +184,7 @@ public class GunModifyScreen extends Screen {
             countManager.onTick(this.minecraft.player);
         }
         msgDelayTick = Math.max(0, msgDelayTick - 1);
+        updateInspectionMode();
         updatePageContent();
         handleMsgLog();
         if (context != null) {
@@ -251,17 +259,19 @@ public class GunModifyScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderGunModel();
         if (context != null) {
-            context.renderComponents(guiGraphics);
+            if (!inspectionMode) {
+                context.renderComponents(guiGraphics);
+            }
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        if (selectedItemSlot != null) {
+        if (selectedItemSlot != null && !inspectionMode) {
             guiGraphics.blit(SELECTED_ITEM_SLOT,
                         (int) (selectedItemSlot.getContentX() - 3),
                         (int) (selectedItemSlot.getContentY() - 3),
                         0,0, 22, 22, 22, 22);
 
         }
-        if (validateMsg != null && msgDelayTick == 0) {
+        if (validateMsg != null && msgDelayTick == 0 && !inspectionMode) {
             validateMsg.render(guiGraphics, 0, mouseX, mouseY, false);
         }
         RenderSystem.enableBlend();
@@ -269,6 +279,7 @@ public class GunModifyScreen extends Screen {
             guiGraphics.drawCenteredString(
                     this.font, Component.translatable("screen.need_update").getString(), this.width / 2, this.height / 2, 0xffffff);
         }
+        renderInspectionOverlay(guiGraphics);
         RenderSystem.disableBlend();
     }
 
@@ -347,6 +358,13 @@ public class GunModifyScreen extends Screen {
      */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (inspectionMode) {
+            if (scrollY != 0) {
+                markInspectionInteraction();
+                modelScale = Mth.clamp(modelScale + (scrollY > 0 ? MODEL_WHEEL_ZOOM_STEP : -MODEL_WHEEL_ZOOM_STEP), MIN_MODEL_SCALE, MAX_MODEL_SCALE);
+            }
+            return true;
+        }
         if (needUpdate) {
             return false;
         }
@@ -406,6 +424,73 @@ public class GunModifyScreen extends Screen {
     public void commitToServer() {
         if (context.commitAndSync()) {
             needUpdate = true;
+        }
+    }
+
+    public void enterInspectionMode() {
+        inspectionMode = true;
+        inspectionInteracted = false;
+        inspectionHintTicks = 0;
+        inspectionMessageTicks = 60;
+        resetModelPose();
+        if (ui != null) {
+            GunModifyUI.setVisible(false);
+        }
+    }
+
+    private void exitInspectionMode() {
+        inspectionMode = false;
+        inspectionRightDown = false;
+        inspectionLeftDown = false;
+        isRollingModel = false;
+        isDraggingModel = false;
+        if (ui != null) {
+            GunModifyUI.setVisible(true);
+        }
+    }
+
+    private void markInspectionInteraction() {
+        if (!inspectionInteracted) {
+            inspectionInteracted = true;
+            inspectionHintTicks = 60;
+        }
+    }
+
+    private void updateInspectionMode() {
+        inspectionMessageTicks = Math.max(0, inspectionMessageTicks - 1);
+        inspectionHintTicks = Math.max(0, inspectionHintTicks - 1);
+        if (inspectionMode && !inspectionInteracted && !inspectionLeftDown && !inspectionRightDown) {
+            modelRY += 0.01f;
+        }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (inspectionMode) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                exitInspectionMode();
+                return true;
+            }
+            if (keyCode == GLFW.GLFW_KEY_ENTER) {
+                resetModelPose();
+                inspectionInteracted = false;
+                inspectionHintTicks = 0;
+                return true;
+            }
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private void renderInspectionOverlay(GuiGraphics guiGraphics) {
+        if (!inspectionMode) {
+            return;
+        }
+        if (inspectionMessageTicks > 0) {
+            guiGraphics.drawCenteredString(this.font, Component.literal("Ecs 退出"), this.width / 2, 20, 0xffffff);
+        }
+        if (inspectionHintTicks > 0) {
+            guiGraphics.drawCenteredString(this.font, Component.literal("按Enter重置"), this.width / 2, this.height - 30, 0xffffff);
         }
     }
 
@@ -616,6 +701,20 @@ public class GunModifyScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (inspectionMode) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                inspectionRightDown = true;
+                markInspectionInteraction();
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                inspectionLeftDown = true;
+                markInspectionInteraction();
+            }
+            dragStartX = (float) mouseX;
+            dragStartY = (float) mouseY;
+            tempModelRX = modelRX;
+            tempModelRY = modelRY;
+            return true;
+        }
         if (needUpdate) {
             return false;
         }
@@ -635,6 +734,20 @@ public class GunModifyScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
+        if (inspectionMode) {
+            float dx = (float) (pMouseX - dragStartX);
+            float dy = (float) (pMouseY - dragStartY);
+            if (inspectionRightDown) {
+                modelX -= dx * 0.5f;
+                modelY -= dy * 0.5f;
+            } else if (inspectionLeftDown) {
+                modelRY += dx * 0.05f;
+                modelRX += dy * 0.05f;
+            }
+            dragStartX = (float) pMouseX;
+            dragStartY = (float) pMouseY;
+            return true;
+        }
         if (isDraggingModel) {
             modelX -= (float) ((pMouseX - dragStartX) * 0.5f);
             modelY -= (float) ((pMouseY - dragStartY) * 0.5f);
@@ -656,6 +769,16 @@ public class GunModifyScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mx, double my, int button) {
+        if (inspectionMode) {
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                inspectionRightDown = false;
+            } else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                inspectionLeftDown = false;
+            }
+            tempModelRY = modelRY % 360;
+            tempModelRX = modelRX % 360;
+            return true;
+        }
         if (isRollingModel) {
             isRollingModel = false;
             tempModelRY = modelRY % 360;

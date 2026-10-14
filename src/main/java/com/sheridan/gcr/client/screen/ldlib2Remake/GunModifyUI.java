@@ -49,6 +49,7 @@ public class GunModifyUI {
     ).setSprite(0, 0, 32, 32);
 
     public static final int PAGE_SIZE = 5 * 10;
+    private static UIElement root;
     private static UIElement right;
     private static UIElement contentRight;
     private static Button btnCollapseRight;
@@ -71,7 +72,7 @@ public class GunModifyUI {
     private static List<List<DisplaySlot>> itemSlots;
 
     public static ModularUI createModularUI(GunModifyScreen screen) {
-        var root = new UIElement();
+        root = new UIElement();
         UIElement rightContent = createRightContent(screen);
         UIElement mainContent = createMainContent(screen);
         UIElement leftContent = createLeftContent(screen);
@@ -146,7 +147,12 @@ public class GunModifyUI {
                 .layout(layoutStyle -> layoutStyle.width(16).height(16).justifyItems(AlignItems.CENTER))
                 .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.zoom_out")));
 
-        topNaviBar.addChildren(btnDragModel, btnResetModel, zoomIn, zoomOut);
+        Button btnInspect = (Button) new Button()
+                .setText("检查")
+                .setOnClick(e -> screen.enterInspectionMode())
+                .layout(layoutStyle -> layoutStyle.width(32).height(16).justifyItems(AlignItems.CENTER));
+
+        topNaviBar.addChildren(btnDragModel, btnResetModel, zoomIn, zoomOut, btnInspect);
 
         UIElement naviBarGap = new UIElement();
         naviBarGap.layout(layoutStyle -> layoutStyle.flex(1));
@@ -376,6 +382,13 @@ public class GunModifyUI {
         right.addChild(contentRight);
         return right;
     }
+
+    public static void setVisible(boolean visible) {
+        if (root != null) {
+            root.setVisible(visible);
+        }
+    }
+
 
     public static void open() {
         Minecraft.getInstance().setScreen(new GunModifyScreen(Component.empty()));

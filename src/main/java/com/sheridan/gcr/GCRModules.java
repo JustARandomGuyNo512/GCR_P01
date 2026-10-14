@@ -819,32 +819,32 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 9.037501f, -6.325f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
-                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
-                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
-                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+    .setTranslation(DisplayData.FIRST_PERSON, 9.037501f, -6.225f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+    .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            7f, 11f,
+                            7.5f, 11f,
                             6f, 6f,
-                            17f, 19f,
-                            0.25f, 0.55f,210.0f),
+                            16f, 17f,
+                            0.25f, 0.55f,225.0f),
                     new RecoilController(
-                            360f, 40.8f,
-                            155.0f, 11.6f,
-                            210.0f, 8f,
-                            152.0f, 14.8f,
-                            890.0f, 19f,
+                            355f, 40.5f,
+                            158.0f, 11.6f,
+                            220.0f, 8f,
+                            158.0f, 14.6f,
+                            845.0f, 18f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
                             0.65f, 25f, 29.8f, 1.6f, 0.9f, 1.6f,
-                            0.81f, 63.3f, 0.46f, 1.25f,  2.5f,
-                            0.013f, 0.3f
+                            0.8f, 62.5f, 0.47f, 1.25f,  2.5f,
+                            0.014f, 0.3f
                     )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
