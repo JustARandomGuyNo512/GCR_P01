@@ -330,7 +330,7 @@ public class ClientTestingResources {
                                     "SHELL_THROW", GCR.RL("shell_7_62x39"), 10f, 28f, 30f, 8f, 40f, 0.25f,
                                     10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
                             viewer,
-                            2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON,  3f,
+                            2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
                             new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON)
                     );
                     model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/akmn.png"));
@@ -500,7 +500,7 @@ public class ClientTestingResources {
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74_muzzle_brake.png"))
         );
         ModelRegistrationManager.registerModel(GCRModules.AKM_MUZZLE_BRAKE, "model_assets/gltf/akm_muzzle_brake.gltf", "model_assets/gltf/akm_muzzle_brake.png", true, d ->
-                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  3f,
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
                         new SlowSmokeEntry(0.85f, 1.1f, new CommonSlowSmokeController().setTravel(1.15f), CommonSlowSmokeEffects.COMMON))
                         .setHeatMapTexPath(GCR.RL("model_assets/heatmap/akm_muzzle_brake.png"))
         );

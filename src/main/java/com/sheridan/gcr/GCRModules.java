@@ -818,8 +818,8 @@ public final class GCRModules {
                             "remove_stuck_empty_length", 0.75f
                     )
             ),
-            new DisplayData()
-    .setTranslation(DisplayData.FIRST_PERSON, 9.037501f, -6.225f, -22.25f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+	new DisplayData()
+    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.35f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -828,23 +828,23 @@ public final class GCRModules {
     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            7.5f, 11f,
+                            7.0f, 10.7f,
                             6f, 6f,
                             16f, 17f,
-                            0.25f, 0.55f,225.0f),
+                            0.25f, 0.55f,235.0f),
                     new RecoilController(
                             355f, 40.5f,
-                            158.0f, 11.6f,
+                            150.0f, 11f,
                             220.0f, 8f,
-                            158.0f, 14.6f,
-                            845.0f, 18f,
+                            150.0f, 14.5f,
+                            850.0f, 18.0f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.65f, 25f, 29.8f, 1.6f, 0.9f, 1.6f,
-                            0.8f, 62.5f, 0.47f, 1.25f,  2.5f,
-                            0.014f, 0.3f
+                            0.65f, 25.4f, 30.5f, 1.6f, 0.9f, 1.6f,
+                            0.81f, 63f, 0.47f, 1.25f,  2.5f,
+                            0.012f, 0.3f
                     )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
