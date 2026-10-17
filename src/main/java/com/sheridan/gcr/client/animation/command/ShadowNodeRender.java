@@ -28,10 +28,10 @@ public class ShadowNodeRender extends Command{
         if (args.size() != 4) {
             throw new IllegalArgumentException("Invalid command args: " + command);
         }
-        startTimestamp = Float.parseFloat(args.getFirst());
-        refBoneName = args.get(1);
-        targetBoneName = args.get(2);
-        copyNodeStatus = Boolean.parseBoolean(args.get(3));
+        startTimestamp = Float.parseFloat(args.getFirst());//指令起点
+        refBoneName = args.get(1);//从哪个骨骼中获取源渲染节点
+        targetBoneName = args.get(2);//将复制节点放到哪个骨骼的姿态上
+        copyNodeStatus = Boolean.parseBoolean(args.get(3));//是否复制数据
         tempEntry = new ShadowEntry(targetBoneName);
     }
 

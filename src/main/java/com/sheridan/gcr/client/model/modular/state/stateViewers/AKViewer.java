@@ -11,16 +11,25 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.views.AKView;
 
 public class AKViewer extends StateViewer<AKView> {
-    public AKViewer(AKView stateView) {
+    private String baseSamplerAnimation;
+    private String stuckSamplerAnimation;
+    private String semiSamplerAnimation;
+    private String fullAutoSamplerAnimation;
+
+    public AKViewer(AKView stateView, String baseSamplerAnimation, String stuckSamplerAnimation, String semiSamplerAnimation, String fullAutoSamplerAnimation) {
         super(stateView);
+        this.baseSamplerAnimation = baseSamplerAnimation;
+        this.stuckSamplerAnimation = stuckSamplerAnimation;
+        this.semiSamplerAnimation = semiSamplerAnimation;
+        this.fullAutoSamplerAnimation = fullAutoSamplerAnimation;
     }
 
     @Override
     public void onRegisterStateMapping() {
-        addStateMapping("base", "gcr:ak74m_base", DEFAULT_SCALE, 0);
-        addStateMapping("stuck", "gcr:ak74m_shoot_stuck", DEFAULT_SCALE, 1);
-        addStateMapping(AKSemi.SEMI.getName(), "gcr:ak74m_to_semi", DEFAULT_SCALE, 1);
-        addStateMapping(AKFullAuto.FULL_AUTO.getName(), "gcr:ak74m_to_auto", DEFAULT_SCALE, 1);
+        addStateMapping("base", baseSamplerAnimation, DEFAULT_SCALE, 0);
+        addStateMapping("stuck", stuckSamplerAnimation, DEFAULT_SCALE, 1);
+        addStateMapping(AKSemi.SEMI.getName(), semiSamplerAnimation, DEFAULT_SCALE, 1);
+        addStateMapping(AKFullAuto.FULL_AUTO.getName(), fullAutoSamplerAnimation, DEFAULT_SCALE, 1);
         addStateMapping(StaticState.Builder.empty(IGun.FIRE_MODEL_ID.getDefaultValue()));
         addStateMapping(StaticState.Builder.of("chamber_empty").setScale("ammo", 0).build());
     }

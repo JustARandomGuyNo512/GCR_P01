@@ -57,7 +57,7 @@ public class AKReloadTask extends GunTask<AK> {
         sendPacketDelay = Utils.secondToTick(taskTimers.getOrDefault(sendPacketDelayKey, 1.0f));
         magAttachment = gun.getMagAttachment(itemStack);
         //TODO:将task长度写入属性中而不是根据动画名字推算
-        AnimationDef animationDef = AnimationRegister.get(GCR.RL("ak74m_" + animationName));
+        AnimationDef animationDef = AnimationRegister.get(GCR.RL(gun.getID().split(":")[1] + "_" + animationName));
         if (animationDef != null) {
             this.length = Math.max(Utils.secondToTick(animationDef.lengthInSeconds() - 0.1f), sendPacketDelay);
         }

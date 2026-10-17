@@ -49,6 +49,17 @@ public class ModSounds {
     public static DeferredHolder<SoundEvent, SoundEvent> BTN = registerSound("btn", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> GUN_STUCK = registerSound("gun_stuck", "gcr");
 
+    public static DeferredHolder<SoundEvent, SoundEvent> GENERIC_CLEAR_SHELL_1 = registerSound("generic_clearshell1", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> GENERIC_GET_MAG_1 = registerSound("generic_getmag1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> GENERIC_GET_MAG_2 = registerSound("generic_getmag2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> GENERIC_GET_MAG_3 = registerSound("generic_getmag3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M203NEW_CLOSE = registerSound("m203new_close", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M203NEW_OPEN = registerSound("m203new_open", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M203NEW_SHELL_IN = registerSound("m203new_shellin", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M203NEW_SHELL_OUT = registerSound("m203new_shellout", "gcr");
+
 
     public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE = registerSound("ak24_fire", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE_SUPPRESSED = registerSound("ak24_fire_suppressed", "gcr");
@@ -58,6 +69,99 @@ public class ModSounds {
 
     public static DeferredHolder<SoundEvent, SoundEvent> AKMN_FIRE = registerSound("akmn_fire", "gcr");
     public static DeferredHolder<SoundEvent, SoundEvent> AKMN_FIRE_SUPPRESSED = registerSound("akmn_fire_suppressed", "gcr");
+
+    // M4NEW
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_FIRE_V2 = registerSound("m4new_fire_v2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_FIRE_SUP_V2 = registerSound("m4new_fire_sup_v2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CHARGE_BACK = registerSound("m4new_chargeback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CHARGE_FORWARD = registerSound("m4new_chargeforward", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_BOLT_RELEASE_1 = registerSound("m4new_boltrelease1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_BOLT_RELEASE_2 = registerSound("m4new_boltrelease2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CHECK_BACK = registerSound("m4new_checkback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CHECK_FORWARD = registerSound("m4new_checkforward", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CLEAR_BACK = registerSound("m4new_clearback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_CLEAR_FORWARD = registerSound("m4new_clearforward", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_HIT_1 = registerSound("m4new_maghit1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_HIT_2 = registerSound("m4new_maghit2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_HIT_3 = registerSound("m4new_maghit3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_IN_1 = registerSound("m4new_magin1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_IN_2 = registerSound("m4new_magin2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_IN_3 = registerSound("m4new_magin3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_MOVE_1 = registerSound("m4new_magmove1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_MOVE_2 = registerSound("m4new_magmove2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_OUT_1 = registerSound("m4new_magout1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_OUT_2 = registerSound("m4new_magout2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_OUT_3 = registerSound("m4new_magout3", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_OUT_4 = registerSound("m4new_magout4", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_MAG_OUT_CHECK = registerSound("m4new_magoutcheck", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_BIG_MOVE_1 = registerSound("m4new_bigmove1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_BIG_MOVE_2 = registerSound("m4new_bigmove2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_SMALL_MOVE_1 = registerSound("m4new_smallmove1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_SMALL_MOVE_2 = registerSound("m4new_smallmove2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_SMALL_MOVE_3 = registerSound("m4new_smallmove3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_REGRIP_1 = registerSound("m4new_regrip1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_REGRIP_2 = registerSound("m4new_regrip2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_REGRIP_3 = registerSound("m4new_regrip3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_REMOVE_STUCK = registerSound("m4new_removestuck", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_SELECTOR_1 = registerSound("m4new_selector1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> M4NEW_SELECTOR_2 = registerSound("m4new_selector2", "gcr");
+
+    // AK24
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE_V2 = registerSound("ak24_fire_v2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_FIRE_SUP_V2 = registerSound("ak24_fire_sup_v2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_CHARGE_BACK = registerSound("ak24_chargeback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_CHARGE_FORWARD = registerSound("ak24_chargeforward", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_BOLT_RELEASE_1 = registerSound("ak24_boltrelease1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_BOLT_RELEASE_2 = registerSound("ak24_boltrelease2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_CHECK_BACK = registerSound("ak24_checkback", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_CHECK_FORWARD = registerSound("ak24_checkforward", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_1 = registerSound("ak24_maghit1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_2 = registerSound("ak24_maghit2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_3 = registerSound("ak24_maghit3", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_4 = registerSound("ak24_maghit4", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_5 = registerSound("ak24_maghit5", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_HIT_6 = registerSound("ak24_maghit6", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_IN_1 = registerSound("ak24_magin1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_IN_2 = registerSound("ak24_magin2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_IN_3 = registerSound("ak24_magin3", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_IN_4 = registerSound("ak24_magin4", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_OUT_1 = registerSound("ak24_magout1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_OUT_2 = registerSound("ak24_magout2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_OUT_3 = registerSound("ak24_magout3", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_OUT_4 = registerSound("ak24_magout4", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_MAG_OUT_5 = registerSound("ak24_magout5", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_BIG_MOVE_1 = registerSound("ak24_bigmove1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_BIG_MOVE_2 = registerSound("ak24_bigmove2", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_SMALL_MOVE_1 = registerSound("ak24_smallmove1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_SMALL_MOVE_2 = registerSound("ak24_smallmove2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_SMALL_MOVE_3 = registerSound("ak24_smallmove3", "gcr");
+
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MAG_IN = registerSound("ak24_easteregg_magin", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MAG_OUT = registerSound("ak24_easteregg_magout", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MOVE_1 = registerSound("ak24_easteregg_move1", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MOVE_2 = registerSound("ak24_easteregg_move2", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MOVE_3 = registerSound("ak24_easteregg_move3", "gcr");
+    public static DeferredHolder<SoundEvent, SoundEvent> AK24_EASTEREGG_MOVE_4 = registerSound("ak24_easteregg_move4", "gcr");
+
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return registerSound(name, GCR.MODID);
     }

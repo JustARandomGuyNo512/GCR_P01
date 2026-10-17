@@ -94,6 +94,37 @@ public class ClientTestingResources {
                         Map.entry("check_grenade", "ak74m_check_grenade_gp25")
                 )
         );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/mcx_spear.animation.json",
+                Map.ofEntries(
+                        Map.entry("check_mag", "mcx_spear_check_mag"),
+                        Map.entry("mag_reload", "mcx_spear_mag_reload"),
+                        Map.entry("mag_reload_empty", "mcx_spear_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "mcx_spear_mag_reload_charge"),
+                        Map.entry("shoot", "mcx_spear_shoot"),
+                        Map.entry("shoot_last", "mcx_spear_shoot_last"),
+                        Map.entry("shoot_stuck", "mcx_spear_shoot_stuck"),
+                        Map.entry("remove_stuck", "mcx_spear_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "mcx_spear_remove_stuck_empty"),
+                        Map.entry("check_chamber", "mcx_spear_check_chamber"),
+                        Map.entry("check_chamber_simple", "mcx_spear_check_chamber_simple")
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ak24_main.animation.json",
+                Map.ofEntries(
+                        Map.entry("mag_reload1", "ak24_mag_reload"),
+                        Map.entry("mag_reload_empty1", "ak24_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "ak24_mag_reload_charge")
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/akmn.animation.json",
+                Map.ofEntries(
+                        Map.entry("mag_reload", "akmn_mag_reload"),
+                        Map.entry("mag_reload_empty", "akmn_mag_reload_empty")
+                )
+        );
         // 弹匣状态动画
         ModelRegistrationManager.loadAndRegisterAnimations(
                 "model_assets/animation/ar_mag_30r.states.json",
@@ -172,7 +203,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.M4A1, "model_assets/gltf/m4a1_main.gltf", "model_assets/gltf/m4a1_main.png", true,
                 meshData -> {
-                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.M4A1);
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.M4A1, "gcr:m4a1_shoot_last", "gcr:m4a1_shoot_stuck");
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
@@ -209,7 +240,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.AK24, "model_assets/gltf/ak24_main.gltf", "model_assets/gltf/ak24_main.png", true,
                 meshData -> {
-                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.AK24);
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.AK24, "gcr:m4a1_shoot_last", "gcr:m4a1_shoot_stuck");
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
@@ -221,9 +252,9 @@ public class ClientTestingResources {
                             //"check_grenade", "gcr:m4a1_check_grenade_m203",
                             ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
                             ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
-                            "mag_reload", "gcr:m4a1_mag_reload",
-                            "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
-                            "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
+                            "mag_reload", "gcr:ak24_mag_reload",
+                            "mag_reload_empty", "gcr:ak24_mag_reload_empty",
+                            "mag_reload_charge", "gcr:ak24_mag_reload_charge",
                             "check_chamber", "gcr:m4a1_check_chamber",
                             "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
                             "shoot", "gcr:m4a1_shoot",
@@ -245,28 +276,26 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.MCX_SPEAR, "model_assets/gltf/mcx_spear_main.gltf", "model_assets/gltf/mcx_spear_main.png", true,
                 meshData -> {
-                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.MCX_SPEAR);
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.MCX_SPEAR, "gcr:mcx_spear_shoot_last", "gcr:mcx_spear_shoot_stuck");
                     ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
                             "SHELL_THROW", GCR.RL("shell_6_8x51"), 15f, 25f, 20f, 5f, 40f, 0.2f,
                             10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
                     ), viewer);
 
                     IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
-                            "check_mag", "gcr:m4a1_check_mag",
-                            //"reload_grenade", "gcr:m4a1_reload_grenade_m203",
-                            //"check_grenade", "gcr:m4a1_check_grenade_m203",
+                            "check_mag", "gcr:mcx_spear_check_mag",
                             ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
                             ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
-                            "mag_reload", "gcr:m4a1_mag_reload",
-                            "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
-                            "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
-                            "check_chamber", "gcr:m4a1_check_chamber",
-                            "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
-                            "shoot", "gcr:m4a1_shoot",
-                            "shoot_last", "gcr:m4a1_shoot_last",
-                            "shoot_stuck", "gcr:m4a1_shoot_stuck",
-                            "remove_stuck", "gcr:m4a1_remove_stuck",
-                            "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
+                            "mag_reload", "gcr:mcx_spear_mag_reload",
+                            "mag_reload_empty", "gcr:mcx_spear_mag_reload_empty",
+                            "mag_reload_charge", "gcr:mcx_spear_mag_reload_charge",
+                            "check_chamber", "gcr:mcx_spear_check_chamber",
+                            "check_chamber_simple", "gcr:mcx_spear_check_chamber_simple",
+                            "shoot", "gcr:mcx_spear_shoot",
+                            "shoot_last", "gcr:mcx_spear_shoot_last",
+                            "shoot_stuck", "gcr:mcx_spear_shoot_stuck",
+                            "remove_stuck", "gcr:mcx_spear_remove_stuck",
+                            "remove_stuck_empty", "gcr:mcx_spear_remove_stuck_empty",
                             "holster", "gcr:ar_holster",
                             "draw", "gcr:ar_draw"
                     ));
@@ -281,7 +310,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.AK74M, "model_assets/gltf/ak74m.gltf", "model_assets/gltf/ak74m.png", true,
                 meshData -> {
-                    AKViewer viewer = new AKViewer((AK) GCRModules.AK74M);
+                    AKViewer viewer = new AKViewer((AK) GCRModules.AK74M, "gcr:ak74m_base","gcr:ak74m_shoot_stuck", "gcr:ak74m_to_semi", "gcr:ak74m_to_auto");
                     AKModel model = new AKModel(
                             meshData,
                             new BulletShellDisplay(
@@ -323,7 +352,7 @@ public class ClientTestingResources {
         ModelRegistrationManager.registerModel(
                 GCRModules.AKMN, "model_assets/gltf/akmn.gltf", "model_assets/gltf/akmn.png", true,
                 meshData -> {
-                    AKViewer viewer = new AKViewer((AK) GCRModules.AKMN);
+                    AKViewer viewer = new AKViewer((AK) GCRModules.AKMN, "gcr:ak74m_base","gcr:ak74m_shoot_stuck", "gcr:ak74m_to_semi", "gcr:ak74m_to_auto");
                     AKModel model = new AKModel(
                             meshData,
                             new BulletShellDisplay(
@@ -341,8 +370,8 @@ public class ClientTestingResources {
                             "shoot_stuck", "gcr:ak74m_shoot_stuck",
                             "holster", "gcr:ar_holster",
                             "draw", "gcr:ar_draw",
-                            "mag_reload", "gcr:ak74m_mag_reload",
-                            "mag_reload_empty", "gcr:ak74m_mag_reload_empty",
+                            "mag_reload", "gcr:akmn_mag_reload",
+                            "mag_reload_empty", "gcr:akmn_mag_reload_empty",
                             AKFullAuto.FULL_AUTO.getName(), "gcr:ak74m_to_auto",
                             AKSemi.SEMI.getName(), "gcr:ak74m_to_semi",
                             "check_chamber", "gcr:ak74m_check_chamber",

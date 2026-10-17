@@ -209,10 +209,10 @@ public class RecoilUpdater implements IRecoilUpdater {
         localPitch *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
         localYaw *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
 
-        float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement()));
+        float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement() * 3));
         float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize * 0.5f);
 
-        float shakeFactor = 1 - Mth.clamp(-zLinear.getDisplacement() * 8, 0, 0.5f + RANDOM.nextFloat() * 0.2f);
+        float shakeFactor = 1 - Mth.clamp(-zLinear.getDisplacement() * 10, 0, 0.7f + RANDOM.nextFloat() * 0.2f);
         if (Client.isAiming()) {
             shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
         }

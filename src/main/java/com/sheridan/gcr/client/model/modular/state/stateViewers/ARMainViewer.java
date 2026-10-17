@@ -11,8 +11,13 @@ import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.views.ARView;
 
 public class ARMainViewer extends StateViewer<ARView> {
-    public ARMainViewer(ARView stateView) {
+    public String boltLockedSamplerAnimation;
+    public String stuckSamplerAnimation;
+
+    public ARMainViewer(ARView stateView, String boltLockedSamplerAnimation, String stuckSamplerAnimation) {
         super(stateView);
+        this.boltLockedSamplerAnimation = boltLockedSamplerAnimation;
+        this.stuckSamplerAnimation = stuckSamplerAnimation;
     }
 
     @Override

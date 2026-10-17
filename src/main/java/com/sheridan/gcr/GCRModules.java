@@ -655,7 +655,7 @@ public final class GCRModules {
                             9f, 13.5f,
                             7.5f, 7.5f,
                             20f, 22f,
-                            0.4f, 0.4f, 205.0f),
+                            0.4f, 0.5f, 205.0f),
                     new RecoilController(
                             360f, 41.2f,
                             155.0f, 15f,
@@ -810,9 +810,9 @@ public final class GCRModules {
                     0.004f,
                     0.05f / 60, 8f,
                     RL("akmn_fire"),
-                    RL("ak74m_fire_suppressed"),
+                    RL("akmn_fire_suppressed"),
                     Map.of(
-                            "mag_reload_length", 2.15f,
+                            "mag_reload_length", 2.55f,
                             "mag_reload_empty_length", 3.2f,
                             "remove_stuck_length", 0.75f,
                             "remove_stuck_empty_length", 0.75f
@@ -828,23 +828,23 @@ public final class GCRModules {
     .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
-                            7.0f, 10.7f,
+                            7.5f, 11f,
                             6f, 6f,
                             16f, 17f,
-                            0.25f, 0.55f,235.0f),
+                            0.25f, 0.56f,200.0f),
                     new RecoilController(
                             355f, 40.5f,
-                            150.0f, 11f,
+                            160.0f, 11.5f,
                             220.0f, 8f,
                             150.0f, 14.5f,
-                            850.0f, 18.0f,
+                            900.0f, 18.0f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
                     new VisualRecoilMix(
-                            0.65f, 25.4f, 30.5f, 1.6f, 0.9f, 1.6f,
-                            0.81f, 63f, 0.47f, 1.25f,  2.5f,
-                            0.012f, 0.3f
+                            0.65f, 25f, 30f, 1.6f, 0.9f, 1.6f,
+                            0.81f, 62f, 0.45f, 1.25f,  2.5f,
+                            0.0133f, 0.3f
                     )
             ),
             List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))

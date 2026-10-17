@@ -726,14 +726,13 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
 
         tooltipComponents.addAll(List.of(
                 Component.literal(baseProperties.rpm.getFullName() + ": " + rpm),
+                Component.literal(baseProperties.baseDamage.getFullName() + ": " + String.format("%.2f", baseDamage)),
                 Component.literal(baseProperties.recoilControl.getFullName()  + ": " + String.format("%.2f", recoilControl)),
                 Component.literal(baseProperties.stability.getFullName() + ": " + String.format("%.2f", stability)),
                 Component.literal(baseProperties.weight.getFullName() + ": " + String.format("%.2f", currentWeight)),
                 Component.literal(baseProperties.spread.getFullName() + ": " + String.format("%.2f", spread)),
-                //Component.literal(baseProperties.stuckRate.getFullName() + ": " + String.format("%.2f", faultRate) + " %"),
                 Component.literal(baseProperties.agility.getFullName() + ": " + String.format("%.2f", agility)),
-                Component.literal(baseProperties.impulse.getFullName() + ": " + String.format("%.2f", impulse) + " %"),
-                Component.literal(baseProperties.baseDamage.getFullName() + ": " + String.format("%.2f", baseDamage))
+                Component.literal(baseProperties.impulse.getFullName() + ": " + String.format("%.2f", impulse) + " %")
         ));
         String string = Component.translatable("tooltip.util.gun_modify").getString();
         String msg = string.replace("$key", KeyBinds.OPEN_GUN_MODIFY_SCREEN.getTranslatedKeyMessage().getString());
