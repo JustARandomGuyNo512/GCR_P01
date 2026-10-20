@@ -819,7 +819,7 @@ public final class GCRModules {
                     )
             ),
 	new DisplayData()
-    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.35f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -831,13 +831,13 @@ public final class GCRModules {
                             7.5f, 11f,
                             6f, 6f,
                             16f, 17f,
-                            0.25f, 0.56f,200.0f),
+                            0.25f, 0.56f,225.0f),
                     new RecoilController(
                             355f, 40.5f,
                             160.0f, 11.5f,
                             220.0f, 8f,
                             150.0f, 14.5f,
-                            900.0f, 18.0f,
+                            900.0f, 18.6f,
                             2.0f, 1.25f,
                             2.5f, 2f,
                             12f),
