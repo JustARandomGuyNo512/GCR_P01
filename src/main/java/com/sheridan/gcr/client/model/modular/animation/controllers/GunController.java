@@ -13,6 +13,7 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
     protected Track<T> SHOOT;
     protected Track<T> DRAW;
     protected Track<T> CHECK;
+    protected Track<T> AIM;
 
     @Override
     public void firstPersonSubscriptions(T model) {
@@ -63,6 +64,12 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
             String after = context.getParam("after");
             MAIN.play(anim(after).coverState());
         });
+
+        subscribe(EventType.AIM, 0, (context) -> {
+            if (animationPool.containsKey("aim")) {
+                AIM.play(anim("aim"));
+            }
+        });
     }
 
     @Override
@@ -77,6 +84,7 @@ public abstract class  GunController<T extends IModularModel>  extends Animation
                 getTrack("check").clear();
             }
         });
+        AIM = defineTrack("aim");
     }
 
     /**
