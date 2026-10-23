@@ -385,8 +385,11 @@ public class DefaultGunRenderer implements IGunRenderer {
             if (camera != null) {
                 currCameraRot.set(camera.xRot, camera.yRot, camera.zRot);
                 currCameraRot.mul(DrawHolsterHandler.get().getEquipProgress(context.partialTicks));
-                CameraAnimationHandler.INSTANCE.set(currCameraRot);
+            } else {
+                currCameraRot.zero();
             }
+            GunPoseHandler.INSTANCE.addAimCamera(context.partialTicks, currCameraRot);
+            CameraAnimationHandler.INSTANCE.set(currCameraRot);
             fpRenderTimeStamp = System.nanoTime();
         }
         context.startRender();

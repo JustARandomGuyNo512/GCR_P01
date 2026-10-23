@@ -175,19 +175,19 @@ public final class GCRModules {
     public static final IModular ACOG = new Scope(
             RL( "acog"),
             new VoxelHandler(RL("common/voxel_shapes/acog_voxel.geo.json")),
-            0.3f, 1.0f, 4f, 4f, 0.15f
+            0.3f, 0.88f, 4f, 4f, 0.15f
     ).setAdjustable(false).addTags("sight", "scope", "upper", "on_rail");
 
     public static final IModular ELCAN = new Scope(
             RL( "elcan"),
             new VoxelHandler(RL("common/voxel_shapes/elcan_voxel.geo.json")),
-            0.7f, 1.0f, 1.5f, 6f, 0.15f
+            0.7f, 0.86f, 1.5f, 6f, 0.15f
     ).addTags("sight", "scope", "upper", "on_rail");
 
     public static final IModular VORTEX_RAZOR_HD = new Scope(
             RL( "vortex_razor_hd"),
             new VoxelHandler(RL("common/voxel_shapes/vortex_razor_hd_voxel.geo.json")),
-            0.61f, 1.0f, 1.0f, 6f, 0.1f
+            0.61f, 0.84f, 1.0f, 6f, 0.1f
     ).addTags("sight", "scope", "upper", "on_rail");
 
     public static final IModular CANTED_RAIL = new CantedRail(
@@ -456,14 +456,14 @@ public final class GCRModules {
             RL( "kac_forward_grip"),
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/kac_forward_grip.voxel.geo.json")),
             0.06f,
-            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.28f, 0.15f))
+            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.28f, 0.08f))
             .addTags("m_lok_rail_fit");
 
     public static final IModular RK_2_GRIP = new ForwardGrip(
             RL( "rk_2_grip"),
             new MLokFitVoxelHandler(RL( "common/voxel_shapes/rk_2_grip.voxel.geo.json")),
             0.07f,
-            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.36f, 0.2f))
+            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.36f, -0.12f))
             .addTags("m_lok_rail_fit");
 
     public static final IModular M4A1 = new AR(
@@ -873,7 +873,7 @@ public final class GCRModules {
             new VoxelHandler(RL( "common/voxel_shapes/vortex_razor_red_dot.voxel.geo.json")),
             0.05f,
             false,
-            1.1f
+            1.12f
     ).addTags("sight", "upper", "red_dot", "on_rail", "canted_sight");
 
     public static final IModular EOTECH_EXPS3 = new RedDot(
@@ -881,7 +881,7 @@ public final class GCRModules {
             new VoxelHandler(RL( "common/voxel_shapes/eotech_exps3_voxel.geo.json")),
             0.3f,
             false,
-            1.1f
+            1.08f
     ).addTags("sight", "upper", "red_dot", "on_rail");
 
     public static final IModular PEQ_15 = new PEQ15(

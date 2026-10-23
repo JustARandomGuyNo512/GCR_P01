@@ -3,6 +3,7 @@ package com.sheridan.gcr.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.GCRModules;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.IScopeModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
@@ -19,6 +20,7 @@ import com.sheridan.gcr.modularSys.fire.IFireMode;
 import com.sheridan.gcr.modularSys.modules.IArmHandlerModular;
 import com.sheridan.gcr.modularSys.modules.IInteractiveModular;
 import com.sheridan.gcr.modularSys.modules.ISight;
+import com.sheridan.gcr.modularSys.modules.Mag;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.modularSys.modules.impl.Muzzle;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -77,6 +79,15 @@ public class WeaponStatus {
     public volatile int fireCount;
     public volatile long lastShoot;
     public float aimingSpeed;
+    /** Seconds for a full raise at the current attachment speed. */
+    private float adsDuration = 0.2f;
+    private float aimClock;
+    /** TAC aim accumulator. Full ADS is 4, and the posed progress is this divided by 4. */
+    private double tacAim;
+    /** TAC aim amplifier. Starts at 0.8, climbs by 0.1 per tick up to 1.3, and snaps to 0.5 when the raise or lower finishes. */
+    private double tacAmp = 0.8;
+    /** Attachment-modified aim speed. TAC guns share a base of 1. */
+    private float tacAimSpeed = 1f;
 
     private Node activeSight = null;
     private final Object2ObjectOpenHashMap<String, Node> IDToNodes = new Object2ObjectOpenHashMap<>();
@@ -208,6 +219,100 @@ public class WeaponStatus {
                 cantedAdsDecSpeedFactor = 1f;
             }
         }
+        refreshAdsDuration();
+    }
+
+    /**
+     * TAC does not store an aim time on the gun. Every gun starts at speed 1,
+     * attachments multiply that speed, and the aim clock ramps it.
+     * Canted sights keep their own in/out factors on top of this.
+     */
+    private void refreshAdsDuration() {
+        tacAimSpeed = tacAttachmentSpeed();
+        aimingSpeed = tacAimSpeed;
+        float paced = Math.max(0.02f, (tacAimSpeed * 1.05f * cantedAdsIncSpeedFactor) / 4f);
+        adsDuration = 1f / (paced * 20f);
+    }
+
+    private float sightAdsModifier() {
+        float modifier = 1f;
+        if (activeSight != null && activeSight.getModule() instanceof ISight sight) {
+            float sightModifier = sight.getAdsSpeedModifier();
+            if (sightModifier > 0.05f) {
+                modifier *= sightModifier;
+            }
+        }
+        return modifier;
+    }
+
+    /**
+     * Product of Timeless and Classics {@code modifyAimDownSightSpeed} values
+     * for the attachments this gun actually has. Sights count only for the one
+     * being aimed through. Handguards and launchers have no TAC value, so their
+     * existing aim-speed bonus still applies.
+     */
+    private float tacAttachmentSpeed() {
+        float speed = sightAdsModifier();
+        if (root != null) {
+            float[] product = {1f};
+            root.dfs(node -> product[0] *= tacModuleModifier(node.getModule()));
+            speed *= product[0];
+        }
+        speed *= (1f + armAimInc(leftArmHold) + armAimInc(rightArmHold));
+        return Math.max(0.01f, speed);
+    }
+
+    /**
+     * Grips already have a TAC multiplier, so their aim bonus is not added again.
+     * Handguards and launchers are not in the TAC files, and keep the bonus they had.
+     */
+    private float armAimInc(IArmHandlerModular arm) {
+        if (!(arm instanceof IModular modular) || tacModuleModifier(modular) != 1f) {
+            return 0f;
+        }
+        IArmHandlerModular.AdditionalPropModifier modifier = arm.getModifier();
+        return modifier == null ? 0f : modifier.getAimingSpeedInc();
+    }
+
+    private float tacModuleModifier(IModular module) {
+        if (module instanceof ISight) {
+            return 1f;
+        }
+        if (module == GCRModules.KAC_FORWARD_GRIP) {
+            return 1.08f;
+        }
+        if (module == GCRModules.RK_2_GRIP) {
+            return 0.88f;
+        }
+        if (module == GCRModules.MOE_CARBINE_STOCK) {
+            return 1.10f;
+        }
+        if (module == GCRModules.M4_CARBINE_STOCK || module == GCRModules.STOCK_6P34) {
+            return 0.85f;
+        }
+        if (module == GCRModules.PT1_STOCK) {
+            return 0.80f;
+        }
+        if (module == GCRModules.PEQ_15) {
+            return 0.85f;
+        }
+        if (module instanceof Muzzle muzzle && muzzle.isSuppressor()) {
+            return 0.80f;
+        }
+        if (module instanceof Mag mag) {
+            int capacity = mag.getMaxCapacity();
+            if (capacity >= 50) {
+                return 0.90f;
+            }
+            if (capacity >= 40) {
+                return 0.95f;
+            }
+        }
+        return 1f;
+    }
+
+    public float getAdsDuration() {
+        return adsDuration;
     }
 
     private void handleAds(Player localPlayer) {
@@ -215,21 +320,41 @@ public class WeaponStatus {
             Client.RIGHT_BUTTON_PRESSED.set(false);
         }
         aimingProgressLast = aimingProgress;
+        float speed = tacAimSpeed;
         if (Client.RIGHT_BUTTON_PRESSED.get()) {
-            if (aimingProgress < 1) {
-                // Quick raise into the shoulder, then a slower settle onto the sight.
-                float settle = Mth.lerp(aimingProgress, 1.25f, 0.75f);
-                aimingProgress = Math.min(1, aimingProgress + aimingSpeed * cantedAdsIncSpeedFactor * settle);
+            if (tacAmp < 1.3) {
+                tacAmp = Math.min(1.3, tacAmp + 0.1);
             }
+            if (tacAim < 4.0) {
+                tacAim += speed * tacAmp * cantedAdsIncSpeedFactor;
+                if (tacAim > 4.0) {
+                    tacAim = 4.0;
+                    tacAmp = 0.5;
+                }
+            }
+            aimClock = (float) (tacAim / 4.0);
             float sprintingProgress = SprintingHandler.INSTANCE.getSprintingProgress();
             float sprinting = 1 - sprintingProgress * sprintingProgress;
-            float r1 = 1.001f - aimingProgress;
+            float r1 = 1.001f - aimClock;
             float r2 = 1.001f - sprinting;
-            aimingProgress = (aimingProgress * r1 + sprinting * r2) / (r1 + r2);
+            aimingProgress = (aimClock * r1 + sprinting * r2) / (r1 + r2);
             isAiming = true;
+        } else if (tacAim > 0) {
+            if (tacAmp < 1.3) {
+                tacAmp = Math.min(1.3, tacAmp + 0.1);
+            }
+            tacAim -= speed * tacAmp * cantedAdsDecSpeedFactor;
+            if (tacAim < 0) {
+                tacAim = 0;
+                tacAmp = 0.5;
+            }
+            aimClock = (float) (tacAim / 4.0);
+            aimingProgress = aimClock;
+            isAiming = false;
         } else {
-            float exitSpeed = Math.max(0.3f, aimingSpeed);
-            aimingProgress = Math.max(0, aimingProgress - exitSpeed * cantedAdsDecSpeedFactor);
+            tacAmp = 0.8;
+            aimClock = 0f;
+            aimingProgress = 0f;
             isAiming = false;
         }
         if (localPlayer == null) {
@@ -268,7 +393,7 @@ public class WeaponStatus {
         stability = gun.getStability(itemStack);
         agility = gun.getAgility(itemStack);
         weight = gun.getCurrentWeight(itemStack);
-        aimingSpeed = calculateFinalAimingSpeed(gun.getAimingSpeed(itemStack), agility, weight);
+        refreshAdsDuration();
     }
 
     public float calculateFinalAimingSpeed(float baseSpeed, float agility, float weight) {
@@ -276,7 +401,7 @@ public class WeaponStatus {
         k = (float) Math.pow(k, 0.7f);
         float factor = (float) (- Math.exp(-k) + 1);
         baseSpeed *= (0.5f + factor) * 0.13f;
-        return Math.clamp(baseSpeed, 0.1f, 0.4f);
+        return Math.clamp(baseSpeed, 0.04f, 0.4f);
     }
 
     /**
