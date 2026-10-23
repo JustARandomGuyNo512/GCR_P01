@@ -790,7 +790,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     public float getAgility(ItemStack itemStack) {
         CompoundTag pick = baseProperties.pick(itemStack, this);
         AdditionalPropModifier leftArmModifier = getLeftArmModifier(itemStack);
-        AdditionalPropModifier rightArmModifier = getLeftArmModifier(itemStack);
+        AdditionalPropModifier rightArmModifier = getRightArmModifier(itemStack);
         float ratio = baseProperties.agility.getRatio(pick);
         ratio = leftArmModifier == null ? ratio : ratio + leftArmModifier.getAgilityInc();
         ratio = rightArmModifier == null ? ratio : ratio + rightArmModifier.getAgilityInc();
