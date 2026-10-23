@@ -55,7 +55,7 @@ public static final IModular MY_SCOPE = new Scope(
         RL("my_scope"),
         new VoxelHandler(RL("common/voxel_shapes/my_scope_voxel.geo.json")),
         0.3f,    // weight
-        0.88f,   // ADS speed modifier (stored; currently never read — see below)
+        0.88f,   // ADS speed modifier: multiplied into aim speed while this sight is active
         4f, 4f,  // min / max magnification
         0.15f    // zoom sensitivity
 ).addTags("sight", "scope", "upper", "on_rail");
@@ -83,14 +83,15 @@ the tooltip automatically, survives rebuilds) and **held-only**
 (`IArmHandlerModular.AdditionalPropModifier` — added at query time for recoil/stability/agility/aim
 speed). Pick per the sibling module's behaviour.
 
-One trap: `Scope`/`Sight` take an `adsSpeedModifier` constructor argument, but nothing currently reads
-`ISight.getAdsSpeedModifier()` — the canted ADS factors are hard-coded in `WeaponStatus`. Do not tune
-that number expecting an effect, and do not "fix" it inside an unrelated attachment PR.
+Optics additionally carry an `adsSpeedModifier` constructor argument, which `WeaponStatus` multiplies
+into the aim speed while that sight is active (`refreshAimingSpeed`). It is a *speed* multiplier, not a
+zoom setting, and it is separate from the canted-sight 0.75/0.6 pacing factors applied by the same
+class.
 
 `BaseProperties` (`modularSys/modules/gunProperties/impl/BaseProperties.java`) is the stat sheet:
 `rpm, recoilControl, stability, weight, spread, stuckRate, maxStuckRate, agility, impulse,
 aimingSpeed, fireSoundRange, bulletVelocity, shootHeatInc, heatDecSpeed, baseDamage`.
-(`bulletVelocity` is currently unused — projectile speed is hard-coded.)
+(`bulletVelocity` is the projectile speed in blocks/tick, read by `Gun.serverShoot`.)
 
 ---
 

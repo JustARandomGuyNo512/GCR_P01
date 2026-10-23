@@ -84,6 +84,9 @@ Implications:
   from the stack, not from the module.
 - `Gun.reCalculateProperties` recomputes from the tree, so anything that modifies stats outside the
   property system is lost on the next recompute (including on the next server start).
+- Aim speed is the one stat with an extra layer: `WeaponStatus` keeps the base value and multiplies it
+  by the active sight's `ISight.getAdsSpeedModifier()` (`refreshAimingSpeed()`), so swapping optics
+  changes how fast ADS completes without recomputing the stats.
 
 ---
 
@@ -262,14 +265,6 @@ src/main/resources/assets/gcr/
 ---
 
 ## 10. Known rough edges (read before "fixing" them)
-
-Known defects — fix in a dedicated PR, do not "tidy up" while adding a feature:
-
-- `Gun.getAgility` reads `getLeftArmModifier(itemStack)` twice, so a left-hand bonus is counted twice
-  and a right-hand bonus is ignored. Grip tuning therefore has roughly half the intended effect.
-- `ISight.getAdsSpeedModifier()` and its implementations are never read; canted ADS factors are
-  hard-coded in `WeaponStatus`. A scope's `adsSpeedModifier` constructor argument currently does nothing.
-- `BaseProperties.bulletVelocity` is never read — `Gun.serverShoot` hard-codes the projectile speed.
 
 Structural issues:
 
