@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="GPL-3.0-or-later"
+
+[[mods]]
+modId="gcr"
+version="${file.jarVersion}"
+displayName="GunsCraft Reforged (Forge 1.20.1 port)"
+authors="Sheridan (upstream); community port in progress"
+description='''GunsCraft Reforged - Forge 1.20.1 source port: compilation and gameplay verification pending.'''
+
+[[dependencies.gcr]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.gcr]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.gcr]]
+modId="ldlib2"
+mandatory=true
+versionRange="[2.2,)"
+ordering="NONE"
+side="BOTH"

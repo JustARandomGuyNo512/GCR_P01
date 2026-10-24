@@ -1,0 +1,57 @@
+package com.sheridan.gcr.client.model.modular;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.sheridan.gcr.client.model.Bone;
+import com.sheridan.gcr.client.model.fx.LaserModel;
+import com.sheridan.gcr.client.render.ModuleRenderContext;
+import com.sheridan.gcr.client.render.fx.LaserEffectRenderer;
+import com.sheridan.gcr.compat.IrisCompat;
+import com.sheridan.gcr.items.DisplayData;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+@OnlyIn(Dist.CLIENT)
+public class LaserSighRenderer {
+    private final int color;
+    private final ILaserSightModel laserSightModel;
+
+    public LaserSighRenderer(ILaserSightModel laserSightModel, int color) {
+        this.laserSightModel = laserSightModel;
+        this.color = color;
+    }
+
+    public void renderFirstPerson(ModuleRenderContext context) {
+        Bone laserPoseBone = laserSightModel.getLaserPoseBone();
+        LaserEffectRenderer.recordEffectCall(
+                color,
+                context.currentRenderNode().id,
+                laserPoseBone.renderStatus.pose,
+                context);
+        renderRay(true, laserPoseBone, context);
+    }
+
+    public void renderGeneric(ModuleRenderContext context) {
+        renderRay(false, laserSightModel.getLaserPoseBone(), context);
+    }
+
+    public void renderRay(boolean firstPerson, Bone laserPoseBone, ModuleRenderContext context) {
+        if (!IrisCompat.isRenderingShadowPass()) {
+            PoseStack poseStack = new PoseStack();
+            poseStack.last().pose().set(laserPoseBone.renderStatus.pose.pose());
+            VertexConsumer vertexConsumer = context.getBuffer(RenderType.energySwirl(LaserModel.LASER_TEXTURE, 0, 0));
+            if (firstPerson) {
+                float hitLength = LaserEffectRenderer.getHitLength(context.currentRenderNode().id);
+                if (Float.isNaN(hitLength)) {
+                    return;
+                }
+                float length = (float) ((hitLength + 1) / DisplayData.FIRST_PERSON_SCALE + Math.random() * (hitLength * 0.3f + 4f));
+                LaserModel.INSTANCE.renderFirstPerson(poseStack, vertexConsumer, color, length);
+            } else {
+                LaserModel.INSTANCE.renderThirdPerson(poseStack, vertexConsumer, color);
+            }
+        }
+    }
+
+}

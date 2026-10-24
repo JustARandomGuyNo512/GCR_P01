@@ -1,0 +1,128 @@
+{
+	"meta": {
+		"format_version": "5.0",
+		"model_format": "bedrock",
+		"box_uv": true
+	},
+	"name": "peq_15_voxel.geo",
+	"model_identifier": "m4a1_main",
+	"visible_box": [3, 1.5, 0.25],
+	"variable_placeholders": "",
+	"variable_placeholder_buttons": [],
+	"bedrock_animation_mode": "entity",
+	"timeline_setups": [],
+	"unhandled_root_fields": {},
+	"resolution": {
+		"width": 64,
+		"height": 64
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"box_uv": true,
+			"render_order": "default",
+			"locked": false,
+			"allow_mirror_modeling": true,
+			"from": [-5.4, -1, -7.6],
+			"to": [5.6, 4.8, 8.4],
+			"autouv": 1,
+			"color": 2,
+			"origin": [-4.4, -1, -6.6],
+			"uv_offset": [-23, -14],
+			"faces": {
+				"north": {
+					"uv": [-7, 2, 4, 7]
+				},
+				"east": {
+					"uv": [-23, 2, -7, 7]
+				},
+				"south": {
+					"uv": [20, 2, 31, 7]
+				},
+				"west": {
+					"uv": [4, 2, 20, 7]
+				},
+				"up": {
+					"uv": [4, 2, -7, -14]
+				},
+				"down": {
+					"uv": [15, -14, 4, 2]
+				}
+			},
+			"type": "cube",
+			"uuid": "ee7a00c5-5b70-73d4-a53f-935a218fe174"
+		},
+		{
+			"name": "cube",
+			"box_uv": true,
+			"render_order": "default",
+			"locked": false,
+			"allow_mirror_modeling": true,
+			"from": [-4.975, -0.5, -9.5],
+			"to": [-1.675, 2.8, -7.6],
+			"autouv": 1,
+			"color": 2,
+			"origin": [-3.975, -0.5, -8.5],
+			"uv_offset": [4, 5],
+			"faces": {
+				"north": {
+					"uv": [5, 6, 8, 9]
+				},
+				"east": {
+					"uv": [4, 6, 5, 9]
+				},
+				"south": {
+					"uv": [9, 6, 12, 9]
+				},
+				"west": {
+					"uv": [8, 6, 9, 9]
+				},
+				"up": {
+					"uv": [8, 6, 5, 5]
+				},
+				"down": {
+					"uv": [11, 5, 8, 6]
+				}
+			},
+			"type": "cube",
+			"uuid": "dc36b0b5-adb0-850f-e529-893ba764b599"
+		}
+	],
+	"groups": [
+		{
+			"uuid": "50d94cd7-7cfc-0d56-29dd-613ea238251f",
+			"export": true,
+			"locked": false,
+			"origin": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"color": 0,
+			"name": "root",
+			"children": [],
+			"reset": false,
+			"shade": true,
+			"mirror_uv": false,
+			"selected": false,
+			"visibility": true,
+			"autouv": 0,
+			"isOpen": true,
+			"primary_selected": false
+		}
+	],
+	"outliner": [
+		{
+			"uuid": "50d94cd7-7cfc-0d56-29dd-613ea238251f",
+			"isOpen": true,
+			"children": ["ee7a00c5-5b70-73d4-a53f-935a218fe174", "dc36b0b5-adb0-850f-e529-893ba764b599"]
+		}
+	],
+	"textures": [],
+	"export_options": {
+		"gltf": {
+			"encoding": "ascii",
+			"scale": 16,
+			"embed_textures": false,
+			"armature": true,
+			"animations": false
+		}
+	}
+}

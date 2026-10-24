@@ -1,0 +1,902 @@
+package com.sheridan.gcr;
+
+import com.sheridan.gcr.client.recoil.RecoilController;
+import com.sheridan.gcr.client.recoil.RecoilData;
+import com.sheridan.gcr.client.recoil.RecoilImpulse;
+import com.sheridan.gcr.client.recoil.VisualRecoilMix;
+import com.sheridan.gcr.items.DisplayData;
+import com.sheridan.gcr.modularSys.Direction;
+import com.sheridan.gcr.modularSys.EmptySlotProvider;
+import com.sheridan.gcr.modularSys.IModular;
+import com.sheridan.gcr.modularSys.SlotProvider;
+import com.sheridan.gcr.modularSys.builder.Accessor;
+import com.sheridan.gcr.modularSys.builder.Unit;
+import com.sheridan.gcr.modularSys.builder.WorkSpace;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
+import com.sheridan.gcr.modularSys.modules.*;
+import com.sheridan.gcr.modularSys.modules.gunProperties.impl.BaseProperties;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
+import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
+import com.sheridan.gcr.modularSys.modules.impl.*;
+import com.sheridan.gcr.modularSys.slot.*;
+import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+import java.util.Map;
+
+
+/** Gun and attachment module definitions. */
+public final class GCRModules {
+
+    private GCRModules() {
+    }
+
+    public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f, 1.0f,
+            new SlotProvider(RL( "common/pivot_maps/m4_profile_fsb_barrel.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("UNDER_BARREL")
+                            .setFilter(SlotFilters.hasAllTags("under_barrel", "ar")))
+                    .addSlot(new SingleFixedSlot("MUZZLE")
+                            .setFilter(SlotFilters.hasAllTags("muzzle", "ar", "5.56x45"))),
+            new VoxelHandler(RL("common/voxel_shapes/m4_profile_fsb_barrel_voxel.geo.json"))
+    ).addTags("has_ar_front_sight", "barrel", "5.56x45", "ar");
+
+    public static final IModular A2_PISTOL_GRIP = new RiflePistolGrip(
+            RL( "a2_pistol_grip"), 0.08f, 0.07f, 0.12f, 0.05f)
+            .addTags("rear_grip", "ar");
+
+    public static final IModular MOE_GRIP = new RiflePistolGrip(
+            RL( "moe_grip"), 0.1f, 0.1f, 0.1f, 0.06f)
+            .addTags("rear_grip", "ar");
+
+    public static final IModular SAKO_ARG_GRIP = new RiflePistolGrip(
+            RL( "sako_arg_grip"), 0.12f, 0.09f, 0.07f, 0.07f)
+            .addTags("rear_grip", "ar");
+
+    public static final IModular AK_POLYMER_GRIP = new RiflePistolGrip(
+            RL( "ak_polymer_grip"), 0.08f, 0.08f, 0.13f, 0.075f)
+            .addTags("rear_grip", "ak");
+
+    public static final IModular AK_BAKELITE_GRIP = new RiflePistolGrip(
+            RL( "ak_bakelite_grip"), 0.08f, 0.08f, 0.13f, 0.1f)
+            .addTags("rear_grip", "ak");
+
+    public static final IModular RK9_GRIP = new RiflePistolGrip(
+            RL( "rk9_grip"), 0.08f, 0.1f, 0.15f, 0.13f)
+            .addTags("rear_grip", "ak");
+
+    public static final IModular MCX_M400_GRIP = new RiflePistolGrip(
+            RL( "mcx_m400_grip"), 0.08f, 0.08f, 0.15f, 0.1f)
+            .addTags("rear_grip", "ar");
+
+    public static final IModular URGI_BARREL = new ARBarrel(RL( "urgi_barrel"), 0.9f, 0.12f, 1.0f,
+            new SlotProvider(RL( "common/pivot_maps/urgi_barrel.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
+            new VoxelHandler(RL("common/voxel_shapes/urgi_barrel_voxel.geo.json"))
+    ).addTags("barrel", "5.56x45", "ar");
+
+    public static final IModular AK24A_BARREL = new ARBarrel(RL( "ak24a_barrel"), 0.78f, 0.075f, 1.0f, 0.08f, 0.05f, -0.1f, -0.05f,
+            new SlotProvider(RL( "common/pivot_maps/ak24a_barrel.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
+            new VoxelHandler(RL("common/voxel_shapes/ak24a_barrel.voxel.geo.json"))
+    ).addTags("barrel", "5.56x45", "ak24");
+
+    public static final IModular AK24B_BARREL = new ARBarrel(RL( "ak24b_barrel"), 0.9f, 0.1f, 1.0f,
+            new SlotProvider(RL( "common/pivot_maps/ak24b_barrel.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "ar"))),
+            new VoxelHandler(RL("common/voxel_shapes/ak24b_barrel_voxel.geo.json"))
+    ).addTags("barrel", "5.56x45", "ak24");
+
+    public static final IModular SIG_FURY_BARREL = new ARBarrel(RL( "sig_fury_barrel"), 1f, 0.1f, 1.0f,
+            new SlotProvider(RL( "common/pivot_maps/sig_fury_barrel_pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("muzzle", "mcx_spear"))),
+            EmptyVoxelHandler.INSTANCE
+    ).addTags("barrel", "6.8x51", "mcx_spear");
+
+    public static final IModular STANAG_MAG_30R = new Mag(RL( "stanag_mag_30r"), 0.11f, 30).addTags("mag", "ar", "5.56x45");
+    public static final IModular PMAG_40R = new Mag(RL( "pmag_40r"), 0.2f, 40).addTags("mag", "ar", "5.56x45");
+    public static final IModular SUREFIRE_MAG_60R = new Mag(RL( "surefire_mag_60r"), 0.33f, 60).addTags("mag", "ar", "5.56x45");
+    public static final IModular USGI_MAG_20R = new Mag(RL( "usgi_mag_20r"), 0.07f, 20).addTags("mag", "ar", "5.56x45");
+    public static final IModular PMAG_30R = new Mag(RL( "pmag_30r"), 0.16f, 30).addTags("mag", "ar", "5.56x45");
+
+    public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
+    public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
+    public static final IModular AKM_STEEL_MAG = new Mag(RL( "akm_steel_mag"), 0.33f, 30).addTags("mag", "ak", "7.62x39");
+
+    public static final IModular SPEAR_MAG_20R = new Mag(RL( "spear_mag_20r"), 0.20f, 20).addTags("mag", "mcx_spear", "6.8x51");
+
+
+    public static final IModular CAR_15_HANDGUARD = new SplitARHandguard(
+            RL("car_15_handguard"),
+            0.26f, 0.03f,
+            new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/car_15_handguard_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.1f,0.1f,0.1f, 0.05f)
+    ).addTags("handguard", "ar");
+
+    public static final IModular M203 = new M203(
+            RL( "m203"), 1.36f,
+            new VoxelHandler(RL("common/voxel_shapes/m203_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.12f, 0.12f, -0.05f, -0.07f),
+            3.3f, 2.45f, 10f, 12f, 5f, 140f,
+            0.4f, 4f, 4)
+            .addTags("under_barrel", "sub_weapon", "ar");
+
+    public static final IModular GP25 = new GP25(
+            RL( "gp25"), 1.5f,
+            new VoxelHandler(RL("common/voxel_shapes/gp25.voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.1f, 0.1f, -0.03f, -0.05f),
+            3f, 1.8f, 12f, 14f, 6f, 125f,
+            0.5f, 3f, 4.4f)
+            .addTags("under_barrel", "sub_weapon", "ak");
+
+    public static final IModular A2_CARRY_HANDLE = new IronSight(
+            RL( "a2_carry_handle"),
+            new VoxelHandler(RL("common/voxel_shapes/a2_carry_handle.geo.json"))
+                    .setCustomBoundaryCollisionConfig((slot) -> slot.hasTag("ar_sight") ? Pair.of(true, true) : Pair.of(false, false)),
+            0.1f, true);
+
+
+    public static final IModular KAC_FOLDING_SIGHT_FAR = new FoldingFarIronSight(
+            RL( "kac_folding_sight_far"),
+            false,
+            0.013f,
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_far_voxel.geo.json"), false, false))
+            .addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular KAC_FOLDING_SIGHT_REAR = new FoldingRearIronSight(
+            RL( "kac_folding_sight_rear"),
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/kac_folding_sight_rear_voxel.geo.json")),
+            0.015f,
+            false,
+            1.0f
+    ).addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular MAGPUL_MBUS_PRO_SIGHT_FAR = new FoldingFarIronSight(
+            RL( "magpul_mbus_pro_sight_far"),
+            false,
+            0.01f,
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/magpul_mbus_pro_sight_far_voxel.geo.json"), false, false))
+            .addTags("sight", "iron_sight", "upper", "on_rail");
+
+    public static final IModular MAGPUL_MBUS_PRO_SIGHT_REAR = new FoldingRearIronSight(
+            RL( "magpul_mbus_pro_sight_rear"),
+            new FoldingIronSightVoxelHandler(RL("common/voxel_shapes/magpul_mbus_pro_sight_rear_voxel.geo.json")),
+            0.01f,
+            false,
+            1.0f
+    ).addTags("sight", "iron_sight", "upper", "on_rail");
+
+
+    public static final IModular ACOG = new Scope(
+            RL( "acog"),
+            new VoxelHandler(RL("common/voxel_shapes/acog_voxel.geo.json")),
+            0.3f, 1.0f, 4f, 4f, 0.15f
+    ).setAdjustable(false).addTags("sight", "scope", "upper", "on_rail");
+
+    public static final IModular ELCAN = new Scope(
+            RL( "elcan"),
+            new VoxelHandler(RL("common/voxel_shapes/elcan_voxel.geo.json")),
+            0.7f, 1.0f, 1.5f, 6f, 0.15f
+    ).addTags("sight", "scope", "upper", "on_rail");
+
+    public static final IModular VORTEX_RAZOR_HD = new Scope(
+            RL( "vortex_razor_hd"),
+            new VoxelHandler(RL("common/voxel_shapes/vortex_razor_hd_voxel.geo.json")),
+            0.61f, 1.0f, 1.0f, 6f, 0.1f
+    ).addTags("sight", "scope", "upper", "on_rail");
+
+    public static final IModular CANTED_RAIL = new CantedRail(
+            RL( "canted_rail"),
+            new VoxelHandler(RL("common/voxel_shapes/canted_rail.voxel.geo.json")),
+            new SlotProvider(RL("common/pivot_maps/canted_rail.pivot.geo.json"))
+                    .addSlot(new SingleFixedSlot("SIGHT")
+                            .setFilter(SlotFilters.hasAllTags("sight", "on_rail", "upper", "canted_sight").and(SlotFilters.notModular(RL( "canted_rail"))))),
+            1).addTags("canted_sight", "sight", "upper", "on_rail");
+
+    public static final IModular M4_CARBINE_STOCK = new Stock(RL( "m4_carbine_stock"), 0.22f, 0.14f, 0.15f).addTags("stock", "ar");
+    public static final IModular MOE_CARBINE_STOCK = new Stock(RL( "moe_carbine_stock"), 0.2f, 0.15f, 0.18f).addTags("stock", "ar");
+    public static final IModular STOCK_6P34 = new Stock(RL( "6p34_stock"), 0.3f, 0.18f, 0.18f).addTags("stock", "ak");
+    public static final IModular PT1_STOCK = new Stock(RL( "pt1_stock"), 0.48f, 0.2f, 0.2f).addTags("stock", "ak");
+
+    public static final IModular AKM_STOCK = new Stock(RL( "akm_stock"), 0.45f, 0.15f, 0.15f).addTags("stock", "akm");
+
+    public static final IModular AR_STOCK_ADAPTER_TYPE1 = new StockAdapter(RL( "ar_stock_adapter_type1"), 0.15f,
+            new SlotProvider(RL( "common/pivot_maps/ar_stock_adapter_type1.pivot.geo.json"))
+                    .addSlot(
+                            new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar"))
+                    )
+    ).addTags("stock", "ak");
+    public static final IModular CTR_STOCK = new Stock(RL( "ctr_stock"), 0.249f, 0.17f, 0.16f).addTags("stock", "ar");
+    public static final IModular MAGPUL_SL_M_STOCK = new Stock(RL( "magpul_sl_m_stock"), 0.23f, 0.15f, 0.15f).addTags("stock", "ar");
+    public static final IModular MCX_STOCK_TUBE = new StockAdapter(RL( "mcx_stock_tube"), 0.1f,
+            new SlotProvider(RL( "common/pivot_maps/mcx_stock_tube_pivot.geo.json"))
+                    .addSlot(
+                            new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar"))
+                    )
+    ).addTags("stock", "mcx");
+
+
+    public static final IModular A2_FLASH_HINDER = new Muzzle(RL( "a2_flash_hinder"), 0.035f, 0.1f, 0.05f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f, false).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular SOCOM_RC2 = new Muzzle(RL( "socom_rc2"), 0.48f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.8f, true).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular AR15_MUZZLE_BRAKE = new Muzzle(RL( "ar15_muzzle_brake"), 0.045f, 0.2f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular ASE_FLASH_HIDER = new Muzzle(RL( "ase_flash_hider"), 0.05f, 0.13f, 0.075f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f, false).addTags("muzzle", "ar", "5.56x45");
+    public static final IModular CLUTCH_LOK_QD_FLASH_HIDER = new Muzzle(RL( "clutch_lok_qd_flash_hider"), 0.09f, 0.12f, 0.06f, IGun.FIRE_SOUND_NORMAL, 0, 1.0f, false).addTags("muzzle", "ar", "5.56x45", "6.8x51", "mcx_spear");
+
+
+    public static final IModular AK74_MUZZLE_BRAKE = new Muzzle(RL( "ak74_muzzle_brake"), 0.05f, 0.2f, 0.13f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular PBS_4 = new Muzzle(RL( "pbs_4"), 0.65f, 0.18f, 0.07f, IGun.FIRE_SOUND_SUPPRESSED, -0.38f, 1.8f, true).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular DTK1_COMPENSATOR = new Muzzle(RL( "dtk1_compensator"), 0.06f, 0.22f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.1f, 1.0f, false).addTags("muzzle", "ak", "5.45x39", "7.62x39", "akm");
+    public static final IModular DTKP_545 = new Muzzle(RL( "dtkp_545"), 0.58f, 0.19f, 0.065f, IGun.FIRE_SOUND_SUPPRESSED, -0.4f, 1.85f, true).addTags("muzzle", "ak", "5.45x39");
+    public static final IModular SLX_SUPPRESSOR = new Muzzle(RL( "slx_suppressor"), 0.54f, 0.15f, 0.075f, IGun.FIRE_SOUND_SUPPRESSED, -0.35f, 1.7f, true).addTags("muzzle", "mcx_spear", "6.8x51");
+    public static final IModular AKM_MUZZLE_BRAKE = new Muzzle(RL( "akm_muzzle_brake"), 0.01f, 0.15f, 0.1f, IGun.FIRE_SOUND_NORMAL, 0.0f, 1.0f, false).addTags("muzzle", "akm", "7.62x39");
+
+
+    public static final IModular KAC_RAS_HANDGUARD = new SplitSlottedARHandguard(
+            RL( "kac_ras_handguard"),
+            new SlotProvider(RL( "common/pivot_maps/kac_ras.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL_LOWER", Direction.LOWER, 13.9162f, 0.9207f, -12.0747f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                            )))
+                    .addSlot(new Rail("RAIL_LEFT", Direction.LOWER, 13.9162f, 0.9207f, -12.0747f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_RIGHT", Direction.LOWER, 13.9162f, 0.9207f, -12.0747f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 13.9162f, 0.9207f, -12.0747f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            ))),
+            0.25f, 0.02f,
+            new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/kac_ras_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.085f,0.07f,0.09f, 0.05f),
+            "RAIL_LOWER"
+    ).addTags("handguard", "ar");
+
+    public static final IModular DANIEL_DEFENSE_RIS_II_HANDGUARD = new SplitSlottedARHandguard(
+            RL( "daniel_defense_ris_ii_handguard"),
+            new SlotProvider(RL( "common/pivot_maps/daniel_defense_ris_ii.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL_LOWER", Direction.LOWER, 13.35f, 0.9207f, -33.1603f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                            )))
+                    .addSlot(new Rail("RAIL_LEFT", Direction.LOWER, 17.498f, -8.3778f, -34.2535f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_RIGHT", Direction.LOWER, 17.498f, -8.3778f, -34.2535f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction")))
+                    .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 17.498f, 2.698f, -12.102f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            )))
+                    .addSlot(new Rail("RAIL_UPPER_FRONT", Direction.UPPER, -20.925f, -27.7092f, -34.2535f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            ))),
+            0.5f, 0.03f,
+            new SplitARHandguardVoxelHandler(GCR.RL("common/voxel_shapes/daniel_defense_ris_ii_voxel.geo.json")),
+            new IArmHandlerModular.AdditionalPropModifier(0.12f,0.11f,0.05f, 0.05f),
+            "RAIL_LOWER"
+    ).addTags("handguard", "ar");
+
+    public static final IModular URGI_HANDGUARD = new Handguard
+            (RL( "urgi_handguard"),
+                    0.4f, 0.025f,
+                    new SlotProvider(RL( "common/pivot_maps/urgi_handguard.pivot.geo.json"))
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 6.3311f, -6.2771f, -38.6771f, 0.3311f, 6.6082f, 6)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 17.5174f, -10.9463f, -38.0826f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(MLokRail.of("RAIL_LEFT", Direction.LOWER, 6.3311f, -12.8852f, -38.6771f, 0.3311f, 6.6082f, 6)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction")))
+                            .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 6.3311f, -12.8852f, -38.6771f, 0.3311f, 6.6082f, 6)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
+                    new VoxelHandler(RL("common/voxel_shapes/urgi_handguard_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.1f,0.12f,0.1f, 0.065f)
+            ).addTags("handguard", "ar");
+
+
+    public static final IModular AK24A_HANDGUARD = new Handguard
+            (RL( "ak24a_handguard"),
+                    0.31f, 0.025f,
+                    new SlotProvider(RL( "common/pivot_maps/ak24a_handguard_pivot.geo.json"))
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 5.4864f, -3.8846f, -22.5086f, 2.541f, 6.4256f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 17.8295f, -2.5463f, -24.8028f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(MLokRail.of("RAIL_LEFT", Direction.LOWER, 5.4864f, -10.3102f, -22.5086f, 2.541f, 6.4256f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction")))
+                            .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 5.4864f, -10.3102f, -22.5086f, 2.541f, 6.4256f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
+                    EmptyVoxelHandler.INSTANCE,
+                    new IArmHandlerModular.AdditionalPropModifier(0.11f,0.11f,0.13f, 0.085f)
+            ).addTags("handguard", "ak24");
+
+    public static final IModular AK_POLYMER_HANDGUARD_LOWER = new Handguard
+            (RL("ak_polymer_handguard_lower"),
+                    0.09f, 0.015f,
+                    EmptySlotProvider.INSTANCE,
+                    new VoxelHandler(RL("common/voxel_shapes/ak_polymer_handguard_lower_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.07f,0.07f,0.1f, 0.05f)
+            ).addTags("handguard", "ak", "lower");
+
+    public static final IModular AK_POLYMER_HANDGUARD_UPPER = new SlotProviderVoxelModule(
+            RL("ak_polymer_handguard_upper"),
+            true,
+            0.03f,
+            Direction.NONE,
+            EmptySlotProvider.INSTANCE,
+            new VoxelHandler(RL("common/voxel_shapes/ak_polymer_handguard_upper_voxel.geo.json"))
+    )
+            .addTags("handguard", "ak", "upper");
+
+
+    public static final IModular AK_WOODEN_HANDGUARD_LOWER = new Handguard
+            (RL("ak_wooden_handguard_lower"),
+                    0.11f, 0.015f,
+                    EmptySlotProvider.INSTANCE,
+                    new VoxelHandler(RL("common/voxel_shapes/ak_wooden_handguard_lower_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.07f,0.07f,0.1f, 0.05f)
+            ).addTags("handguard", "ak", "lower");
+
+    public static final IModular AK_WOODEN_HANDGUARD_UPPER = new SlotProviderVoxelModule(
+            RL("ak_wooden_handguard_upper"),
+            true,
+            0.036f,
+            Direction.NONE,
+            EmptySlotProvider.INSTANCE,
+            new VoxelHandler(RL("common/voxel_shapes/ak_wooden_handguard_upper_voxel.geo.json"))
+    )
+            .addTags("handguard", "ak", "upper");
+
+    public static final IModular B10_HANDGUARD = new Handguard
+            (RL("b10_handguard"),
+                    0.15f, 0.012f,
+                    new SlotProvider(RL( "common/pivot_maps/b10_handguard_pivot.geo.json"))
+                            .addSlot(new Rail("RAIL_LOWER", Direction.LOWER, 9.2f, 1.6207f, -9f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new SingleFixedSlot("RAIL_MOUNT_LEFT", Direction.LOWER)
+                                    .setFilter(SlotFilters.hasTag("b10_mount_rail")))
+                            .addSlot(new SingleFixedSlot("RAIL_MOUNT_RIGHT", Direction.LOWER)
+                                    .setFilter(SlotFilters.hasTag("b10_mount_rail"))),
+                    new VoxelHandler(RL("common/voxel_shapes/b10_handguard_voxel.geo.json")),
+                    new IArmHandlerModular.AdditionalPropModifier(0.08f,0.08f,0.1f, 0.05f)
+            ).addTags("handguard", "ak", "lower", "zenitco");
+
+    public static final IModular B10_MOUNT_RAIL = new SlotProviderVoxelModule(
+            RL("b10_mount_rail"),
+            true,
+            0.01f,
+            Direction.NONE,
+            new SlotProvider(RL("common/pivot_maps/b10_mount_rail.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL", Direction.LOWER, 11.8513f, 0f, -11.9301f)
+                            .setFilter(SlotFilters.hasAllTags("on_rail", "all_rail_direction"))),
+            new VoxelHandler(RL("common/voxel_shapes/b10_mount_rail_voxel.geo.json"))
+    ).addTags("b10_mount_rail");
+
+    public static final IModular B19_HANDGUARD = new ZenitcoUpperHandguard(
+            RL("b19_handguard"),
+            true,
+            0.075f,
+            Direction.NONE,
+            new SlotProvider(RL( "common/pivot_maps/b19_handguard_pivot.geo.json"))
+                    .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 6.1258f, -1.5542f, -9.2342f)
+                            .setFilter(SlotFilters.hasTag("on_rail").and(
+                                    SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                            ))
+                    ),
+            new VoxelHandler(RL("common/voxel_shapes/b19_handguard_voxel.geo.json"))
+    ).addTags("handguard", "ak", "upper");
+
+    public static final IModular SPEAR_LT_HANDGUARD = new Handguard
+            (RL( "spear_lt_handguard"),
+                    0.2f, 0.025f,
+                    new SlotProvider(RL( "common/pivot_maps/spear_lt_handguard_pivot.geo.json"))
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.237f, 11.1722f, -8.786f, 18.0692f, 6.897f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 8.4276f, 0.8287f, -7.0901f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(MLokRail.of("RAIL_LEFT", Direction.LOWER, 21.5f, 4.1226f, -8.7348f, 17.64525f, 6.76135f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction")))
+                            .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 29.5227f, 4.1226f, -8.7348f, 24.40655f, 6.76135f, 5)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
+                    EmptyVoxelHandler.INSTANCE,
+                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.155f,0.12f, 0.07f)
+            ).addTags("handguard", "mcx_spear");
+
+    public static final IModular SPEAR_HANDGUARD = new Handguard
+            (RL( "spear_handguard"),
+                    0.22f, 0.025f,
+                    new SlotProvider(RL( "common/pivot_maps/spear_handguard_pivot.geo.json"))
+                            .addSlot(MLokRail.of("RAIL_GRIP", Direction.LOWER, 21.2412f + 0.4f, 10.8839f + 0.4f, -15.4961f + 0.4f, 17.64515f + 0.4f, 6.76125f, 5)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit").and(
+                                            SlotFilters.hasTag("lower").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(new Rail("RAIL_UPPER", Direction.UPPER, 8.4276f, -3.9463f, -15.5589f)
+                                    .setFilter(SlotFilters.hasTag("on_rail").and(
+                                            SlotFilters.hasTag("upper").or(SlotFilters.hasTag("all_rail_direction"))
+                                    )))
+                            .addSlot(MLokRail.of("RAIL_LEFT", Direction.LOWER, 21.5f, 4.1226f, -15.4961f, 17.64525f, 6.7613f, 4)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction")))
+                            .addSlot(MLokRail.of("RAIL_RIGHT", Direction.LOWER, 29.5227f, 4.1226f, -15.4961f, 24.40655f, 6.7613f, 6)
+                                    .setFilter(SlotFilters.hasAllTags("on_rail", "m_lok_rail_fit", "all_rail_direction"))),
+                    EmptyVoxelHandler.INSTANCE,
+                    new IArmHandlerModular.AdditionalPropModifier(0.12f,0.14f,0.1f, 0.06f)
+            ).addTags("handguard", "mcx_spear");
+
+    public static final IModular B13_BRACKET = new SlotProviderVoxelModule(
+            RL("b13_bracket"),
+            true,
+            0.175f,
+            Direction.NONE,
+            new SlotProvider(RL("common/pivot_maps/b13_bracket.pivot.geo.json"))
+                    .addSlot(new Rail("RAIL", Direction.UPPER, 12.5686f, -3.4314f, -19.4315f)
+                            .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))),
+            new VoxelHandler(RL("common/voxel_shapes/b13_bracket.voxel.geo.json"))
+    ).addTags("ak", "mount");
+
+    public static final IModular KAC_FORWARD_GRIP = new ForwardGrip(
+            RL( "kac_forward_grip"),
+            new MLokFitVoxelHandler(RL( "common/voxel_shapes/kac_forward_grip.voxel.geo.json")),
+            0.06f,
+            new IArmHandlerModular.AdditionalPropModifier(0.22f,0.15f,0.28f, 0.15f))
+            .addTags("m_lok_rail_fit");
+
+    public static final IModular RK_2_GRIP = new ForwardGrip(
+            RL( "rk_2_grip"),
+            new MLokFitVoxelHandler(RL( "common/voxel_shapes/rk_2_grip.voxel.geo.json")),
+            0.07f,
+            new IArmHandlerModular.AdditionalPropModifier(0.14f,0.2f,0.36f, 0.2f))
+            .addTags("m_lok_rail_fit");
+
+    public static final IModular M4A1 = new AR(
+            RL( "m4a1"),
+            RL( "common/pivot_maps/m4a1_main.pivot.geo.json"),
+
+            new BaseProperties(850, 1.15f, 0.18f, 3.5f,
+                    0.00075f, 0.1f,
+                    1.3f, 4f,
+                    30f,
+                    0.005f,
+                    0.05f / 60,
+                    6,
+                    RL("m4a1_fire"),
+                    RL("m4a1_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 1.8f,
+                            "mag_reload_empty_length", 2.45f,
+                            "mag_reload_charge_length", 2.8f,
+                            "remove_stuck_empty_length", 0.85f,
+                            "remove_stuck_length", 0.55f
+                    )
+            ),
+            new DisplayData()
+                    .setTranslation(0, 8.775F, -7.175875f, -23.037498F, 0.0F, 0.0F, 0.0F, 0.625F, 0.625F, 0.625F)
+                    .setTranslation(1, 0.0F, 1.3F, -0.1F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(2, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(3, 0.0F, 0.0F, 0.0F, 0.0F, 90.0F, 0.0F, 0.3F, 0.3F, 0.3F)
+                    .setTranslation(4, -1.6F, 0.8F, -10.5F, 0.0F, 270.0F, 0.0F, 0.15F, 0.15F, 0.15F)
+                    .setTranslation(5, -16.0F, -10.5F, 4.0F, -18.621124F, 40.83802F, 26.0F, 0.15F, 0.15F, 0.15F)
+                    .setAimingTranslation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F),
+
+            new RecoilData(
+                    new RecoilImpulse(
+                            6.5f, 11.25f,
+                            4.2f, 4.2f,
+                            19.5f, 16.5f,
+                            0.11f, 0.5f, 160.0f),
+                    new RecoilController(
+                            350f, 40f,
+                            145.0f, 11.5f,
+                            220.0f, 9.5f,
+                            145.0f, 14.2f,
+                            900.0f, 18f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            13f),
+                    new VisualRecoilMix(
+                            0.46f, 25, 28, 1.5f, 0.9f, 1.6f,
+                            0.56f, 65f, 0.47f, 1.15f,  2.5f,
+                            0.0126f, 0.35f
+                    )
+            ),
+            List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
+            .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "5.56x45", "ar")))
+            .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "ar")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10f, -1.802f, -14.4f, "ar_sight", "allow_ignore_rear_IS_collide")
+                    .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail").or(SlotFilters.modular("gcr:a2_carry_handle"))
+                    ))
+            .setDefaultModuleInitHandler((workspace, accessor) -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "BARREL", M4_PROFILE_FSB_BARREL.getID()).ifPresent(barrel -> {
+                    workspace.addChild(barrel, "MUZZLE", A2_FLASH_HINDER.getID());
+                });
+                workspace.addChild(root, "HANDGUARD", CAR_15_HANDGUARD.getID());
+                workspace.addChild(root, "REAR_GRIP", A2_PISTOL_GRIP.getID());
+                workspace.addChild(root, "STOCK", M4_CARBINE_STOCK.getID());
+                // New guns start with no physical magazine installed.
+                // Magazine models are attached only when a MAG module is installed.
+                workspace.addChild(root, "SCOPE", A2_CARRY_HANDLE.getID());
+            });
+
+
+    public static final IModular AK24 = new AR(
+            RL( "ak24"),
+            RL( "common/pivot_maps/ak24_main.pivot.geo.json"),
+
+            new BaseProperties(750, 1.15f, 0.18f, 3.5f,
+                    0.0005f, 0.08f,
+                    1.3f, 4f,
+                    30f,
+                    0.004f,
+                    0.05f / 60,
+                    6,
+                    RL("ak24_fire"),
+                    RL("ak24_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 1.8f,
+                            "mag_reload_empty_length", 2.45f,
+                            "mag_reload_charge_length", 2.8f,
+                            "remove_stuck_empty_length", 0.85f,
+                            "remove_stuck_length", 0.55f
+                    )
+            ),
+            new DisplayData()
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.875f, -7.375875f, -23.137499f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+
+            new RecoilData(
+                    new RecoilImpulse(
+                            7f, 12f,
+                            5f, 5f,
+                            21, 17,
+                            0.12f, 0.45f, 180.0f),
+                    new RecoilController(
+                            355f, 40f,
+                            150.0f, 11.5f,
+                            220.0f, 9f,
+                            145.0f, 14.5f,
+                            930.0f, 18.5f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            13f),
+                    new VisualRecoilMix(
+                            0.5f, 25, 28, 1.6f, 0.9f, 1.6f,
+                            0.58f, 68f, 0.47f, 1.15f,  2.5f,
+                            0.013f, 0.35f
+                    )
+            ),
+            List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
+            .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "5.56x45", "ak24")))
+            .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "ak24")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ar")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ar", "5.56x45")))
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10.2f, -1.802f, -14.1705f, "ar_sight", "allow_ignore_rear_IS_collide")
+                    .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
+            .setDefaultModuleInitHandler((workspace, accessor) -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "BARREL", AK24A_BARREL.getID()).ifPresent(barrel -> workspace.addChild(barrel, "MUZZLE", ASE_FLASH_HIDER.getID()));
+                workspace.addChild(root, "HANDGUARD", AK24A_HANDGUARD.getID()).ifPresent(handguard -> {
+                    workspace.addChild(handguard, "RAIL_UPPER", MAGPUL_MBUS_PRO_SIGHT_FAR.getID()).ifPresent(farSight -> {
+                        accessor.getBelongsTo(farSight).ifPresent(slotInstance -> {
+                            if (slotInstance.getSlot() instanceof Rail rail) {
+                                rail.setChildPosition(farSight, accessor, 0.85f);
+                            }
+                        });
+                    });
+                });
+                workspace.addChild(root, "REAR_GRIP", SAKO_ARG_GRIP.getID());
+                workspace.addChild(root, "STOCK", CTR_STOCK.getID());
+                // New guns start with no physical magazine installed.
+                // Magazine models are attached only when a MAG module is installed.
+                workspace.addChild(root, "SCOPE", MAGPUL_MBUS_PRO_SIGHT_REAR.getID()).ifPresent(rearSight -> accessor.getBelongsTo(rearSight).ifPresent(slotInstance -> {
+                    if (slotInstance.getSlot() instanceof Rail rail) {
+                        rail.setChildPosition(rearSight, accessor, 0.075f);
+                    }
+                }));
+            });
+
+    public static final IModular MCX_SPEAR = new AR(
+            RL( "mcx_spear"),
+            RL( "common/pivot_maps/mcx_spear_main_pivot.geo.json"),
+
+            new BaseProperties(800, 1.8f, 0.19f, 2.9f,
+                    0.00055f, 0.09f,
+                    1.2f, 5f,
+                    30f,
+                    0.006f,
+                    0.05f / 60,
+                    14,
+                    RL("mcx_spear_fire"),
+                    RL("mcx_spear_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 1.8f,
+                            "mag_reload_empty_length", 2.45f,
+                            "mag_reload_charge_length", 2.8f,
+                            "remove_stuck_empty_length", 0.85f,
+                            "remove_stuck_length", 0.55f
+                    )
+            ),
+            new DisplayData()
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.725f, -7.45625f, -22.8f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -11.5f, -12.5f, 5, -16.911613f, 46.547535f, 35.338047f, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+
+            new RecoilData(
+                    new RecoilImpulse(
+                            9f, 13.5f,
+                            7.5f, 7.5f,
+                            20f, 22f,
+                            0.4f, 0.5f, 205.0f),
+                    new RecoilController(
+                            360f, 41.2f,
+                            155.0f, 15f,
+                            230.0f, 9f,
+                            145.0f, 15f,
+                            910.0f, 19f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            13f),
+                    new VisualRecoilMix(
+                            0.48f, 27, 30, 1.55f, 0.9f, 1.6f,
+                            0.625f, 65f, 0.48f, 1.2f,  2.5f,
+                            0.013f, 0.35f
+                    )
+            ),
+            List.of(ARSemi.SEMI, ARFullAuto.FULL_AUTO))
+            .addSlot(new ReplaceOnlySlot("BARREL").setFilter(SlotFilters.hasAllTags("barrel", "6.8x51", "mcx_spear")))
+            .addSlot(new SingleFixedSlot("HANDGUARD").setFilter(SlotFilters.hasAllTags("handguard", "mcx_spear")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ar")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "mcx")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "mcx_spear", "6.8x51")))
+            .addSlot(new Rail("SCOPE", Direction.UPPER, 10.2f, 0f, -46.5724f, "ar_sight", "allow_ignore_rear_IS_collide")
+                    .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail")))
+            .setDefaultModuleInitHandler((workspace, accessor) -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "BARREL", SIG_FURY_BARREL.getID()).ifPresent(barrel -> workspace.addChild(barrel, "MUZZLE", SLX_SUPPRESSOR.getID()));
+                workspace.addChild(root, "HANDGUARD", SPEAR_HANDGUARD.getID()).ifPresent(handguard -> {
+                    workspace.addChild(handguard, "RAIL_UPPER", KAC_FOLDING_SIGHT_FAR.getID()).ifPresent(farSight -> {
+                        accessor.getBelongsTo(farSight).ifPresent(slotInstance -> {
+                            if (slotInstance.getSlot() instanceof Rail rail) {
+                                rail.setChildPosition(farSight, accessor, 0.65f);
+                            }
+                        });
+                    });
+                });
+                workspace.addChild(root, "REAR_GRIP", MCX_M400_GRIP.getID());
+                workspace.addChild(root, "STOCK", MCX_STOCK_TUBE.getID()).ifPresent(stockTube -> {
+                    workspace.addChild(stockTube, "STOCK", MAGPUL_SL_M_STOCK.getID());
+                });
+                // New guns start with no physical magazine installed.
+                // Magazine models are attached only when a MAG module is installed.
+                workspace.addChild(root, "SCOPE", KAC_FOLDING_SIGHT_REAR.getID()).ifPresent(rearSight -> accessor.getBelongsTo(rearSight).ifPresent(slotInstance -> {
+                    if (slotInstance.getSlot() instanceof Rail rail) {
+                        rail.setChildPosition(rearSight, accessor, 0.01f);
+                    }
+                }));
+            });
+
+    public static final IModular DUSTCOVER_6P34 = new AKSimpleDustCover(
+            RL( "6p34_dustcover"),
+            0.15f,
+            0.1f,
+            0.025f)
+            .addTags("ak", "dustcover");
+
+    public static final IModular AK_RIBBED_DUSTCOVER = new AKSimpleDustCover(
+            RL( "ak_ribbed_dustcover"),
+            0.15f,
+            0.1f,
+            0.025f)
+            .addTags("ak", "dustcover");
+
+    public static final IModular PDC_DUSTCOVER = new AKDustCover(
+            RL( "pdc_dustcover"),
+            0.194f,
+            0.1f,
+            0.025f,
+            new SlotProvider(RL( "common/pivot_maps/pdc_dustcover_pivot.geo.json"))
+                    .addSlot(
+                            new Rail("SCOPE", Direction.UPPER, 11.713f, -1.802f, -16.5f, "allow_ignore_rear_IS_collide")
+                                    .setFilter(SlotFilters.hasAllTags("sight", "upper", "on_rail"))
+                    ),
+            new VoxelHandler(RL("common/voxel_shapes/pdc_dustcover_voxel.geo.json")))
+            .addTags("ak", "dustcover");
+
+    public static final IModular AK74M = new AK(
+            RL( "ak74m"),
+            RL( "common/pivot_maps/ak74m_pivot.geo.json"),
+
+            new BaseProperties(650, 2.1f, 0.2f, 3.3f,
+                    0.0003f, 0.08f,
+                    1.3f, 4f,
+                    30f,
+                    0.004f,
+                    0.05f / 60, 5.5f,
+                    RL("ak74m_fire"),
+                    RL("ak74m_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 2.15f,
+                            "mag_reload_empty_length", 3.2f,
+                            "remove_stuck_length", 0.75f,
+                            "remove_stuck_empty_length", 0.75f
+                    )
+            ),
+            new DisplayData()
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+            new RecoilData(
+                    new RecoilImpulse(
+                            5.3f, 10.5f,
+                            5.5f, 5.5f,
+                            16, 14f,
+                            0.15f, 0.6f,210.0f),
+                    new RecoilController(
+                            350f, 40f,
+                            150.0f, 11f,
+                            200.0f, 8f,
+                            150.0f, 14.5f,
+                            900.0f, 18f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            12f),
+                    new VisualRecoilMix(
+                            0.55f, 25.5f, 29.6f, 1.5f, 0.9f, 1.6f,
+                            0.75f, 63f, 0.46f, 1.25f,  2.5f,
+                            0.01f, 0.35f
+                    )
+            ),
+            List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
+            .addSlot(new SingleFixedSlot("HANDGUARD_LOWER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "lower")))
+            .addSlot(new SingleFixedSlot("HANDGUARD_UPPER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "upper")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ak")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "ak")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ak", "5.45x39")))
+            .addSlot(new SingleFixedSlot("DUSTCOVER").setFilter(SlotFilters.hasAllTags("ak", "dustcover")))
+            .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("ak", "muzzle", "5.45x39")))
+            .addSlot(new SingleFixedSlot("MOUNT").setFilter(SlotFilters.hasAllTags("ak", "mount")))
+            .addSlot(new SingleFixedSlot("UNDER_BARREL").setFilter(SlotFilters.hasAllTags("under_barrel", "ak")))
+            .setDefaultModuleInitHandler((workspace, accessor) -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "MUZZLE", AK74_MUZZLE_BRAKE.getID());
+                workspace.addChild(root, "HANDGUARD_LOWER", AK_POLYMER_HANDGUARD_LOWER.getID());
+                workspace.addChild(root, "HANDGUARD_UPPER", AK_POLYMER_HANDGUARD_UPPER.getID());
+                workspace.addChild(root, "REAR_GRIP", AK_POLYMER_GRIP.getID());
+                workspace.addChild(root, "STOCK", STOCK_6P34.getID());
+                // New guns start with no physical magazine installed.
+                // Magazine models are attached only when a MAG module is installed.
+                workspace.addChild(root, "DUSTCOVER", DUSTCOVER_6P34.getID());
+            });
+
+    public static final IModular AKMN = new AK(
+            RL( "akmn"),
+            RL( "common/pivot_maps/akmn.pivot.geo.json"),
+
+            new BaseProperties(600, 2.2f, 0.235f, 3.1f,
+                    0.0003f, 0.08f,
+                    1.3f, 4.5f,
+                    30f,
+                    0.004f,
+                    0.05f / 60, 8f,
+                    RL("akmn_fire"),
+                    RL("akmn_fire_suppressed"),
+                    Map.of(
+                            "mag_reload_length", 2.55f,
+                            "mag_reload_empty_length", 3.2f,
+                            "remove_stuck_length", 0.75f,
+                            "remove_stuck_empty_length", 0.75f
+                    )
+            ),
+	new DisplayData()
+    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+            new RecoilData(
+                    new RecoilImpulse(
+                            7.5f, 11f,
+                            6f, 6f,
+                            16f, 17f,
+                            0.25f, 0.56f,225.0f),
+                    new RecoilController(
+                            355f, 40.5f,
+                            160.0f, 11.5f,
+                            220.0f, 8f,
+                            150.0f, 14.5f,
+                            900.0f, 18.6f,
+                            2.0f, 1.25f,
+                            2.5f, 2f,
+                            12f),
+                    new VisualRecoilMix(
+                            0.65f, 25f, 30f, 1.6f, 0.9f, 1.6f,
+                            0.81f, 62f, 0.45f, 1.25f,  2.5f,
+                            0.0133f, 0.3f
+                    )
+            ),
+            List.of(AKSemi.SEMI, AKFullAuto.FULL_AUTO))
+            .addSlot(new SingleFixedSlot("HANDGUARD_LOWER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "lower")))
+            .addSlot(new SingleFixedSlot("HANDGUARD_UPPER").setFilter(SlotFilters.hasAllTags("handguard", "ak", "upper")))
+            .addSlot(new ReplaceOnlySlot("REAR_GRIP").setFilter(SlotFilters.hasAllTags("rear_grip", "ak")))
+            .addSlot(new SingleFixedSlot("STOCK").setFilter(SlotFilters.hasAllTags("stock", "akm")))
+            .addSlot(new SingleFixedSlot("MAG").setFilter(SlotFilters.hasAllTags("mag", "ak", "7.62x39")))
+            .addSlot(new SingleFixedSlot("DUSTCOVER").setFilter(SlotFilters.hasAllTags("ak", "dustcover")))
+            .addSlot(new SingleFixedSlot("MUZZLE").setFilter(SlotFilters.hasAllTags("akm", "muzzle", "7.62x39")))
+            .addSlot(new SingleFixedSlot("MOUNT").setFilter(SlotFilters.hasAllTags("ak", "mount")))
+            .addSlot(new SingleFixedSlot("UNDER_BARREL").setFilter(SlotFilters.hasAllTags("under_barrel", "ak")))
+            .setDefaultModuleInitHandler((workspace, accessor) -> {
+                Unit root = workspace.getRootUnit();
+                workspace.addChild(root, "MUZZLE", AKM_MUZZLE_BRAKE.getID());
+                workspace.addChild(root, "HANDGUARD_LOWER", AK_WOODEN_HANDGUARD_LOWER.getID());
+                workspace.addChild(root, "HANDGUARD_UPPER", AK_WOODEN_HANDGUARD_UPPER.getID());
+                workspace.addChild(root, "REAR_GRIP", AK_BAKELITE_GRIP.getID());
+                workspace.addChild(root, "STOCK", AKM_STOCK.getID());
+                // New guns start with no physical magazine installed.
+                // Magazine models are attached only when a MAG module is installed.
+                workspace.addChild(root, "DUSTCOVER", AK_RIBBED_DUSTCOVER.getID());
+            });
+
+    public static final IModular VORTEX_RAZOR_RED_DOT = new RedDot(
+            RL( "vortex_razor_red_dot"),
+            new VoxelHandler(RL( "common/voxel_shapes/vortex_razor_red_dot.voxel.geo.json")),
+            0.05f,
+            false,
+            1.1f
+    ).addTags("sight", "upper", "red_dot", "on_rail", "canted_sight");
+
+    public static final IModular EOTECH_EXPS3 = new RedDot(
+            RL( "eotech_exps3"),
+            new VoxelHandler(RL( "common/voxel_shapes/eotech_exps3_voxel.geo.json")),
+            0.3f,
+            false,
+            1.1f
+    ).addTags("sight", "upper", "red_dot", "on_rail");
+
+    public static final IModular PEQ_15 = new PEQ15(
+            RL( "peq_15"),
+            0.22f, 13, 60, 12,
+            Direction.UPPER,
+            new MLokFitVoxelHandler(RL( "common/voxel_shapes/peq_15_voxel.geo.json"))
+    ).addTags("on_rail", "all_rail_direction", "m_lok_rail_fit");
+
+    private static ResourceLocation RL(String path) {
+        return GCR.RL(path);
+    }
+}

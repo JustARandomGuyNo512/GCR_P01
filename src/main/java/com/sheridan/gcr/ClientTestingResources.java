@@ -1,0 +1,693 @@
+package com.sheridan.gcr;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.sheridan.gcr.client.model.bulletShell.BulletShellModel;
+import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
+import com.sheridan.gcr.client.model.modular.*;
+import com.sheridan.gcr.client.model.modular.animation.controllers.AKController;
+import com.sheridan.gcr.client.model.modular.animation.controllers.ARMainController;
+import com.sheridan.gcr.client.model.modular.animation.controllers.GP25Controller;
+import com.sheridan.gcr.client.model.modular.animation.controllers.M203Controller;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.IAnimationController;
+import com.sheridan.gcr.client.model.modular.modules.*;
+import com.sheridan.gcr.client.model.modular.state.IStateViewer;
+import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
+import com.sheridan.gcr.client.model.modular.state.stateViewers.*;
+import com.sheridan.gcr.client.model.playerArm.BufferedPlayerArmModel;
+import com.sheridan.gcr.client.render.HeatMapTextureManager;
+import com.sheridan.gcr.client.render.RenderTypes;
+import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellDisplay;
+import com.sheridan.gcr.client.render.fx.muzzleFlash.CommonMuzzleFlashes;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.fast.CommonMuzzleSmokeEffects;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.CommonSlowSmokeController;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.CommonSlowSmokeEffects;
+import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeEntry;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
+import com.sheridan.gcr.modularSys.fire.closedBolt.ARSemi;
+import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
+import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
+import com.sheridan.gcr.modularSys.modules.views.IAmmoSourceView;
+import com.sheridan.gcr.modularSys.modules.views.IFlashLightView;
+import com.sheridan.gcr.modularSys.modules.views.IGP25View;
+import com.sheridan.gcr.modularSys.modules.views.IM203View;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.joml.Vector3f;
+
+import java.util.Map;
+
+@OnlyIn(Dist.CLIENT)
+public class ClientTestingResources {
+
+
+    public static void init(FMLClientSetupEvent event) {
+        // ==================== 1. 动画整合与批量注册 ====================
+        // 主武器动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/m4a1_main.animation.json",
+                Map.ofEntries(
+                        Map.entry("check_mag", "m4a1_check_mag"),
+                        Map.entry("reload_grenade", "m4a1_reload_grenade_m203"),
+                        Map.entry("reload_grenade.G", "m4a1_reload_grenade_m203.g"),
+                        Map.entry("to_semi", "m4a1_to_semi"),
+                        Map.entry("check_grenade.G", "m4a1_check_grenade_m203.g"),
+                        Map.entry("check_grenade", "m4a1_check_grenade_m203"),
+                        Map.entry("to_auto", "m4a1_to_auto"),
+                        Map.entry("shoot_last", "m4a1_shoot_last"),
+                        Map.entry("mag_reload", "m4a1_mag_reload"),
+                        Map.entry("mag_reload_empty", "m4a1_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "m4a1_mag_reload_charge"),
+//                        Map.entry("chamber_reload", "m4a1_chamber_reload"),
+//                        Map.entry("chamber_reload_empty", "m4a1_chamber_reload_empty"),
+                        Map.entry("base", "m4a1_base"),
+                        Map.entry("shoot", "m4a1_shoot"),
+                        Map.entry("shoot_stuck", "m4a1_shoot_stuck"),
+                        Map.entry("remove_stuck", "m4a1_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "m4a1_remove_stuck_empty"),
+                        Map.entry("check_chamber", "m4a1_check_chamber"),
+                        Map.entry("check_chamber_simple", "m4a1_check_chamber_simple")
+                )
+        );
+
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ak74m.animation.json",
+                Map.ofEntries(
+                        Map.entry("check_mag", "ak74m_check_mag"),
+                        Map.entry("to_semi", "ak74m_to_semi"),
+                        Map.entry("to_auto", "ak74m_to_auto"),
+                        Map.entry("mag_reload", "ak74m_mag_reload"),
+                        Map.entry("mag_reload_empty", "ak74m_mag_reload_empty"),
+                        Map.entry("base", "ak74m_base"),
+                        Map.entry("shoot", "ak74m_shoot"),
+                        Map.entry("shoot_last", "ak74m_shoot_last"),
+                        Map.entry("shoot_stuck", "ak74m_shoot_stuck"),
+                        Map.entry("remove_stuck", "ak74m_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "ak74m_remove_stuck_empty"),
+                        Map.entry("check_chamber", "ak74m_check_chamber"),
+                        Map.entry("check_chamber_simple", "ak74m_check_chamber_simple"),
+                        Map.entry("reload_grenade", "ak74m_reload_grenade_gp25"),
+                        Map.entry("reload_grenade.G", "ak74m_reload_grenade_gp25.g"),
+                        Map.entry("check_grenade.G", "ak74m_check_grenade_gp25.g"),
+                        Map.entry("check_grenade", "ak74m_check_grenade_gp25")
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/mcx_spear.animation.json",
+                Map.ofEntries(
+                        Map.entry("check_mag", "mcx_spear_check_mag"),
+                        Map.entry("mag_reload", "mcx_spear_mag_reload"),
+                        Map.entry("mag_reload_empty", "mcx_spear_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "mcx_spear_mag_reload_charge"),
+                        Map.entry("shoot", "mcx_spear_shoot"),
+                        Map.entry("shoot_last", "mcx_spear_shoot_last"),
+                        Map.entry("shoot_stuck", "mcx_spear_shoot_stuck"),
+                        Map.entry("remove_stuck", "mcx_spear_remove_stuck"),
+                        Map.entry("remove_stuck_empty", "mcx_spear_remove_stuck_empty"),
+                        Map.entry("check_chamber", "mcx_spear_check_chamber"),
+                        Map.entry("check_chamber_simple", "mcx_spear_check_chamber_simple")
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ak24_main.animation.json",
+                Map.ofEntries(
+                        Map.entry("mag_reload1", "ak24_mag_reload"),
+                        Map.entry("mag_reload_empty1", "ak24_mag_reload_empty"),
+                        Map.entry("mag_reload_charge", "ak24_mag_reload_charge")
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/akmn.animation.json",
+                Map.ofEntries(
+                        Map.entry("mag_reload", "akmn_mag_reload"),
+                        Map.entry("mag_reload_empty", "akmn_mag_reload_empty")
+                )
+        );
+        // 弹匣状态动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ar_mag_30r.states.json",
+                Map.of(
+                        "full_1", "ar_mag_30r_full_1",
+                        "full_2", "ar_mag_30r_full_2",
+                        "left_1", "ar_mag_30r_left_1",
+                        "left_2", "ar_mag_30r_left_2",
+                        "left_3", "ar_mag_30r_left_3",
+                        "empty", "ar_mag_30r_empty"
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/6l23.states.json",
+                Map.of(
+                        "full_1", "6l23_full_1",
+                        "full_2", "6l23_full_2",
+                        "left_1", "6l23_left_1",
+                        "left_2", "6l23_left_2",
+                        "left_3", "6l23_left_3",
+                        "left_4", "6l23_left_4",
+                        "left_5", "6l23_left_5",
+                        "empty", "6l23_empty"
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/akm_steel_mag.states.json",
+                Map.of(
+                        "full_1", "akm_steel_mag_full_1",
+                        "full_2", "akm_steel_mag_full_2",
+                        "left_1", "akm_steel_mag_left_1",
+                        "left_2", "akm_steel_mag_left_2",
+                        "left_3", "akm_steel_mag_left_3",
+                        "left_4", "akm_steel_mag_left_4",
+                        "left_5", "akm_steel_mag_left_5",
+                        "empty", "akm_steel_mag_empty"
+                )
+        );
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/spear_20r_mag.states.json",
+                Map.of(
+                        "full_1", "spear_20r_mag_full_1",
+                        "full_2", "spear_20r_mag_full_2",
+                        "left_1", "spear_20r_mag_left_1",
+                        "left_2", "spear_20r_mag_left_2",
+                        "left_3", "spear_20r_mag_left_3",
+                        "left_4", "spear_20r_mag_left_4",
+                        "left_5", "spear_20r_mag_left_5",
+                        "empty", "spear_20r_mag_empty"
+                )
+        );
+        // 全局动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/ar.global.animation.json",
+                Map.of("holster", "ar_holster", "draw", "ar_draw")
+        );
+        // M203 状态动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/m203.states.json",
+                Map.of("full", "m203_full",
+                        "empty", "m203_empty",
+                        "base", "m203_base",
+                        "fired", "m203_fired")
+        );
+
+        // GP25 状态动画
+        ModelRegistrationManager.loadAndRegisterAnimations(
+                "model_assets/animation/gp25.states.json",
+                Map.of("empty", "gp25_empty",
+                        "base", "gp25_base")
+        );
+
+        // ==================== 2. 模型注册与自定义 Lambda 逻辑 ====================
+
+        // 非常规注册示例：带 Viewer、Display 以及 Controller 初始化的复杂对象
+        ModelRegistrationManager.registerModel(
+                GCRModules.M4A1, "model_assets/gltf/m4a1_main.gltf", "model_assets/gltf/m4a1_main.png", true,
+                meshData -> {
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.M4A1, "gcr:m4a1_shoot_last", "gcr:m4a1_shoot_stuck");
+                    ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
+                            "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
+                            10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
+                    ), viewer);
+
+                    IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
+                            "check_mag", "gcr:m4a1_check_mag",
+                            "reload_grenade", "gcr:m4a1_reload_grenade_m203",
+                            "check_grenade", "gcr:m4a1_check_grenade_m203",
+                            ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
+                            ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
+                            "mag_reload", "gcr:m4a1_mag_reload",
+                            "mag_reload_empty", "gcr:m4a1_mag_reload_empty",
+                            "mag_reload_charge", "gcr:m4a1_mag_reload_charge",
+                            "check_chamber", "gcr:m4a1_check_chamber",
+                            "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
+                            "shoot", "gcr:m4a1_shoot",
+                            "shoot_last", "gcr:m4a1_shoot_last",
+                            "shoot_stuck", "gcr:m4a1_shoot_stuck",
+                            "remove_stuck", "gcr:m4a1_remove_stuck",
+                            "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.AK24, "model_assets/gltf/ak24_main.gltf", "model_assets/gltf/ak24_main.png", true,
+                meshData -> {
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.AK24, "gcr:m4a1_shoot_last", "gcr:m4a1_shoot_stuck");
+                    ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
+                            "SHELL_THROW", GCR.RL("shell_5_56x45"), 15f, 25f, 20f, 5f, 40f, 0.2f,
+                            10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
+                    ), viewer);
+
+                    IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
+                            "check_mag", "gcr:m4a1_check_mag",
+                            //"reload_grenade", "gcr:m4a1_reload_grenade_m203",
+                            //"check_grenade", "gcr:m4a1_check_grenade_m203",
+                            ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
+                            ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
+                            "mag_reload", "gcr:ak24_mag_reload",
+                            "mag_reload_empty", "gcr:ak24_mag_reload_empty",
+                            "mag_reload_charge", "gcr:ak24_mag_reload_charge",
+                            "check_chamber", "gcr:m4a1_check_chamber",
+                            "check_chamber_simple", "gcr:m4a1_check_chamber_simple",
+                            "shoot", "gcr:m4a1_shoot",
+                            "shoot_last", "gcr:m4a1_shoot_last",
+                            "shoot_stuck", "gcr:m4a1_shoot_stuck",
+                            "remove_stuck", "gcr:m4a1_remove_stuck",
+                            "remove_stuck_empty", "gcr:m4a1_remove_stuck_empty",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.MCX_SPEAR, "model_assets/gltf/mcx_spear_main.gltf", "model_assets/gltf/mcx_spear_main.png", true,
+                meshData -> {
+                    ARMainViewer viewer = new ARMainViewer((AR) GCRModules.MCX_SPEAR, "gcr:mcx_spear_shoot_last", "gcr:mcx_spear_shoot_stuck");
+                    ARMainModel model = new ARMainModel(meshData, new BulletShellDisplay(
+                            "SHELL_THROW", GCR.RL("shell_6_8x51"), 15f, 25f, 20f, 5f, 40f, 0.2f,
+                            10, 90, 360 * 10, 0.25f, 360, 0.8f, 500, 100
+                    ), viewer);
+
+                    IAnimationController<?> controller = new ARMainController(c -> c.registerAnimations(
+                            "check_mag", "gcr:mcx_spear_check_mag",
+                            ARFullAuto.FULL_AUTO.getName(), "gcr:m4a1_to_auto",
+                            ARSemi.SEMI.getName(), "gcr:m4a1_to_semi",
+                            "mag_reload", "gcr:mcx_spear_mag_reload",
+                            "mag_reload_empty", "gcr:mcx_spear_mag_reload_empty",
+                            "mag_reload_charge", "gcr:mcx_spear_mag_reload_charge",
+                            "check_chamber", "gcr:mcx_spear_check_chamber",
+                            "check_chamber_simple", "gcr:mcx_spear_check_chamber_simple",
+                            "shoot", "gcr:mcx_spear_shoot",
+                            "shoot_last", "gcr:mcx_spear_shoot_last",
+                            "shoot_stuck", "gcr:mcx_spear_shoot_stuck",
+                            "remove_stuck", "gcr:mcx_spear_remove_stuck",
+                            "remove_stuck_empty", "gcr:mcx_spear_remove_stuck_empty",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.AK74M, "model_assets/gltf/ak74m.gltf", "model_assets/gltf/ak74m.png", true,
+                meshData -> {
+                    AKViewer viewer = new AKViewer((AK) GCRModules.AK74M, "gcr:ak74m_base","gcr:ak74m_shoot_stuck", "gcr:ak74m_to_semi", "gcr:ak74m_to_auto");
+                    AKModel model = new AKModel(
+                            meshData,
+                            new BulletShellDisplay(
+                                    "SHELL_THROW", GCR.RL("shell_5_45x39"), 10f, 28f, 30f, 8f, 40f, 0.25f,
+                                    10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
+                            viewer,
+                            2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                            new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON)
+                    );
+                    model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74m.png"));
+
+                    IAnimationController<?> controller = new AKController(c -> c.registerAnimations(
+                            "shoot", "gcr:ak74m_shoot",
+                            "shoot_last", "gcr:ak74m_shoot_last",
+                            "shoot_stuck", "gcr:ak74m_shoot_stuck",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw",
+                            "mag_reload", "gcr:ak74m_mag_reload",
+                            "mag_reload_empty", "gcr:ak74m_mag_reload_empty",
+                            AKFullAuto.FULL_AUTO.getName(), "gcr:ak74m_to_auto",
+                            AKSemi.SEMI.getName(), "gcr:ak74m_to_semi",
+                            "check_chamber", "gcr:ak74m_check_chamber",
+                            "check_chamber_simple", "gcr:ak74m_check_chamber_simple",
+                            "remove_stuck", "gcr:ak74m_remove_stuck",
+                            "remove_stuck_empty", "gcr:ak74m_remove_stuck_empty",
+                            "check_mag", "gcr:ak74m_check_mag",
+                            "reload_grenade", "gcr:ak74m_reload_grenade_gp25",
+                            "check_grenade", "gcr:ak74m_check_grenade_gp25"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.AKMN, "model_assets/gltf/akmn.gltf", "model_assets/gltf/akmn.png", true,
+                meshData -> {
+                    AKViewer viewer = new AKViewer((AK) GCRModules.AKMN, "gcr:ak74m_base","gcr:ak74m_shoot_stuck", "gcr:ak74m_to_semi", "gcr:ak74m_to_auto");
+                    AKModel model = new AKModel(
+                            meshData,
+                            new BulletShellDisplay(
+                                    "SHELL_THROW", GCR.RL("shell_7_62x39"), 10f, 28f, 30f, 8f, 40f, 0.25f,
+                                    10, 90, 360 * 12, 0.3f, 360, 0.8f, 500, 100),
+                            viewer,
+                            2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                            new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON)
+                    );
+                    model.setHeatMapTexPath(GCR.RL("model_assets/heatmap/akmn.png"));
+
+                    IAnimationController<?> controller = new AKController(c -> c.registerAnimations(
+                            "shoot", "gcr:ak74m_shoot",
+                            "shoot_last", "gcr:ak74m_shoot_last",
+                            "shoot_stuck", "gcr:ak74m_shoot_stuck",
+                            "holster", "gcr:ar_holster",
+                            "draw", "gcr:ar_draw",
+                            "mag_reload", "gcr:akmn_mag_reload",
+                            "mag_reload_empty", "gcr:akmn_mag_reload_empty",
+                            AKFullAuto.FULL_AUTO.getName(), "gcr:ak74m_to_auto",
+                            AKSemi.SEMI.getName(), "gcr:ak74m_to_semi",
+                            "check_chamber", "gcr:ak74m_check_chamber",
+                            "check_chamber_simple", "gcr:ak74m_check_chamber_simple",
+                            "remove_stuck", "gcr:ak74m_remove_stuck",
+                            "remove_stuck_empty", "gcr:ak74m_remove_stuck_empty",
+                            "check_mag", "gcr:ak74m_check_mag",
+                            "reload_grenade", "gcr:ak74m_reload_grenade_gp25",
+                            "check_grenade", "gcr:ak74m_check_grenade_gp25"
+                    ));
+                    model.bindController(controller);
+                    model.callInitAnimation();
+                    model.callInitTrack();
+                    model.callInitEventSubscriptions();
+                    return model;
+                }
+        );
+
+        // 如果需要取消 M203 的延迟编译，将 immediateCompile 设为 false 即可
+        ModelRegistrationManager.registerModel(
+                GCRModules.M203, "model_assets/gltf/m203.gltf", "model_assets/gltf/m203.png", true,
+                meshData -> {
+                    M203Model testM203Model = new M203Model(meshData, new M203Viewer((IM203View) GCRModules.M203), new MuzzleFlashRenderer(
+                            new MuzzleEntry("no1", "MUZZLE_FLASH", "",
+                                    3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
+                                    1.8f, CommonMuzzleSmokeEffects.COMMON,
+                                    1.5f).withSlowSmokeEntry(
+                                    new SlowSmokeEntry(1.5f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON)
+                            )
+                    )
+                    );
+                    IAnimationController<?> controller = new M203Controller();
+                    testM203Model.bindController(controller);
+                    testM203Model.callInitAnimation();
+                    testM203Model.callInitTrack();
+                    testM203Model.callInitEventSubscriptions();
+                    return testM203Model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.GP25, "model_assets/gltf/gp25.gltf", "model_assets/gltf/gp25.png", true,
+                meshData -> {
+                    GP25Model testGP25Model = new GP25Model(meshData, new GP25Viewer((IGP25View) GCRModules.GP25), new MuzzleFlashRenderer(
+                            new MuzzleEntry("no1", "MUZZLE_FLASH", "",
+                                    3f, CommonMuzzleFlashes.SUPPRESSOR_COMMON,
+                                    1.8f, CommonMuzzleSmokeEffects.COMMON,
+                                    1.5f)
+                                    .withSlowSmokeEntry(
+                                            new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON)
+                                    )
+                    )
+                    );
+                    testGP25Model.setTestAlpha(0.15f);
+                    IAnimationController<?> controller = new GP25Controller();
+                    testGP25Model.bindController(controller);
+                    testGP25Model.callInitAnimation();
+                    testGP25Model.callInitTrack();
+                    testGP25Model.callInitEventSubscriptions();
+                    return testGP25Model;
+                }
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.STANAG_MAG_30R, "model_assets/gltf/stanag_mag_30r.gltf", "model_assets/gltf/stanag_mag_30r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.STANAG_MAG_30R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.PMAG_40R, "model_assets/gltf/pmag_40r.gltf", "model_assets/gltf/pmag_40r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.PMAG_40R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.PMAG_30R, "model_assets/gltf/pmag_30r.gltf", "model_assets/gltf/pmag_30r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.PMAG_30R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.SUREFIRE_MAG_60R, "model_assets/gltf/surefire_mag_60r.gltf", "model_assets/gltf/surefire_mag_60r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.SUREFIRE_MAG_60R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.USGI_MAG_20R, "model_assets/gltf/usgi_mag_20r.gltf", "model_assets/gltf/usgi_mag_20r.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.USGI_MAG_20R, 4, "gcr:ar_mag_30r"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.MAG_6L18, "model_assets/gltf/6l18.gltf", "model_assets/gltf/6l18.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L18, 6, "gcr:6l23"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.MAG_6L23, "model_assets/gltf/6l23.gltf", "model_assets/gltf/6l23.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L23, 6, "gcr:6l23"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.AKM_STEEL_MAG, "model_assets/gltf/akm_steel_mag.gltf", "model_assets/gltf/akm_steel_mag.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.AKM_STEEL_MAG, 6, "gcr:akm_steel_mag"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.MAG_6L31, "model_assets/gltf/6l31.gltf", "model_assets/gltf/6l31.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.MAG_6L31, 6, "gcr:6l23"))
+        );
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.SPEAR_MAG_20R, "model_assets/gltf/spear_20r_mag.gltf", "model_assets/gltf/spear_20r_mag.png", true,
+                meshData -> new MagModel(meshData, GCR.RL(""), new CommonMagViewer((IAmmoSourceView) GCRModules.SPEAR_MAG_20R, 6, "gcr:spear_20r_mag"))
+        );
+
+        // 常规单行注册
+        ModelRegistrationManager.registerModel(GCRModules.M4_PROFILE_FSB_BARREL, "model_assets/gltf/m4_profile_fsb_barrel.gltf", "model_assets/gltf/m4_profile_fsb_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f,
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/m4_profile_fsb_barrel.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.A2_FLASH_HINDER, "model_assets/gltf/a2_flash_hider.gltf", "model_assets/gltf/a2_flash_hider.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/a2_flash_hider.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.ASE_FLASH_HIDER, "model_assets/gltf/ase_flash_hider.gltf", "model_assets/gltf/ase_flash_hider.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ase_flash_hider.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.CLUTCH_LOK_QD_FLASH_HIDER, "model_assets/gltf/clutch_lok_qd_flash_hider.gltf", "model_assets/gltf/clutch_lok_qd_flash_hider.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.75f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                        new SlowSmokeEntry(0.8f, 1.2f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/clutch_lok_qd_flash_hider.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.SOCOM_RC2, "model_assets/gltf/socom_rc2.gltf", "model_assets/gltf/socom_rc2.png", true, d ->
+                new MuzzleModel(d, 2.5f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.3f, CommonMuzzleSmokeEffects.COMMON,  1f,
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/socom_rc2.png"))
+                        .modifyHeatSensitive(3f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.SLX_SUPPRESSOR, "model_assets/gltf/slx_suppressor.gltf", "model_assets/gltf/slx_suppressor.png", true, d ->
+                new MuzzleModel(d, 2.65f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.4f, CommonMuzzleSmokeEffects.COMMON,  1.1f,
+                        new SlowSmokeEntry(1.5f, 2.8f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/slx_suppressor.png"))
+                        .modifyHeatSensitive(2.8f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.AR15_MUZZLE_BRAKE, "model_assets/gltf/ar15_muzzle_brake.gltf", "model_assets/gltf/ar15_muzzle_brake.png", true, d ->
+                new MuzzleModel(d, 3.6f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3f,
+                        new SlowSmokeEntry(1.2f, 1.5f, new CommonSlowSmokeController().setTravel(1.3f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ar15_muzzle_brake.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.AK74_MUZZLE_BRAKE, "model_assets/gltf/ak74_muzzle_brake.gltf", "model_assets/gltf/ak74_muzzle_brake.png", true, d ->
+                new MuzzleModel(d, 3.9f, CommonMuzzleFlashes.AK_COMPENSATOR, 3f, CommonMuzzleSmokeEffects.COMMON,  3.3f,
+                        new SlowSmokeEntry(1.2f, 1.4f, new CommonSlowSmokeController().setTravel(1.3f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak74_muzzle_brake.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.AKM_MUZZLE_BRAKE, "model_assets/gltf/akm_muzzle_brake.gltf", "model_assets/gltf/akm_muzzle_brake.png", true, d ->
+                new MuzzleModel(d, 2f, CommonMuzzleFlashes.COMMON, 1.8f, CommonMuzzleSmokeEffects.COMMON,  2.8f,
+                        new SlowSmokeEntry(0.85f, 1.1f, new CommonSlowSmokeController().setTravel(1.15f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/akm_muzzle_brake.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.PBS_4, "model_assets/gltf/pbs4.gltf", "model_assets/gltf/pbs4.png", true, d ->
+                new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f,
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/pbs4.png"))
+                        .modifyHeatSensitive(3f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.DTKP_545, "model_assets/gltf/dtkp_545.gltf", "model_assets/gltf/dtkp_545.png", true, d ->
+                new MuzzleModel(d, 2.7f, CommonMuzzleFlashes.SUPPRESSOR_COMMON, 2.5f, CommonMuzzleSmokeEffects.COMMON,  1f,
+                        new SlowSmokeEntry(1.5f, 2.5f, new CommonSlowSmokeController().setTravel(1.5f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtkp_545.png"))
+                        .modifyHeatSensitive(3f)
+        );
+        ModelRegistrationManager.registerModel(GCRModules.DTK1_COMPENSATOR, "model_assets/gltf/dtk1_compensator.gltf", "model_assets/gltf/dtk1_compensator.png", true, d ->
+                new MuzzleModel(d, 4f, CommonMuzzleFlashes.AK_COMPENSATOR, 3.2f, CommonMuzzleSmokeEffects.COMMON,  3.2f,
+                        new SlowSmokeEntry(1.2f, 1.5f, new CommonSlowSmokeController().setTravel(1.3f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/dtk1_compensator.png"))
+        );
+        ModelRegistrationManager.registerModel(GCRModules.CAR_15_HANDGUARD, "model_assets/gltf/car_15_handguard.gltf", "model_assets/gltf/car_15_handguard.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.M4_CARBINE_STOCK, "model_assets/gltf/ar_marine_stock.gltf", "model_assets/gltf/ar_marine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MOE_CARBINE_STOCK, "model_assets/gltf/moe_carbine_stock.gltf", "model_assets/gltf/moe_carbine_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.STOCK_6P34, "model_assets/gltf/6p34_stock.gltf", "model_assets/gltf/6p34_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.DUSTCOVER_6P34, "model_assets/gltf/6p34_dustcover.gltf", "model_assets/gltf/6p34_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.PDC_DUSTCOVER, "model_assets/gltf/pdc_dustcover.gltf", "model_assets/gltf/pdc_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.PT1_STOCK, "model_assets/gltf/pt1_stock.gltf", "model_assets/gltf/pt1_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AR_STOCK_ADAPTER_TYPE1, "model_assets/gltf/ar_stock_adapter_type1.gltf", "model_assets/gltf/ar_stock_adapter_type1.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.CTR_STOCK, "model_assets/gltf/ctr_stock.gltf", "model_assets/gltf/ctr_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_SL_M_STOCK, "model_assets/gltf/magpul_sl_m_stock.gltf", "model_assets/gltf/magpul_sl_m_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MCX_STOCK_TUBE, "model_assets/gltf/mcx_stock_tube.gltf", "model_assets/gltf/mcx_stock_tube.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AKM_STOCK, "model_assets/gltf/akm_stock.gltf", "model_assets/gltf/akm_stock.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_RIBBED_DUSTCOVER, "model_assets/gltf/ak_ribbed_dustcover.gltf", "model_assets/gltf/ak_ribbed_dustcover.png", true, d -> new ModularModel(d, GCR.RL("")));
+
+
+        ModelRegistrationManager.registerModel(GCRModules.A2_PISTOL_GRIP, "model_assets/gltf/a2_pistol_grip.gltf", "model_assets/gltf/a2_pistol_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_GRIP, "model_assets/gltf/ak_polymer_grip.gltf", "model_assets/gltf/ak_polymer_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MOE_GRIP, "model_assets/gltf/moe_grip.gltf", "model_assets/gltf/moe_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.RK9_GRIP, "model_assets/gltf/rk9_grip.gltf", "model_assets/gltf/rk9_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.SAKO_ARG_GRIP, "model_assets/gltf/sako_arg_grip.gltf", "model_assets/gltf/sako_arg_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.MCX_M400_GRIP, "model_assets/gltf/mcx_m400_grip.gltf", "model_assets/gltf/mcx_m400_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_BAKELITE_GRIP, "model_assets/gltf/ak_bakelite_grip.gltf", "model_assets/gltf/ak_bakelite_grip.png", true, d -> new ModularModel(d, GCR.RL("")));
+
+
+        ModelRegistrationManager.registerModel(GCRModules.A2_CARRY_HANDLE, "model_assets/gltf/a2_carry_handle.gltf", "model_assets/gltf/a2_carry_handle.png", true, d -> new SightModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_REAR, "model_assets/gltf/kac_folding_sight_rear.gltf", "model_assets/gltf/kac_folding_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FOLDING_SIGHT_FAR, "model_assets/gltf/kac_folding_sight_far.gltf", "model_assets/gltf/kac_folding_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_MBUS_PRO_SIGHT_REAR, "model_assets/gltf/magpul_mbus_pro_sight_rear.gltf", "model_assets/gltf/magpul_mbus_pro_sight_rear.png", true, d -> new FoldingRearIronSightModel(d, GCR.RL(""), 90));
+        ModelRegistrationManager.registerModel(GCRModules.MAGPUL_MBUS_PRO_SIGHT_FAR, "model_assets/gltf/magpul_mbus_pro_sight_far.gltf", "model_assets/gltf/magpul_mbus_pro_sight_far.png", true, d -> new FoldingFarIronSightModel(d, GCR.RL(""), 90));
+
+        ModelRegistrationManager.registerModel(GCRModules.CANTED_RAIL, "model_assets/gltf/canted_rail.gltf", "model_assets/gltf/canted_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.KAC_RAS_HANDGUARD, "model_assets/gltf/kac_ras.gltf", "model_assets/gltf/kac_ras.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.DANIEL_DEFENSE_RIS_II_HANDGUARD, "model_assets/gltf/daniel_defense_ris_ii.gltf", "model_assets/gltf/daniel_defense_ris_ii.png", true, SplitARHandguardModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.KAC_FORWARD_GRIP, "model_assets/gltf/kac_forward_grip.gltf", "model_assets/gltf/kac_forward_grip.png", true, MLokFitGripModel::new);
+        ModelRegistrationManager.registerModel(GCRModules.RK_2_GRIP, "model_assets/gltf/rk_2_grip.gltf", "model_assets/gltf/rk_2_grip.png", true, MLokFitGripModel::new);
+
+        ModelRegistrationManager.registerModel(GCRModules.URGI_HANDGUARD, "model_assets/gltf/urgi_handguard.gltf", "model_assets/gltf/urgi_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK24A_HANDGUARD, "model_assets/gltf/ak24a_handguard.gltf", "model_assets/gltf/ak24a_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_HANDGUARD, "model_assets/gltf/spear_handguard.gltf", "model_assets/gltf/spear_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.32f));
+        ModelRegistrationManager.registerModel(GCRModules.SPEAR_LT_HANDGUARD, "model_assets/gltf/spear_lt_handguard.gltf", "model_assets/gltf/spear_lt_handguard.png", true, d -> (IModularModel) new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")).setTestAlpha(0.32f));
+
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_LOWER, "model_assets/gltf/ak_polymer_handguard_lower.gltf", "model_assets/gltf/ak_polymer_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_POLYMER_HANDGUARD_UPPER, "model_assets/gltf/ak_polymer_handguard_upper.gltf", "model_assets/gltf/ak_polymer_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B10_HANDGUARD, "model_assets/gltf/b10_handguard.gltf", "model_assets/gltf/b10_handguard.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B19_HANDGUARD, "model_assets/gltf/b19_handguard.gltf", "model_assets/gltf/b19_handguard.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B10_MOUNT_RAIL, "model_assets/gltf/b10_mount_rail.gltf", "model_assets/gltf/b10_mount_rail.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.B13_BRACKET, "model_assets/gltf/b13_bracket.gltf", "model_assets/gltf/b13_bracket.png", true, d -> new ModularModel(d, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_WOODEN_HANDGUARD_LOWER, "model_assets/gltf/ak_wooden_handguard_lower.gltf", "model_assets/gltf/ak_wooden_handguard_lower.png", true, d -> new ArmHandlerModel<>(d, IStateViewer.EMPTY, GCR.RL("")));
+        ModelRegistrationManager.registerModel(GCRModules.AK_WOODEN_HANDGUARD_UPPER, "model_assets/gltf/ak_wooden_handguard_upper.gltf", "model_assets/gltf/ak_wooden_handguard_upper.png", true, d -> new ModularModel(d, GCR.RL("")));
+
+
+        ModelRegistrationManager.registerModel(GCRModules.URGI_BARREL, "model_assets/gltf/urgi_barrel.gltf", "model_assets/gltf/urgi_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f,
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/urgi_barrel.png"))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.AK24A_BARREL, "model_assets/gltf/ak24a_barrel.gltf", "model_assets/gltf/ak24a_barrel.png", true, d ->
+                new BarrelModel(d, 2.8f, CommonMuzzleFlashes.COMMON, 2.25f, CommonMuzzleSmokeEffects.COMMON, 3.5f,
+                        new SlowSmokeEntry(0.8f, 1.2f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak24a_barrel.png"))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.AK24B_BARREL, "model_assets/gltf/ak24b_barrel.gltf", "model_assets/gltf/ak24b_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f,
+                        new SlowSmokeEntry(0.8f, 1f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/ak24b_barrel.png"))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.SIG_FURY_BARREL, "model_assets/gltf/sig_fury_barrel.gltf", "model_assets/gltf/sig_fury_barrel.png", true, d ->
+                new BarrelModel(d, 2.2f, CommonMuzzleFlashes.COMMON, 2f, CommonMuzzleSmokeEffects.COMMON, 3f,
+                        new SlowSmokeEntry(0.8f, 1.2f, new CommonSlowSmokeController().setTravel(1.1f), CommonSlowSmokeEffects.COMMON))
+                        .setHeatMapTexPath(GCR.RL("model_assets/heatmap/sig_fury_barrel.png"))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.ACOG, "model_assets/gltf/acog.gltf", "model_assets/gltf/acog.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.13f, 2f, 0.7f, 1f, 2f, new Vector3f(0.085f, 1.5f, 7f), new Vector3f(0.35f, 0.61f, 0.8f), 0.25f, 1.15f, 1.9f, GCR.RL("textures/sight/crosshair/acog.png")));
+        ModelRegistrationManager.registerModel(GCRModules.ELCAN, "model_assets/gltf/elcan.gltf", "model_assets/gltf/elcan.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.19f, 2f, 0.6f, 1f, 1.5f, new Vector3f(0.075f, 1.5f, 6f), new Vector3f(0.27f, 0.65f, 0.85f), 0.25f, 1.15f, 1.9f, GCR.RL("textures/sight/crosshair/elcan.png")));
+        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_HD, "model_assets/gltf/vortex_razor_hd.gltf", "model_assets/gltf/vortex_razor_hd.png", true, d -> new ScopeModel(d, GCR.RL(""), 0.158f, 2f, 0.88f, 1.2f, 2f, new Vector3f(0.04f, 1.5f, 7.5f), new Vector3f(0.27f, 0.50f, 0.93f), 0.25f, 1.15f, 1.85f, GCR.RL("textures/sight/crosshair/vortex_razor_hd.png")));
+
+
+        BulletShellModel shell_5_56x45 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.gltf")),
+                GCR.RL("shell_5_56x45"));
+        BulletShellModel shell_5_45x39 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.gltf")),
+                GCR.RL("shell_5_45x39"));
+        BulletShellModel shell_6_8x51 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_6_8x51.gltf")),
+                GCR.RL("shell_6_8x51"));
+        BulletShellModel shell_7_62x39 = new BulletShellModel(
+                GltfModelLoader.loadModel(GCR.RL("gcr", "model_assets/gltf/shell_7_62x39.gltf")),
+                GCR.RL("shell_7_62x39"));
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_5_56x45.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_56x45.png")))
+        );
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_5_45x39.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_5_45x39.png")))
+        );
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_6_8x51.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_6_8x51.png")))
+        );
+        ModelRegistrationManager.addDeferredCompileTask(() ->
+                shell_7_62x39.compile(RenderTypes.getMeshCutOut(GCR.RL("gcr", "model_assets/gltf/shell_7_62x39.png")))
+        );
+
+        ModelRegistrationManager.registerModel(GCRModules.VORTEX_RAZOR_RED_DOT, "model_assets/gltf/vortex_razor_red_dot.gltf", "model_assets/gltf/vortex_razor_red_dot.png", true, d -> new RedDotModel(d, GCR.RL("vortex_razor_red_dot"), GCR.RL("textures/sight/crosshair/red_dot.png"), 0.06875f));
+
+        ModelRegistrationManager.registerModel(GCRModules.EOTECH_EXPS3, "model_assets/gltf/eotech_exps3.gltf", "model_assets/gltf/eotech_exps3.png", true, d -> new RedDotModel(d, GCR.RL("eotech_exps3"), GCR.RL("textures/sight/crosshair/eotech_exps3.png"), 0.045f));
+
+
+        ModelRegistrationManager.registerModel(
+                GCRModules.PEQ_15, "model_assets/gltf/peq_15.gltf", "model_assets/gltf/peq_15.png", true,
+                d -> new PEQ15Model(d, GCR.RL(""), new FlashLightStatesViewer((IFlashLightView) GCRModules.PEQ_15)));
+
+
+        BufferedPlayerArmModel.init();
+        event.enqueueWork(() -> RenderSystem.recordRenderCall(ClientTestingResources::compile));
+
+        HeatMapTextureManager.handleTextureLoad();
+    }
+
+    public static void afterModelRegister() {
+        ModuleModelRegister.visitAll(model -> {
+            if (model instanceof IStateViewerModel<?> stateListenerModel) {
+                IStateViewer<?> stateViewer = stateListenerModel.getViewer();
+                if (stateViewer != null) {
+                    stateViewer.onRegisterStateMapping();
+                }
+            }
+        });
+    }
+
+    public static void compile() {
+        // 直接触发由管理器收集并生成的延迟编译任务列表
+        ModelRegistrationManager.compileAll();
+    }
+
+    public static void regModels() {
+
+    }
+}

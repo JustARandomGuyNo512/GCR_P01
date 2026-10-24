@@ -1,0 +1,31 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.sig_fury",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 1,
+				"visible_bounds_height": 1,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "MUZZLE",
+					"parent": "root",
+					"pivot": [0, 0, -49]
+				},
+				{
+					"name": "MUZZLE_FLASH",
+					"parent": "root",
+					"pivot": [0, 0, -49.5]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,135 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'com.gradleup.shadow' version '8.3.10'
+}
+
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+
+java { toolchain.languageVersion = JavaLanguageVersion.of(17) }
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    maven { url = 'https://cursemaven.com' }
+    maven {
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+}
+
+configurations { jmeBundled }
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+            mods { gcr { source sourceSets.main } }
+        }
+        client { }
+        server { args '--nogui' }
+    }
+}
+
+mixin {
+    add sourceSets.main, 'gcr.refmap.json'
+    config 'gcr.mixins.json'
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Published Forge 1.20.1 LDLib2 port (stable release 2.2.41).
+    // https://www.curseforge.com/minecraft/mc-mods/lowdraglib2-unofficial-port/files/8945777
+    implementation fg.deobf('curse.maven:lowdraglib2-unofficial-port-1641643:8945777')
+
+    // Explicit development runtime dependency required by LDLib2.
+    // https://www.curseforge.com/minecraft/mc-mods/kotlin-for-forge/files/7291067
+    runtimeOnly fg.deobf('curse.maven:kotlin-for-forge-351264:7291067')
+
+    // No Oculus, Iris or Sodium dependency. GCR uses its vanilla/OpenGL rendering
+    // path for the requested Forge 1.20.1 client profile.
+    // Embeddium is optional at runtime, not a compile-time requirement here.
+    // Shader-framework-specific integration may be added only after separate testing.
+
+    jmeBundled('org.jmonkeyengine:jme3-core:3.7.0-stable') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    jmeBundled('org.jmonkeyengine:jme3-plugins:3.7.0-stable') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    implementation 'org.jmonkeyengine:jme3-core:3.7.0-stable'
+    implementation 'org.jmonkeyengine:jme3-plugins:3.7.0-stable'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5'
+    annotationProcessor 'com.google.code.gson:gson:2.10.1'
+    annotationProcessor 'org.ow2.asm:asm-tree:9.8'
+    annotationProcessor 'com.google.guava:guava:33.3.1-jre'
+}
+
+tasks.named('shadowJar') {
+    archiveClassifier.set('')
+    configurations = [project.configurations.jmeBundled]
+    relocate 'com.jme3', "${mod_id}.shadowed.jme3"
+    manifest { attributes('MixinConfigs': 'gcr.mixins.json',
+                          'Implementation-Title': mod_name,
+                          'Implementation-Version': mod_version) }
+}
+// ForgeGradle needs to reobfuscate the *shaded* final artifact, not jar.
+reobf { shadowJar {} }
+// MixinGradle writes the obfuscation mappings to compileJava-refmap.json, but
+// the runtime mixin configuration expects gcr.refmap.json at the JAR root.
+// Bundle the generated mapping explicitly in the final shaded/reobfuscated JAR.
+// Without this, production Forge clients cannot resolve named injection targets
+// such as GameRenderer#getFov and #bobView.
+// Patch the final JAR after Shadow and ForgeGradle reobfuscation. The Mixin
+// annotation processor writes its mappings under build/tmp/compileJava; the
+// ShadowJar task does not reliably include resources added earlier.
+// The MixinGradle task can remove its temporary refmap while embedding it
+// into intermediate outputs. Snapshot it immediately after Java compilation.
+tasks.named('compileJava') {
+    doLast {
+        def candidates = fileTree(buildDir) {
+            include '**/*refmap*.json'
+        }.files.findAll { it.isFile() && !it.path.contains('/refmap-cache/') }
+        logger.lifecycle("Mixin refmap candidates at compileJava: ${candidates}")
+        if (candidates.isEmpty()) {
+            throw new GradleException("Mixin refmap was not generated")
+        }
+        def candidate = candidates.find { it.name == 'compileJava-refmap.json' } ?: candidates.first()
+        def output = file("${buildDir}/refmap-cache/gcr.refmap.json")
+        output.parentFile.mkdirs()
+        output.bytes = candidate.bytes
+        logger.lifecycle("Saved GCR mixin mappings: ${output} (${output.length()} bytes)")
+    }
+}
+
+tasks.named('reobfShadowJar') {
+    doLast {
+        def ref = file("${buildDir}/refmap-cache/gcr.refmap.json")
+        if (!ref.isFile()) {
+            throw new GradleException("Missing saved Mixin refmap: ${ref}")
+        }
+        def artifact = tasks.named('shadowJar').get().archiveFile.get().asFile
+        ant.zip(destfile: artifact, update: true) {
+            zipfileset(file: ref, fullpath: 'gcr.refmap.json')
+        }
+    }
+}
+tasks.named('shadowJar') { finalizedBy('reobfShadowJar') }
+tasks.named('jar') { enabled = false }
+tasks.matching { it.name == 'reobfJar' }.configureEach { enabled = false }
+tasks.named('assemble') { dependsOn tasks.named('shadowJar') }
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

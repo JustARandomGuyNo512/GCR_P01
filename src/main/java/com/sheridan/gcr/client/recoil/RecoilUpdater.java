@@ -1,0 +1,532 @@
+package com.sheridan.gcr.client.recoil;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.sheridan.gcr.Client;
+import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.model.Bone;
+import com.sheridan.gcr.client.model.modular.IGunModel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
+import java.util.SplittableRandom;
+import java.util.concurrent.locks.ReentrantLock;
+
+@OnlyIn(Dist.CLIENT)
+public class RecoilUpdater implements IRecoilUpdater {
+    private static final SplittableRandom RANDOM = new SplittableRandom(System.currentTimeMillis());
+    private static final SmoothNoise1D noise1DX = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
+    private static final SmoothNoise1D noise1DY = new SmoothNoise1D((long) (3000 + Math.random() * 1000));
+    private static final float PHI_SHAKE_ROT = (float) -Math.PI * 0.48f;
+    private static final float PHI_VISUAL_BACK_Z = (float) -Math.PI * 0.5f;
+    private long lastShoot = 0;
+    private RecoilData data;
+
+    private float noiseTimerX = (float) (50 + Math.random() * 100);
+    private float noiseTimerY = (float) (50 + Math.random() * 100);
+
+
+    private final RecoilSpring1D zLinear = new RecoilSpring1D();      // 线性位移 Z
+    private final RecoilSpring1D basePitch = new RecoilSpring1D();    // 基础 Pitch 抬起
+    private final RecoilSpring2D localRot = new RecoilSpring2D();     // 模型本地 Pitch (X) & Yaw (Y) 旋转震动
+    private final RecoilSpring2D globalRot = new RecoilSpring2D();    // 全局 Pitch (X) & Yaw (Y) 旋转震动
+    private final RecoilSpring1D roll = new RecoilSpring1D();         // 枪械侧倾 Roll
+
+    // 汇总物理状态（用于兼容渲染层与同步）
+    private final Vector3f gunDisplacement = new Vector3f();
+    private final Vector3f gunVelocity = new Vector3f();
+    private final Vector3f localAngularDisplacement = new Vector3f();
+    private final Vector3f globalAngularDisplacement = new Vector3f();
+    private final Vector3f gunAngularVelocity = new Vector3f();
+
+    // --- 镜头后坐力状态 ---
+    private float camUpSpeed = 0f;
+    private float camRandomSpeedPitch = 0f;
+    private float camRandomSpeedYaw = 0f;
+    private float camShake = 0f;
+    private final Vector2f cameraSpeed = new Vector2f();
+
+    // --- 渲染插值相关变量 ---
+    private static final double PHYSICS_TICK_NANOS = 10_000_000.0;
+    private final Vector3f prevRenderDisplacement = new Vector3f();
+    private final Vector3f prevRenderLocalAngularDisplacement = new Vector3f();
+    private final Vector3f prevRenderGlobalAngularDisplacement = new Vector3f();
+    private final Vector3f currRenderDisplacement = new Vector3f();
+    private final Vector3f currRenderLocalAngularDisplacement = new Vector3f();
+    private final Vector3f currRenderGlobalAngularDisplacement = new Vector3f();
+    private final ReentrantLock renderStateLock = new ReentrantLock();
+    private volatile long lastPhysicsUpdateTime = System.nanoTime();
+
+    private float recoilHeat = 0f;
+    private float recoilBackEMA = 0f;
+    private float randomSeed = 0f;
+    private float randomSeed2 = 0f;
+
+    /**
+     * 物理线程在 update 结束时调用，用于发布状态给渲染线程
+     */
+    private void publishRenderState() {
+        renderStateLock.lock();
+        try {
+            prevRenderDisplacement.set(currRenderDisplacement);
+            prevRenderLocalAngularDisplacement.set(currRenderLocalAngularDisplacement);
+            prevRenderGlobalAngularDisplacement.set(currRenderGlobalAngularDisplacement);
+            currRenderDisplacement.set(gunDisplacement);
+            currRenderLocalAngularDisplacement.set(localAngularDisplacement);
+            currRenderGlobalAngularDisplacement.set(globalAngularDisplacement);
+            lastPhysicsUpdateTime = System.nanoTime();
+        } finally {
+            renderStateLock.unlock();
+        }
+    }
+
+    @Override
+    public void update(double timeDist) {
+        if (data == null) {
+            return;
+        }
+        float dt = (float) timeDist;
+        float aimingFactor = Client.WEAPON_STATUS.getAimingProgress();
+        float recoilControlRatio = Client.WEAPON_STATUS.getRecoilControl();
+        aimingFactor *= aimingFactor;
+
+        float control = Math.max(0, recoilControlRatio);
+        float recoilControl = (float) Math.sqrt(control);
+        RecoilController controller = data.getRecoilController();
+
+        float motionAdsModifierStiff = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierStiff());
+        float motionAdsModifierDamp = Mth.lerp(aimingFactor, 1.0f, controller.motionAdsModifierDamp());
+        float aimingRotFactorStiff = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierStiff());
+        float aimingRotFactorDamp = Mth.lerp(aimingFactor, 1.0f, controller.rotAdsModifierDamp());
+
+        float k_lin_z = controller.linearZStiffness() * motionAdsModifierStiff;
+        float c_lin_z = controller.linearZDamping() * motionAdsModifierDamp;
+        zLinear.updateImplicit(dt, k_lin_z, c_lin_z);
+
+        float k_ang_pitch = controller.pitchStiffness() * aimingRotFactorStiff * recoilControl;
+        float c_ang_pitch = controller.pitchDamping() * aimingRotFactorDamp * recoilControl;
+        basePitch.updateExplicit(dt, k_ang_pitch, c_ang_pitch);
+
+        float k_ang_local = controller.localRotStiffness() * aimingRotFactorStiff * recoilControl;
+        float c_ang_local = controller.localRotDamping() * aimingRotFactorDamp * recoilControl;
+        localRot.updateExplicit(dt, k_ang_local, c_ang_local);
+
+        float k_ang_global = controller.globalRotStiffness() * aimingRotFactorStiff * recoilControl;
+        float c_ang_global = controller.globalRotDamping() * aimingRotFactorDamp * recoilControl;
+        globalRot.updateExplicit(dt, k_ang_global, c_ang_global);
+
+
+        float k_ang_roll = controller.rollStiffness() * aimingRotFactorStiff;
+        float c_ang_roll = controller.rollDamping() * aimingRotFactorDamp;
+        float zFactor = Mth.lerp(-zLinear.getDisplacement() * 8, 1, 1.5f);
+        roll.updateExplicit(dt, k_ang_roll * zFactor, c_ang_roll);
+
+
+        gunDisplacement.set(0, 0, zLinear.getDisplacement());
+        gunVelocity.set(0, 0, zLinear.getVelocity());
+
+        localAngularDisplacement.set(
+                basePitch.getDisplacement() + localRot.getDisplacementX(),
+                localRot.getDisplacementY(),
+                roll.getDisplacement()
+        );
+
+        globalAngularDisplacement.set(
+                globalRot.getDisplacementX(),
+                globalRot.getDisplacementY(),
+                0
+        );
+
+        gunAngularVelocity.set(
+                basePitch.getVelocity() + localRot.getVelocityX() + globalRot.getVelocityX(),
+                localRot.getVelocityY() + globalRot.getVelocityY(),
+                roll.getVelocity()
+        );
+
+        recoilBackEMA = 0.1f * zLinear.getDisplacement() + 0.9f * recoilBackEMA;
+
+        updateRecoilHeat(Client.WEAPON_STATUS.getFireInterval(), recoilControlRatio, 0.8f, 0.082f);
+        publishRenderState();
+    }
+
+    @Override
+    public void onShoot(Player player) {
+        if (data == null) {
+            return;
+        }
+
+        RecoilImpulse impulse = data.getImpulse();
+        applyImpulse(
+                impulse.back(),
+                impulse.randomLocalPitch(),
+                impulse.randomLocalYaw(),
+                impulse.randomGlobalPitch(),
+                impulse.randomGlobalYaw(),
+                impulse.roll()
+        );
+    }
+
+    public void applyImpulse(float impulseZ, float localPitch, float localYaw, float globalPitch, float globalYaw, float shakeRoll) {
+        if (data == null) {
+            return;
+        }
+
+        float impulseVal = Client.WEAPON_STATUS.getImpulse();
+        float playerDynamicFactor = Client.WEAPON_STATUS.getPlayerDynamicFactor();
+        float stableFactor = 1.0f / (Client.WEAPON_STATUS.getStability() * playerDynamicFactor);
+        float recoilControlFactor = 1.0f / Client.WEAPON_STATUS.getRecoilControl();
+        float recoilHeatRes = getRecoilHeat();
+
+        float delta = Math.min(distFromLastShoot(), 1.0f) * 20f;
+        this.noiseTimerX += delta;
+        this.noiseTimerY += delta;
+
+        float aimingFactor = Client.getAimingProgress();
+        float aimingFactorSqr = aimingFactor * aimingFactor;
+        RecoilImpulse impulse = data.getImpulse();
+        float rotLever = impulse.rotPitch() * recoilControlFactor * (Mth.clamp(1 - aimingFactorSqr, 0.05f, 1f));
+
+        impulseZ *= Math.max(0, impulseVal);
+
+        float torqueImpulseX = (float) (rotLever * impulseZ * (impulse.torquePitchStart() + recoilHeatRes * (1 - impulse.torquePitchStart())) * (0.9f + 0.2f * Math.random()));
+
+        float dynamicRand = (float) (Mth.lerp(recoilHeatRes, impulse.randomStart(), 1f) *
+                (2.9f - aimingFactor * 2.75f) *
+                stableFactor * Math.sqrt(impulseVal));
+        impulseZ *= (float) (0.8f + 0.4f * Math.random());
+
+        float noiseX = randomNoiseX(noiseTimerX);
+        float noiseY = randomNoiseY(noiseTimerY);
+
+        float randGlobalPitch = noiseX * globalPitch * dynamicRand * (1 - 0.3f * aimingFactorSqr);
+        float randGlobalYaw = noiseY * globalYaw * dynamicRand;
+
+        stableFactor = (float) Math.pow(stableFactor, 0.7f);
+        localPitch *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
+        localYaw *= (RANDOM.nextBoolean() ? 1 : -1) * stableFactor;
+
+        float shakeRollRandomSize = (RANDOM.nextFloat() - 0.5f) * Math.min(1, Math.abs(zLinear.getDisplacement() * 3));
+        float rawShakeRoll = -shakeRoll * (1 + shakeRollRandomSize * 0.5f);
+
+        float shakeFactor = 1 - Mth.clamp(-zLinear.getDisplacement() * 10, 0, 0.7f + RANDOM.nextFloat() * 0.2f);
+        if (Client.isAiming()) {
+            shakeFactor = Mth.lerp(aimingFactor, shakeFactor, -aimingFactor * (RANDOM.nextFloat() + 0.5f));
+        }
+        float adsShakeFactor = 1 - aimingFactor * (0.9f + RANDOM.nextFloat() * 0.08f);
+
+        float rollVelocityImpulse = rawShakeRoll * shakeFactor * adsShakeFactor;
+        float shakeZFactor = Math.min(1.0f - shakeFactor, adsShakeFactor) * adsShakeFactor;
+        float rollDisplacementImpulse = rawShakeRoll * shakeZFactor * 0.026f;
+
+
+        zLinear.addVelocity(impulseZ);
+        basePitch.addVelocity(torqueImpulseX);
+        localRot.addVelocity(localPitch, localYaw);
+        globalRot.addVelocity(randGlobalPitch, randGlobalYaw);
+
+        roll.addVelocity(rollVelocityImpulse);
+        roll.addDisplacement(rollDisplacementImpulse);
+
+        float f1 = (1 - aimingFactor * 0.9f);
+        float totalRandPitch = localPitch * f1 + randGlobalPitch;
+        float totalRandYaw = localYaw * f1 + randGlobalYaw;
+        float randPitchCam = totalRandPitch > 0 ? totalRandPitch * 0.7f : totalRandPitch;
+
+        float camImpactScale = 0.0088f + aimingFactor * 0.0075f;
+        float camRandomScale = 0.003f + aimingFactor * 0.047f;
+        float camImpact = camImpactScale * (torqueImpulseX + impulseZ * (1.5f + aimingFactor * 1.5f));
+        float camImpactRandomYaw = totalRandYaw * camRandomScale;
+        float camImpactRandomPitch = randPitchCam * camRandomScale;
+
+        this.camShake = 1e-4f * shakeRoll * Math.signum(localYaw);
+
+        applyCamImpulse(camImpact, camImpactRandomPitch, camImpactRandomYaw, recoilControlFactor, aimingFactor);
+        randomSeed = RANDOM.nextFloat();
+        randomSeed2 = RANDOM.nextFloat();
+        lastShoot = System.currentTimeMillis();
+    }
+
+    public void updateRecoilHeat(float fireInterval, float controlMod, float recoilControlSpeed, float baseRecoveryRate) {
+        float friction = -0.35f * (controlMod - 1) + 0.95f;
+        friction = Mth.clamp(friction, 0.25f, 0.97f);
+        this.camUpSpeed *= friction;
+        this.camRandomSpeedPitch *= friction;
+        this.camRandomSpeedYaw *= friction;
+
+        if (Math.abs(this.camUpSpeed) < 1e-3f) this.camUpSpeed = 0.0f;
+        if (Math.abs(this.camRandomSpeedPitch) < 1e-3f) this.camRandomSpeedPitch = 0.0f;
+        if (Math.abs(this.camRandomSpeedYaw) < 1e-3f) this.camRandomSpeedYaw = 0.0f;
+
+        float timeSinceLastShoot = Client.distFromLastShoot();
+        if (timeSinceLastShoot > fireInterval + 0.05f) {
+            float actualRecoveryRate = Math.max(0.1f, baseRecoveryRate * controlMod);
+            this.recoilHeat = Math.max(0.0f, this.recoilHeat - actualRecoveryRate);
+        }
+    }
+
+    private void applyCamImpulse(float baseImpulse, float randomPitch, float randomYaw, float recoilControlFactor, float aimingProgress) {
+        float actualShotsToStable = Math.max(1.5f, Math.min(25.0f, data.getRecoilController().stableDuration() * recoilControlFactor));
+        float jumpFactor = Mth.lerp(aimingProgress, 1, Mth.clamp(Client.distFromLastJump() * 2f, 0.5f, 1.0f));
+        float heatStep = 1.0f / actualShotsToStable;
+        this.recoilHeat = Math.min(1.0f, this.recoilHeat + heatStep);
+
+        float heatFactor = (float) Math.pow(this.recoilHeat, 0.75f) * jumpFactor;
+
+        this.camUpSpeed = (1.0f - heatFactor) * baseImpulse;
+        this.camRandomSpeedPitch += randomPitch * heatFactor;
+        this.camRandomSpeedYaw += randomYaw * heatFactor;
+    }
+
+    @Override
+    public void applyTransformPost(PoseStack poseStack, boolean aiming, float particleTicks, IGunModel model) {
+        float aimingProgress = Client.getAimingProgress();
+        aimingProgress *= aimingProgress;
+        long now = System.nanoTime();
+        double timeSinceLastUpdate = (double) (now - lastPhysicsUpdateTime);
+        float alpha = (float) Math.max(0.0, Math.min(1.0, timeSinceLastUpdate / PHYSICS_TICK_NANOS));
+        float recoilHeatRes = getRecoilHeat();
+
+        Vector3f lerpGunDisplacement = new Vector3f();
+        Vector3f lerpLocalAngular = new Vector3f();
+        Vector3f lerpGlobalAngular = new Vector3f();
+
+        renderStateLock.lock();
+        try {
+            prevRenderDisplacement.lerp(currRenderDisplacement, alpha, lerpGunDisplacement);
+            prevRenderLocalAngularDisplacement.lerp(currRenderLocalAngularDisplacement, alpha, lerpLocalAngular);
+            prevRenderGlobalAngularDisplacement.lerp(currRenderGlobalAngularDisplacement, alpha, lerpGlobalAngular);
+        } finally {
+            renderStateLock.unlock();
+        }
+
+        float adsZCompensation = Client.WEAPON_STATUS.getLerpAdsZCompensation(particleTicks);
+        float EMAFactor = aimingProgress * recoilHeatRes * recoilBackEMA * adsZCompensation;
+
+        float distFromLastShoot = Client.distFromLastShoot();
+
+        float shakeX = 0;
+        float shakeY = 0;
+        float shakeRotY = 0;
+        float shakeRotX = 0;
+        float visualBackZ = 0;
+        if (data != null) {
+            VisualRecoilMix mix = data.getVisualRecoilMix();
+            if (mix != null) {
+                if (distFromLastShoot < 3f) {
+                    float f1 = Mth.lerp(aimingProgress, 1, mix.shakeAdsScaleFactor());
+
+                    float o1 = Mth.lerp(aimingProgress, 1, mix.backAdsOmegaFactor());
+                    float o2 = Mth.lerp(aimingProgress, 1, mix.rotAdsOmegaFactor());
+
+                    float z1 = Mth.lerp(aimingProgress, 1, mix.backAdsZetaFactor());
+                    float z2 = Mth.lerp(aimingProgress, 1, mix.rotAdsZetaFactor());
+
+                    float zFactor = Mth.clamp(-zLinear.getDisplacement() * 8.5f, 0f, 1f);
+                    float zOmega = Mth.lerp(zFactor, mix.backOmegaMin(), mix.backOmegaMax());
+
+                    float scale = (1f + recoilHeatRes * 0.6f) * f1 * mix.shakeScale();
+                    float omega = (1 + recoilHeatRes * 1.5f) * 22;
+                    float rand = (randomSeed * 0.5f + 0.5f) * recoilHeatRes;
+                    float halfPI = (float) (Math.PI * (0.45f + rand * 0.1f));
+                    shakeX = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega, 0.26f, rand * halfPI * 0.67f);
+                    shakeY = (float) Utils.dampedOscillation(distFromLastShoot, scale, omega * 1.1f, 0.28f, rand * halfPI);
+
+
+                    float cScale = mix.rotScale();
+                    float ry = Math.signum(randomSeed - 0.5f) * Math.min(randomSeed + 0.5f, 1);
+                    float rx = (Math.signum(randomSeed2 - 0.5f) + 0.5f - aimingProgress * 0.5f) * Math.min(randomSeed2 + 0.6f, 1);
+
+                    shakeRotY = (float) Utils.dampedOscillation(distFromLastShoot, ry * cScale, mix.rotOmega() * o2, mix.rotZeta() * z2, PHI_SHAKE_ROT);
+                    shakeRotX = (float) Utils.dampedOscillation(distFromLastShoot, rx * cScale, mix.rotOmega() * o2, mix.rotZeta() * z2, PHI_SHAKE_ROT);
+                    visualBackZ = (float) Utils.dampedOscillation(distFromLastShoot, mix.backScale(), zOmega * o1, mix.backZeta() * z1, PHI_VISUAL_BACK_Z);
+
+                }
+            }
+        }
+
+        IRecoilCameraHandler instance = RecoilCameraHandler.getInstance();
+        if (instance != null) {
+            instance.applyGunModelTransform(poseStack, aiming, particleTicks, recoilHeatRes, model);
+        }
+
+        Bone handRotPivot = model.getHandRotPivot();
+        poseStack.translate(shakeX, shakeY * 0.5f, handRotPivot.z);
+        poseStack.mulPose(new Quaternionf().rotateXYZ(
+                -(float) Math.toRadians(lerpGlobalAngular.x),
+                (float) Math.toRadians(lerpGlobalAngular.y),
+                (float) Math.toRadians(lerpGlobalAngular.z)
+        ));
+        poseStack.translate(0, 0, -handRotPivot.z);
+
+        poseStack.mulPose(new Quaternionf().rotateXYZ(
+                -(float) Math.toRadians(lerpLocalAngular.x + shakeRotX),
+                (float) Math.toRadians(lerpLocalAngular.y + shakeRotY),
+                (float) Math.toRadians(lerpLocalAngular.z)
+        ));
+
+        float zBack = Mth.lerp(aimingProgress, -lerpGunDisplacement.z, -lerpGunDisplacement.z * adsZCompensation);
+        zBack += EMAFactor + visualBackZ * Mth.lerp(aimingProgress, 1, adsZCompensation);
+
+        poseStack.translate(lerpGunDisplacement.x, lerpGunDisplacement.y, zBack);
+
+    }
+
+
+    @Override
+    public void setRecoilData(RecoilData data) {
+        this.data = data;
+
+        this.noiseTimerX = (float) (Math.random() * 200);
+        this.noiseTimerY = (float) (Math.random() * 200);
+
+        zLinear.reset();
+        basePitch.reset();
+        localRot.reset();
+        globalRot.reset();
+        roll.reset();
+
+        gunDisplacement.set(0, 0, 0);
+        gunVelocity.set(0, 0, 0);
+        localAngularDisplacement.set(0, 0, 0);
+        gunAngularVelocity.set(0, 0, 0);
+    }
+
+    @Override
+    public RecoilData getRecoilData() {
+        return data;
+    }
+
+    @Override
+    public float getGunKickPitch() {
+        return currRenderLocalAngularDisplacement.x + currRenderGlobalAngularDisplacement.x;
+    }
+
+    @Override
+    public float getGunKickYaw() {
+        return currRenderLocalAngularDisplacement.y + currRenderGlobalAngularDisplacement.y;
+    }
+
+    @Override
+    public float getCamShakeZ() {
+        return this.camShake;
+    }
+
+    @Override
+    public Vector2f getCameraSpeed() {
+        cameraSpeed.set(camUpSpeed + camRandomSpeedPitch, camRandomSpeedYaw);
+        return cameraSpeed;
+    }
+
+    @Override
+    public float distFromLastShoot() {
+        return (System.currentTimeMillis() - lastShoot) * 0.001f;
+    }
+
+    public float getRecoilHeat() {
+        return recoilHeat;
+    }
+
+    private float randomNoiseX(float seed) {
+        return noise1DX.sample(seed) + (RANDOM.nextFloat() * 0.2f - 0.1f);
+    }
+
+    private float randomNoiseY(float seed) {
+        return noise1DY.sample(seed) + (RANDOM.nextFloat() * 0.2f - 0.1f);
+    }
+
+
+    public static class RecoilSpring1D {
+        private float displacement = 0f;
+        private float velocity = 0f;
+
+        public void updateExplicit(float dt, float stiffness, float damping) {
+            float force = -stiffness * displacement - damping * velocity;
+            velocity += force * dt;
+            displacement += velocity * dt;
+        }
+
+
+        public void updateImplicit(float dt, float stiffness, float damping) {
+            velocity = (velocity - stiffness * displacement * dt) / (1.0f + damping * dt);
+            displacement += velocity * dt;
+        }
+
+        public void addVelocity(float impulse) {
+            this.velocity += impulse;
+        }
+
+        public void addDisplacement(float delta) {
+            this.displacement += delta;
+        }
+
+        public void reset() {
+            this.displacement = 0f;
+            this.velocity = 0f;
+        }
+
+        public float getDisplacement() {
+            return displacement;
+        }
+
+        public float getVelocity() {
+            return velocity;
+        }
+    }
+
+    public static class RecoilSpring2D {
+        private final Vector2f displacement = new Vector2f(0f, 0f);
+        private final Vector2f velocity = new Vector2f(0f, 0f);
+
+        public void updateExplicit(float dt, float stiffness, float damping) {
+            float fx = -stiffness * displacement.x - damping * velocity.x;
+            float fy = -stiffness * displacement.y - damping * velocity.y;
+
+            velocity.x += fx * dt;
+            velocity.y += fy * dt;
+
+            displacement.x += velocity.x * dt;
+            displacement.y += velocity.y * dt;
+        }
+
+        public void addVelocity(float impulseX, float impulseY) {
+            this.velocity.add(impulseX, impulseY);
+        }
+
+        public void addDisplacement(float deltaX, float deltaY) {
+            this.displacement.add(deltaX, deltaY);
+        }
+
+        public void reset() {
+            this.displacement.set(0f, 0f);
+            this.velocity.set(0f, 0f);
+        }
+
+        public float getDisplacementX() {
+            return displacement.x;
+        }
+
+        public float getDisplacementY() {
+            return displacement.y;
+        }
+
+        public float getVelocityX() {
+            return velocity.x;
+        }
+
+        public float getVelocityY() {
+            return velocity.y;
+        }
+
+        public Vector2f getDisplacement() {
+            return displacement;
+        }
+
+        public Vector2f getVelocity() {
+            return velocity;
+        }
+    }
+}

@@ -1,0 +1,594 @@
+package com.sheridan.gcr.client.model;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.sheridan.gcr.Client;
+import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.render.Shaders;
+import com.sheridan.gcr.compat.IrisCompat;
+import com.sheridan.gcr.mixin.VertexBufferAccessor;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL31;
+
+import javax.annotation.Nullable;
+import java.nio.FloatBuffer;
+import java.util.*;
+
+import static org.lwjgl.opengl.GL15.*;
+
+@OnlyIn(Dist.CLIENT)
+public class BufferedBoneMeshModel {
+    protected CompatType compatType = CompatType.VANILLA;
+    public static final int COMPILE_LIGHT = LightTexture.pack(15,15);
+    //mat4 * 2
+    private static final int UBO_ELEMENT_SIZE = 16 * 2;
+    // UBO 在 GLSL 中的绑定点 (layout (..., binding = 0) ...)
+    private static final int UBO_BINDING_POINT = 0;
+    // 骨骼数量 (必须与 GLSL 中的 128 匹配)
+    private static final int MAX_BONES = 128;
+    /**
+     * 原始数据
+     * */
+    protected float[] positions;
+    protected float[] normals;
+    protected float[] uvs;
+    //bone1 index start -> bone1 index end, bone2 index start -> bone2 index end
+    protected int[] boneIndices;
+    /**
+     * 骨骼数据
+     * */
+    public Bone rootBone;
+    protected List<BoneRenderStatus> renderableBoneStatusList;
+    protected Map<Integer, Bone> IndexToBone;
+    protected Object2ObjectOpenHashMap<String, Bone> flatBoneMap;
+    /**
+     * 渲染工具
+     * */
+    protected FloatBuffer boneStatusUboBuffer;
+    private final BoneUniformBuffer boneUbo = new BoneUniformBuffer();
+
+    // UBO 的 OpenGL ID
+    private int uboId = -1;
+    private int irisOverride = -1;
+    private int lastKnownProgramId = -1; // 用来检测 Shader 是否变化
+
+
+    public RenderType renderType;
+    protected VertexBuffer rawDataVertexBuffer;
+
+    protected int boneCount = 0;
+    protected int vertexCount = 0;
+    protected int renderingVertexCount = 0;
+
+    protected ResourceLocation debugName = GCR.RL("");
+
+    public BufferedBoneMeshModel(MeshModelData root, ResourceLocation debugName) {
+        this.readFromMeshData(root);
+        this.debugName = debugName;
+    }
+
+    protected void readFromMeshData(MeshModelData root) {
+        Map<String, Bone> boneMap = new HashMap<>();
+        Map<Bone, List<Vertex>> vertexMap = new HashMap<>();
+        initializeBoneMaps();
+        processBoneHierarchy(root, boneMap, vertexMap);
+        initializeVertexArrays();
+        processVertexData(vertexMap);
+    }
+
+    private void initializeBoneMaps() {
+        this.flatBoneMap = new Object2ObjectOpenHashMap<>();
+        this.IndexToBone = new Object2ObjectOpenHashMap<>();
+        this.renderableBoneStatusList = new ArrayList<>();
+        this.boneCount = 0;
+        this.vertexCount = 0;
+    }
+
+    protected void processBoneHierarchy(MeshModelData root, Map<String, Bone> boneMap, Map<Bone, List<Vertex>> vertexMap) {
+        root.depthFirstTraversal((modelData) -> {
+            boolean isRoot = MeshModelData.ROOT.equals(modelData.getName());
+            List<Vertex> vertices = modelData.getVertices();
+            Bone bone = createBone(modelData, vertices);
+            boneMap.put(modelData.getName(), bone);
+            updateBoneMaps(bone);
+            setupBoneParent(modelData, bone, boneMap);
+            vertexMap.put(bone, vertices);
+            this.vertexCount += vertices.size();
+            if (isRoot) {
+                this.rootBone = bone;
+            }
+        });
+    }
+
+    protected Bone createBone(MeshModelData modelData, List<Vertex> vertices) {
+        Bone bone = new Bone(this.boneCount, modelData.getName(), vertices.size(), this);
+        bone.loadPose(modelData);
+        this.boneCount++;
+        return bone;
+    }
+
+    protected void updateBoneMaps(Bone bone) {
+        this.flatBoneMap.put(bone.name, bone);
+        this.IndexToBone.put(bone.index, bone);
+    }
+
+    protected void setupBoneParent(MeshModelData modelData, Bone bone, Map<String, Bone> boneMap) {
+        MeshModelData parent = modelData.getParent();
+        if (parent != null) {
+            Bone parentBone = boneMap.get(parent.getName());
+            parentBone.addChild(bone.name, bone);
+        }
+    }
+
+    private void initializeVertexArrays() {
+        this.positions = new float[this.vertexCount * 3];
+        this.normals = new float[this.vertexCount * 3];
+        this.uvs = new float[this.vertexCount * 2];
+        this.boneIndices = new int[this.boneCount * 2];
+    }
+
+    private void processVertexData(Map<Bone, List<Vertex>> vertexMap) {
+        List<Map.Entry<Bone, List<Vertex>>> entries = new ArrayList<>(vertexMap.entrySet());
+        entries.sort(Comparator.comparingInt(o -> o.getKey().index));
+        int vertexTail = 0;
+        for (Map.Entry<Bone, List<Vertex>> entry : entries) {
+            vertexTail = populateVertexArrays(entry, vertexTail);
+            BoneRenderStatus boneRenderStatus = createBoneRenderStatus(entry.getKey(), vertexTail);
+            if (boneRenderStatus.vertexCount > 0) {
+                this.renderableBoneStatusList.add(boneRenderStatus);
+            }
+            entry.getKey().renderStatus = boneRenderStatus;
+        }
+    }
+
+    private int populateVertexArrays(Map.Entry<Bone, List<Vertex>> entry, int vertexTail) {
+        List<Vertex> vertices = entry.getValue();
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertex vertex = vertices.get(i);
+            int baseIndex = (vertexTail + i) * 3;
+            this.positions[baseIndex] = vertex.x;
+            this.positions[baseIndex + 1] = vertex.y;
+            this.positions[baseIndex + 2] = vertex.z;
+            this.normals[baseIndex] = vertex.normalX;
+            this.normals[baseIndex + 1] = vertex.normalY;
+            this.normals[baseIndex + 2] = vertex.normalZ;
+            this.uvs[(vertexTail + i) * 2] = vertex.u;
+            this.uvs[(vertexTail + i) * 2 + 1] = vertex.v;
+        }
+        int rangeIndex = entry.getKey().index * 2;
+        this.boneIndices[rangeIndex] = vertexTail;
+        vertexTail += vertices.size();
+        this.boneIndices[rangeIndex + 1] = vertexTail;
+        return vertexTail;
+    }
+
+    private BoneRenderStatus createBoneRenderStatus(Bone bone, int vertexTail) {
+        return new BoneRenderStatus(
+                bone.index,
+                this.boneIndices[bone.index * 2],
+                this.boneIndices[bone.index * 2 + 1]);
+    }
+
+    public Bone getBone(String name) {
+        return flatBoneMap.get(name);
+    }
+
+    public boolean hasBone(String name) {
+        return flatBoneMap.containsKey(name);
+    }
+
+    public PoseStack.Pose getBoneRenderPose(String name) {
+        Bone bone = getBone(name);
+        return bone == null ? null : bone.renderStatus.pose;
+    }
+
+    public int getVertexCount() {
+        return vertexCount;
+    }
+
+    public void compile(RenderType type) {
+        if (rawDataVertexBuffer != null) {
+            return;
+        }
+        renderType = type;
+        rawDataVertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        BufferBuilder rawBuilder = new BufferBuilder(1024 * 256);
+        rawBuilder.begin(type.mode(), type.format());
+        PoseStack poseStack = new PoseStack();
+        poseStack.setIdentity();
+        compileVertexToBuffer(rawBuilder, poseStack.last());
+        if (!boneUbo.create(renderableBoneStatusList.size())) {
+            throw new IllegalStateException("GCR requires <= 128 renderable bones and a 16 KiB uniform block");
+        }
+        // 1.20.1 stores the vertex data in BufferBuilder.RenderedBuffer.
+        // Quads requiring translucency sorting need a separate render-path review.
+        BufferBuilder.RenderedBuffer rawData = rawBuilder.endOrDiscardIfEmpty();
+        if (rawData != null) {
+            rawDataVertexBuffer.bind();
+            rawDataVertexBuffer.upload(rawData);
+            VertexBuffer.unbind();
+        }
+        rawBuilder.discard();
+        renderingVertexCount = 0;
+        if (boneStatusUboBuffer == null) {
+            boneStatusUboBuffer = BufferUtils.createFloatBuffer(UBO_ELEMENT_SIZE * renderableBoneStatusList.size());
+        }
+    }
+
+    public void setRenderType(RenderType type, boolean recompile) {
+        this.renderType = type;
+        if (recompile) {
+            compile(type);
+        }
+    }
+
+    @Nullable
+    public RenderType getRenderType() {
+        return renderType;
+    }
+
+    private void checkOrCreateUBO() {
+        if (uboId != -1) {
+            return;
+        }
+        uboId = glGenBuffers();
+        int bufferSizeInFloats = MAX_BONES * UBO_ELEMENT_SIZE;
+        long bufferSizeInBytes = (long)bufferSizeInFloats * Float.BYTES;
+
+        glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
+        glBufferData(GL31.GL_UNIFORM_BUFFER, bufferSizeInBytes, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
+    }
+
+
+    protected boolean updateCompatType() {
+        CompatType prevType = Client.isUsingIrisShader ? CompatType.IRIS : CompatType.VANILLA;
+        if (compatType != prevType) {
+            compatType = prevType;
+            release();
+            compile(renderType);
+            System.out.println("Recompile for compat type: " + compatType + " vertex count: " + vertexCount);
+            return false;
+        }
+        return true;
+    }
+
+    protected void compileVertexToBuffer(VertexConsumer rawData, PoseStack.Pose pose) {
+        int boneIndex = 0;
+        for (BoneRenderStatus status : renderableBoneStatusList) {
+            Bone bone = IndexToBone.get(status.boneIndex);
+            int vertexStart = boneIndices[bone.index * 2];
+            int vertexEnd = boneIndices[bone.index * 2 + 1];
+            renderingVertexCount += bone.vertexCount;
+            for (int i = vertexStart; i < vertexEnd; i++) {
+                int posIndex = i * 3;
+                rawData.vertex(pose.pose(), positions[posIndex], positions[posIndex + 1], positions[posIndex + 2])
+                        .color(1f, 1f, 1f, 1f)
+                        .uv(uvs[i * 2], uvs[i * 2 + 1])
+                        .overlayCoords(boneIndex, 0)
+                        .uv2(COMPILE_LIGHT)
+                        .normal(pose.normal(), normals[posIndex], normals[posIndex + 1], normals[posIndex + 2]).endVertex();
+            }
+            boneIndex++;
+        }
+    }
+
+    public boolean isCompiled() {
+        return rawDataVertexBuffer != null;
+    }
+
+    public int getRenderableBoneCount() {
+        return renderableBoneStatusList.size();
+    }
+    public void release() {
+        if (RenderSystem.isOnRenderThread()) {
+            _release();
+        } else {
+            RenderSystem.recordRenderCall(this::_release);
+        }
+    }
+    protected void _release() {
+        if (RenderSystem.isOnRenderThread()) {
+            boneUbo.close();
+            if (uboId != -1) {
+                GL15.glDeleteBuffers(uboId);
+                uboId = -1;
+            }
+        } else {
+            throw new IllegalStateException("Cannot release resources outside of the render thread!");
+        }
+
+        if (rawDataVertexBuffer != null) {
+            rawDataVertexBuffer.close();
+            rawDataVertexBuffer = null;
+        }
+        if (boneStatusUboBuffer != null) {
+            boneStatusUboBuffer = null;
+        }
+
+        irisOverride = -1;
+        lastKnownProgramId = -1;
+    }
+
+    public void render(boolean isFirstPerson, float partialTicks) {
+        String name = String.valueOf(debugName);
+        if (!prepared()) {
+            Shaders.diagOnce("notprepared:" + name, "model " + name + " not prepared (vbo=" + (rawDataVertexBuffer != null) + ", renderType=" + (renderType != null) + ")");
+            return;
+        }
+        if (renderingVertexCount == 0) {
+            Shaders.diagOnce("zerovert:" + name, "model " + name + " has renderingVertexCount == 0");
+            return;
+        }
+        ShaderInstance shader = prepareShaderAndBuffer();
+        if (shader == null) {
+            Shaders.diagOnce("noshader", "entity_cutout_ubo shader is null (failed to load?)");
+            return;
+        }
+        if (!checkShaderUbo(shader.getId())) {
+            Shaders.diagOnce("noubo:" + shader.getId(), "UBO block GcrBoneUBO not usable in shader program " + shader.getId());
+            return;
+        }
+        Shaders.diagOnce("render:" + name, "rendering model " + name + " verts=" + renderingVertexCount + " firstPerson=" + isFirstPerson);
+        bindShaderSamplers(shader);
+        applyVanillaDefaultUniforms(shader);
+        shader.apply();
+        prepareUbo();
+        uploadUbo();
+        callRender(shader, isFirstPerson, partialTicks);
+        unUseShaderAndBuffer(shader);
+    }
+
+    /**
+     * 1.20.1's {@link ShaderInstance#apply()} only binds samplers that were registered through
+     * {@link ShaderInstance#setSampler}; vanilla does that inside VertexBuffer.drawWithShader, which GCR bypasses
+     * (it issues raw glDrawElements). Without this every sampler reads whatever texture happened to be bound.
+     */
+    public static void applyVanillaDefaultUniforms(ShaderInstance shader) {
+        // Vanilla sets these in VertexBuffer.drawWithShader, which GCR bypasses. Without them the
+        // light directions stay (0,0,0) -> normalize() yields NaN and the model is unlit/dark.
+        RenderSystem.setupShaderLights(shader);
+        if (shader.COLOR_MODULATOR != null) {
+            shader.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
+        }
+        if (shader.FOG_START != null) {
+            shader.FOG_START.set(RenderSystem.getShaderFogStart());
+        }
+        if (shader.FOG_END != null) {
+            shader.FOG_END.set(RenderSystem.getShaderFogEnd());
+        }
+        if (shader.FOG_COLOR != null) {
+            shader.FOG_COLOR.set(RenderSystem.getShaderFogColor());
+        }
+        if (shader.FOG_SHAPE != null) {
+            shader.FOG_SHAPE.set(RenderSystem.getShaderFogShape().getIndex());
+        }
+    }
+
+    public static void bindShaderSamplers(ShaderInstance shader) {
+        for (int i = 0; i < 12; i++) {
+            shader.setSampler("Sampler" + i, RenderSystem.getShaderTexture(i));
+        }
+    }
+
+    protected void callRender(ShaderInstance shader, boolean isFirstPerson, float partialTicks) {
+        if (compatType == CompatType.IRIS) {
+            renderInIris(shader, isFirstPerson, IrisCompat.isRenderingShadowPass(), partialTicks);
+        } else if (compatType == CompatType.VANILLA) {
+            renderInVanilla(shader, isFirstPerson, partialTicks);
+        }
+    }
+
+    protected void unUseShaderAndBuffer(ShaderInstance shader) {
+        shader.clear();
+        VertexBuffer.unbind();
+        renderType.clearRenderState();
+    }
+
+    protected ShaderInstance prepareShaderAndBuffer() {
+        ShaderInstance shader = getShader();
+        if (shader == null) {
+            return null;
+        }
+        renderType.setupRenderState();
+        VertexBufferAccessor accessor = (VertexBufferAccessor) rawDataVertexBuffer;
+        rawDataVertexBuffer.bind();
+        if (shader.MODEL_VIEW_MATRIX != null) {
+            shader.MODEL_VIEW_MATRIX.set(RenderSystem.getModelViewMatrix());
+        }
+        if (shader.PROJECTION_MATRIX != null) {
+            shader.PROJECTION_MATRIX.set(RenderSystem.getProjectionMatrix());
+        }
+        boolean renderingShadowPass = IrisCompat.isRenderingShadowPass();
+        if (renderingShadowPass) {
+            if (shader.PROJECTION_MATRIX != null) {
+                shader.PROJECTION_MATRIX.set(IrisCompat.getShadowProjectionMat());
+            }
+        }
+        return shader;
+    }
+
+    protected boolean prepared() {
+        return rawDataVertexBuffer != null && renderType != null && updateCompatType();
+    }
+
+    public static ShaderInstance getShader() {
+        return Client.isUsingIrisShader ?
+                GameRenderer.getRendertypeEntityCutoutShader() :
+                Shaders.getEntityCutOutUBO();
+    }
+
+    protected void renderInIris(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
+        irisOverride = GL20.glGetUniformLocation(shader.getId(), "gcrDoTransformOverride");
+        if (irisOverride == -1) {
+            return;
+        }
+        GL20.glUniform1i(irisOverride, 1);
+        renderInner(shader, isFirstPerson, isShadowPass, partialTicks);
+        GL20.glUniform1i(irisOverride, 0);
+    }
+
+    protected void renderInVanilla(ShaderInstance shader, boolean isFirstPerson, float partialTicks) {
+        renderInner(shader, isFirstPerson, false, partialTicks);
+    }
+
+    protected void renderInner(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {
+        afterUniformLoaded(shader, isFirstPerson, isShadowPass, partialTicks);
+        draw(renderableBoneStatusList.stream().mapToInt(status -> status.vertexCount).sum(), 0);
+    }
+
+    public void prepareUbo() {
+        boneUbo.beginWrite();
+        for (BoneRenderStatus status : renderableBoneStatusList) {
+            boneUbo.putBone(status.pose, status.lightmapUV, status.visible);
+        }
+    }
+
+    public static boolean isCurrentSupportGcrRender() {
+        ShaderInstance shader = getShader();
+        if (shader == null) {
+            return false;
+        }
+
+        return GL20.glGetUniformLocation(
+                shader.getId(),
+                "gcrDoTransformOverride"
+        ) != -1;
+    }
+
+    public void draw(int vertexCount, int indices) {
+        VertexBufferAccessor accessor = (VertexBufferAccessor) rawDataVertexBuffer;
+        GlStateManager._drawElements(
+                accessor.getMode().asGLMode,
+                vertexCount,
+                accessor.invokeGetIndexType().asGLType,
+                (long) indices * accessor.invokeGetIndexType().bytes);
+    }
+
+    public int getIndexByteSize() {
+        return ((VertexBufferAccessor) rawDataVertexBuffer).invokeGetIndexType().bytes;
+    }
+
+    public boolean checkShaderUbo(int shaderProgramId) {
+        return boneUbo.bindProgram(shaderProgramId);
+        /*
+        if (uboId == -1) {
+            return false;
+        }
+        if (shaderProgramId == 0) {
+            return false;
+        }
+
+        if (lastKnownProgramId != shaderProgramId) {
+            int blockIndex = GL31.glGetUniformBlockIndex(shaderProgramId, "GcrBoneUBO");
+            if (blockIndex == GL31.GL_INVALID_INDEX) {
+                lastKnownProgramId = -1;
+                return false;
+            }
+            GL31.glUniformBlockBinding(shaderProgramId, blockIndex, UBO_BINDING_POINT);
+            lastKnownProgramId = shaderProgramId;
+        }
+
+        return true; */
+    }
+
+    public void uploadUbo() {
+        boneUbo.uploadAndBind();
+        /*
+        //重新绑定ubo buffer base以解决某些intel老旧集成显卡的ubo访问问题，也许可以解决问题。。。
+        GL30.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, 0, 0);
+        glBindBuffer(GL31.GL_UNIFORM_BUFFER, uboId);
+        glBufferSubData(GL31.GL_UNIFORM_BUFFER, 0, boneStatusUboBuffer);
+        glBindBuffer(GL31.GL_UNIFORM_BUFFER, 0);
+        GL31.glBindBufferBase(GL31.GL_UNIFORM_BUFFER, UBO_BINDING_POINT, uboId); */
+    }
+
+    protected void afterUniformLoaded(ShaderInstance shader, boolean isFirstPerson, boolean isShadowPass, float partialTicks) {}
+
+    private void loadLightAndVisible(BoneRenderStatus status) {
+        int light = status.lightmapUV;
+        int u = light & '\uffff';
+        int v = light >> 16 & '\uffff';
+        boneStatusUboBuffer.put((float) u);
+        boneStatusUboBuffer.put((float) v);
+        boneStatusUboBuffer.put(status.visible ? 1.0f : 0.0f);
+        boneStatusUboBuffer.put(0.0f);//padding
+    }
+
+    private void loadMat3(Matrix3f mat) {
+        boneStatusUboBuffer.put(mat.m00);
+        boneStatusUboBuffer.put(mat.m01);
+        boneStatusUboBuffer.put(mat.m02);
+        boneStatusUboBuffer.put(0.0f);//padding
+        boneStatusUboBuffer.put(mat.m10);
+        boneStatusUboBuffer.put(mat.m11);
+        boneStatusUboBuffer.put(mat.m12);
+        boneStatusUboBuffer.put(0.0f);//padding
+        boneStatusUboBuffer.put(mat.m20);
+        boneStatusUboBuffer.put(mat.m21);
+        boneStatusUboBuffer.put(mat.m22);
+        boneStatusUboBuffer.put(0.0f);//padding
+    }
+
+    protected void loadMat4(Matrix4f mat) {
+        boneStatusUboBuffer.put(mat.m00());
+        boneStatusUboBuffer.put(mat.m01());
+        boneStatusUboBuffer.put(mat.m02());
+        boneStatusUboBuffer.put(mat.m03());
+        boneStatusUboBuffer.put(mat.m10());
+        boneStatusUboBuffer.put(mat.m11());
+        boneStatusUboBuffer.put(mat.m12());
+        boneStatusUboBuffer.put(mat.m13());
+        boneStatusUboBuffer.put(mat.m20());
+        boneStatusUboBuffer.put(mat.m21());
+        boneStatusUboBuffer.put(mat.m22());
+        boneStatusUboBuffer.put(mat.m23());
+        boneStatusUboBuffer.put(mat.m30());
+        boneStatusUboBuffer.put(mat.m31());
+        boneStatusUboBuffer.put(mat.m32());
+        boneStatusUboBuffer.put(mat.m33());
+    }
+
+
+    public void resetPose() {
+        rootBone.resetPoseAll();
+    }
+    protected void updateBoneRenderStatus(Bone root, PoseStack poseStack, int light) {
+        if (root.visible) {
+            poseStack.pushPose();
+            root.translateAndRotate(poseStack);
+            root.updateRenderStatus(poseStack, light);
+            renderingVertexCount += root.vertexCount;
+            for (Bone child : root.children.values()) {
+                updateBoneRenderStatus(child, poseStack, light);
+            }
+            poseStack.popPose();
+        }
+    }
+
+    protected void onBoneTouched(Bone bone) {}
+
+    public void updateBoneRenderStatus(PoseStack poseStack, int light) {
+        this.updateBoneRenderStatus(rootBone, poseStack, light);
+    }
+
+
+    public ResourceLocation getDebugName() {
+        return debugName;
+    }
+
+}

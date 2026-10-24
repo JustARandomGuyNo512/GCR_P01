@@ -1,0 +1,316 @@
+package com.sheridan.gcr.client.render;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.animation.command.ShadowNodeRender;
+import com.sheridan.gcr.client.model.Bone;
+import com.sheridan.gcr.client.model.BoneRenderStatus;
+import com.sheridan.gcr.client.model.modular.IAnimationControllerModel;
+import com.sheridan.gcr.client.model.modular.IArmHandlerModel;
+import com.sheridan.gcr.client.model.modular.state.IStateViewer;
+import com.sheridan.gcr.client.model.modular.state.IStateViewerModel;
+import com.sheridan.gcr.client.model.modular.state.ReadOnlyTag;
+import com.sheridan.gcr.client.model.playerArm.BufferedPlayerArmModel;
+import com.sheridan.gcr.client.render.fx.bulletShell.BulletShellRenderer;
+import com.sheridan.gcr.compat.IrisCompat;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.*;
+
+@OnlyIn(Dist.CLIENT)
+public class FirstPersonRenderContext extends ModuleRenderContext implements IRenderStatusCacheContext {
+    public final Map<ModuleRenderNode, Map<String, BoneRenderStatus>> tempStatusMap = new HashMap<>();
+    public boolean renderMode = true;
+    public boolean saveTempPose = false;
+    private final List<ModuleRenderNode> stateViewers = new ArrayList<>();
+    private final List<ModuleRenderNode> allRenderNodes = new ArrayList<>();
+    protected ModuleRenderNode leftArmNode;
+    protected ModuleRenderNode rightArmNode;
+    protected IArmHandlerModel leftArm;
+    protected IArmHandlerModel rightArm;
+    private boolean isShadowNodeRender = false;
+
+    public FirstPersonRenderContext(
+            LivingEntity entity, ModuleRenderNode root, ItemStack itemStack,
+            float partialTicks, int light, int overlay, IGun gun, PoseStack poseStack, MultiBufferSource bufferSource) {
+        super(entity, root, itemStack, partialTicks, light, overlay, ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, gun, poseStack, bufferSource);
+        String leftArmHoldID = gun.getLeftArmHoldID(itemStack);
+        String rightArmHoldID = gun.getRightArmHoldID(itemStack);
+        root.dfsTravel(node -> {
+            if (node.model instanceof IArmHandlerModel armHandlerModel) {
+                if (Objects.equals(leftArmHoldID, node.id) && armHandlerModel.has(false)) {
+                    this.leftArm = armHandlerModel;
+                    this.leftArmNode = node;
+                }
+                if (Objects.equals(rightArmHoldID, node.id) && armHandlerModel.has(true)) {
+                    this.rightArm = armHandlerModel;
+                    this.rightArmNode = node;
+                }
+            }
+        });
+        //default
+        if (leftArm == null || rightArm == null) {
+            if (root.model instanceof IArmHandlerModel model) {
+                if (leftArm == null && model.has(false)) {
+                    this.leftArm = model;
+                    this.leftArmNode = root;
+                }
+                if (rightArm == null && model.has(true)) {
+                    this.rightArm = model;
+                    this.rightArmNode = root;
+                }
+            }
+        }
+    }
+
+    public void frameUpdate(PoseStack poseStack, int light, int overlay, float partialTicks) {
+        this.poseStack = poseStack;
+        this.light = light;
+        this.overlay = overlay;
+        this.partialTicks = partialTicks;
+        this.entity = Minecraft.getInstance().player;
+        updateNodeStates();
+    }
+
+    public void updateNodeStates() {
+        CompoundTag states = this.gun.getStatesTag(itemStack);
+        for (ModuleRenderNode node : stateViewers) {
+            if (states.contains(node.id)) {
+                ReadOnlyTag nodeStates = node.getStates();
+                if (nodeStates == null) {
+                    node.setStates(new ReadOnlyTag(states.getCompound(node.id)));
+                } else {
+                    node.getStates().setRef(states.getCompound(node.id));
+                }
+            }
+        }
+    }
+
+    public void onContextInit() {
+        this.root.dfsTravel(node -> {
+            if (node.model instanceof IStateViewerModel<?>) {
+                stateViewers.add(node);
+            }
+            allRenderNodes.add(node);
+            Map<String, BoneRenderStatus> temp = new HashMap<>();
+            root.model.getRootBone().deptFirstTravel(bone -> temp.put(bone.name, bone.renderStatus.copy()));
+            tempStatusMap.put(node, temp);
+        });
+    }
+
+    public void calcPose() {
+        this.calcPose(root);
+    }
+
+    private void calcPose(ModuleRenderNode root) {
+        this.currentRenderNode = root;
+        root.initTranslate(poseStack);
+        IStateViewer<?> viewer = null;
+
+        if (renderMode) {//应用动画
+            if (root.model instanceof IStateViewerModel<?> stateListenerModel) {
+                viewer = stateListenerModel.getViewer();
+            }
+            if (root.model instanceof IAnimationControllerModel model) {
+                model.applyFirstPersonAnimation(this);
+                model.applyCustomFirstPersonAnimation(this);
+            }
+            if (viewer != null) {
+                viewer.applyState(root.model, this, currentRenderNode.getStates());
+            }
+            this.clearStateLockedBones();
+        }
+
+        root.model.updateBoneRenderStatus(this);
+        root.model.preFirstPersonRender(this);
+        Map<String, BoneRenderStatus> temp = getRenderStatusMap().get(currentRenderNode);
+        if (temp != null) {
+            root.model.getRootBone().deptFirstTravel(bone -> {
+                BoneRenderStatus status = temp.get(bone.name);
+                if (status != null) {
+                    status.copyFrom(bone.renderStatus);
+                } else {
+                    temp.put(bone.name, bone.renderStatus.copy());
+                }
+            });
+        }
+
+        if (root.slots != null) {
+            for (Map.Entry<String, List<ModuleRenderNode>> entry : root.slots.entrySet()) {
+                String key = entry.getKey();
+                PoseStack.Pose slotPose = root.model.getBonePose(key);
+                if (slotPose == null) {
+                    continue;
+                }
+                Utils.overridePose(poseStack, slotPose);
+                for (ModuleRenderNode node : entry.getValue()) {
+                    poseStack.pushPose();
+                    this.calcPose(node);
+                    poseStack.popPose();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void renderNodeTree(ModuleRenderNode root) {
+        if (!renderMode) {
+            return;
+        }
+        recordArms();
+        handleRender();
+    }
+
+    @Override
+    public boolean isShadowNodeRender() {
+        return isShadowNodeRender;
+    }
+
+    protected void handleBulletShellRender() {
+        BulletShellRenderer.renderInFirstPerson(light);
+    }
+
+    protected boolean canRenderArm() {
+        if (leftArm == null || rightArm == null) {
+            return false;
+        }
+        if (IrisCompat.isRenderingShadowPass()) {
+            return false;
+        }
+        return BufferedPlayerArmModel.getInstance().checkSkinTexture();
+    }
+
+    protected void handleArmRender() {
+        if (canRenderArm()) {
+            BufferedPlayerArmModel.getInstance().render(true, 0);
+        }
+    }
+
+    protected void recordArms() {
+        if (canRenderArm()) {
+            BufferedPlayerArmModel.getInstance().hideAll();
+            recordArm(
+                    false,
+                    leftArm,
+                    leftArmNode,
+                    getLocalStorage(RenderConstants.ANIMATED_LEFT_ARM_MODEL_NODE),
+                    getLocalStorage(RenderConstants.LEFT_ARM_LERP_CONTROL));
+
+            recordArm(
+                    true,
+                    rightArm,
+                    rightArmNode,
+                    getLocalStorage(RenderConstants.ANIMATED_RIGHT_ARM_MODEL_NODE),
+                    getLocalStorage(RenderConstants.RIGHT_ARM_LERP_CONTROL));
+        }
+    }
+
+    private void recordArm(boolean isRight, IArmHandlerModel baseArm, ModuleRenderNode baseArmNode, Object animatedArmObj, Object lerpControlObj) {
+        ModuleRenderNode animatedArmNode = (animatedArmObj instanceof ModuleRenderNode a && a != baseArmNode) ? a : null;
+        boolean isSlim = BufferedPlayerArmModel.isPlayerModelSlim();
+        if (animatedArmNode != null && lerpControlObj instanceof Float progress && progress > 0 && animatedArmNode.model instanceof IArmHandlerModel animatedArm) {
+            PoseStack.Pose from, to;
+            Bone bone = baseArm.getBone(isRight, isSlim);
+            from = getPose(baseArmNode, bone.name);
+            Bone animatedBone = animatedArm.getBone(isRight, isSlim);
+            to = getPose(animatedArmNode, animatedBone.name);
+            PoseStack.Pose pose = Utils.lerpPose(from, to, progress);
+            BufferedPlayerArmModel.getInstance().record(pose, !isRight, isSlim, light);
+        } else {
+            BufferedPlayerArmModel.getInstance().record(com.sheridan.gcr.Utils.copyPose(baseArm.getPose(isRight, isSlim)), !isRight, isSlim, light);
+        }
+    }
+
+    private void handleRender() {
+        for (ModuleRenderNode node : allRenderNodes) {
+            Map<String, BoneRenderStatus> stringPoseMap = getRenderStatusMap().get(node);
+            if (stringPoseMap == null) {
+                continue;
+            }
+            currentRenderNode = node;
+            node.model.copyRenderStatus(stringPoseMap);
+            node.model.render(this);
+        }
+        handleShadowNodeRender();
+        handleArmRender();
+        handleBulletShellRender();
+    }
+
+    protected void handleShadowNodeRender() {
+        isShadowNodeRender = true;
+        ShadowNodeRender.ShadowEntries shadowEntries = getLocalStorage(ShadowNodeRender.SHADOW_NODE_RENDER_KEY, ShadowNodeRender.ShadowEntries.class);
+        if (shadowEntries == null) {
+            isShadowNodeRender = false;
+            return;
+        }
+        List<ShadowNodeRender.ShadowEntry> entries = shadowEntries.entries;
+        if (entries.isEmpty()) {
+            isShadowNodeRender = false;
+            return;
+        }
+        for (ShadowNodeRender.ShadowEntry entry : entries) {
+            ModuleRenderNode shadowNode = entry.shadowNode;
+            if (shadowNode == null) {
+                continue;
+            }
+            ModuleRenderNode node = entry.node;
+            Map<String, BoneRenderStatus> stringPoseMap = getRenderStatusMap().get(node);
+            if (stringPoseMap == null) {
+                continue;
+            }
+            BoneRenderStatus targetStatus = stringPoseMap.get(entry.targetBoneName);
+            if (targetStatus == null) {
+                continue;
+            }
+            currentRenderNode = shadowNode;
+            this.poseStack.pushPose();
+            shadowNode.model.resetPose();
+            this.poseStack.last().pose().set(targetStatus.pose.pose());
+            this.poseStack.last().normal().set(targetStatus.pose.normal());
+
+            IStateViewer<?> viewer = null;
+            if (shadowNode.model instanceof IStateViewerModel<?> stateListenerModel) {
+                viewer = stateListenerModel.getViewer();
+            }
+            if (viewer != null) {
+                viewer.applyState(currentRenderNode.model, this, currentRenderNode.getStates());
+            }
+
+            shadowNode.initTranslate(poseStack);
+            shadowNode.model.updateBoneRenderStatus(this);
+            shadowNode.model.preFirstPersonRender(this);
+            shadowNode.model.render(this);
+            this.poseStack.popPose();
+        }
+        currentRenderNode = null;
+        isShadowNodeRender = false;
+    }
+
+    static final PoseStack.Pose EMPTY_POSE = new PoseStack().last();
+    public PoseStack.Pose getPose(ModuleRenderNode node, String boneName) {
+        Map<String, BoneRenderStatus> stringBoneRenderStatusMap = getRenderStatusMap().get(node);
+        if (stringBoneRenderStatusMap == null) {
+            return EMPTY_POSE;
+        }
+        BoneRenderStatus status = stringBoneRenderStatusMap.get(boneName);
+        return status == null ? EMPTY_POSE : status.pose;
+    }
+
+    @Override
+    public Map<ModuleRenderNode, Map<String, BoneRenderStatus>> getRenderStatusMap() {
+        return tempStatusMap;
+    }
+
+    public ReadOnlyTag getNodeStates(String bulletShellHandlerNodeID) {
+        CompoundTag nodeStatesTag = gun.getNodeStatesTag(itemStack, bulletShellHandlerNodeID);
+        return ReadOnlyTag.of(nodeStatesTag);
+    }
+}

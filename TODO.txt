@@ -1,0 +1,20 @@
+Before the release of the first public test version, the to-do list of the GCR team:
+
+Coding stuff:
+1.[done]Reconstruct the "PlayerArmModel" from the vanilla rendering to the "GCR BufferedRender"
+ that supports the Iris first-person sub-pipeline to achieve better performance, lighting effects, and correct occlusion effects.
+2.[done]Add the Iris first-person sub-pipeline rendering to BulletShellRender
+    2.1[done].Add a composite renderer to apply effects on iris
+3.Achieve the effect of a laser sight
+4.Implement the sub-weapon system architecture and the grenade launcher
+5.Implement the weapon data stream in a multiplayer environment for the server, including status broadcasts, event notifications, etc.
+6.Optimize the trajectory rendering of tracer effect
+7.Reconstruct the better weapon modification interface using ldlib
+8.Realize the m-lok guide rail
+9.Add a series of accessories (including models and texture assets)
+10.Release the beta version
+
+Art stuff:
+1.Reset the UV layout of the model (re-generate the UV layout and upload it to GitHub)
+2.Create PBR textures
+3.Create textures with better visual effects

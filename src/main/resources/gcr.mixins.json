@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.sheridan.gcr.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "gcr.refmap.json",
+  "plugin": "com.sheridan.gcr.mixin.GCRMixinPlugin",
+  "mixins": [
+    "PlayerMixin"
+  ],
+  "client": [
+    "GameRendererAccessor",
+    "GameRendererMixin",
+    "IrisShaderCompatMixin",
+    "ItemInHandRendererMixin",
+    "LightTextureAccessor",
+    "LightTextureMixin",
+    "MixinGlStateManagerTextures",
+    "RenderItemMixin",
+    "RenderSystemAccessor",
+    "VertexBufferAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
