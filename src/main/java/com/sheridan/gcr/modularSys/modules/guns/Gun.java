@@ -158,7 +158,9 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             dir = Vec3.directionFromRotation(pitch, yaw).normalize();
             pos = shooter.getEyePosition();
         }
-        double speed = 30f;
+        // 初速走枪械属性（bullet_velocity，格 / tick）。数值非正时退回旧常量 30。
+        float bulletVelocity = getBulletVelocity(itemStack);
+        double speed = bulletVelocity > 0f ? bulletVelocity : 30f;
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
         bullet.setPos(pos);
@@ -775,6 +777,17 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         return baseProperties.baseDamage.get(pick);
     }
 
+    /**
+     * 子弹初速（格 / tick），读取属性表里的 {@code bullet_velocity}。
+     *
+     * <p>属性是可被配件改写的倍率值，所以换枪管 / 换弹种之后初速会自动跟着变。
+     * 目前只有 {@link #serverShoot} 用到，因此没有加到 {@code IGun} 上——避免给外部实现增加编译负担。</p>
+     */
+    public float getBulletVelocity(ItemStack itemStack) {
+        CompoundTag pick = baseProperties.pick(itemStack, this);
+        return baseProperties.bulletVelocity.get(pick);
+    }
+
     @Override
     public IArmHandlerModular getLeftArmHolding(ItemStack itemStack) {
         return getArmHolding(itemStack, LEFT_ARM_HOLD);
@@ -820,7 +833,7 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
     public float getAgility(ItemStack itemStack) {
         CompoundTag pick = baseProperties.pick(itemStack, this);
         AdditionalPropModifier leftArmModifier = getLeftArmModifier(itemStack);
-        AdditionalPropModifier rightArmModifier = getLeftArmModifier(itemStack);
+        AdditionalPropModifier rightArmModifier = getRightArmModifier(itemStack);
         float ratio = baseProperties.agility.getRatio(pick);
         ratio = leftArmModifier == null ? ratio : ratio + leftArmModifier.getAgilityInc();
         ratio = rightArmModifier == null ? ratio : ratio + rightArmModifier.getAgilityInc();

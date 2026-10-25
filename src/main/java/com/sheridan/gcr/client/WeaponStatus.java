@@ -77,10 +77,27 @@ public class WeaponStatus {
     private volatile boolean fireBlocked;
     public volatile int fireCount;
     public volatile long lastShoot;
+    /**
+     * 实际使用的瞄准速度（进度 / tick），已经乘过当前瞄具的倍率。
+     *
+     * <p>由 {@link #refreshAimingSpeed()} 计算，{@link #handleAds} 每 tick 用它累加进度。</p>
+     */
     public float aimingSpeed;
-    /** Seconds for a full raise at the current aim step. */
-    private float adsDuration = 0.2f;
     private float aimClock;
+    /**
+     * 不含瞄具倍率的基础瞄准速度。
+     *
+     * <p>枪械属性（RPM / 敏捷 / 重量曲线，见 {@link #calculateFinalAimingSpeed}）算出来的结果，
+     * 乘上当前瞄具的 {@link ISight#getAdsSpeedModifier()} 之后才是 {@link #aimingSpeed}。</p>
+     */
+    private float baseAimingSpeed;
+    /**
+     * 当前瞄具的瞄准速度倍率。
+     *
+     * <p>这是瞄具自己的数据（{@code Scope} / {@code Sight} 的构造参数）：红点略快、高倍镜略慢。
+     * 它与侧瞄（{@link ISight#ON_SIDE_POSITION}）的 0.75/0.6 进出速度因子是两回事，两者相乘。</p>
+     */
+    private float sightAdsSpeedModifier = 1f;
     private boolean wasAiming;
 
     private Node activeSight = null;
@@ -201,9 +218,12 @@ public class WeaponStatus {
     private void checkSight() {
         String usingSightID = gun.getUsingSightID(itemStack);
         activeSight = IDToNodes.get(usingSightID);
+        // 没瞄具（或瞄准的是枪身本体）时倍率为 1，避免沿用上一把枪的瞄具数据。
+        sightAdsSpeedModifier = 1f;
         if (activeSight != null && activeSight.getModule() instanceof ISight sight) {
             lastAdsZCompensation = adsZCompensation;
             adsZCompensation = sight.getZCompensation();
+            sightAdsSpeedModifier = sanitizeAdsSpeedModifier(sight.getAdsSpeedModifier());
             int isSide = activeSight.getUnit().getCustomParam(ISight.ON_SIDE_POSITION);
             if (isSide == 1) {
                 cantedAdsIncSpeedFactor = 0.75f;
@@ -213,36 +233,8 @@ public class WeaponStatus {
                 cantedAdsDecSpeedFactor = 1f;
             }
         }
-        refreshAdsDuration();
-    }
-
-    /**
-     * Aim step from the gun's aiming speed, weight, agility, grips, and the active sight.
-     * Canted sights keep their own in/out factors.
-     */
-    private void refreshAdsDuration() {
-        float base = gun != null && itemStack != null ? gun.getAimingSpeed(itemStack) : 1.3f;
-        float safeWeight = weight > 0.01f ? weight : 1f;
-        float step = calculateFinalAimingSpeed(base, agility, safeWeight);
-        step *= sightAdsModifier();
-        aimingSpeed = step;
-        float paced = Math.max(0.02f, step * cantedAdsIncSpeedFactor);
-        adsDuration = 1f / (paced * 20f);
-    }
-
-    private float sightAdsModifier() {
-        float modifier = 1f;
-        if (activeSight != null && activeSight.getModule() instanceof ISight sight) {
-            float sightModifier = sight.getAdsSpeedModifier();
-            if (sightModifier > 0.05f) {
-                modifier *= sightModifier;
-            }
-        }
-        return modifier;
-    }
-
-    public float getAdsDuration() {
-        return adsDuration;
+        // 换镜不会改变 identityID / modifyID，因此不能等模块树变化来刷新倍率。
+        refreshAimingSpeed();
     }
 
     private void handleAds(Player localPlayer) {
@@ -304,7 +296,31 @@ public class WeaponStatus {
         stability = gun.getStability(itemStack);
         agility = gun.getAgility(itemStack);
         weight = gun.getCurrentWeight(itemStack);
-        refreshAdsDuration();
+        baseAimingSpeed = calculateFinalAimingSpeed(gun.getAimingSpeed(itemStack), agility, weight);
+        refreshAimingSpeed();
+    }
+
+    /**
+     * 把基础瞄准速度与当前瞄具倍率合成 {@link #aimingSpeed}。
+     *
+     * <p>基础值只随枪械属性变化（换配件、换枪），倍率只随瞄具变化（换镜、侧瞄切换）；
+     * 两者分开缓存，换镜时不必重算整张属性表。</p>
+     */
+    private void refreshAimingSpeed() {
+        if (baseAimingSpeed <= 0f) {
+            // 属性表还没初始化（首 tick 之前），不要用 0 覆盖掉已有速度。
+            return;
+        }
+        aimingSpeed = baseAimingSpeed * sightAdsSpeedModifier;
+    }
+
+    /**
+     * 瞄具倍率兜底：数据写错（0、负数、NaN）时退回 1。
+     *
+     * <p>倍率是模块的构造参数，写错时宁可当作没有加成，也不能让瞄准永远进不去或瞬间完成。</p>
+     */
+    private static float sanitizeAdsSpeedModifier(float modifier) {
+        return Float.isFinite(modifier) && modifier > 0f ? modifier : 1f;
     }
 
     public float calculateFinalAimingSpeed(float baseSpeed, float agility, float weight) {
@@ -420,7 +436,7 @@ public class WeaponStatus {
         IDToNodes.clear();
         IDToModels.clear();
         interactiveModules.clear();
-        aimingSpeed = gun.getAimingSpeed(itemStack);
+        // 瞄准速度统一由 handlePropertiesUpdate 计算（含瞄具倍率），这里不再写一个未加工的原始值。
         ListTag modulesTag = gun.getModulesTag(itemStack);
         root = Node.read(modulesTag);
         final boolean[] Suppressed = {true};
