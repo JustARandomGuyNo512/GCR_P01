@@ -2,6 +2,7 @@ package com.sheridan.gcr;
 
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.AnimationRegister;
+import com.sheridan.gcr.client.animation.AnimationVariants;
 import com.sheridan.gcr.client.animation.io.BedrockAnimationLoader;
 import com.sheridan.gcr.client.model.MeshModelData;
 import com.sheridan.gcr.client.model.gltf.io.GltfModelLoader;
@@ -131,6 +132,17 @@ public class ModelRegistrationManager {
                 AnimationRegister.register(GCR.RL(regKey), def);
             }
         });
+        return anims;
+    }
+
+    /**
+     * Loads a gun animation JSON and registers prefixed variants from the same
+     * file ({@code shoot_one}, {@code mag_reload_empty_two}, …).
+     */
+    public static Map<String, AnimationDef> loadAndRegisterGunAnimations(
+            String jsonPath, Map<String, String> mapping, String gunPrefix) {
+        Map<String, AnimationDef> anims = loadAndRegisterAnimations(jsonPath, mapping);
+        AnimationVariants.collectFromClips(gunPrefix, anims, mapping);
         return anims;
     }
 

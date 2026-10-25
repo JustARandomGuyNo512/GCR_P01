@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.model.modular.animation.controllers;
 import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.AnimationInstance;
 import com.sheridan.gcr.client.animation.AnimationRegister;
+import com.sheridan.gcr.client.animation.AnimationVariants;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.*;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
@@ -14,11 +15,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AnimationController<T extends IModularModel> implements IAnimationController<T> {
     protected final Map<String, Track<T>> trackMap = new HashMap<>();
     protected final Map<String, AnimationDef> animationPool = new HashMap<>();
+    protected final Map<String, List<AnimationDef>> randomPools = new HashMap<>();
     protected final List<EventRegistry> eventRegistries = new ArrayList<>();
     private volatile ModuleRenderContext tempContext = null;
 
@@ -40,7 +43,36 @@ public abstract class AnimationController<T extends IModularModel> implements IA
             throw new IllegalArgumentException("Animation not found at: " + path);
         }
         animationPool.put(simpleName, def);
+        bindVariants(simpleName, path, def);
         return def;
+    }
+
+    private void bindVariants(String category, ResourceLocation registeredPath, AnimationDef base) {
+        List<AnimationVariants.Variant> variants = AnimationVariants.variantsForRegistered(registeredPath);
+        if (variants.isEmpty()) {
+            String gunPrefix = AnimationVariants.gunPrefixOf(registeredPath, category);
+            if (gunPrefix != null) {
+                variants = AnimationVariants.variants(gunPrefix, category);
+            }
+        }
+        if (variants.isEmpty()) {
+            return;
+        }
+        List<AnimationDef> pool = new ArrayList<>();
+        pool.add(base);
+        for (AnimationVariants.Variant variant : variants) {
+            AnimationDef extra = AnimationRegister.get(variant.location());
+            if (extra == null) {
+                continue;
+            }
+            animationPool.put(variant.alias(), extra);
+            if (!pool.contains(extra)) {
+                pool.add(extra);
+            }
+        }
+        if (pool.size() > 1) {
+            randomPools.put(category, pool);
+        }
     }
 
     public void registerAnimation(String simpleName, String path) {
@@ -89,6 +121,14 @@ public abstract class AnimationController<T extends IModularModel> implements IA
 
 
     protected AnimationInstance anim(String name) {
+        AnimationDef def = pickDef(name);
+        if (def == null) {
+            throw new IllegalStateException("Animation not found: " + name);
+        }
+        return def.asInstance();
+    }
+
+    protected AnimationInstance animExact(String name) {
         AnimationDef def = animationPool.get(name);
         if (def == null) {
             throw new IllegalStateException("Animation not found: " + name);
@@ -97,6 +137,22 @@ public abstract class AnimationController<T extends IModularModel> implements IA
     }
 
     protected AnimationDef animDef(String name) {
+        return pickDef(name);
+    }
+
+    protected AnimationDef animDef(String name, long seed) {
+        List<AnimationDef> pool = randomPools.get(name);
+        if (pool != null && pool.size() > 1) {
+            return pool.get(Math.floorMod(Long.hashCode(seed), pool.size()));
+        }
+        return animationPool.get(name);
+    }
+
+    private AnimationDef pickDef(String name) {
+        List<AnimationDef> pool = randomPools.get(name);
+        if (pool != null && pool.size() > 1) {
+            return pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+        }
         return animationPool.get(name);
     }
 
