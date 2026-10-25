@@ -3,6 +3,7 @@ package com.sheridan.gcr.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
 import com.sheridan.gcr.client.model.modular.IModularModel;
 import com.sheridan.gcr.client.model.modular.IScopeModel;
 import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
@@ -96,6 +97,7 @@ public class WeaponStatus {
      * 它与侧瞄（{@link ISight#ON_SIDE_POSITION}）的 0.75/0.6 进出速度因子是两回事，两者相乘。</p>
      */
     private float sightAdsSpeedModifier = 1f;
+    private boolean wasAiming;
 
     private Node activeSight = null;
     private final Object2ObjectOpenHashMap<String, Node> IDToNodes = new Object2ObjectOpenHashMap<>();
@@ -253,6 +255,10 @@ public class WeaponStatus {
             float exitSpeed = Math.max(0.3f, aimingSpeed);
             aimingProgress = Math.max(0, aimingProgress - exitSpeed * cantedAdsDecSpeedFactor);
             isAiming = false;
+        }
+        if (isAiming != wasAiming) {
+            wasAiming = isAiming;
+            Client.getGunRenderer().dispatchAnimationEvent(EventType.AIM);
         }
         if (localPlayer == null) {
             return;
