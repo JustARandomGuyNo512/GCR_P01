@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
@@ -44,6 +45,8 @@ public class BufferedBoneMeshModel {
      * 原始数据
      * */
     protected float[] positions;
+    private AABB[] localBoneBounds;
+    private static final AABB NO_BONE_BOUNDS = new AABB(0, 0, 0, 0, 0, 0);
     protected float[] normals;
     protected float[] uvs;
     //bone1 index start -> bone1 index end, bone2 index start -> bone2 index end
@@ -198,6 +201,47 @@ public class BufferedBoneMeshModel {
 
     public int getVertexCount() {
         return vertexCount;
+    }
+
+    /** Bone-local bounds of this mesh. Null when the bone has no vertices. */
+    public @Nullable AABB localBoneBounds(Bone bone) {
+        if (bone == null || bone.vertexCount <= 0 || bone.renderStatus == null || positions == null) {
+            return null;
+        }
+        if (localBoneBounds == null) {
+            localBoneBounds = new AABB[Math.max(1, boneCount)];
+        }
+        int index = bone.index;
+        if (index < 0 || index >= localBoneBounds.length) {
+            return null;
+        }
+        if (localBoneBounds[index] == null) {
+            int start = bone.renderStatus.vertexStart;
+            int end = bone.renderStatus.vertexEnd;
+            float minX = Float.MAX_VALUE;
+            float minY = Float.MAX_VALUE;
+            float minZ = Float.MAX_VALUE;
+            float maxX = -Float.MAX_VALUE;
+            float maxY = -Float.MAX_VALUE;
+            float maxZ = -Float.MAX_VALUE;
+            for (int v = start; v < end; v++) {
+                int p = v * 3;
+                float x = positions[p];
+                float y = positions[p + 1];
+                float z = positions[p + 2];
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                minZ = Math.min(minZ, z);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+                maxZ = Math.max(maxZ, z);
+            }
+            localBoneBounds[index] = minX == Float.MAX_VALUE
+                    ? NO_BONE_BOUNDS
+                    : new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+        }
+        AABB box = localBoneBounds[index];
+        return box == NO_BONE_BOUNDS ? null : box;
     }
 
     public void compile(RenderType type) {

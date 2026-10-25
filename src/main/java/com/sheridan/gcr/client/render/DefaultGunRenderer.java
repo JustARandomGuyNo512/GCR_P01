@@ -1,8 +1,13 @@
 package com.sheridan.gcr.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.BarrelAim;
@@ -33,6 +38,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -291,6 +297,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         RenderSystem.getModelViewStack().pushMatrix();
         RenderSystem.getModelViewStack().set(gunModifyPoseStack.last().pose());
         RenderSystem.applyModelViewMatrix();
+        drawModifyContrastWash();
 
         displayData.applyGunModifyScreenTranslation(gunModifyPoseStack, x, y, rx, ry, scale);
         float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
@@ -308,6 +315,48 @@ public class DefaultGunRenderer implements IGunRenderer {
 
         RenderSystem.getModelViewStack().popMatrix();
         RenderSystem.applyModelViewMatrix();
+    }
+
+    /** Soft light behind the gun so dark parts stay readable against a dark world. */
+    private static void drawModifyContrastWash() {
+        Minecraft mc = Minecraft.getInstance();
+        int w = mc.getWindow().getWidth();
+        int h = mc.getWindow().getHeight();
+        if (w <= 0 || h <= 0 || Client.isUsingIrisShader) {
+            return;
+        }
+        Matrix4f previousProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        VertexSorting previousSorting = RenderSystem.getVertexSorting();
+        RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, w, h, 0, -1, 1), VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.getModelViewStack().pushMatrix();
+        RenderSystem.getModelViewStack().identity();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+
+        float cx = w * 0.5f;
+        float cy = h * 0.5f;
+        float rx = w * 0.46f;
+        float ry = h * 0.34f;
+        int segments = 48;
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        buffer.addVertex(cx, cy, 0).setColor(0x78D8D2C6);
+        for (int i = 0; i <= segments; i++) {
+            double theta = Math.PI * 2.0 * i / segments;
+            buffer.addVertex(cx + rx * (float) Math.cos(theta), cy + ry * (float) Math.sin(theta), 0).setColor(0x00D8D2C6);
+        }
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.getModelViewStack().popMatrix();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setProjectionMatrix(previousProjection, previousSorting);
     }
 
     private void clearCache() {

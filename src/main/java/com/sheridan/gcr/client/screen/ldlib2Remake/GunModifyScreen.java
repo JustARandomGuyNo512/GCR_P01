@@ -328,6 +328,14 @@ public class GunModifyScreen extends Screen {
                         selectedItemSlot = null;
                     }
                 }
+            } else if (selectedNode != null && selectedNode.getBelongsTo() != null) {
+                SlotInstance belongsTo = selectedNode.getBelongsTo();
+                if (belongsTo.allow(OperationType.REPLACE)
+                        && module != selectedNode.getModule()
+                        && belongsTo.accepts(module)
+                        && countManager.getModuleLeftCount(module) > 0) {
+                    replaceSelectedModule();
+                }
             }
         }
     }

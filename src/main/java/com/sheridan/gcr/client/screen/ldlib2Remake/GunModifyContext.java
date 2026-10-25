@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.model.BoneRenderStatus;
+import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.screen.Utils;
 import com.sheridan.gcr.client.render.ModifyScreenRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
@@ -228,7 +229,7 @@ public class GunModifyContext {
 
         updateRailScrollSign();
         updateRailAxisCache();
-        renderNodeToNode.forEach(this::captureDragRect);
+        renderNodeToNode.forEach((renderNode, node) -> capturePickRect(renderNode, node, tempPoseMap.get(renderNode)));
 
         context.getRoot().dfsTravel(n -> {
             Node node = renderNodeToNode.get(n);
@@ -553,7 +554,8 @@ public class GunModifyContext {
                 ModuleRenderNode key = pair.getKey();
                 Node node = renderNodeToNode.get(key);
                 boolean hot = key == selectedRenderNode || (node != null && node.getID().equals(hoveredDragId));
-                markPoint(guiGraphics, pos.x, pos.y, hot);
+                boolean warn = node != null && collisionRes.collidesWithNode(node.getID());
+                markPoint(guiGraphics, pos.x, pos.y, hot, warn);
             }
         }
 
@@ -566,7 +568,7 @@ public class GunModifyContext {
                 if (pos == OUT_SCREEN) {
                     continue;
                 }
-                markPoint(guiGraphics, pos.x, pos.y + 6, pair.getKey() == selectedSlot);
+                markPoint(guiGraphics, pos.x, pos.y + 6, pair.getKey() == selectedSlot, false);
             }
         }
     }
@@ -598,28 +600,60 @@ public class GunModifyContext {
         return new Vector3f(screenX, screenY, v.z);
     }
 
-    private void captureDragRect(ModuleRenderNode renderNode, Node node) {
-        if (!isRailNode(node) || !(node.getModule() instanceof IVoxelHandlerModule module) || module.getHandler() == null) {
+    private void capturePickRect(ModuleRenderNode renderNode, Node node, Map<String, BoneRenderStatus> poses) {
+        if (node == null || node == nodeRoot) {
             return;
+        }
+        ScreenBounds bounds = new ScreenBounds();
+        if (!projectVoxel(node, bounds)) {
+            projectMesh(renderNode, poses, bounds);
+        }
+        if (bounds.hits == 0) {
+            return;
+        }
+        dragRects.add(new DragRect(node.getID(), renderNode,
+                bounds.minX - 3f, bounds.minY - 3f, bounds.maxX + 3f, bounds.maxY + 3f, bounds.depth / bounds.hits));
+    }
+
+    private boolean projectVoxel(Node node, ScreenBounds bounds) {
+        if (!(node.getModule() instanceof IVoxelHandlerModule module) || module.getHandler() == null) {
+            return false;
         }
         Matrix4f slotPose = slotRenderPos.get(node.getBelongsTo());
         if (slotPose == null) {
-            return;
+            return false;
         }
         IVoxel voxel = module.getHandler().getVoxel(node.getUnit(), accessor);
-        if (voxel == null || voxel.getBoundingBox() == null) {
-            return;
+        AABB box = voxel == null ? null : voxel.getBoundingBox();
+        if (!usableBox(box)) {
+            return false;
         }
-        AABB box = voxel.getBoundingBox();
         Matrix4f pose = new Matrix4f(slotPose).translate(0f, 0f, node.getUnit().getZOffset());
         if (node.shouldReverseModel()) {
             pose.rotateZ((float) Math.PI);
         }
-        float minX = Float.MAX_VALUE;
-        float minY = Float.MAX_VALUE;
-        float maxX = -Float.MAX_VALUE;
-        float maxY = -Float.MAX_VALUE;
-        int hits = 0;
+        projectBox(pose, box, bounds);
+        return bounds.hits > 0;
+    }
+
+    private void projectMesh(ModuleRenderNode renderNode, Map<String, BoneRenderStatus> poses, ScreenBounds bounds) {
+        if (poses == null || !(renderNode.model instanceof BufferedBoneMeshModel mesh) || mesh.rootBone == null) {
+            return;
+        }
+        mesh.rootBone.deptFirstTravel(bone -> {
+            BoneRenderStatus status = poses.get(bone.name);
+            if (status == null || !status.visible) {
+                return;
+            }
+            AABB box = mesh.localBoneBounds(bone);
+            if (!usableBox(box)) {
+                return;
+            }
+            projectBox(status.pose.pose(), box, bounds);
+        });
+    }
+
+    private void projectBox(Matrix4f pose, AABB box, ScreenBounds bounds) {
         for (double x : new double[]{box.minX, box.maxX}) {
             for (double y : new double[]{box.minY, box.maxY}) {
                 for (double z : new double[]{box.minZ, box.maxZ}) {
@@ -627,32 +661,39 @@ public class GunModifyContext {
                     if (screen == OUT_SCREEN) {
                         continue;
                     }
-                    hits++;
-                    minX = Math.min(minX, screen.x);
-                    minY = Math.min(minY, screen.y);
-                    maxX = Math.max(maxX, screen.x);
-                    maxY = Math.max(maxY, screen.y);
+                    bounds.hits++;
+                    bounds.minX = Math.min(bounds.minX, screen.x);
+                    bounds.minY = Math.min(bounds.minY, screen.y);
+                    bounds.maxX = Math.max(bounds.maxX, screen.x);
+                    bounds.maxY = Math.max(bounds.maxY, screen.y);
+                    bounds.depth += screen.z;
                 }
             }
         }
-        if (hits == 0) {
-            return;
+    }
+
+    private static boolean usableBox(AABB box) {
+        if (box == null) {
+            return false;
         }
-        dragRects.add(new DragRect(node.getID(), renderNode, minX - 3f, minY - 3f, maxX + 3f, maxY + 3f));
+        return box.maxX - box.minX > 1.0e-4
+                || box.maxY - box.minY > 1.0e-4
+                || box.maxZ - box.minZ > 1.0e-4;
     }
 
     private String hitDragRect(float mouseX, float mouseY) {
+        DragRect best = null;
         for (int i = dragRects.size() - 1; i >= 0; i--) {
             DragRect rect = dragRects.get(i);
             if (mouseX < rect.minX || mouseX > rect.maxX || mouseY < rect.minY || mouseY > rect.maxY) {
                 continue;
             }
-            Node node = renderNodeToNode.get(rect.renderNode);
-            if (canDrag(node)) {
-                return rect.nodeId;
+            if (best == null || rect.depth < best.depth - 0.002f
+                    || (Math.abs(rect.depth - best.depth) <= 0.002f && rect.area() < best.area())) {
+                best = rect;
             }
         }
-        return null;
+        return best == null ? null : best.nodeId;
     }
 
     private boolean pressDragRect(float mouseX, float mouseY) {
@@ -664,17 +705,25 @@ public class GunModifyContext {
             if (!hit.equals(rect.nodeId)) {
                 continue;
             }
+            Node node = renderNodeToNode.get(rect.renderNode);
+            boolean rail = canDrag(node);
             boolean wasSelected = selectedNode != null && hit.equals(selectedNode.getID());
-            selectNode(rect.renderNode);
+            if (wasSelected && !rail) {
+                clearSelection();
+                return true;
+            }
+            if (!wasSelected) {
+                selectNode(rect.renderNode);
+            }
             if (selectedNode == null) {
                 return true;
             }
             draggingKey = "n:" + selectedNode.getID();
-            dragMode = DragMode.RAIL;
+            dragMode = rail ? DragMode.RAIL : DragMode.HOLD;
             pressX = lastPointerX = mouseX;
             pressY = lastPointerY = mouseY;
             dragPassedThreshold = false;
-            reclickSelectedRail = wasSelected;
+            reclickSelectedRail = wasSelected && rail;
             return true;
         }
         return false;
@@ -694,23 +743,35 @@ public class GunModifyContext {
     }
 
     private void drawDragHighlight(GuiGraphics graphics) {
-        if (hoveredDragId == null) {
-            return;
-        }
+        String selectedId = selectedNode == null ? null : selectedNode.getID();
         for (DragRect rect : dragRects) {
-            if (!hoveredDragId.equals(rect.nodeId)) {
+            boolean hover = rect.nodeId.equals(hoveredDragId);
+            boolean selected = rect.nodeId.equals(selectedId);
+            if (!hover && !selected) {
                 continue;
             }
             int x0 = Math.round(rect.minX);
             int y0 = Math.round(rect.minY);
             int x1 = Math.round(rect.maxX);
             int y1 = Math.round(rect.maxY);
-            int color = 0xCCF2D48A;
+            if (hover) {
+                graphics.fill(x0, y0, x1, y1, 0x33F2D48A);
+            }
+            int color = hover ? 0xFFF2D48A : 0xA6F2D48A;
             graphics.fill(x0, y0, x1, y0 + 1, color);
             graphics.fill(x0, y1 - 1, x1, y1, color);
             graphics.fill(x0, y0, x0 + 1, y1, color);
             graphics.fill(x1 - 1, y0, x1, y1, color);
         }
+    }
+
+    private static final class ScreenBounds {
+        private float minX = Float.MAX_VALUE;
+        private float minY = Float.MAX_VALUE;
+        private float maxX = -Float.MAX_VALUE;
+        private float maxY = -Float.MAX_VALUE;
+        private float depth;
+        private int hits;
     }
 
     private static final class DragRect {
@@ -720,14 +781,20 @@ public class GunModifyContext {
         private final float minY;
         private final float maxX;
         private final float maxY;
+        private final float depth;
 
-        private DragRect(String nodeId, ModuleRenderNode renderNode, float minX, float minY, float maxX, float maxY) {
+        private DragRect(String nodeId, ModuleRenderNode renderNode, float minX, float minY, float maxX, float maxY, float depth) {
             this.nodeId = nodeId;
             this.renderNode = renderNode;
             this.minX = minX;
             this.minY = minY;
             this.maxX = maxX;
             this.maxY = maxY;
+            this.depth = depth;
+        }
+
+        private float area() {
+            return Math.max(0f, maxX - minX) * Math.max(0f, maxY - minY);
         }
     }
 
@@ -807,13 +874,7 @@ public class GunModifyContext {
             reclickSelectedRail = false;
             return true;
         }
-        if (pressDragRect(mouseX, mouseY)) {
-            return true;
-        }
-        if (pressNode(mouseX, mouseY)) {
-            return true;
-        }
-        return pressSlot(mouseX, mouseY);
+        return pressDragRect(mouseX, mouseY);
     }
 
     public boolean isPointerDragging() {
@@ -849,72 +910,6 @@ public class GunModifyContext {
         draggingKey = null;
         reclickSelectedRail = false;
         dragPassedThreshold = false;
-    }
-
-    private boolean pressNode(float mouseX, float mouseY) {
-        if (!renderNodeIcon) {
-            return false;
-        }
-        for (Pair<ModuleRenderNode, Vector3f> pair : renderNodeScreenPos.values()) {
-            Vector3f pos = pair.getValue();
-            if (pos == OUT_SCREEN) {
-                continue;
-            }
-            float dx = pos.x - mouseX;
-            float dy = pos.y - mouseY;
-            if (dx * dx + dy * dy > NODE_HIT * NODE_HIT) {
-                continue;
-            }
-            ModuleRenderNode renderNode = pair.getKey();
-            Node node = renderNodeToNode.get(renderNode);
-            boolean rail = isRailNode(node);
-            boolean wasSelected = selectedRenderNode == renderNode;
-            if (wasSelected && !rail) {
-                clearSelection();
-                return true;
-            }
-            if (!wasSelected) {
-                selectNode(renderNode);
-            }
-            if (selectedNode != null) {
-                draggingKey = "n:" + selectedNode.getID();
-                dragMode = rail ? DragMode.RAIL : DragMode.HOLD;
-                pressX = lastPointerX = mouseX;
-                pressY = lastPointerY = mouseY;
-                dragPassedThreshold = false;
-                reclickSelectedRail = wasSelected && rail;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean pressSlot(float mouseX, float mouseY) {
-        if (!renderSlotIcon) {
-            return false;
-        }
-        for (Pair<SlotInstance, Vector3f> pair : slotScreenPos.values()) {
-            if (pair.getLeft().isHidden() || isSlotOccupied(pair.getLeft())) {
-                continue;
-            }
-            Vector3f pos = pair.getValue();
-            if (pos == OUT_SCREEN) {
-                continue;
-            }
-            float dx = pos.x - mouseX;
-            float dy = pos.y + 6 - mouseY;
-            if (dx * dx + dy * dy > SLOT_HIT * SLOT_HIT) {
-                continue;
-            }
-            SlotInstance slot = pair.getKey();
-            if (selectedSlot == slot && selectedNode == null) {
-                clearSelection();
-            } else {
-                selectSlot(slot);
-            }
-            return true;
-        }
-        return false;
     }
 
     private void selectNode(ModuleRenderNode renderNode) {
@@ -1025,16 +1020,18 @@ public class GunModifyContext {
             float scaleY = dy == 0f ? Float.MAX_VALUE : (callout.h * 0.5f) / Math.abs(dy);
             float scale = Math.min(scaleX, scaleY);
             boolean hot = callout.selected || isHoveredCallout(callout);
-            drawLeader(graphics, centerX + dx * scale, centerY + dy * scale, callout.anchorX, callout.anchorY,
-                    hot ? 0xFFF4F1EA : 0xD0C8C2B6);
+            int line = callout.warn ? 0xCCE24B4B : (hot ? 0xA6F4F1EA : 0x66C8C2B6);
+            drawLeader(graphics, centerX + dx * scale, centerY + dy * scale, callout.anchorX, callout.anchorY, line);
         }
         for (Callout callout : callouts) {
             int left = Math.round(callout.x);
             int top = Math.round(callout.y);
             int size = Math.round(callout.w);
             boolean hot = callout.selected || isHoveredCallout(callout);
-            graphics.fill(left, top, left + size, top + size, hot ? 0xF01C1E22 : 0xE0101214);
-            graphics.renderOutline(left, top, size, size, hot ? 0xFFF2D48A : 0xFF6E6A62);
+            int plate = callout.warn ? 0xF06A2420 : (hot ? 0xF0E7D7A8 : 0xF0E6E0D4);
+            int outline = callout.warn ? 0xFFE24B4B : (hot ? 0xFFF2D48A : 0xFF6E6A62);
+            graphics.fill(left, top, left + size, top + size, plate);
+            graphics.renderOutline(left, top, size, size, outline);
             if (!callout.icon.isEmpty()) {
                 float scale = (size - 4f) / 16f;
                 graphics.pose().pushPose();
@@ -1042,6 +1039,9 @@ public class GunModifyContext {
                 graphics.pose().scale(scale, scale, 1f);
                 graphics.renderItem(callout.icon, 0, 0);
                 graphics.pose().popPose();
+            }
+            if (callout.warn) {
+                drawWarnBadge(graphics, left + size - 5, top - 2);
             }
         }
     }
@@ -1063,7 +1063,8 @@ public class GunModifyContext {
                     continue;
                 }
                 drafts.add(new CalloutDraft("n:" + node.getID(), pos.x, pos.y, nodeIcon(node),
-                        isRailNode(node), renderNode == selectedRenderNode, renderNode, null));
+                        isRailNode(node), renderNode == selectedRenderNode, renderNode, null,
+                        collisionRes.collidesWithNode(node.getID())));
             }
         }
         if (renderSlotIcon) {
@@ -1077,7 +1078,7 @@ public class GunModifyContext {
                     continue;
                 }
                 drafts.add(new CalloutDraft("s:" + System.identityHashCode(slot), pos.x, pos.y + 6, ItemStack.EMPTY,
-                        false, slot == selectedSlot && selectedNode == null, null, slot));
+                        false, slot == selectedSlot && selectedNode == null, null, slot, false));
             }
         }
         if (drafts.isEmpty()) {
@@ -1123,7 +1124,7 @@ public class GunModifyContext {
             float y = centerY + radiusY * (float) Math.sin(theta) - ICON * 0.5f;
             CalloutDraft draft = row.get(i);
             callouts.add(new Callout(draft.key, draft.anchorX, draft.anchorY, x, y, ICON, ICON, draft.icon,
-                    draft.rail, draft.selected, draft.renderNode, draft.slot));
+                    draft.rail, draft.selected, draft.renderNode, draft.slot, draft.warn));
         }
     }
 
@@ -1140,15 +1141,23 @@ public class GunModifyContext {
     }
 
     /** A few pixels, just enough to see where the part sits. */
-    private static void markPoint(GuiGraphics graphics, float x, float y, boolean selected) {
+    private static void markPoint(GuiGraphics graphics, float x, float y, boolean selected, boolean warn) {
         int cx = Math.round(x);
         int cy = Math.round(y);
-        int color = selected ? 0xFFF2D48A : 0xFFF4F1EA;
-        graphics.fill(cx - 1, cy - 1, cx + 1, cy + 1, color);
+        int color = warn ? 0xFFE24B4B : (selected ? 0xFFF2D48A : 0xFFF4F1EA);
+        int radius = warn ? 2 : 1;
+        graphics.fill(cx - radius, cy - radius, cx + radius, cy + radius, color);
+    }
+
+    /** Red badge with a small exclamation, drawn over the corner of a colliding icon. */
+    private static void drawWarnBadge(GuiGraphics graphics, int x, int y) {
+        graphics.fill(x, y, x + 7, y + 8, 0xFFE24B4B);
+        graphics.fill(x + 3, y + 1, x + 4, y + 5, 0xFFFFFFFF);
+        graphics.fill(x + 3, y + 6, x + 4, y + 7, 0xFFFFFFFF);
     }
 
     private record CalloutDraft(String key, float anchorX, float anchorY, ItemStack icon, boolean rail, boolean selected,
-                                ModuleRenderNode renderNode, SlotInstance slot) {}
+                                ModuleRenderNode renderNode, SlotInstance slot, boolean warn) {}
 
     private static final class Callout {
         private final String key;
@@ -1161,11 +1170,12 @@ public class GunModifyContext {
         private final ItemStack icon;
         private final boolean rail;
         private final boolean selected;
+        private final boolean warn;
         private final ModuleRenderNode renderNode;
         private final SlotInstance slot;
 
         private Callout(String key, float anchorX, float anchorY, float x, float y, float w, float h, ItemStack icon,
-                         boolean rail, boolean selected, ModuleRenderNode renderNode, SlotInstance slot) {
+                         boolean rail, boolean selected, ModuleRenderNode renderNode, SlotInstance slot, boolean warn) {
             this.key = key;
             this.anchorX = anchorX;
             this.anchorY = anchorY;
@@ -1176,6 +1186,7 @@ public class GunModifyContext {
             this.icon = icon;
             this.rail = rail;
             this.selected = selected;
+            this.warn = warn;
             this.renderNode = renderNode;
             this.slot = slot;
         }
@@ -1203,6 +1214,15 @@ public class GunModifyContext {
         }
         public Pair<Boolean, Boolean> wasNodeCollidedBoundary(String id) {
             return nodesWithSelfBoundary.getOrDefault(id, Pair.of(false, false));
+        }
+
+        public boolean collidesWithNode(String id) {
+            for (Pair<String, String> pair : nodesToNodes) {
+                if (id.equals(pair.getLeft()) || id.equals(pair.getRight())) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public boolean isOk() {
