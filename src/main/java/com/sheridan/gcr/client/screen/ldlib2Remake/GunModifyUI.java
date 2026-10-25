@@ -1,17 +1,19 @@
-package com.sheridan.gcr.client.screen.ldlib2Remake;// MyItemPanelUI.java
+package com.sheridan.gcr.client.screen.ldlib2Remake;
 
-
+import com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture;
+import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
+import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
+import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
-import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.Sprites;
 import com.sheridan.gcr.GCR;
 import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.AlignItems;
@@ -19,10 +21,10 @@ import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class GunModifyUI {
     public static final IGuiTexture DRAG = SpriteTexture.of(
             GCR.RL(GCR.MODID, "textures/gui/component/drag.png")
@@ -44,238 +46,438 @@ public class GunModifyUI {
             GCR.RL(GCR.MODID, "textures/gui/component/reset.png")
     ).setSprite(0, 0, 32, 32);
 
-    public static final IGuiTexture SEARCH = SpriteTexture.of(
-            GCR.RL(GCR.MODID, "textures/gui/component/search.png")
-    ).setSprite(0, 0, 32, 32);
+    public static final int GRID_COLUMNS = 6;
+    public static final int GRID_ROWS = 3;
+    public static final int PAGE_SIZE = GRID_COLUMNS * GRID_ROWS;
 
-    public static final int PAGE_SIZE = 5 * 10;
+    private static final int INK = 0xFFE7E2D6;
+    private static final int MUTED = 0xFF9C978C;
+    private static final int HAIRLINE = 0x66E7E2D6;
+
+    private static final IGuiTexture FILL = new ColorRectTexture(0xE0101216);
+    private static final IGuiTexture RULE = new ColorRectTexture(HAIRLINE);
+    private static final IGuiTexture WELL = IGuiTexture.group(
+            new ColorRectTexture(0xCC171A1E),
+            new ColorBorderTexture(1, 0x33E7E2D6));
+    private static final IGuiTexture HOVER = new ColorRectTexture(0x28FFFFFF);
+    private static final IGuiTexture PRESS = new ColorRectTexture(0x40E7E2D6);
+    private static final IGuiTexture CHIP = IGuiTexture.group(
+            new ColorRectTexture(0x22101418),
+            new ColorBorderTexture(1, 0x99E7E2D6));
+    private static final IGuiTexture CHIP_HOVER = IGuiTexture.group(
+            new ColorRectTexture(0x33E7E2D6),
+            new ColorBorderTexture(1, 0xFFE7E2D6));
+
     private static UIElement root;
-    private static UIElement right;
-    private static UIElement contentRight;
+    private static UIElement tray;
+    private static UIElement catalogBody;
     private static Button btnCollapseRight;
     private static Label pageLabel;
+    private static Label slotTitle;
+    private static Label weaponName;
+    private static UIElement actionRow;
+    private static UIElement centerPrompt;
 
-    private static UIElement left;
-
-    private static UIElement main;
     public static CButton btnReplaceModule;
     public static CButton btnRemoveModule;
     public static CButton btnCommit;
     public static Button btnDragModel;
     public static Button btnResetModel;
 
-    public static UIElement scrollComponents;
-    public static CScroller scroller;
-    private static Button btnResetScroller;
     private static TextField searchBox;
 
     private static List<List<DisplaySlot>> itemSlots;
 
     public static ModularUI createModularUI(GunModifyScreen screen) {
         root = new UIElement();
-        UIElement rightContent = createRightContent(screen);
-        UIElement mainContent = createMainContent(screen);
-        UIElement leftContent = createLeftContent(screen);
-        root.addChildren(leftContent, mainContent, rightContent);
+        root.addChild(createViewport(screen));
         root.layout(layout -> layout
                 .widthPercent(100)
                 .heightPercent(100)
-                .flexDirection(FlexDirection.ROW));
-        UI ui = UI.of(root);
-        return new ModularUI(ui);
+                .paddingAll(14)
+                .flexDirection(FlexDirection.COLUMN));
+        return new ModularUI(UI.of(root));
     }
 
-    public static UIElement createLeftContent(GunModifyScreen screen) {
-        UIElement leftContent = new UIElement()
-                .layout(layoutStyle -> layoutStyle
-                        .width(16 * 5 + 30)
-                        .minHeight(239)
-                        .heightPercent(100));
-        return leftContent;
-    }
-
-    public static UIElement createMainContent(GunModifyScreen screen) {
-        UIElement mainContent = new UIElement().layout(layoutStyle -> layoutStyle.flex(1));
-        UIElement mainUpperContent = createMainUpperContent(screen);
-        UIElement mainLowerContent = createMainLowerContent(screen);
-        mainContent.addChildren(mainUpperContent, mainLowerContent);
-        return mainContent;
-    }
-
-    private static UIElement createMainUpperContent(GunModifyScreen screen) {
-        UIElement content = new UIElement();
-        content.layout(layoutStyle -> layoutStyle
-                        .gapAll(3)
-                        .widthPercent(100)
-                        .heightPercent(70));
-        UIElement paddingTop = new UIElement().layout(layoutStyle -> layoutStyle.height(15).widthPercent(100));
-        content.addChild(paddingTop);
-
-        btnDragModel = (Button) new Button()
-                .addPreIcon(DRAG)
-                .noText()
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.drag")))
-                .addEventListener(UIEvents.MOUSE_DOWN, screen::onDragModel)
-                .addEventListener(UIEvents.MOUSE_UP, e -> screen.stopDragModel());
-        btnResetModel = (Button) new Button()
-                .setOnClick(e -> screen.resetModelPose())
-                .addPreIcon(RESET)
-                .noText()
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.reset")));
-
-        btnReplaceModule = (CButton) new CButton().setOnClick(e -> screen.replaceSelectedModule()).addPreIcon(REPLACE).noText();
-        btnRemoveModule = (CButton) new CButton().setOnClick(e -> screen.removeSelectedModule()).addPreIcon(STOP).noText();
-        btnCommit = (CButton) new CButton().setOnClick(e -> screen.commitToServer()).addPreIcon(OK).noText();
-
-        btnDragModel.layout(layoutStyle -> layoutStyle.width(16).height(16));
-        btnResetModel.layout(layoutStyle -> layoutStyle.width(16).height(16));
-        btnReplaceModule.layout(layoutStyle -> layoutStyle.width(16).height(16));
-        btnRemoveModule.layout(layoutStyle -> layoutStyle.width(16).height(16));
-        btnCommit.layout(layoutStyle -> layoutStyle.width(16).height(16));
-
-        UIElement topNaviBar = new UIElement().layout(layoutStyle -> layoutStyle
-                .flexDirection(FlexDirection.ROW)
-                .widthPercent(100)
-                .gapAll(5));
-
-        Button zoomIn = (Button) new Button().setOnClick(e -> screen.zoomInModel())
-                .setText("+")
-                .layout(layoutStyle -> layoutStyle.width(16).height(16).justifyItems(AlignItems.CENTER))
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.zoom_in")));
-        Button zoomOut = (Button) new Button().setOnClick(e -> screen.zoomOutModel())
-                .setText("-")
-                .layout(layoutStyle -> layoutStyle.width(16).height(16).justifyItems(AlignItems.CENTER))
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.zoom_out")));
-
-        Button btnInspect = (Button) new Button()
-                .setText("检查")
-                .setOnClick(e -> screen.enterInspectionMode())
-                .layout(layoutStyle -> layoutStyle.width(32).height(16).justifyItems(AlignItems.CENTER));
-
-        topNaviBar.addChildren(btnDragModel, btnResetModel, zoomIn, zoomOut, btnInspect);
-
-        UIElement naviBarGap = new UIElement();
-        naviBarGap.layout(layoutStyle -> layoutStyle.flex(1));
-        topNaviBar.addChildren(naviBarGap, btnReplaceModule, btnRemoveModule, btnCommit);
-
-
-        scrollComponents = new UIElement().layout(layoutStyle -> layoutStyle
-                .gapAll(2)
-                .alignItems(AlignItems.CENTER)
-                .justifyContent(AlignContent.CENTER)
-                .flexDirection(FlexDirection.ROW)
-                .widthPercent(100));
-
-        UIElement scrollerBox = new UIElement().layout(layoutStyle -> layoutStyle
+    private static UIElement createViewport(GunModifyScreen screen) {
+        UIElement viewport = new UIElement().layout(layout -> layout
                 .flex(1)
-                .maxWidth(200)
-                .justifyContent(AlignContent.CENTER)
-                .alignItems(AlignItems.CENTER)
-                .paddingTop(6));
-
-        scroller = (CScroller) new CScroller()
-                .setRange(0f, 1f)
-                .setScrollBarSize(13f)
-                .headButton(btn -> {btn.setVisible(false); btn.getLayout().width(0).height(0);})
-                .tailButton(btn -> {btn.setVisible(false); btn.getLayout().width(0).height(0);})
-                .setOnValueChanged(screen::trySetNodePos)
-                .layout(layoutStyle -> layoutStyle.widthPercent(100));
-        scrollerBox.addChild(scroller);
-
-        btnResetScroller = (Button) new Button()
-                .setOnClick(e -> screen.resetScroller())
-                .noText()
-                .addPreIcon(RESET)
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.reset_scroll")))
-                .layout(layoutStyle -> layoutStyle
-                        .width(16)
-                        .height(16));
-        scrollComponents.addChildren(scrollerBox, btnResetScroller);
-        setScrollComponentsVisible(false);
-
-        content.addChildren(
-                topNaviBar,
-                new UIElement().layout(layoutStyle -> layoutStyle
-                        .flex(1)),
-                scrollComponents);
-
-        return content;
-    }
-
-    public static void setScrollComponentsVisible(boolean visible) {
-        if (scrollComponents == null) {
-            return;
-        }
-        scrollComponents.setVisible(visible);
-    }
-
-    public static void setScrollPos(float pos) {
-        if (scroller != null) {
-            scroller.setValue(pos);
-        }
-    }
-
-    public static void defaultScrollDelta() {
-        setScrollDelta(0.1f);
-    }
-
-    public static void setScrollDelta(float delta) {
-        if (scroller == null) {
-            return;
-        }
-        scroller.scrollerStyle(style -> style.scrollDelta(delta));
-    }
-
-
-    private static UIElement createMainLowerContent(GunModifyScreen screen) {
-        UIElement content = new UIElement();
-        content.layout(layoutStyle -> layoutStyle
                 .widthPercent(100)
-                .heightPercent(30));
+                .flexDirection(FlexDirection.COLUMN)
+                .gapAll(8));
 
-        return content;
+        UIElement trayDock = new UIElement()
+                .layout(layout -> layout.widthPercent(100).flexDirection(FlexDirection.ROW))
+                .addChildren(new UIElement().layout(layout -> layout.flex(1)), createTray(screen));
+        viewport.addChildren(
+                createTopBar(screen),
+                new UIElement().layout(layout -> layout.flex(1)),
+                createCaption(),
+                trayDock);
+        return viewport;
+    }
+
+    private static UIElement createTopBar(GunModifyScreen screen) {
+        Label kicker = (Label) new Label()
+                .setText("screen.modify.kicker", true)
+                .textStyle(style -> style.textColor(MUTED).textShadow(false))
+                .layout(layout -> layout.height(10));
+        weaponName = (Label) new Label()
+                .setText(Component.empty())
+                .textStyle(style -> style
+                        .textColor(INK)
+                        .textShadow(false)
+                        .textWrap(TextWrap.HOVER_ROLL)
+                        .adaptiveWidth(false))
+                .layout(layout -> layout.widthPercent(100).height(12));
+        UIElement titles = new UIElement()
+                .layout(layout -> layout.flex(1).flexDirection(FlexDirection.COLUMN).gapAll(1))
+                .addChildren(kicker, weaponName);
+
+        btnDragModel = iconButton(DRAG, "tooltip.btn.drag");
+        btnDragModel.addEventListener(UIEvents.MOUSE_DOWN, screen::onDragModel);
+        btnDragModel.addEventListener(UIEvents.MOUSE_UP, e -> screen.stopDragModel());
+        btnResetModel = (Button) iconButton(RESET, "tooltip.btn.reset")
+                .setOnClick(e -> screen.resetModelPose());
+
+        Button zoomOut = textButton("-", "tooltip.btn.zoom_out", 16);
+        zoomOut.setOnClick(e -> screen.zoomOutModel());
+        Button zoomIn = textButton("+", "tooltip.btn.zoom_in", 16);
+        zoomIn.setOnClick(e -> screen.zoomInModel());
+        Button inspect = textButton("screen.modify.inspect", "tooltip.btn.inspect", 58);
+        inspect.setText("screen.modify.inspect", true);
+        inspect.setOnClick(e -> screen.enterInspectionMode());
+
+        btnCommit = (CButton) new CButton()
+                .setText("screen.modify.save", true)
+                .setOnClick(e -> screen.commitToServer());
+        chip(btnCommit);
+        btnCommit.layout(layout -> layout.width(58).height(16));
+        btnCommit.disable("tooltip.btn.unmodified");
+
+        UIElement tools = new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.ROW)
+                        .alignItems(AlignItems.CENTER)
+                        .gapAll(6))
+                .addChildren(btnDragModel, btnResetModel, zoomOut, zoomIn, inspect, btnCommit);
+
+        return new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.ROW)
+                        .alignItems(AlignItems.CENTER)
+                        .widthPercent(100)
+                        .gapAll(8))
+                .addEventListener(UIEvents.MOUSE_DOWN, GunModifyUI::consumeClick)
+                .addChildren(titles, tools);
+    }
+
+    private static UIElement createCaption() {
+        Label promptLabel = (Label) new Label()
+                .setText("screen.modify.hint.select", true)
+                .textStyle(style -> style
+                        .textAlignHorizontal(Horizontal.CENTER)
+                        .textWrap(TextWrap.WRAP)
+                        .adaptiveWidth(false)
+                        .adaptiveHeight(true)
+                        .textColor(INK)
+                        .textShadow(true))
+                .layout(layout -> layout.widthPercent(100));
+        centerPrompt = new UIElement()
+                .layout(layout -> layout.widthPercent(100).paddingBottom(6))
+                .addChild(promptLabel);
+        return centerPrompt;
+    }
+
+    private static UIElement createTray(GunModifyScreen screen) {
+        slotTitle = (Label) new Label()
+                .setText("screen.modify.catalog_title", true)
+                .textStyle(style -> style
+                        .textColor(INK)
+                        .textShadow(false)
+                        .textWrap(TextWrap.NONE)
+                        .adaptiveWidth(true))
+                .layout(layout -> layout.height(12));
+
+        btnRemoveModule = (CButton) new CButton()
+                .setText("screen.modify.remove", true)
+                .setOnClick(e -> screen.removeSelectedModule());
+        ghost(btnRemoveModule);
+        btnRemoveModule.layout(layout -> layout.width(62).height(14));
+        btnRemoveModule.disable("tooltip.btn.opt_not_allow");
+
+        btnReplaceModule = (CButton) new CButton()
+                .setText("screen.modify.replace", true)
+                .setOnClick(e -> screen.replaceSelectedModule());
+        ghost(btnReplaceModule);
+        btnReplaceModule.layout(layout -> layout.width(68).height(14));
+        btnReplaceModule.disable("tooltip.btn.no_module");
+
+        actionRow = new UIElement()
+                .layout(layout -> layout.flexDirection(FlexDirection.ROW).gapAll(2))
+                .addChildren(btnRemoveModule, btnReplaceModule);
+        setShown(actionRow, false);
+
+        btnCollapseRight = textButton("screen.modify.hide_list", "tooltip.btn.fold", 42);
+        btnCollapseRight.setText("screen.modify.hide_list", true);
+        btnCollapseRight.setOnClick(e -> collapseRight());
+
+        UIElement actions = new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.ROW)
+                        .alignItems(AlignItems.CENTER)
+                        .gapAll(2))
+                .addChildren(actionRow, btnCollapseRight);
+        UIElement header = new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.COLUMN)
+                        .widthPercent(100)
+                        .gapAll(2))
+                .addChildren(slotTitle, actions);
+
+        searchBox = (TextField) new TextField()
+                .setAnyString()
+                .setTextResponder(screen::searchAttachments)
+                .textFieldStyle(style -> style
+                        .textColor(INK)
+                        .cursorColor(INK)
+                        .textShadow(false)
+                        .placeholder(Component.translatable("tooltip.input.search_attachments")))
+                .layout(layout -> layout.flex(1).height(14))
+                .style(style -> style
+                        .background(WELL)
+                        .tooltips(Component.translatable("tooltip.input.search_attachments")))
+                .setId("search_attachments");
+        Button clear = textButton("x", "tooltip.btn.clear", 14);
+        clear.setOnClick(e -> screen.clearSearch());
+        UIElement searchRow = new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.ROW)
+                        .alignItems(AlignItems.CENTER)
+                        .widthPercent(100)
+                        .gapAll(6))
+                .addChildren(searchBox, clear);
+
+        UIElement cards = createCards(screen);
+
+        pageLabel = (Label) new Label()
+                .setText(Component.translatable("screen.modify.page_empty"))
+                .textStyle(style -> style
+                        .textAlignHorizontal(Horizontal.CENTER)
+                        .textAlignVertical(Vertical.CENTER)
+                        .textColor(MUTED)
+                        .textShadow(false))
+                .layout(layout -> layout.flex(1).height(12));
+        Button prev = textButton("<", "tooltip.btn.page_prev", 16);
+        prev.setOnClick(e -> screen.showPage(screen.getPage() - 1));
+        Button next = textButton(">", "tooltip.btn.page_next", 16);
+        next.setOnClick(e -> screen.showPage(screen.getPage() + 1));
+        UIElement pager = new UIElement()
+                .layout(layout -> layout
+                        .flexDirection(FlexDirection.ROW)
+                        .alignItems(AlignItems.CENTER)
+                        .justifyContent(AlignContent.CENTER)
+                        .widthPercent(100)
+                        .gapAll(8))
+                .addChildren(prev, pageLabel, next);
+
+        catalogBody = new UIElement()
+                .layout(layout -> layout
+                        .widthPercent(100)
+                        .flexDirection(FlexDirection.COLUMN)
+                        .gapAll(6))
+                .addChildren(searchRow, cards, pager);
+
+        UIElement body = new UIElement()
+                .layout(layout -> layout
+                        .widthPercent(100)
+                        .flexDirection(FlexDirection.COLUMN)
+                        .paddingAll(6)
+                        .gapAll(4))
+                .addChildren(header, catalogBody);
+
+        tray = new UIElement()
+                .layout(layout -> layout.width(188).flexDirection(FlexDirection.COLUMN))
+                .style(style -> style.background(FILL))
+                .addEventListener(UIEvents.MOUSE_DOWN, GunModifyUI::consumeClick)
+                .addChildren(rule(), body)
+                .setId("content_right_main");
+        setShown(tray, false);
+        return tray;
+    }
+
+    private static UIElement createCards(GunModifyScreen screen) {
+        itemSlots = new ArrayList<>();
+        UIElement grid = new UIElement().layout(layout -> layout
+                .flexDirection(FlexDirection.COLUMN)
+                .alignItems(AlignItems.CENTER)
+                .widthPercent(100)
+                .gapAll(2));
+        for (int rowIndex = 0; rowIndex < GRID_ROWS; rowIndex++) {
+            UIElement row = new UIElement().layout(layout -> layout
+                    .flexDirection(FlexDirection.ROW)
+                    .justifyContent(AlignContent.CENTER)
+                    .gapAll(2));
+            List<DisplaySlot> slots = new ArrayList<>();
+            for (int column = 0; column < GRID_COLUMNS; column++) {
+                DisplaySlot slot = new DisplaySlot();
+                slot.addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick);
+                slot.layout(layout -> layout.width(18).height(18));
+                slot.style(style -> style.background(WELL));
+                slot.slotStyle(style -> style.hoverOverlay(HOVER).showItemTooltips(true));
+                row.addChild(slot);
+                slots.add(slot);
+            }
+            itemSlots.add(slots);
+            grid.addChild(row);
+        }
+        return grid;
+    }
+
+    private static UIElement rule() {
+        return new UIElement()
+                .layout(layout -> layout.widthPercent(100).height(1))
+                .style(style -> style.background(RULE));
+    }
+
+    private static Button iconButton(IGuiTexture icon, String tooltip) {
+        Button button = (Button) new Button()
+                .addPreIcon(icon)
+                .noText()
+                .layout(layout -> layout.width(16).height(16))
+                .style(style -> style.tooltips(Component.translatable(tooltip)));
+        ghost(button);
+        return button;
+    }
+
+    private static Button textButton(String text, String tooltip, float width) {
+        Button button = (Button) new Button()
+                .setText(text)
+                .layout(layout -> layout.width(width).height(14).justifyItems(AlignItems.CENTER))
+                .style(style -> style.tooltips(Component.translatable(tooltip)));
+        ghost(button);
+        return button;
+    }
+
+    private static void ghost(Button button) {
+        button.buttonStyle(style -> style
+                .baseTexture(IGuiTexture.EMPTY)
+                .hoverTexture(HOVER)
+                .pressedTexture(PRESS));
+        button.style(style -> style.background(IGuiTexture.EMPTY));
+        button.textStyle(style -> style
+                .textColor(INK)
+                .textShadow(false)
+                .textAlignHorizontal(Horizontal.CENTER)
+                .textAlignVertical(Vertical.CENTER));
+    }
+
+    private static void chip(Button button) {
+        button.buttonStyle(style -> style
+                .baseTexture(CHIP)
+                .hoverTexture(CHIP_HOVER)
+                .pressedTexture(PRESS));
+        button.style(style -> style.background(IGuiTexture.EMPTY));
+        button.textStyle(style -> style
+                .textColor(INK)
+                .textShadow(false)
+                .textAlignHorizontal(Horizontal.CENTER)
+                .textAlignVertical(Vertical.CENTER));
+    }
+
+    private static void consumeClick(com.lowdragmc.lowdraglib2.gui.ui.event.UIEvent event) {
+        event.hasHandler = true;
+        event.stopPropagation();
+    }
+
+    private static void setShown(UIElement element, boolean shown) {
+        if (element == null) {
+            return;
+        }
+        element.setVisible(shown);
+        element.setDisplay(shown);
+    }
+
+    public static void setWeaponName(Component name) {
+        if (weaponName != null && name != null) {
+            weaponName.setText(name);
+        }
+    }
+
+    public static void setModuleActionsVisible(boolean visible) {
+        if (actionRow == null || actionRow.isVisible() == visible) {
+            return;
+        }
+        setShown(actionRow, visible);
+    }
+
+    public static void showIdlePrompt() {
+        setShown(centerPrompt, true);
+        setShown(tray, false);
+        if (slotTitle != null) {
+            slotTitle.setText(Component.translatable("screen.modify.catalog_title"));
+        }
+    }
+
+    public static void showSelection(Component title) {
+        setShown(centerPrompt, false);
+        setShown(tray, true);
+        if (slotTitle != null) {
+            slotTitle.setText(title);
+        }
+        fitTray(title);
+    }
+
+    /** Grow the panel so the slot title is fully inside it. */
+    private static void fitTray(Component title) {
+        if (tray == null || title == null) {
+            return;
+        }
+        int text = Minecraft.getInstance().font.width(title) + 20;
+        int buttons = 62 + 68 + 42 + 16;
+        int grid = GRID_COLUMNS * 18 + (GRID_COLUMNS - 1) * 2 + 16;
+        int width = Math.max(text, Math.max(buttons, grid));
+        int screen = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 36;
+        if (screen > 96) {
+            width = Math.min(width, screen);
+        }
+        tray.getLayout().width(width);
     }
 
     public static void collapseRight() {
-        boolean visible = contentRight.isVisible();
-        visible = !visible;
-        contentRight.setVisible(visible);
-        btnCollapseRight.setText(visible ? "tooltip.btn.fold" : "tooltip.btn.unfold", true);
+        if (catalogBody == null) {
+            return;
+        }
+        boolean show = !catalogBody.isVisible();
+        setShown(catalogBody, show);
+        if (btnCollapseRight != null) {
+            btnCollapseRight.setText(show ? "screen.modify.hide_list" : "screen.modify.show_list", true);
+            btnCollapseRight.getStyle().tooltips(Component.translatable(show ? "tooltip.btn.fold" : "tooltip.btn.unfold"));
+        }
     }
 
     public static void hideRight() {
-        boolean visible = contentRight.isVisible();
-        if (visible) {
-            collapseRight();
-        }
+        setShown(catalogBody, false);
+        setShown(tray, false);
     }
 
     public static void showRight() {
-        boolean visible = contentRight.isVisible();
-        if (!visible) {
-            collapseRight();
-        }
-    }
-
-    private static void createItemSlots(GunModifyScreen screen) {
-        itemSlots = new ArrayList<>();
-        int itemTabColumns = 10;
-        for (int i = 0; i < itemTabColumns; i++) {
-            itemSlots.add(List.of(
-                    (DisplaySlot) new DisplaySlot().addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick),
-                    (DisplaySlot) new DisplaySlot().addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick),
-                    (DisplaySlot) new DisplaySlot().addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick),
-                    (DisplaySlot) new DisplaySlot().addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick),
-                    (DisplaySlot) new DisplaySlot().addEventListener(UIEvents.MOUSE_DOWN, screen::onAttachmentSlotClick)));
+        setShown(tray, true);
+        setShown(catalogBody, true);
+        if (btnCollapseRight != null) {
+            btnCollapseRight.setText("screen.modify.hide_list", true);
+            btnCollapseRight.getStyle().tooltips(Component.translatable("tooltip.btn.fold"));
         }
     }
 
     public static void clearItemSlots() {
-        if (itemSlots != null) {
-            for (List<DisplaySlot> itemSlots : itemSlots) {
-                for (DisplaySlot itemSlot : itemSlots) {
-                    itemSlot.setItem(ItemStack.EMPTY);
-                }
+        if (itemSlots == null) {
+            return;
+        }
+        for (List<DisplaySlot> row : itemSlots) {
+            for (DisplaySlot itemSlot : row) {
+                itemSlot.setItem(ItemStack.EMPTY);
+                itemSlot.setCount(0);
             }
         }
     }
@@ -285,102 +487,13 @@ public class GunModifyUI {
     }
 
     public static void clearSearchBox() {
-        if (searchBox != null) {
+        if (searchBox == null) {
+            return;
+        }
+        String value = searchBox.getValue();
+        if (value != null && !value.isEmpty()) {
             searchBox.setText("");
         }
-    }
-
-    private static UIElement createRightContent(GunModifyScreen screen) {
-        btnCollapseRight = new Button()
-                .setText("tooltip.btn.fold", true)
-                .setOnClick(e -> collapseRight());
-        right = new UIElement()
-                .addChild(btnCollapseRight)
-                .layout(layoutStyle -> layoutStyle
-                        .width(16 * 5 + 30)
-                        .minHeight(239)
-                        .heightPercent(100));
-
-        createItemSlots(screen);
-
-        UIElement itemTab = new UIElement().layout(layout -> layout.justifyContent(AlignContent.CENTER));
-        for (List<DisplaySlot> itemSlotList : itemSlots) {
-            UIElement itemTabRow = new UIElement().layout(layoutStyle -> layoutStyle
-                    .flexDirection(FlexDirection.ROW)
-                    .justifyContent(AlignContent.CENTER)
-                    .gapAll(2)
-            );
-            for (DisplaySlot itemSlot : itemSlotList) {
-                itemTabRow.addChild(itemSlot);
-            }
-            itemTab.addChild(itemTabRow);
-        }
-        pageLabel = (Label) new Label()
-                .textStyle(textStyle -> textStyle.textAlignHorizontal(Horizontal.CENTER))
-                .setText(" -- / -- ")
-                .layout(layoutStyle -> layoutStyle.flex(1));
-        searchBox = (TextField) new TextField()
-                .layout(layout -> layout.flex(1))
-                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.input.search_attachments")))
-                .setId("search_attachments")
-                .addEventListener(UIEvents.KEY_DOWN, e -> {
-                    if (e.keyCode == GLFW.GLFW_KEY_ENTER) {
-                        TextField searchBox = (TextField) e.currentElement;
-                        String value = searchBox.getValue();
-                        screen.searchAttachments(value);
-                    }
-                });
-        contentRight = new UIElement().addChildren(
-                        new UIElement()
-                                .layout(layout -> layout.flexDirection(FlexDirection.ROW))
-                                .addChildren(
-                                        searchBox,
-                                        new Button()
-                                                .setOnClick(e -> {
-                                                    String value = searchBox.getValue();
-                                                    screen.searchAttachments(value);
-                                                })
-                                                .noText()
-                                                .addPreIcon(SEARCH)
-                                                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.search"))),
-                                        new Button()
-                                                .setOnClick(e -> screen.clearSearch())
-                                                .noText()
-                                                .addPreIcon(STOP)
-                                                .style(basicStyle -> basicStyle.tooltips(Component.translatable("tooltip.btn.clear")))
-                                ),
-                        new Label().setText("tooltip.tab.suitable_attachments", true).layout(layoutStyle -> layoutStyle.paddingLeft(2)),
-                        itemTab,
-                        new UIElement()
-                                .layout(layout -> layout
-                                        .flexDirection(FlexDirection.ROW)
-                                        .justifyContent(AlignContent.CENTER)
-                                        .gapAll(2)
-                                )
-                                .addChildren(
-                                        new Button().setText("<")
-                                                .setOnClick(e -> {
-                                                    int page = screen.getPage();
-                                                    screen.setPage(page - 1);
-                                                    syncPageInfo(screen);
-                                                }),
-                                        pageLabel,
-                                        new Button().setText(">")
-                                                .setOnClick(e -> {
-                                                    int page = screen.getPage();
-                                                    screen.setPage(page + 1);
-                                                    syncPageInfo(screen);
-                                                })
-                        )
-                ).addEventListener(UIEvents.MOUSE_DOWN, e -> {})
-                .layout(layoutStyle -> layoutStyle
-                        .widthPercent(100)
-                        .flex(1)
-                        .paddingAll(3))
-                .style(style -> style.background(Sprites.BORDER))
-                .setId("content_right_main");
-        right.addChild(contentRight);
-        return right;
     }
 
     public static void setVisible(boolean visible) {
@@ -389,18 +502,19 @@ public class GunModifyUI {
         }
     }
 
-
     public static void open() {
         Minecraft.getInstance().setScreen(new GunModifyScreen(Component.empty()));
     }
 
     public static void syncPageInfo(GunModifyScreen screen) {
-        int page = screen.getPage();
-        int maxPage = screen.getMaxPage();
-        if (maxPage == 0) {
-            pageLabel.setText(" -- / -- ");
+        if (pageLabel == null) {
             return;
         }
-        pageLabel.setText(page + " / " + maxPage);
+        int maxPage = screen.getMaxPage();
+        if (maxPage <= 0) {
+            pageLabel.setText(Component.translatable("screen.modify.page_empty"));
+            return;
+        }
+        pageLabel.setText(Component.translatable("screen.modify.page", screen.getPage(), maxPage));
     }
 }

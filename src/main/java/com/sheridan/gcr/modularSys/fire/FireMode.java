@@ -3,6 +3,7 @@ package com.sheridan.gcr.modularSys.fire;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.Utils;
+import com.sheridan.gcr.client.BarrelAim;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.recoil.IRecoilUpdater;
 import com.sheridan.gcr.client.recoil.RecoilHandler;
@@ -73,7 +74,9 @@ public abstract class FireMode<T extends IGun> implements IFireMode<T>{
             gunKickPitch = recoilUpdater.getGunKickPitch();
             gunKickYaw = recoilUpdater.getGunKickYaw();
         }
-        PacketDistributor.sendToServer(new GunFirePacket(shootId, gunId, stuck, gunKickPitch, gunKickYaw));
+        GunFirePacket packet = new GunFirePacket(shootId, gunId, stuck, gunKickPitch, gunKickYaw);
+        BarrelAim.apply(packet);
+        PacketDistributor.sendToServer(packet);
     }
 
 }

@@ -142,22 +142,22 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
             return;
         }
 
-        float yaw = shooter.getYRot();
-        float pitch = shooter.getXRot();
-
-        pitch += packet.gunKickPitch;
-        yaw += packet.gunKickYaw;
-
         float spread = getSpread(itemStack);
-
         float randPitch = (float) ((random.nextGaussian() - 0.5f) * spread);
         float randYaw = (float) ((random.nextGaussian() - 0.5f) * spread);
 
-        pitch += randPitch;
-        yaw += randYaw;
-
-        Vec3 dir = Vec3.directionFromRotation(pitch, yaw).normalize();
-        Vec3 pos = shooter.getEyePosition();
+        Vec3 pos;
+        Vec3 dir;
+        if (shooter instanceof ServerPlayer player && acceptBarrelAim(player, packet)) {
+            // Origin and direction already include the viewmodel, so gun kick is not applied again.
+            pos = new Vec3(packet.originX, packet.originY, packet.originZ);
+            dir = deflect(new Vec3(packet.dirX, packet.dirY, packet.dirZ), randPitch, randYaw);
+        } else {
+            float yaw = shooter.getYRot() + packet.gunKickYaw + randYaw;
+            float pitch = shooter.getXRot() + packet.gunKickPitch + randPitch;
+            dir = Vec3.directionFromRotation(pitch, yaw).normalize();
+            pos = shooter.getEyePosition();
+        }
         double speed = 30f;
 
         BulletEntity bullet = new BulletEntity(ModEntities.BULLET.get(), level);
@@ -201,6 +201,36 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
                 shooter,
                 firePacket
         );
+    }
+
+    /** Muzzle origin has to stay on the shooter. A bad or missing aim falls back to the eyes. */
+    private static boolean acceptBarrelAim(ServerPlayer player, GunFirePacket packet) {
+        if (!packet.useBarrel) {
+            return false;
+        }
+        if (!Double.isFinite(packet.originX) || !Double.isFinite(packet.originY) || !Double.isFinite(packet.originZ)) {
+            return false;
+        }
+        if (!Float.isFinite(packet.dirX) || !Float.isFinite(packet.dirY) || !Float.isFinite(packet.dirZ)) {
+            return false;
+        }
+        Vec3 origin = new Vec3(packet.originX, packet.originY, packet.originZ);
+        if (origin.distanceToSqr(player.getEyePosition()) > 25.0) {
+            return false;
+        }
+        double len2 = packet.dirX * (double) packet.dirX + packet.dirY * (double) packet.dirY + packet.dirZ * (double) packet.dirZ;
+        if (len2 < 0.25 || len2 > 4.0) {
+            return false;
+        }
+        Vec3 dir = new Vec3(packet.dirX, packet.dirY, packet.dirZ).normalize();
+        return dir.dot(player.getLookAngle()) >= 0.0;
+    }
+
+    private static Vec3 deflect(Vec3 dir, float pitchDeg, float yawDeg) {
+        dir = dir.normalize();
+        float yaw = (float) Math.toDegrees(Mth.atan2(-dir.x, dir.z));
+        float pitch = (float) Math.toDegrees(Math.asin(Mth.clamp(-dir.y, -1.0, 1.0)));
+        return Vec3.directionFromRotation(pitch + pitchDeg, yaw + yawDeg);
     }
 
     @Override

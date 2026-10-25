@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,24 @@ public class GunFirePacket implements CustomPacketPayload, IPacket<GunFirePacket
     public boolean stuck;
     public float gunKickPitch;
     public float gunKickYaw;
+    /** Client solved a first-person muzzle origin and direction for this shot. */
+    public boolean useBarrel;
+    public double originX;
+    public double originY;
+    public double originZ;
+    public float dirX;
+    public float dirY;
+    public float dirZ;
+
+    public void setBarrelAim(Vec3 origin, Vec3 direction) {
+        this.useBarrel = true;
+        this.originX = origin.x;
+        this.originY = origin.y;
+        this.originZ = origin.z;
+        this.dirX = (float) direction.x;
+        this.dirY = (float) direction.y;
+        this.dirZ = (float) direction.z;
+    }
 
     public GunFirePacket(int shootId, String gunId, boolean stuck, float gunKickPitch, float gunKickYaw) {
         this.shootId = shootId;
@@ -57,16 +76,35 @@ public class GunFirePacket implements CustomPacketPayload, IPacket<GunFirePacket
         buf.writeBoolean(stuck);
         buf.writeFloat(gunKickPitch);
         buf.writeFloat(gunKickYaw);
+        buf.writeBoolean(useBarrel);
+        if (useBarrel) {
+            buf.writeDouble(originX);
+            buf.writeDouble(originY);
+            buf.writeDouble(originZ);
+            buf.writeFloat(dirX);
+            buf.writeFloat(dirY);
+            buf.writeFloat(dirZ);
+        }
     }
 
     private static GunFirePacket decode(FriendlyByteBuf buf) {
-        return new GunFirePacket(
+        GunFirePacket packet = new GunFirePacket(
                 buf.readInt(),
                 buf.readUtf(),
                 buf.readBoolean(),
                 buf.readFloat(),
                 buf.readFloat()
         );
+        packet.useBarrel = buf.readBoolean();
+        if (packet.useBarrel) {
+            packet.originX = buf.readDouble();
+            packet.originY = buf.readDouble();
+            packet.originZ = buf.readDouble();
+            packet.dirX = buf.readFloat();
+            packet.dirY = buf.readFloat();
+            packet.dirZ = buf.readFloat();
+        }
+        return packet;
     }
 
     @Override

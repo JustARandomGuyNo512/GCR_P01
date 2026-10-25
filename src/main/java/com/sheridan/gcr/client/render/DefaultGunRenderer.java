@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.BarrelAim;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
@@ -57,7 +58,7 @@ import java.util.function.Consumer;
 public class DefaultGunRenderer implements IGunRenderer {
     private static final Vector3f GUN_LOCAL_POS = new Vector3f();
     private static final Matrix4f FP_MODEL_VIEW_MAT = new Matrix4f();
-    public static final int GUN_MODIFY_SCREEN_LIGHT = LightTexture.pack(12,15);
+    public static final int GUN_MODIFY_SCREEN_LIGHT = LightTexture.pack(15, 15);
     private FirstPersonRenderContext cachedFPContext;
     private final PoseStack firstPersonPoseStack = new PoseStack();
     private final PoseStack gunModifyPoseStack = new PoseStack();
@@ -100,6 +101,7 @@ public class DefaultGunRenderer implements IGunRenderer {
         if (hideFPRender || IrisCompat.isRenderingShadowPass()) {
             return;
         }
+        BarrelAim.beginCaptureFrame();
         String identityId = gun.getIdentityID(itemStack);
         int modifyId = gun.getModifyID(itemStack);
         boolean doUpdateCache = modifyId != lastFPModifyID || !Objects.equals(identityId, lastFPIdentityID);
@@ -170,6 +172,9 @@ public class DefaultGunRenderer implements IGunRenderer {
         String usingSightID = cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack);
         if (!Objects.equals(lastUsingSightID, usingSightID)) {
             GunPoseHandler.INSTANCE.calculateSightPose(usingSightID, cachedFPContext, () -> renderFirstPerson(cachedFPContext));
+            if (Client.WEAPON_STATUS.isAiming()) {
+                dispatchAnimationEvent(EventType.AIM);
+            }
         }
         lastUsingSightID = usingSightID;
 
@@ -385,11 +390,8 @@ public class DefaultGunRenderer implements IGunRenderer {
             if (camera != null) {
                 currCameraRot.set(camera.xRot, camera.yRot, camera.zRot);
                 currCameraRot.mul(DrawHolsterHandler.get().getEquipProgress(context.partialTicks));
-            } else {
-                currCameraRot.zero();
+                CameraAnimationHandler.INSTANCE.set(currCameraRot);
             }
-            GunPoseHandler.INSTANCE.addAimCamera(context.partialTicks, currCameraRot);
-            CameraAnimationHandler.INSTANCE.set(currCameraRot);
             fpRenderTimeStamp = System.nanoTime();
         }
         context.startRender();

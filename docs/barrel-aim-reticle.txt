@@ -1,0 +1,175 @@
+Barrel aim and tethered reticle
+================================
+Portable description of the first-person system in this mod.
+Use it to rebuild the same behavior in another gun mod. Class names below
+are the current implementation; the steps are what matter.
+
+Idea
+----
+The camera and the barrel are two different aim lines.
+
+- The center dot is the camera. It stays on the screen center. It is intent.
+- The hollow ring is the barrel. It is where the shot will go, ignoring drop.
+- Bullets spawn at the muzzle and travel along the barrel direction.
+- Do not bend far shots back toward the screen center.
+- Do not add a second lag/sway/recoil spring. The viewmodel already has those.
+  The ring only reads the muzzle bone.
+
+HUD
+---
+Three layers, drawn while a gun is held in first person:
+
+1. Center dot. Solid white. Screen center.
+2. Two short horizontal bars beside the dot. Their gap grows with the gun's
+   spread. They stay on the camera, not on the ring.
+3. Hollow ring. Solid white. Projected from the barrel ray.
+   Amber (0xFFCC66) when the barrel hits something the camera ray does not
+   (a wall edge, a player, anything between the muzzle and the camera target).
+
+Hide all three when a screen is open, the HUD is hidden, the camera is not
+first person, or the gun is aimed (aim progress above about 0.45). That
+includes iron sights, red dots, and scopes. Bullets still use the barrel
+while the HUD is hidden.
+
+Size, at the values tuned in game (GUI scale 3):
+
+- Draw in screen pixels. Scale the GUI pose by 1 / guiScale first, then use
+  the framebuffer width and height. Otherwise GUI scale inflates the mark.
+- Ring radius is 3 GUI pixels, converted to screen pixels (radius * round(guiScale)).
+- Ring stroke is 1 screen pixel. A pixel is on the ring when
+  abs(distance from center - radius) <= 0.5.
+- Clamp the ring to the screen with a margin of radius + 2. Hide it when the
+  world point is behind the camera.
+- Center dot is 1 GUI pixel. Each bar is 2 GUI pixels long and 1 GUI pixel tall.
+  Gap is 2 GUI pixels plus spread * 6. Spread here is the same degrees value
+  the server uses for (gaussian - 0.5) * spread.
+- Colors are fully opaque. White is 0xFFFFFFFF. Blocked is 0xFFFFCC66.
+
+Per-frame order
+---------------
+1. At the start of the local player's first-person gun draw, reset the
+   "best muzzle" pick.
+2. While the gun model renders, capture each eligible muzzle bone.
+3. After the level is rendered, and before the HUD, solve the world ray from
+   the capture, then project the hit into NDC.
+4. When the vanilla crosshair layer is about to draw, cancel it and draw
+   the dot, bars, and ring.
+5. On fire, solve again and send origin + direction to the server.
+
+The hand is drawn after the world stage, so the ring is one frame behind the
+viewmodel. That matches a laser drawn from the same bone. Do not read the bone
+outside the model render; the pose is only valid then. Drop a capture older
+than 250 ms.
+
+Muzzle capture
+--------------
+Bone name: MUZZLE_FLASH.
+If a child module sits in the MUZZLE slot, skip the parent's bone and use the
+child's MUZZLE_FLASH. Among the bones that do capture, keep the one with the
+most negative view-space Z, so a suppressor tip wins over the barrel behind it.
+
+Only capture when all of these are true:
+
+- first person
+- the entity being drawn is the local player
+- the effect belongs to the gun root, not a side attachment such as a grenade launcher
+- not a shadow pass
+- the render context has an entity (the modify screen does not)
+
+The bone matrix is in viewmodel space. Forward is -Z. Convert it the same way
+the laser dot is converted, or the ring and the muzzle will disagree:
+
+    fovScale = tan(fov / 2) / tan(35 degrees)
+    pos = bone translation
+    dir = bone rotation applied to (0, 0, -1), then normalized
+    dir.x *= fovScale
+    dir.y *= fovScale
+    unit = irisShaderPackActive ? fovScale : 0.25 * fovScale
+    pos *= unit
+
+Iris already scales the first-person pose by 0.25, so that 0.25 must not be
+applied twice. Store pos and dir. They are still camera-local.
+
+Solve
+-----
+Skip unless first person, a gun is held, and a fresh capture exists.
+
+    worldOffset = rotate localPos by the camera quaternion
+    worldForward = normalize(rotate localDir by the camera quaternion)
+    muzzle = cameraPosition + worldOffset
+    direction = worldForward
+
+Raycast from muzzle along direction.
+
+- Blocks: collider shapes, no fluids, out to 192 blocks. Leaves are empty,
+  same as the bullet.
+- Entities: pickable, alive, not the shooter, not spectators, out to 64 blocks.
+  Use the entity's pick radius. The closer of the block hit and the entity hit wins.
+
+If something is hit, the ring sits on that point.
+Compare it with a second ray from the camera along the camera look, same ranges.
+The shot is blocked when the barrel hit is at least 0.4 blocks closer than the
+camera hit. If the camera hits nothing, treat the camera distance as 192.
+
+If nothing is hit, put the ring at muzzle + direction * 48 so it still shows
+barrel direction and does not jump when looking at the sky.
+
+Shots use muzzle as the origin and worldForward as the direction. Spread is
+applied later, around that direction. The ring is the center of the cone.
+
+Project
+-------
+Take the ring's world point relative to the camera. Transform by the model-view
+matrix, then the projection matrix, saved from the level render (the same
+matrices the laser uses). Iris needs the camera quaternion here; the raw
+model-view matrix is wrong under a shader pack.
+
+    if clip.w <= 0.05: behind the camera, hide the ring
+    ndcX = clip.x / clip.w
+    ndcY = clip.y / clip.w
+    screenX = (ndcX * 0.5 + 0.5) * framebufferWidth
+    screenY = (1 - (ndcY * 0.5 + 0.5)) * framebufferHeight
+
+Fire
+----
+The client solves at the moment of the shot and sends:
+
+    useBarrel   boolean
+    origin      3 doubles, only if useBarrel
+    direction   3 floats, only if useBarrel
+
+The server accepts that aim only when:
+
+- the shooter is a player
+- origin and direction are finite
+- origin is within 5 blocks of the eye (distance squared <= 25)
+- direction length squared is between 0.25 and 4
+- direction dot look direction is >= 0 (not more than 90 degrees off the look)
+
+Otherwise spawn at the eye along look yaw/pitch plus the separate gun-kick angles.
+When the barrel aim is accepted, do not add gun kick again. The viewmodel pose
+already includes it, so it is already in the direction.
+
+Spread stays server-side: (nextGaussian() - 0.5) * spread degrees of pitch and
+yaw, applied by turning the direction into yaw/pitch, adding the offsets, and
+turning it back into a vector. Bullet speed in this mod is 30 blocks per tick.
+The ring does not show spread or projectile drop.
+
+What another mod must supply
+----------------------------
+- A muzzle transform in the same space as the first-person gun, updated every
+  frame the gun is drawn. A named bone is one way. Any matrix with position and
+  a forward axis works.
+- A client-to-server shot message that can carry an origin and a direction,
+  plus the server checks above. Without the checks, a client can spawn shots
+  away from the player.
+- A HUD draw after the world projection matrices exist.
+- The same collision rules as the projectile, or the ring will mark surfaces
+  the bullet flies through.
+
+Leave out
+---------
+Third-person ergonomics, a handling spring, stance recoil tables, lock-on
+reticles, and drawing bullet drop into the ring. Those are not part of this
+system. Third person and a missing bone fall back to the eyes and a center dot
+only.

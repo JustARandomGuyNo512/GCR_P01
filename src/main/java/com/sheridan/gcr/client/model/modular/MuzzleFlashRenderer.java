@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.BarrelAim;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
@@ -140,6 +141,12 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
             PoseStack.Pose bonePose = model.getBonePose(entry.getBoneName());
             if (bonePose == null) {
                 continue;
+            }
+            if (context.isFirstPerson()
+                    && context.root != null
+                    && effectModuleId.equals(context.root.id)
+                    && context.entity.getId() == Client.LOCAL_PLAYER_ID) {
+                BarrelAim.capture(bonePose);
             }
             long startTime = GunEffectManager.getEffectTimestamp(
                     context.entity.getId(),

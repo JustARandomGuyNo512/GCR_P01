@@ -698,6 +698,7 @@ public class GCR {
             NeoForge.EVENT_BUS.register(IrisGunPostRenderer.class);
             NeoForge.EVENT_BUS.register(GunEffectManager.class);
             NeoForge.EVENT_BUS.register(LaserEffectRenderer.class);
+            BarrelCrosshairRenderer.init();
             Client.onClientSetup(event);
 
             Collection<DeferredHolder<Item, ? extends Item>> entries = ITEMS.getEntries();

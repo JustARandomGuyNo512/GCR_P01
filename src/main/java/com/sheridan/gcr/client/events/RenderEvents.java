@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.WeaponStatus;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
+import com.sheridan.gcr.client.render.fx.BarrelCrosshairRenderer;
 import com.sheridan.gcr.client.render.IrisExtendRT;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.GunItem;
@@ -61,6 +62,7 @@ public class RenderEvents {
         if (event.getName().equals(VanillaGuiLayers.CROSSHAIR)) {
             if (Client.WEAPON_STATUS.isHoldingGun()) {
                 event.setCanceled(true);
+                BarrelCrosshairRenderer.drawHud(event.getGuiGraphics());
 //                if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
 //                    return;
 //                }

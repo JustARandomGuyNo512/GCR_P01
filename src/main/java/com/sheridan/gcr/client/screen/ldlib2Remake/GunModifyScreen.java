@@ -13,7 +13,6 @@ import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.ModuleRegister;
 import com.sheridan.gcr.modularSys.builder.*;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
-import com.sheridan.gcr.modularSys.slot.IRail;
 import com.sheridan.gcr.modularSys.slot.OperationType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,7 +33,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
@@ -65,10 +64,10 @@ public class GunModifyScreen extends Screen {
     private int msgDelayTick = 0;
     private boolean inspectionMode = false;
     private boolean inspectionInteracted = false;
-    private int inspectionHintTicks = 0;
-    private int inspectionMessageTicks = 0;
     private boolean inspectionRightDown = false;
     private boolean inspectionLeftDown = false;
+    private boolean suppressSearch;
+    private String appliedSearch = "";
 
     private ModularUI ui;
 
@@ -95,15 +94,21 @@ public class GunModifyScreen extends Screen {
     }
 
     public void setPage(int page) {
-        if (allSuitableModules.isEmpty()) {
-            return;
-        }
-        if (this.page == page) {
-            return;
-        }
         int maxPage = getMaxPage();
-        page = Mth.clamp(page, 1, maxPage);
-        this.page = page;
+        if (maxPage < 1) {
+            this.page = 1;
+            return;
+        }
+        this.page = Mth.clamp(page, 1, maxPage);
+    }
+
+    public void showPage(int page) {
+        int previous = this.page;
+        setPage(page);
+        if (this.page != previous) {
+            selectedItemSlot = null;
+        }
+        updatePageContent();
     }
 
     public int getMaxPage() {
@@ -189,12 +194,9 @@ public class GunModifyScreen extends Screen {
         handleMsgLog();
         if (context != null) {
             context.onTick();
-            if (context.consumeRailScrollResync()) {
-                // 模型姿态改变后导轨在屏幕上的方向可能翻转，把 scrollbar 重新对齐到模块的实际位置
-                syncScrollerToSelectedNode();
-            }
             Node selectedNode = context.getSelectedNode();
             if (selectedNode != null && selectedNode.getBelongsTo() != null) {
+                GunModifyUI.setModuleActionsVisible(true);
                 SlotInstance belongsTo = selectedNode.getBelongsTo();
                 if (belongsTo.allow(OperationType.REMOVE)) {
                     GunModifyUI.btnRemoveModule.enable("tooltip.btn.remove_module");
@@ -218,8 +220,7 @@ public class GunModifyScreen extends Screen {
                     GunModifyUI.btnReplaceModule.disable("tooltip.btn.opt_not_allow");
                 }
             } else {
-                GunModifyUI.btnReplaceModule.setVisible(false);
-                GunModifyUI.btnRemoveModule.setVisible(false);
+                GunModifyUI.setModuleActionsVisible(false);
             }
             if (context.treeModified()) {
                 if (context.allowSave()) {
@@ -260,7 +261,7 @@ public class GunModifyScreen extends Screen {
         renderGunModel();
         if (context != null) {
             if (!inspectionMode) {
-                context.renderComponents(guiGraphics);
+                context.renderComponents(guiGraphics, mouseX, mouseY);
             }
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -430,8 +431,6 @@ public class GunModifyScreen extends Screen {
     public void enterInspectionMode() {
         inspectionMode = true;
         inspectionInteracted = false;
-        inspectionHintTicks = 0;
-        inspectionMessageTicks = 60;
         resetModelPose();
         if (ui != null) {
             GunModifyUI.setVisible(false);
@@ -450,15 +449,10 @@ public class GunModifyScreen extends Screen {
     }
 
     private void markInspectionInteraction() {
-        if (!inspectionInteracted) {
-            inspectionInteracted = true;
-            inspectionHintTicks = 60;
-        }
+        inspectionInteracted = true;
     }
 
     private void updateInspectionMode() {
-        inspectionMessageTicks = Math.max(0, inspectionMessageTicks - 1);
-        inspectionHintTicks = Math.max(0, inspectionHintTicks - 1);
         if (inspectionMode && !inspectionInteracted && !inspectionLeftDown && !inspectionRightDown) {
             modelRY += 0.01f;
         }
@@ -474,7 +468,6 @@ public class GunModifyScreen extends Screen {
             if (keyCode == GLFW.GLFW_KEY_ENTER) {
                 resetModelPose();
                 inspectionInteracted = false;
-                inspectionHintTicks = 0;
                 return true;
             }
             return true;
@@ -486,12 +479,9 @@ public class GunModifyScreen extends Screen {
         if (!inspectionMode) {
             return;
         }
-        if (inspectionMessageTicks > 0) {
-            guiGraphics.drawCenteredString(this.font, Component.literal("Ecs 退出"), this.width / 2, 20, 0xffffff);
-        }
-        if (inspectionHintTicks > 0) {
-            guiGraphics.drawCenteredString(this.font, Component.literal("按Enter重置"), this.width / 2, this.height - 30, 0xffffff);
-        }
+        int y = this.height - 32;
+        guiGraphics.drawCenteredString(this.font, Component.translatable("screen.modify.inspect_line_1"), this.width / 2, y, 0xFFE7E2D6);
+        guiGraphics.drawCenteredString(this.font, Component.translatable("screen.modify.inspect_line_2"), this.width / 2, y + 12, 0xFF9C978C);
     }
 
     public void resetModelPose() {
@@ -504,12 +494,6 @@ public class GunModifyScreen extends Screen {
         modelScale = 1;
         dragStartX = 0;
         dragStartY = 0;
-    }
-
-    public void trySetNodePos(float pos) {
-        if (context != null) {
-            context.trySetSelectedNodePos(pos);
-        }
     }
 
     private void updateRenderContext(ModifyScreenRenderContext moduleRenderContext) {
@@ -526,166 +510,190 @@ public class GunModifyScreen extends Screen {
         if (itemStack != null) {
             this.context = new GunModifyContext(itemStack);
             this.context.setOnSelectionChange(this::onSelectionChange);
+            GunModifyUI.setWeaponName(itemStack.getHoverName());
         }
     }
 
     private void onSelectionChange(Node node, SlotInstance slot) {
         if (node == null && slot == null) {
+            suppressSearch = true;
+            GunModifyUI.clearSearchBox();
+            suppressSearch = false;
+            appliedSearch = "";
+            allSuitableModules.clear();
+            page = 1;
+            selectedItemSlot = null;
+            lastModularSlot = null;
             GunModifyUI.clearItemSlots();
             GunModifyUI.hideRight();
-            GunModifyUI.setScrollComponentsVisible(false);
-            GunModifyUI.clearSearchBox();
-            selectedItemSlot = null;
-        } else {
-            SlotInstance selectedSlot = node == null ? slot : node.getBelongsTo();
-            if (node != null && node.getBelongsToSlot() instanceof IRail rail && !node.isFixedPosition()) {
-                GunModifyUI.setScrollComponentsVisible(true);
-                // 导轨位置需要按当前视角下的移动方向转换成 scrollbar 的值
-                GunModifyUI.setScrollPos(context.railPosToScrollValue(rail.getNormalizedChildPosition(node.getUnit())));
-            } else {
-                GunModifyUI.setScrollComponentsVisible(false);
-            }
-            GunModifyUI.showRight();
-            if (selectedSlot == lastModularSlot) {
-                return;
-            }
-            GunModifyUI.clearSearchBox();
-            GunModifyUI.clearItemSlots();
-            selectedItemSlot = null;
-            lastModularSlot = selectedSlot;
-            updateAllSuitableModules(selectedSlot);
-            setPage(0);
+            GunModifyUI.setModuleActionsVisible(false);
+            GunModifyUI.showIdlePrompt();
             updatePageContent();
+            return;
         }
+        SlotInstance selectedSlot = node == null ? slot : node.getBelongsTo();
+        if (selectedSlot == null) {
+            onSelectionChange(null, null);
+            return;
+        }
+        GunModifyUI.showRight();
+        GunModifyUI.showSelection(selectionTitle(node, selectedSlot));
+        GunModifyUI.setModuleActionsVisible(node != null);
+        if (selectedSlot == lastModularSlot) {
+            return;
+        }
+        suppressSearch = true;
+        GunModifyUI.clearSearchBox();
+        suppressSearch = false;
+        appliedSearch = "";
+        GunModifyUI.clearItemSlots();
+        selectedItemSlot = null;
+        lastModularSlot = selectedSlot;
+        updateAllSuitableModules(selectedSlot);
+        page = 1;
+        updatePageContent();
+    }
+
+    private Component selectionTitle(Node node, SlotInstance slot) {
+        Component slotName = slotLabel(slot);
+        if (node == null) {
+            return slotName;
+        }
+        IModular module = node.getModule();
+        if (module == null || module.getBindItem() == null) {
+            return slotName;
+        }
+        return Component.translatable("screen.modify.selected_installed", slotName, new ItemStack(module.getBindItem()).getHoverName());
+    }
+
+    private Component slotLabel(SlotInstance slot) {
+        String raw = slot.slotName().toLowerCase(Locale.ROOT);
+        StringBuilder pretty = new StringBuilder();
+        for (String part : raw.split("_")) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            if (!pretty.isEmpty()) {
+                pretty.append(' ');
+            }
+            pretty.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) {
+                pretty.append(part.substring(1));
+            }
+        }
+        return Component.translatableWithFallback("slot." + raw, pretty.toString());
     }
 
     private void updateAllSuitableModules(SlotInstance selectedSlot) {
-        Map<String, IModular> all = ModuleRegister.all();
-        List<IModular> suitableModules = new ArrayList<>();
-        for (Map.Entry<String, IModular> entry : all.entrySet()) {
-            IModular value = entry.getValue();
-            if (selectedSlot.accepts(value)) {
-                suitableModules.add(value);
-            }
-        }
         allSuitableModules.clear();
-        for (IModular suitableModule : suitableModules) {
-            ModuleItem<?> bindItem = suitableModule.getBindItem();
-            ItemStack itemStack = new ItemStack(bindItem);
-            allSuitableModules.add(itemStack);
-        }
-    }
-
-    public void resetScroller() {
-        if (context != null && context.getSelectedNode() != null) {
-            Node selectedNode = context.getSelectedNode();
-            if (selectedNode.getBelongsToSlot() instanceof IRail rail) {
-                float normalizedOriginOffest = rail.getNormalizedOriginOffest();
-                GunModifyUI.setScrollPos(context.railPosToScrollValue(normalizedOriginOffest));
-            }
-        }
-    }
-
-    /** 把 scrollbar 的位置同步成当前所选模块在导轨上的位置 */
-    private void syncScrollerToSelectedNode() {
-        if (context == null) {
+        if (selectedSlot == null) {
             return;
         }
-        Node selectedNode = context.getSelectedNode();
-        if (selectedNode != null
-                && selectedNode.getBelongsToSlot() instanceof IRail rail
-                && !selectedNode.isFixedPosition()) {
-            GunModifyUI.setScrollComponentsVisible(true);
-            GunModifyUI.setScrollPos(context.railPosToScrollValue(rail.getNormalizedChildPosition(selectedNode.getUnit())));
+        for (IModular module : ModuleRegister.all().values()) {
+            if (selectedSlot.accepts(module) && module.getBindItem() != null) {
+                allSuitableModules.add(new ItemStack(module.getBindItem()));
+            }
         }
     }
 
     public void clearSearch() {
-        if (context == null) {
-            return;
-        }
-        Node node = context.getSelectedNode();
-        SlotInstance slot = context.getSelectedSlot();
-        SlotInstance selectedSlot = node == null ? slot : node.getBelongsTo();
-        if (selectedSlot == null) {
-            return;
-        }
+        suppressSearch = true;
         GunModifyUI.clearSearchBox();
-        GunModifyUI.clearItemSlots();
-        selectedItemSlot = null;
-        updateAllSuitableModules(selectedSlot);
-        setPage(0);
-        updatePageContent();
+        suppressSearch = false;
+        appliedSearch = "";
+        restoreSuitableList();
     }
 
     public void searchAttachments(String value) {
-        if (context == null) {
+        if (suppressSearch || context == null) {
             return;
         }
-
-        if (value == null || value.isEmpty()) {
+        String query = value == null ? "" : value.trim();
+        if (query.equals(appliedSearch)) {
             return;
         }
-
-        // 1. 重新获取当前槽位允许的所有完整模块列表
-        SlotInstance selectedSlot = context.getSelectedNode() == null ?
-                context.getSelectedSlot() :
-                context.getSelectedNode().getBelongsTo();
-
+        if (query.isEmpty()) {
+            appliedSearch = "";
+            restoreSuitableList();
+            return;
+        }
+        SlotInstance selectedSlot = currentSlot();
         if (selectedSlot == null) {
             return;
         }
-
-        // 获取该槽位支持的所有模块
-        Map<String, IModular> allModules = ModuleRegister.all();
+        appliedSearch = query;
+        String searchTerm = query.toLowerCase(Locale.ROOT);
         List<ItemStack> filteredResults = new ArrayList<>();
-
-        for (IModular module : allModules.values()) {
-            if (selectedSlot.accepts(module)) {
-                ItemStack stack = new ItemStack(module.getBindItem());
-
-                // 2. 搜索过滤逻辑
-                // 匹配物品的本地化名称（例如 "红点瞄准镜"）或 ID（"red_dot"）
-                String displayName = stack.getHoverName().getString().toLowerCase();
-                String searchTerm = value.toLowerCase();
-
-                if (searchTerm.isEmpty() || displayName.contains(searchTerm)) {
-                    filteredResults.add(stack);
-                }
+        for (IModular module : ModuleRegister.all().values()) {
+            if (!selectedSlot.accepts(module) || module.getBindItem() == null) {
+                continue;
+            }
+            ItemStack stack = new ItemStack(module.getBindItem());
+            String moduleId = module.getID() == null ? "" : module.getID();
+            String haystack = (stack.getHoverName().getString() + " " + stack.getItem().getDescriptionId() + " " + moduleId)
+                    .toLowerCase(Locale.ROOT);
+            if (haystack.contains(searchTerm)) {
+                filteredResults.add(stack);
             }
         }
+        allSuitableModules.clear();
+        allSuitableModules.addAll(filteredResults);
+        page = 1;
+        selectedItemSlot = null;
+        updatePageContent();
+    }
 
-        // 3. 更新类成员列表并重置 UI 状态
-        this.allSuitableModules.clear();
-        this.allSuitableModules.addAll(filteredResults);
+    private void restoreSuitableList() {
+        if (context == null) {
+            return;
+        }
+        SlotInstance selectedSlot = currentSlot();
+        if (selectedSlot == null) {
+            return;
+        }
+        selectedItemSlot = null;
+        updateAllSuitableModules(selectedSlot);
+        page = 1;
+        updatePageContent();
+    }
 
-        this.page = 1; // 搜索后回到第一页
-        this.selectedItemSlot = null; // 清除当前选择
-
-        // 4. 刷新显示
-        this.updatePageContent();
-
-        // 如果你的 UI 类里有同步页码的方法，也调用一下
-        GunModifyUI.syncPageInfo(this);
-        GunModifyUI.clearItemSlots();
+    private SlotInstance currentSlot() {
+        if (context == null) {
+            return null;
+        }
+        Node node = context.getSelectedNode();
+        return node == null ? context.getSelectedSlot() : node.getBelongsTo();
     }
 
     private void updatePageContent() {
-        List<List<DisplaySlot>> itemSlots = GunModifyUI.getItemSlots();
+        List<List<DisplaySlot>> slots = GunModifyUI.getItemSlots();
+        if (slots == null || slots.isEmpty()) {
+            GunModifyUI.syncPageInfo(this);
+            return;
+        }
+        int columns = GunModifyUI.GRID_COLUMNS;
         int pageSize = GunModifyUI.PAGE_SIZE;
-        for (int i = (page - 1) * pageSize; i < page * pageSize; i++) {
-            if (i >= allSuitableModules.size()) {
-                break;
+        int start = (page - 1) * pageSize;
+        for (int offset = 0; offset < pageSize; offset++) {
+            int row = offset / columns;
+            int column = offset % columns;
+            if (row >= slots.size() || column >= slots.get(row).size()) {
+                continue;
             }
-            ItemStack itemStack = allSuitableModules.get(i);
-            DisplaySlot itemSlot = itemSlots.get(i / 5).get(i % 5);
+            DisplaySlot itemSlot = slots.get(row).get(column);
+            int index = start + offset;
+            if (index < 0 || index >= allSuitableModules.size()) {
+                itemSlot.setItem(ItemStack.EMPTY);
+                itemSlot.setCount(0);
+                continue;
+            }
+            ItemStack itemStack = allSuitableModules.get(index);
             itemSlot.setItem(itemStack);
             if (itemStack.getItem() instanceof ModuleItem<?> item) {
-                IModular module = item.getModule();
-                int moduleLeftCount = countManager.getModuleLeftCount(module);
-                itemSlot.setCount(moduleLeftCount);
+                itemSlot.setCount(countManager.getModuleLeftCount(item.getModule()));
+            } else {
+                itemSlot.setCount(0);
             }
-
         }
         GunModifyUI.syncPageInfo(this);
     }
@@ -720,13 +728,23 @@ public class GunModifyScreen extends Screen {
         }
         boolean b = super.mouseClicked(mouseX, mouseY, button);
         if (context != null && !b) {
-            if (!context.onMouseClick((float) mouseX, (float) mouseY)) {
-                if (!isDraggingModel) {
-                    isRollingModel = true;
-                }
+            if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && hasControlDown()) {
+                isDraggingModel = true;
+                isRollingModel = false;
                 dragStartX = (float) mouseX;
                 dragStartY = (float) mouseY;
+                return true;
             }
+            if (!context.beginPointer((float) mouseX, (float) mouseY)) {
+                if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && !isDraggingModel) {
+                    isRollingModel = true;
+                    dragStartX = (float) mouseX;
+                    dragStartY = (float) mouseY;
+                }
+            } else {
+                this.setDragging(true);
+            }
+            return true;
         }
         return b;
 
@@ -746,6 +764,10 @@ public class GunModifyScreen extends Screen {
             }
             dragStartX = (float) pMouseX;
             dragStartY = (float) pMouseY;
+            return true;
+        }
+        if (context != null && context.isPointerDragging()) {
+            context.dragPointer((float) pMouseX, (float) pMouseY);
             return true;
         }
         if (isDraggingModel) {
@@ -778,6 +800,9 @@ public class GunModifyScreen extends Screen {
             tempModelRY = modelRY % 360;
             tempModelRX = modelRX % 360;
             return true;
+        }
+        if (context != null) {
+            context.endPointer();
         }
         if (isRollingModel) {
             isRollingModel = false;
