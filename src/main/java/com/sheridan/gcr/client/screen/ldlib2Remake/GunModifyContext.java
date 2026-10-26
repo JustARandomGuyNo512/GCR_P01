@@ -89,6 +89,26 @@ public class GunModifyContext {
     private int lastMutateId;
 
     private boolean collisionDirty = false;
+    // Memoized once per work-space change so rendering 60+ FPS never runs
+    // the physics simulation for rails every frame.
+    private final Map<SlotInstance, Boolean> railRoomCache = new IdentityHashMap<>();
+    private int railRoomRevision = Integer.MIN_VALUE;
+
+    public boolean canAddToSlot(SlotInstance slot) {
+        if (slot == null) return false;
+        WorkSpace ws = (WorkSpace) builder.getWorkspace();
+        if (railRoomRevision != ws.getMutateId()) {
+            railRoomRevision = ws.getMutateId();
+            railRoomCache.clear();
+        }
+        return railRoomCache.computeIfAbsent(slot, s -> RailSpace.hasRoom(ws, s));
+    }
+
+    public boolean canAddToSlot(SlotInstance slot, IModular module) {
+        if (slot == null || module == null) return false;
+        return RailSpace.findPosition((WorkSpace) builder.getWorkspace(), slot, module) >= 0f;
+    }
+
 
     /**
      * 导轨移动方向：
@@ -138,9 +158,22 @@ public class GunModifyContext {
 
 
     public boolean addUnit(IModular modular) {
+        if (selectedSlot == null) return false;
+        WorkSpace workspace = (WorkSpace) builder.getWorkspace();
+        SlotInstance target = selectedSlot;
+        float freePosition = RailSpace.findPosition(workspace, target, modular);
+        if (freePosition < 0f) return false;
+
         final boolean[] added = {false};
-        builder.getWorkspace().addChild(selectedSlot, modular).ifPresentOrElse(unit -> {
-            Node node = ((WorkSpace) builder.getWorkspace()).getNode(unit);
+        builder.getWorkspace().addChild(target, modular).ifPresentOrElse(unit -> {
+            // A newly installed rail module is moved to its physically free
+            // segment BEFORE rebuilding the model and opening its slider.
+            if (target.getSlot() instanceof IRail rail) {
+                rail.setChildPosition(unit, accessor, freePosition);
+                workspace.increaseMutateId();
+            }
+            railRoomCache.clear();
+            Node node = workspace.getNode(unit);
             if (node != null) {
                 selectedNode = node;
                 selectedSlot = null;
@@ -581,7 +614,7 @@ public class GunModifyContext {
      * 占满的槽位不再渲染也不可点击，避免玩家误以为还能继续添加模块。
      */
     public boolean isSlotOccupied(SlotInstance slot) {
-        return getWorkSpace().getNodes(slot).size() >= slot.getSlot().maxCapacity();
+        return !canAddToSlot(slot);
     }
 
     private ResourceLocation getSlotIcon(SlotInstance slot) {
