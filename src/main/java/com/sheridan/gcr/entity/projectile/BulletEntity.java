@@ -4,6 +4,9 @@ import com.sheridan.gcr.damageTypes.ModDamageTypes;
 import com.sheridan.gcr.entity.projectile.PlayerAnatomy;
 import com.sheridan.gcr.config.PlayerHitZoneConfig;
 import com.sheridan.gcr.compat.OwnMultipartHitFilter;
+import com.sheridan.gcr.network.GCRNetwork;
+import com.sheridan.gcr.network.s2c.BulletImpactPacket;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.entity.PartEntity;
 import com.sheridan.gcr.modularSys.modules.guns.Gun;
 import net.minecraft.core.BlockPos;
@@ -153,6 +156,13 @@ public class BulletEntity extends Entity {
         // Search broadly but resolve an impact ONLY against the actual target
         // geometry. The former ProjectileUtil raycast added an invisible margin.
         ResolvedContact entityHit = findExactEntityHit(start, entityCheckEnd, velocity);
+        // Server-authoritative visual water trail, ending at the nearest
+        // actual collision. This does not modify GCR bullet physics or damage.
+        if (level() instanceof ServerLevel serverLevel) {
+            Vec3 trailEnd = entityHit != null ? entityHit.hit().getLocation() : entityCheckEnd;
+            GcrBulletWaterEffects.trace(serverLevel, start, trailEnd);
+        }
+
         if (entityHit != null) {
             onHitEntity(entityHit);
             return;
@@ -228,6 +238,12 @@ public class BulletEntity extends Entity {
                 double vz = normal.z * speed;
                 BlockParticleOption particleData = new BlockParticleOption(ParticleTypes.BLOCK, state);
                 Vec3 hitLocation = hit.getLocation();
+                // Cosmetic only. PlayerAnatomy and PlayerHitZoneConfig remain
+                // authoritative for player hits and bullet damage.
+                GCRNetwork.CHANNEL.send(
+                        PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                                hitLocation.x, hitLocation.y, hitLocation.z, 96.0, serverWorld.dimension())),
+                        new BulletImpactPacket(hitLocation, direction));
                 for (int i = 0; i < 8; i++) {
                     double rx = vx + (world.random.nextDouble() - 0.5) * 0.25;
                     double ry = vy + (world.random.nextDouble() - 0.5) * 0.25;

@@ -1,0 +1,82 @@
+name: Verify GCR upstream enhancements (Forge 1.20.1)
+
+on:
+  push:
+    branches:
+      - feature/forge-1.20.1-upstream-enhancements
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-gcr-upstream
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout upstream enhancements
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+      - name: Compile and reobfuscate mod
+        run: gradle --no-daemon --no-build-cache --stacktrace clean build
+      - name: Verify core features and mixin metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          jar_count=$(find build/libs -maxdepth 1 -type f -name '*.jar' | wc -l)
+          test "$jar_count" -eq 1
+          file=$(find build/libs -maxdepth 1 -type f -name '*.jar' -print -quit)
+          test -s "$file"
+          unzip -tqq "$file"
+          jar tf "$file" > jar-contents.txt
+          for entry in \
+            com/sheridan/gcr/entity/projectile/GcrBulletWaterEffects.class \
+            com/sheridan/gcr/client/render/fx/particles/GcrWaterParticles.class \
+            com/sheridan/gcr/client/render/events/GcrHipfireDot.class \
+            com/sheridan/gcr/client/render/AftermatchWeaponMotion.class \
+            com/sheridan/gcr/modularSys/fire/AftermatchWallTuck.class \
+            com/sheridan/gcr/config/PlayerHitZoneConfig.class \
+            com/sheridan/gcr/network/c2s/PhysicalMagazinePacket.class \
+            com/sheridan/gcr/network/s2c/BulletImpactPacket.class \
+            com/sheridan/gcr/client/render/fx/BulletImpactDecals.class \
+            com/sheridan/gcr/client/screen/GcrUITheme.class \
+            com/sheridan/gcr/client/render/fx/LaserEffectRenderer.class \
+            com/sheridan/gcr/entity/projectile/PlayerAnatomy.class \
+            com/sheridan/gcr/items/MagazineItem.class \
+            assets/gcr/textures/gui/hipfire_dot.png \
+            assets/gcr/textures/particle/laser_dot.png \
+            assets/gcr/sounds/magazine/chamber_load_rifle.ogg \
+            assets/gcr/sounds/magazine/chamber_load2_rifle.ogg \
+            assets/gcr/sounds/magazine/chamber_out.ogg \
+            assets/gcr/shaders/core/entity_cutout_ubo.fsh \
+            assets/gcr/particles/water_bubble.json \
+            assets/gcr/particles/water_drop.json \
+            assets/gcr/particles/water_puff.json \
+            gcr.refmap.json; do
+            grep -Fqx "$entry" jar-contents.txt
+          done
+          unzip -p "$file" assets/gcr/textures/gui/hipfire_dot.png | cmp - src/main/resources/assets/gcr/textures/gui/hipfire_dot.png
+          sha256sum "$file" > SHA256SUMS.txt
+          mkdir -p release
+          cp "$file" release/GCR-Upstream-Forge-1.20.1.jar
+      - name: Upload compiled public-candidate JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: GCR-Upstream-Forge-1.20.1-Verified
+          path: |
+            release/GCR-Upstream-Forge-1.20.1.jar
+            SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30

@@ -74,3 +74,18 @@ For the full terms and conditions governing the GCR software, please refer to th
 
 
 
+
+
+## Forge 1.20.1 public candidate
+
+Build requirements: **Java 17** and **Gradle 8.8**. From the repository root run:
+
+```bash
+gradle --no-daemon clean build
+```
+
+The publication candidate is checked by `.github/workflows/verify-upstream-enhancements.yml` and produces a downloadable test JAR. Gameplay and shader compatibility must still be validated before release.
+
+See `UPSTREAM-FEATURES.md` (English) or `UPSTREAM-FEATURES-UA.md` (Ukrainian) for supported features, test limitations and remaining requirements.
+
+Third-party models, animations and audio are **not automatically relicensed** by the GPL software license. Verify permission to redistribute each included asset before public release.

@@ -276,8 +276,33 @@ public class BufferedBoneMeshModel {
             renderingVertexCount += bone.vertexCount;
             for (int i = vertexStart; i < vertexEnd; i++) {
                 int posIndex = i * 3;
+                // The Oculus/Iris path uses a shaderpack-provided entity
+                // shader, NOT GCR's own fragment shader. Give modular gun
+                // meshes subtle geometric key/fill contrast in their existing
+                // vertex colors so their facets remain readable there, too.
+                // This is intentionally restricted to gun/attachment meshes:
+                // player arms, particles and other buffered models are untouched.
+                float geometryLight = 1f;
+                if (compatType == CompatType.IRIS
+                        && this instanceof com.sheridan.gcr.client.model.modular.ModularModel) {
+                    float nx = normals[posIndex];
+                    float ny = normals[posIndex + 1];
+                    float nz = normals[posIndex + 2];
+                    float lengthSq = nx * nx + ny * ny + nz * nz;
+                    if (lengthSq > 1.0e-6f && Float.isFinite(lengthSq)) {
+                        float invLength = (float) (1.0 / Math.sqrt(lengthSq));
+                        nx *= invLength;
+                        ny *= invLength;
+                        nz *= invLength;
+                        // Opposing soft key and fill; contrast is deliberately
+                        // bounded (75%-100%) rather than painting hard shadows.
+                        float key = Math.max(0f, 0.33f * nx + 0.78f * ny + 0.53f * nz);
+                        float fill = Math.max(0f, -0.72f * nx + 0.44f * ny + 0.49f * nz);
+                        geometryLight = Math.min(1.0f, 0.75f + 0.25f * key + 0.07f * fill);
+                    }
+                }
                 rawData.vertex(pose.pose(), positions[posIndex], positions[posIndex + 1], positions[posIndex + 2])
-                        .color(1f, 1f, 1f, 1f)
+                        .color(geometryLight, geometryLight, geometryLight, 1f)
                         .uv(uvs[i * 2], uvs[i * 2 + 1])
                         .overlayCoords(boneIndex, 0)
                         .uv2(COMPILE_LIGHT)

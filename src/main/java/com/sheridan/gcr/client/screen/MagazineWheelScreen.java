@@ -272,8 +272,8 @@ public final class MagazineWheelScreen extends Screen {
         for (int i = 0; i < n; i++) {
             MagazineGroup group = groups.get(page * PAGE_SIZE + i);
             boolean favorite = group.selected().magazineType().equals(preferredType);
-            int color = hovered == page * PAGE_SIZE + i ? 0xE4AD872A
-                    : favorite ? 0xCF244D45 : 0xCC202C39;
+            int color = hovered == page * PAGE_SIZE + i ? GcrUITheme.BUTTON_HOVER
+                    : favorite ? GcrUITheme.BUTTON_INSTALLED : GcrUITheme.BUTTON;
             double center = TWO_PI * i / n;
             double halfAngle = Math.PI / n;
             double gap = Math.min(Math.toRadians(2), halfAngle * 0.12);
@@ -281,7 +281,7 @@ public final class MagazineWheelScreen extends Screen {
                     center - halfAngle + gap, center + halfAngle - gap, color);
         }
         ringSection(b, centerX, centerY, 0, CANCEL_RADIUS - 1, -Math.PI, Math.PI,
-                cancelHover ? 0xEEA47B1F : 0xED111A24);
+                cancelHover ? GcrUITheme.BUTTON_HOVER : GcrUITheme.INPUT);
         BufferUploader.drawWithShader(b.end());
         RenderSystem.disableBlend();
     }
@@ -289,12 +289,12 @@ public final class MagazineWheelScreen extends Screen {
     @Override
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float partialTick) {
         updateHovered(mouseX, mouseY);
-        gfx.fill(0, 0, width, height, 0xB0091018);
+        gfx.fill(0, 0, width, height, 0xA9080D0D);
 
         int cx = width / 2, cy = height / 2;
         double r = outerRadius();
         renderSectors(cx, cy, r);
-        gfx.drawCenteredString(font, title, cx, (int)(cy - r - 24), 0xF6E4AF);
+        gfx.drawCenteredString(font, title, cx, (int)(cy - r - 24), GcrUITheme.AMBER);
 
         int n = displayed();
         for (int i = 0; i < n; i++) {
@@ -310,24 +310,24 @@ public final class MagazineWheelScreen extends Screen {
             ItemStack display = choice.snapshot();
             gfx.renderItem(display, tx - 8, ty - 23);
             String name = font.plainSubstrByWidth(display.getHoverName().getString(), maxTextWidth);
-            gfx.drawCenteredString(font, name, tx, ty - 2, 0xF5F6F7);
+            gfx.drawCenteredString(font, name, tx, ty - 2, GcrUITheme.WARM_WHITE);
             String count = choice.rounds() + "/" + choice.capacity();
             if (choice.magazineType().equals(preferredType)) count = "★ " + count;
-            gfx.drawCenteredString(font, count, tx, ty + 10, 0xA4E3B6);
+            gfx.drawCenteredString(font, count, tx, ty + 10, GcrUITheme.GRAY_TEXT);
             if (group.quantity() > 1) {
-                gfx.drawCenteredString(font, "×" + group.quantity(), tx, ty + 22, 0xF9D478);
+                gfx.drawCenteredString(font, "×" + group.quantity(), tx, ty + 22, GcrUITheme.AMBER);
             }
         }
 
         // The center uses the SAME golden hover state as magazine petals.
-        gfx.drawCenteredString(font, Component.literal("R"), cx, cy - 12, 0xF2DEA7);
-        gfx.drawCenteredString(font, Component.translatable("gcr.wheel.cancel"), cx, cy + 3, 0xEFF3F4);
+        gfx.drawCenteredString(font, Component.literal("R"), cx, cy - 12, GcrUITheme.AMBER);
+        gfx.drawCenteredString(font, Component.translatable("gcr.wheel.cancel"), cx, cy + 3, GcrUITheme.WARM_WHITE);
         if (groups.size() > PAGE_SIZE) {
             gfx.drawCenteredString(font, (page + 1) + "/" + ((groups.size() + PAGE_SIZE - 1) / PAGE_SIZE),
-                    cx, cy + (int)r + 9, 0xE5D5AD);
+                    cx, cy + (int)r + 9, GcrUITheme.AMBER);
         }
         gfx.drawCenteredString(font, Component.translatable("gcr.wheel.hint"),
-                cx, Math.min(height - 12, cy + (int)r + 31), 0xB9C7D6);
+                cx, Math.min(height - 12, cy + (int)r + 31), GcrUITheme.GRAY_TEXT);
         super.render(gfx, mouseX, mouseY, partialTick);
     }
 }

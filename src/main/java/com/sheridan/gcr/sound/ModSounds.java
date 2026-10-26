@@ -47,6 +47,11 @@ public class ModSounds {
     public static RegistryObject<SoundEvent> AK74M_FIRE_SUPPRESSED = registerSound("ak74m_fire_suppressed", "gcr");
 
 
+    public static final RegistryObject<SoundEvent> MAG_ROUND_LOAD =
+            registerSound("mag_round_load", "gcr");
+    public static final RegistryObject<SoundEvent> MAG_ROUND_UNLOAD =
+            registerSound("mag_round_unload", "gcr");
+
     public static RegistryObject<SoundEvent> BTN = registerSound("btn", "gcr");
     public static RegistryObject<SoundEvent> GUN_STUCK = registerSound("gun_stuck", "gcr");
 

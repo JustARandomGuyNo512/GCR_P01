@@ -1,303 +1,218 @@
 package com.sheridan.gcr.client.render.fx;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.sheridan.gcr.Client;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.events.RenderEvents;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
-import com.sheridan.gcr.client.render.delayed.Stage;
-import com.sheridan.gcr.client.render.delayed.Task;
+import com.sheridan.gcr.compat.IrisCompat;
+import com.sheridan.gcr.compat.OwnMultipartHitFilter;
+import com.sheridan.gcr.items.GunItem;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
+/**
+ * TaCZ Additions-style block-face laser dots. The gun model supplies the animated
+ * emitter orientation; world raycasts and world RenderType draw the actual dot.
+ */
 @OnlyIn(Dist.CLIENT)
-public class LaserEffectRenderer {
+public final class LaserEffectRenderer {
+    private static final RenderType DOT_TYPE = LaserDotType.make();
+    private static final Map<String, NodeState> NODES = new HashMap<>();
+    private static String lastIdentity = "";
+    private static int lastModifyId = -1;
+    private static final long EXPIRE_NANOS = 2_000_000_000L;
 
-    private static final Map<String, NodeState> activeNodes = new HashMap<>();
-    private static final Map<String, String> slaveToMasterCache = new HashMap<>();
+    private LaserEffectRenderer() {}
 
-    private static int lastModifyID = -1;
-    private static String lastIdentityID = "";
-    private static boolean structureChanged = false;
-
-    static {
-        Stage.HIGH.addTask(new Task(LaserEffectRenderer::renderEffect).forever());
+    public static float getHitLength(String id) {
+        NodeState node = NODES.get(id);
+        return node == null ? Float.NaN : node.hitLength;
     }
 
-    /**
-     * 新增：通过 currentNodeId 查询射线命中长度的方法
-     * 如果找不到节点，默认返回 Float.NaN
-     */
-    public static float getHitLength(String currentNodeId) {
-        NodeState state = activeNodes.get(currentNodeId);
-        return state != null ? state.hitLength : Float.NaN;
-    }
-
-    public static void recordEffectCall(int color, String currentNodeId, PoseStack.Pose laserSourcePose, ModuleRenderContext context) {
-        if (!structureChanged) {
-            int modifyID = context.gun.getModifyID(context.itemStack);
-            String identityID = context.gun.getIdentityID(context.itemStack);
-            if (modifyID != lastModifyID || !Objects.equals(identityID, lastIdentityID)) {
-                lastModifyID = modifyID;
-                lastIdentityID = identityID;
-                structureChanged = true;
-            }
+    public static void recordEffectCall(int color, String id, PoseStack.Pose emitterPose, ModuleRenderContext context) {
+        if (IrisCompat.isRenderingShadowPass()) return;
+        int modifyId = context.gun.getModifyID(context.itemStack);
+        String identity = context.gun.getIdentityID(context.itemStack);
+        if (!Objects.equals(lastIdentity, identity) || lastModifyId != modifyId) {
+            NODES.clear();
+            lastIdentity = identity;
+            lastModifyId = modifyId;
         }
 
-        float fovScene = (float) RenderEvents.currentFov;
-        float scale = (float) (
-                Math.tan(Math.toRadians(fovScene * 0.5)) /
-                        Math.tan(Math.toRadians(35))
-        );
+        Matrix4f pose = emitterPose.pose();
+        float fov = (float) RenderEvents.currentFov;
+        float fovScale = (float)(Math.tan(Math.toRadians(fov * 0.5)) / Math.tan(Math.toRadians(35.0)));
+        Vector3f position = pose.getTranslation(new Vector3f())
+                .mul(0.25f * fovScale, 0.25f * fovScale, 0.25f);
+        Vector3f direction = pose.transformDirection(new Vector3f(0, 0, -1));
+        direction.mul(fovScale, fovScale, 1f);
+        if (!valid(direction) || direction.lengthSquared() < 0.0001f) return;
 
-        Matrix4f poseMatrix = laserSourcePose.pose();
-        Vector3f localPos = poseMatrix.getTranslation(new Vector3f());
-        Vector3f localDir = poseMatrix.transformDirection(new Vector3f(0, 0, -1)).normalize();
-        localDir.mul(scale, scale, 1);
-        localPos.mul(0.25f * scale, 0.25f * scale, 0.25f);
-
-        activeNodes.compute(currentNodeId, (id, state) -> {
-            if (state == null) {
-                state = new NodeState(id);
-            }
-            state.localPos = localPos;
-            state.localDir = localDir;
-            state.recorded = true;
-            state.color = color;
-            return state;
-        });
+        NodeState node = NODES.computeIfAbsent(id, ignored -> new NodeState());
+        node.localOrigin.set(position);
+        node.localDirection.set(direction.normalize());
+        node.color = color;
+        node.lastRecorded = System.nanoTime();
     }
-
-    private static Matrix4f calculateCleanProjectionMatrix() {
-        Minecraft mc = Minecraft.getInstance();
-        Matrix4f cleanProj = new Matrix4f();
-        if (mc.level == null || mc.player == null) {
-            return cleanProj.set(RenderSystem.getProjectionMatrix());
-        }
-        cleanProj.identity();
-        float fovRadians = (float)(RenderEvents.currentFov * (Math.PI / 180.0));
-        float aspectRatio = (float)mc.getWindow().getWidth() / (float)mc.getWindow().getHeight();
-        float nearPlane = 0.05F;
-        float farPlane = mc.gameRenderer.getDepthFar();
-        cleanProj.perspective(fovRadians, aspectRatio, nearPlane, farPlane);
-        return cleanProj;
-    }
-
-    static Matrix4f modelViewMat = new Matrix4f();
-    static Matrix4f projectionMat = new Matrix4f();
 
     @SubscribeEvent
-    public static void saveMatrix(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            if (Client.isUsingIrisShader) {
-                Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-                Quaternionf quaternionf = camera.rotation().conjugate(new Quaternionf());
-                Matrix4f matrix4f = (new Matrix4f()).rotation(quaternionf);
-                modelViewMat.set(matrix4f);
-            } else {
-                modelViewMat.set(RenderSystem.getModelViewMatrix());
-            }
-            projectionMat.set(calculateCleanProjectionMatrix());
-        }
-    }
-
     public static void renderEffect(RenderLevelStageEvent event) {
-        activeNodes.values().removeIf(state -> !state.recorded);
-
-        if (activeNodes.isEmpty()) {
-            slaveToMasterCache.clear();
-            return;
-        }
-
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null) {
+        if (mc.level == null || mc.player == null || mc.screen != null
+                || !mc.options.getCameraType().isFirstPerson()
+                || !(mc.player.getMainHandItem().getItem() instanceof GunItem)
+                || IrisCompat.isRenderingShadowPass()) {
+            NODES.clear();
             return;
         }
 
-        List<NodeState> nodes = new ArrayList<>(activeNodes.values());
+        long now = System.nanoTime();
+        NODES.values().removeIf(node -> now - node.lastRecorded > EXPIRE_NANOS);
+        if (NODES.isEmpty()) return;
 
-        if (structureChanged) {
-            slaveToMasterCache.clear();
-            for (int i = 0; i < nodes.size(); i++) {
-                NodeState n1 = nodes.get(i);
-                if (slaveToMasterCache.containsKey(n1.id)) {
-                    continue;
-                }
+        Camera camera = event.getCamera();
+        Vec3 cameraPos = camera.getPosition();
+        Quaternionf rotation = camera.rotation();
+        Vector3f cameraForward = rotation.transform(new Vector3f(0, 0, -1));
+        MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
+        PoseStack poseStack = event.getPoseStack();
+        VertexConsumer consumer = buffers.getBuffer(DOT_TYPE);
+        boolean hasDots = false;
 
-                for (int j = i + 1; j < nodes.size(); j++) {
-                    NodeState n2 = nodes.get(j);
-                    if (slaveToMasterCache.containsKey(n2.id)) {
-                        continue;
-                    }
-
-                    if (isCollinear(n1, n2)) {
-                        slaveToMasterCache.put(n2.id, n1.id);
-                    }
-                }
+        for (NodeState node : NODES.values()) {
+            Vector3f dir = new Vector3f(node.localDirection).rotate(rotation).normalize();
+            if (!valid(dir) || dir.dot(cameraForward) < 0.25f) {
+                // An invalid muzzle transform must not create backwards rays.
+                dir.set(cameraForward);
             }
-            structureChanged = false;
-        }
-
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        Vec3 camPos = camera.getPosition();
-        Quaternionf cameraRotation = camera.rotation();
-
-        for (NodeState node : nodes) {
-            if (slaveToMasterCache.containsKey(node.id)) {
-                String masterId = slaveToMasterCache.get(node.id);
-                NodeState masterNode = activeNodes.get(masterId);
-                if (masterNode != null) {
-                    node.lastHitPos = masterNode.lastHitPos;
-                    node.hitLength = masterNode.hitLength; // 共享 Master 的命中长度
-                    continue;
-                }
-            }
-
-            Vector3f worldPosOffset = new Vector3f(node.localPos).rotate(cameraRotation);
-            Vector3f worldDir = new Vector3f(node.localDir).rotate(cameraRotation);
-
-            Vec3 start = camPos.add(worldPosOffset.x, worldPosOffset.y, worldPosOffset.z);
-            double laserRange = 64.0D;
-            Vec3 end = start.add(worldDir.x * laserRange, worldDir.y * laserRange, worldDir.z * laserRange);
-
-            HitResult blockHit = mc.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player));
-            Vec3 finalHitPos = blockHit.getLocation();
-
-            Vec3 entityEnd = blockHit.getType() != HitResult.Type.MISS ? finalHitPos : end;
-            double closestDistSq = start.distanceToSqr(entityEnd);
-
-            AABB searchBox = new AABB(start, entityEnd).inflate(1.0D);
-            boolean hitEntity = false;
-
-            for (Entity entity : mc.level.getEntities(mc.player, searchBox, e -> !e.isSpectator() && e.isPickable())) {
-                AABB entityAABB = entity.getBoundingBox().inflate(entity.getPickRadius());
-                Optional<Vec3> hitOptional = entityAABB.clip(start, entityEnd);
-                if (hitOptional.isPresent()) {
-                    double distSq = start.distanceToSqr(hitOptional.get());
-                    if (distSq < closestDistSq) {
-                        closestDistSq = distSq;
-                        finalHitPos = hitOptional.get();
-                        hitEntity = true;
+            Vector3f offset = new Vector3f(node.localOrigin).rotate(rotation);
+            Vec3 rayStart = cameraPos.add(offset.x, offset.y, offset.z);
+            Vec3 rayEnd = rayStart.add(dir.x * 64d, dir.y * 64d, dir.z * 64d);
+            BlockHitResult hit = mc.level.clip(
+                    new ClipContext(rayStart, rayEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, mc.player));
+            Vec3 surface = hit.getLocation();
+            Vec3 normal = hit.getType() == HitResult.Type.BLOCK
+                    ? Vec3.atLowerCornerOf(hit.getDirection().getNormal()) : null;
+            Vec3 entityEnd = hit.getType() == HitResult.Type.MISS ? rayEnd : surface;
+            double closest = rayStart.distanceToSqr(entityEnd);
+            AABB query = new AABB(rayStart, entityEnd).inflate(0.5);
+            for (Entity entity : mc.level.getEntities(mc.player, query,
+                    e -> !OwnMultipartHitFilter.isOwnerOrOwnedPart(e, mc.player)
+                            && !e.isSpectator() && e.isPickable())) {
+                Optional<Vec3> entityHit = entity.getBoundingBox().inflate(entity.getPickRadius())
+                        .clip(rayStart, entityEnd);
+                if (entityHit.isPresent()) {
+                    double d2 = rayStart.distanceToSqr(entityHit.get());
+                    if (d2 < closest) {
+                        closest = d2;
+                        surface = entityHit.get();
+                        normal = new Vec3(-dir.x, -dir.y, -dir.z);
                     }
                 }
             }
-
-            if (hitEntity || blockHit.getType() != HitResult.Type.MISS) {
-                node.lastHitPos = finalHitPos;
-                float distance = (float) start.distanceTo(finalHitPos);
-
-                if (distance < 0.75F) {
-                    node.hitLength = Float.NaN;
-                } else {
-                    node.hitLength = distance;
-                }
-            } else {
-                node.lastHitPos = null;
-                node.hitLength = 64.0F;
+            if (normal == null) {
+                node.hitLength = 64f;
+                continue;
             }
+            float distance = (float) rayStart.distanceTo(surface);
+            node.hitLength = distance;
+            if (distance < 0.25f) continue;
+            drawDot(consumer, poseStack.last().pose(), surface, normal, cameraPos, node.color, distance);
+            hasDots = true;
         }
-
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GL11.glDepthMask(false);
-
-        GL20.glUseProgram(LaserGlowShader.programId);
-        GL30.glBindVertexArray(LaserGlowShader.vaoId);
-
-        float[] matBuffer = new float[16];
-        projectionMat.get(matBuffer);
-        GL20.glUniformMatrix4fv(LaserGlowShader.projMatLoc, false, matBuffer);
-
-        PoseStack poseStack = new PoseStack();
-        poseStack.mulPoseMatrix(modelViewMat);
-        for (NodeState node : activeNodes.values()) {
-            // 条件变更为：有命中坐标，且命中长度不能为 NaN (即长度必须 >= 1.5 block)
-            if (node.lastHitPos != null && !Float.isNaN(node.hitLength)) {
-                double renderX = node.lastHitPos.x - camPos.x;
-                double renderY = node.lastHitPos.y - camPos.y;
-                double renderZ = node.lastHitPos.z - camPos.z;
-
-                poseStack.pushPose();
-                poseStack.translate(renderX, renderY, renderZ);
-
-                float scale = 0.05F;
-                poseStack.scale(scale, scale, scale);
-                Matrix4f modelViewMatrix = poseStack.last().pose();
-                modelViewMatrix.get(matBuffer);
-                GL20.glUniformMatrix4fv(LaserGlowShader.modelViewMatLoc, false, matBuffer);
-
-                int color = node.color;
-
-                int a = (color >> 24) & 0xFF;
-                int r = (color >> 16) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = color & 0xFF;
-                if (a == 0) a = 255;
-
-                float rF = r / 255.0f;
-                float gF = g / 255.0f;
-                float bF = b / 255.0f;
-                float aF = a / 255.0f;
-
-                GL20.glUniform4f(LaserGlowShader.glowColorLoc, rF, gF, bF, aF);
-
-                GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, LaserGlowShader.vertexCount);
-                poseStack.popPose();
-            }
-            node.recorded = false;
-        }
-
-        GL30.glBindVertexArray(0);
-        GL20.glUseProgram(0);
-        GL11.glDepthMask(true);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if (hasDots) buffers.endBatch(DOT_TYPE);
     }
 
-    private static boolean isCollinear(NodeState n1, NodeState n2) {
-        float dotDir = n1.localDir.dot(n2.localDir);
-        if (dotDir < 0.99f) {
-            return false;
-        }
-        Vector3f offset = new Vector3f(n2.localPos).sub(n1.localPos);
-        float distance = offset.length();
-        if (distance < 0.01f) {
-            return true;
-        }
-
-        offset.normalize();
-        float dotOffset = Math.abs(offset.dot(n1.localDir));
-        return dotOffset > 0.99f;
+    private static boolean valid(Vector3f direction) {
+        return Float.isFinite(direction.x) && Float.isFinite(direction.y) && Float.isFinite(direction.z);
     }
 
-    public static class NodeState {
-        final String id;
-        Vector3f localPos = new Vector3f();
-        Vector3f localDir = new Vector3f();
-        Vec3 lastHitPos = null;
-        public int color;
-        boolean recorded = false;
-        // 新增：用于记录当前的命中长度
+    private static void drawDot(VertexConsumer consumer, Matrix4f pose, Vec3 hit, Vec3 normal,
+                                Vec3 cameraPos, int color, float distance) {
+        Vector3f n = normal.toVector3f().normalize();
+        Vector3f axis = Math.abs(n.y) > 0.95f
+                ? new Vector3f(1, 0, 0) : new Vector3f(0, 1, 0);
+        Vector3f tangent = axis.cross(n, new Vector3f()).normalize();
+        Vector3f bitangent = n.cross(tangent, new Vector3f()).normalize();
+        // Compact core, modest halo expansion over distance.
+        float radius = Math.min(0.075f, 0.040f + distance * 0.0003f);
+        tangent.mul(radius);
+        bitangent.mul(radius);
+        Vec3 renderPos = hit.add(normal.scale(0.006)).subtract(cameraPos);
+        int red = (color >>> 16) & 255;
+        int green = (color >>> 8) & 255;
+        int blue = color & 255;
+        // Colored laser halo with a brighter central pixel from the alpha texture.
+        vertex(consumer, pose, renderPos, tangent, bitangent, -1,-1, 0,1, red,green,blue);
+        vertex(consumer, pose, renderPos, tangent, bitangent, -1, 1, 0,0, red,green,blue);
+        vertex(consumer, pose, renderPos, tangent, bitangent,  1, 1, 1,0, red,green,blue);
+        vertex(consumer, pose, renderPos, tangent, bitangent,  1,-1, 1,1, red,green,blue);
+    }
+
+    private static void vertex(VertexConsumer consumer, Matrix4f pose, Vec3 at, Vector3f x, Vector3f y,
+                               int xDir, int yDir, float u, float v, int r, int g, int b) {
+        consumer.vertex(pose,
+                        (float)at.x + x.x*xDir + y.x*yDir,
+                        (float)at.y + x.y*xDir + y.y*yDir,
+                        (float)at.z + x.z*xDir + y.z*yDir)
+                .uv(u, v)
+                .color(Math.min(255, (int)(r * 1.8f)), Math.min(255, (int)(g * 1.8f)),
+                       Math.min(255, (int)(b * 1.8f)), 255)
+                .endVertex();
+    }
+
+    private static final class NodeState {
+        final Vector3f localOrigin = new Vector3f();
+        final Vector3f localDirection = new Vector3f(0, 0, -1);
+        int color;
         float hitLength = Float.NaN;
+        long lastRecorded;
+    }
 
-        NodeState(String id) {
-            this.id = id;
+    /** Mirrors the custom world-pass RenderType used by TaCZ Additions. */
+    private static final class LaserDotType extends RenderType {
+        private LaserDotType() {
+            super("gcr_laser_dot", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS,
+                    256, false, true, () -> {}, () -> {});
+        }
+
+        static RenderType make() {
+            return create("gcr_laser_dot", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS,
+                    256, false, true, CompositeState.builder()
+                            .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))
+                            .setTextureState(new TextureStateShard(GCR.RL("textures/particle/laser_dot.png"), false, false))
+                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .setDepthTestState(LEQUAL_DEPTH_TEST)
+                            .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                            .setWriteMaskState(COLOR_WRITE)
+                            .setCullState(NO_CULL)
+                            .createCompositeState(false));
         }
     }
 }

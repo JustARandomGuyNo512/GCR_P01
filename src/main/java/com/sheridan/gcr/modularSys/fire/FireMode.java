@@ -2,6 +2,7 @@ package com.sheridan.gcr.modularSys.fire;
 
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.render.AftermatchWeaponMotion;
 import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.recoil.IRecoilUpdater;
@@ -73,7 +74,9 @@ public abstract class FireMode<T extends IGun> implements IFireMode<T>{
             gunKickPitch = recoilUpdater.getGunKickPitch();
             gunKickYaw = recoilUpdater.getGunKickYaw();
         }
-        GCRNetwork.sendToServer(new GunFirePacket(shootId, gunId, stuck, gunKickPitch, gunKickYaw));
+        AftermatchWeaponMotion.ShotOffset offset = AftermatchWeaponMotion.INSTANCE.shotOffset();
+        GCRNetwork.sendToServer(new GunFirePacket(shootId, gunId, stuck,
+                gunKickPitch, gunKickYaw, offset.pitchDegrees(), offset.yawDegrees()));
     }
 
 }

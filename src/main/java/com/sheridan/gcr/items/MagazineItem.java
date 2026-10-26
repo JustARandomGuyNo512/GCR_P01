@@ -202,21 +202,25 @@ public final class MagazineItem extends ModuleItem<Mag> {
                 : rounds >= capacity() ? ChatFormatting.GREEN : ChatFormatting.YELLOW;
         tooltip.add(Component.translatable("tooltip.gcr.magazine_rounds", rounds, capacity())
                 .withStyle(color));
-        // These tags mirror the MAG-slot compatibility filters of the five GCR firearms.
-        Component compatible = Component.empty();
+        // Render each compatible firearm on its OWN line, instead of
+        // a comma-separated inline string that clips long translated names.
+        List<String> guns = new ArrayList<>();
         if (magazine.hasTag("mag") && magazine.hasTag("ar") && magazine.hasTag("5.56x45")) {
-            compatible = Component.empty().append(Component.translatable("gcr:m4a1"))
-                    .append(", ").append(Component.translatable("gcr:ak24"));
+            guns.add("gcr:m4a1");
+            guns.add("gcr:ak24");
         } else if (magazine.hasTag("mag") && magazine.hasTag("ak") && magazine.hasTag("5.45x39")) {
-            compatible = Component.translatable("gcr:ak74m");
+            guns.add("gcr:ak74m");
         } else if (magazine.hasTag("mag") && magazine.hasTag("ak") && magazine.hasTag("7.62x39")) {
-            compatible = Component.translatable("gcr:akmn");
+            guns.add("gcr:akmn");
         } else if (magazine.hasTag("mag") && magazine.hasTag("mcx_spear") && magazine.hasTag("6.8x51")) {
-            compatible = Component.translatable("gcr:mcx_spear");
+            guns.add("gcr:mcx_spear");
         }
-        if (!compatible.getString().isEmpty()) {
-            tooltip.add(Component.translatable("tooltip.gcr.magazine_compatible", compatible)
+        if (!guns.isEmpty()) {
+            tooltip.add(Component.translatable("tooltip.gcr.compatible_weapons")
                     .withStyle(ChatFormatting.GRAY));
+            for (String gunId : guns)
+                tooltip.add(Component.literal("  • ").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.translatable(gunId).withStyle(ChatFormatting.GRAY)));
         }
         tooltip.add(Component.translatable("tooltip.gcr.magazine_hold_load")
                 .withStyle(ChatFormatting.GRAY));

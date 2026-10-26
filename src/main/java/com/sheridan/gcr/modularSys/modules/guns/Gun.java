@@ -18,6 +18,7 @@ import com.sheridan.gcr.modularSys.IDGenerator;
 import com.sheridan.gcr.modularSys.ModuleRegister;
 import com.sheridan.gcr.modularSys.builder.*;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
+import com.sheridan.gcr.modularSys.fire.AftermatchWallTuck;
 import com.sheridan.gcr.modularSys.modules.*;
 import com.sheridan.gcr.modularSys.modules.Module;
 import com.sheridan.gcr.modularSys.modules.gunProperties.IProperties;
@@ -130,6 +131,8 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         }
         GunEffectManager.updateEffectTimestamp(player.getId(), GunEffect.SHOOT, rootNodeId(itemStack), System.currentTimeMillis());
         Client.WEAPON_STATUS.lastShoot = System.nanoTime();
+        // Apply transient world illumination to the actual shooter entity.
+        // Suppressor / flash-hider classification is shared with FP glow.
         com.sheridan.gcr.client.render.fx.MuzzleFlashDynamicLight.fire(player, this, itemStack);
         Client.getGunRenderer().dispatchAnimationEvent(EventType.CLEAR_TRACK, Map.of("name", "check"));
         //ModularModel.debugHeat = Mth.clamp(ModularModel.debugHeat + 0.1f, 0, 1);
@@ -145,8 +148,10 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float yaw = shooter.getYRot();
         float pitch = shooter.getXRot();
 
-        pitch += packet.gunKickPitch;
-        yaw += packet.gunKickYaw;
+        // Authoritative wall tuck: the server raises the actual projectile, not just the model.
+        pitch -= AftermatchWallTuck.check(shooter, 1f).raiseDegrees();
+        pitch += packet.gunKickPitch + packet.motionPitch;
+        yaw += packet.gunKickYaw + packet.motionYaw;
 
         float spread = getSpread(itemStack);
 
@@ -743,6 +748,25 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         String string = Component.translatable("tooltip.util.gun_modify").getString();
         String msg = string.replace("$key", KeyBinds.OPEN_GUN_MODIFY_SCREEN.getTranslatedKeyMessage().getString());
         tooltipComponents.add(Component.literal(msg).setStyle(Style.EMPTY.withColor(Color.GRAY.getRGB())));
+        // Physical magazine / chamber gestures. The reload key name is read
+        // from the actual KeyMapping so the tooltip stays correct after a
+        // player's key rebind. These are separate from ammo/stats descriptions.
+        Component reloadKey = KeyBinds.RELOAD.getTranslatedKeyMessage();
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_header")
+                .withStyle(net.minecraft.ChatFormatting.GOLD));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_quick", reloadKey)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_wheel", reloadKey)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_remove", reloadKey)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_chamber", reloadKey)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_jam", reloadKey)
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("tooltip.gcr.gun_reload_loose_mag",
+                        reloadKey, net.minecraft.client.Minecraft.getInstance().options.keyUse.getTranslatedKeyMessage())
+                .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
     }
 
     @Override

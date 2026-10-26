@@ -488,6 +488,7 @@ public class GCR {
         MinecraftForge.EVENT_BUS.register(GunHeatHandler.class);
         // TacZ Additions-style vanilla light-block fallback for gunshots.
         MinecraftForge.EVENT_BUS.register(com.sheridan.gcr.common.MuzzleFlashLightBlockManager.class);
+        MinecraftForge.EVENT_BUS.register(com.sheridan.gcr.entity.projectile.GcrBulletWaterEffects.class);
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListeners);
 
 
@@ -497,6 +498,10 @@ public class GCR {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PlayerHitZoneConfig.SPEC,
                 "gcr-player-hit-zones.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT,
+                com.sheridan.gcr.config.AftermatchMotionConfig.SPEC, "gcr-motion-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,
+                com.sheridan.gcr.config.AftermatchWallConfig.SPEC, "gcr-wall-common.toml");
     }
 
     @SubscribeEvent
@@ -613,6 +618,7 @@ public class GCR {
             MinecraftForge.EVENT_BUS.register(DelayedRenderTaskHandler.class);
             MinecraftForge.EVENT_BUS.register(GunEffectManager.class);
             MinecraftForge.EVENT_BUS.register(LaserEffectRenderer.class);
+            MinecraftForge.EVENT_BUS.register(com.sheridan.gcr.client.render.fx.BulletImpactDecals.class);
             Client.onClientSetup(event);
 
             Collection<RegistryObject<Item>> entries = ITEMS.getEntries();
@@ -652,6 +658,12 @@ public class GCR {
             event.registerSpriteSet(ModParticles.FRAGMENT.get(), FragmentParticle.Provider::new);
             event.registerSpriteSet(ModParticles.SPARK.get(), SparkParticle.Provider::new);
             event.registerSpriteSet(ModParticles.HEAT_SMOKE.get(), EmberParticle.Provider::new);
+            event.registerSpriteSet(ModParticles.WATER_PUFF.get(),
+                    com.sheridan.gcr.client.render.fx.particles.GcrWaterParticles.PuffProvider::new);
+            event.registerSpriteSet(ModParticles.WATER_DROP.get(),
+                    com.sheridan.gcr.client.render.fx.particles.GcrWaterParticles.DropProvider::new);
+            event.registerSpriteSet(ModParticles.WATER_BUBBLE.get(),
+                    com.sheridan.gcr.client.render.fx.particles.GcrWaterParticles.BubbleProvider::new);
         }
         @SubscribeEvent
         public static void registerKeyMapping(RegisterKeyMappingsEvent event) {

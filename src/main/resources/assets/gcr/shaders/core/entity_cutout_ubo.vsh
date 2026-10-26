@@ -34,6 +34,10 @@ out vec4 lightMapColor;
 out vec4 overlayColor;
 out vec2 texCoord0;
 out vec3 muzzleLightContribution;
+// Camera-space normal and surface position for low-cost per-fragment material
+// relief. Normal UV data already exist in GCR meshes and are transformed by UBO.
+out vec3 gcrViewNormal;
+out vec3 gcrViewPosition;
 
 void main() {
     int boneId = clamp(UV1.x, 0, 127);
@@ -53,6 +57,8 @@ void main() {
     vec3 transformedNormal = normalTrans * Normal;
     transformedNormal = normalize(transformedNormal);
     vec4 transformedPos = transMat * vec4(Position, 1.0);
+    gcrViewNormal = normalize(mat3(ModelViewMat) * transformedNormal);
+    gcrViewPosition = (ModelViewMat * transformedPos).xyz;
 
 
     ivec2 light = ivec2(normalLightVisible[3][0], normalLightVisible[3][1]);

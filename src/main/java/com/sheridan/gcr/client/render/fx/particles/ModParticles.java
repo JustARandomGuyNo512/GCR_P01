@@ -9,6 +9,7 @@ import com.sheridan.gcr.client.render.fx.particles.explosion.FlashOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.FragmentOption;
 import com.sheridan.gcr.client.render.fx.particles.explosion.SparkOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.DeferredRegister;
@@ -19,6 +20,13 @@ public final class ModParticles {
     private ModParticles() { }
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
             DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, GCR.MODID);
+
+    public static final RegistryObject<SimpleParticleType> WATER_PUFF =
+            PARTICLE_TYPES.register("water_puff", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> WATER_DROP =
+            PARTICLE_TYPES.register("water_drop", () -> new SimpleParticleType(false));
+    public static final RegistryObject<SimpleParticleType> WATER_BUBBLE =
+            PARTICLE_TYPES.register("water_bubble", () -> new SimpleParticleType(false));
 
     public static final RegistryObject<ParticleType<FlashOption>> FLASH = PARTICLE_TYPES.register("flash", () ->
         new ParticleType<FlashOption>(true, new ParticleOptions.Deserializer<FlashOption>() {

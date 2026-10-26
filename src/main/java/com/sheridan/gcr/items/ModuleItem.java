@@ -30,6 +30,9 @@ public class ModuleItem<T extends IModular> extends NoRepairNoEnchantmentItem {
     public void appendHoverText(@NotNull ItemStack stack, @NotNull net.minecraft.world.level.Level context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
         module.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        // Specific receiver/stock/handguard/module compatibility only;
+        // generic rail attachments intentionally have no firearm list.
+        AttachmentCompatibilityTooltip.append(module, tooltipComponents);
     }
 
     public T getModule() {

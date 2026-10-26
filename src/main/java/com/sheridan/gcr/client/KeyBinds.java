@@ -35,6 +35,7 @@ public class KeyBinds {
         event.register(RELOAD);
         event.register(OPEN_GUN_MODIFY_SCREEN);
         event.register(CHECK_MAG);
+        event.register(CHECK_CHAMBER);
         event.register(SWITCH_EFFECTIVE_SIGHT);
         event.register(USE_GRENADE_LAUNCHER);
         event.register(CHECK_SUB_WEAPON);

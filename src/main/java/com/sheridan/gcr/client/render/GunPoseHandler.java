@@ -242,6 +242,12 @@ public class GunPoseHandler {
                     Vector3f translation = mat.getTranslation(new Vector3f());
                     Quaternionf q = Utils.extractPureRotation(mat);
                     Vector3f euler = q.getEulerAnglesXYZ(new Vector3f());
+                    boolean cantedSight = node.getCustomParam(ISight.ON_SIDE_POSITION) != -1;
+                    // Inverting each Euler component separately does not
+                    // invert a combined side-sight roll + yaw + pitch.
+                    Vector3f inverseEuler = cantedSight
+                            ? new Quaternionf(q).conjugate().getEulerAnglesXYZ(new Vector3f())
+                            : new Vector3f(-euler.x, -euler.y, -euler.z);
                     float z = Math.max(
                             translation.z,
                             node.getCustomParam(ISight.ON_SIDE_POSITION) == -1 ? farthestZ : farthestZSide
@@ -258,9 +264,9 @@ public class GunPoseHandler {
                             -translation.x,
                             -translation.y,
                             -z,
-                            -euler.x,
-                            -euler.y,
-                            -euler.z
+                            inverseEuler.x,
+                            inverseEuler.y,
+                            inverseEuler.z
                     );
                 }
             }

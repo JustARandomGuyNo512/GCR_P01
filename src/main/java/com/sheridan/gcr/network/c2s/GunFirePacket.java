@@ -3,6 +3,7 @@ package com.sheridan.gcr.network.c2s;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.modularSys.fire.IFireMode;
+import com.sheridan.gcr.modularSys.fire.AftermatchWallTuck;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
 import com.sheridan.gcr.network.IPacket;
 import com.sheridan.gcr.network.s2c.GunFireAckPacket;
@@ -36,13 +37,22 @@ public class GunFirePacket implements IPacket<GunFirePacket> {
     public boolean stuck;
     public float gunKickPitch;
     public float gunKickYaw;
+    /** Additional aim direction derived from first-person model inertia. */
+    public float motionPitch;
+    public float motionYaw;
+    // Strict server-side upper bounds: this packet cannot override arbitrary aim.
+    public static final float MAX_MOTION_PITCH = 10f;
+    public static final float MAX_MOTION_YAW = 20f;
 
-    public GunFirePacket(int shootId, String gunId, boolean stuck, float gunKickPitch, float gunKickYaw) {
+    public GunFirePacket(int shootId, String gunId, boolean stuck,
+                         float gunKickPitch, float gunKickYaw, float motionPitch, float motionYaw) {
         this.shootId = shootId;
         this.gunId = gunId;
         this.stuck = stuck;
         this.gunKickPitch = gunKickPitch;
         this.gunKickYaw = gunKickYaw;
+        this.motionPitch = motionPitch;
+        this.motionYaw = motionYaw;
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -51,6 +61,8 @@ public class GunFirePacket implements IPacket<GunFirePacket> {
         buf.writeBoolean(stuck);
         buf.writeFloat(gunKickPitch);
         buf.writeFloat(gunKickYaw);
+        buf.writeFloat(motionPitch);
+        buf.writeFloat(motionYaw);
     }
 
     public static GunFirePacket decode(FriendlyByteBuf buf) {
@@ -58,6 +70,8 @@ public class GunFirePacket implements IPacket<GunFirePacket> {
                 buf.readInt(),
                 buf.readUtf(),
                 buf.readBoolean(),
+                buf.readFloat(),
+                buf.readFloat(),
                 buf.readFloat(),
                 buf.readFloat()
         );
@@ -88,6 +102,20 @@ public class GunFirePacket implements IPacket<GunFirePacket> {
             if (fireMode == null || !fireMode.getGunClass().isInstance(gunModule)) {
                 // 这一发确实属于手上这把枪，但没法处理它：回执必须带上这把枪真实的卡壳状态，
                 // 否则客户端会把物品里的卡壳位错误地写成 false。
+                reject(player, packet, gunModule.isStuck(heldItem));
+                return;
+            }
+            // Additional client-reported visual inertia is accepted only
+            // within the renderer's small physically possible angle envelope.
+            if (!Float.isFinite(packet.motionPitch) || !Float.isFinite(packet.motionYaw)
+                    || Math.abs(packet.motionPitch) > MAX_MOTION_PITCH
+                    || Math.abs(packet.motionYaw) > MAX_MOTION_YAW) {
+                reject(player, packet, gunModule.isStuck(heldItem));
+                return;
+            }
+            // Reject BEFORE AssaultRifeFireMode.useAmmo: a wall-blocked shot must not cost a round.
+            // Always recalculate on the server; the client cannot bypass the wall with a packet.
+            if (AftermatchWallTuck.check(player, 1f).fireBlocked()) {
                 reject(player, packet, gunModule.isStuck(heldItem));
                 return;
             }

@@ -182,6 +182,11 @@ public class ControllerEvents {
         int btn = event.getButton();
 
         if (Client.WEAPON_STATUS.isHoldingGun()) {
+            if (btn >= 2 && action == 1) {
+                // Mouse-bound GCR actions never generate an InputEvent.Key.
+                // Dispatch press actions without intercepting the key mapping.
+                dispatchRemappedMouseAction(btn);
+            }
             if (action == 1) {//press
                 if (btn == 0) {//left
                     Client.LEFT_BUTTON_PRESSED.set(true);
@@ -193,7 +198,10 @@ public class ControllerEvents {
                         Client.RIGHT_BUTTON_PRESSED.set(true);
                     }
                 }
-                event.setCanceled(true);
+                // Only intercept primary firearm attack/use buttons.
+                // Canceling MMB here prevents vanilla/Forge from updating
+                // controls remapped to middle or other mouse buttons.
+                if (btn == 0 || btn == 1) event.setCanceled(true);
             } else if (action == 0) {//up
                 if (btn == 0) {//left
                     Client.LEFT_BUTTON_PRESSED.set(false);
@@ -217,6 +225,42 @@ public class ControllerEvents {
                     iInteractiveModular.onMousePressed(btn, action, id, unit, gun, itemStack);
                 }
             }
+        }
+    }
+
+    private static void dispatchRemappedMouseAction(int button) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.screen != null) return;
+        ItemStack stack = mc.player.getMainHandItem();
+        if (!(stack.getItem() instanceof GunItem weapon)) return;
+        IGun gun = weapon.getGun();
+        if (GCR.IS_DEVELOPMENT && KeyBinds.OPEN_DISPLAY_ADJUST_SCREEN.matchesMouse(button)) {
+            mc.setScreen(new DebugDisplayDataAdjustScreen());
+            return;
+        }
+        if (KeyBinds.OPEN_GUN_MODIFY_SCREEN.matchesMouse(button)) {
+            GunModifyUI.open();
+            return;
+        }
+        if (DrawHolsterHandler.get().getEquipProgress() < 1) return;
+        if (KeyBinds.CHECK_MAG.matchesMouse(button) && !SprintingHandler.INSTANCE.isSprinting()) {
+            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.CHECKING,
+                    Map.of("type", CheckingTask.CHECK_MAG));
+            if (task != null) GunTaskHandler.INSTANCE.setTask(task);
+        }
+        if (KeyBinds.CHECK_CHAMBER.matchesMouse(button)) {
+            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.CHECKING,
+                    Map.of("type", CheckingTask.CHECK_CHAMBER));
+            if (task != null) GunTaskHandler.INSTANCE.setTask(task);
+        }
+        if (KeyBinds.SWITCH_FIRE_MODE.matchesMouse(button)) {
+            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.SWITCH_FIRE_MODE, Map.of());
+            if (task != null) GunTaskHandler.INSTANCE.setTask(task);
+        }
+        if (KeyBinds.SWITCH_EFFECTIVE_SIGHT.matchesMouse(button)
+                && gun instanceof ISlottedGun) {
+            IGunTask<?> task = gun.getTask(stack, IGunTask.TaskType.SWITCH_USING_SIGHT, Map.of());
+            if (task != null) task.start();
         }
     }
 

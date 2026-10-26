@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.WeaponStatus;
 import com.sheridan.gcr.client.animation.CameraAnimationHandler;
 import com.sheridan.gcr.client.model.BufferedBoneMeshModel;
 import com.sheridan.gcr.client.render.HardCodeAnimationHandler;
+import com.sheridan.gcr.client.render.events.GcrHipfireDot;
 import com.sheridan.gcr.client.render.IrisExtendRT;
 import com.sheridan.gcr.compat.IrisCompat;
 import com.sheridan.gcr.items.GunItem;
@@ -59,25 +60,35 @@ public class RenderEvents {
         Client.getGunRenderer().renderTickPost(event.renderTickTime);
     }
 
+    /**
+     * Replace only the vanilla crosshair overlay for the equipped GCR weapon.
+     *
+     * Forge's overlay id is a ResourceLocation, NOT the VanillaGuiOverlay enum
+     * instance. Comparing those two types made the old cancellation dead code.
+     * Draw in this same guaranteed overlay event instead of relying on a
+     * separate RenderGuiEvent.Post callback that may be covered by other HUD.
+     */
     @SubscribeEvent
     public static void onRenderCrosshair(RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR)) {
-            if (Client.WEAPON_STATUS.isHoldingGun()) {
-                event.setCanceled(true);
-//                if (Minecraft.getInstance().screen instanceof GunModifyScreen) {
-//                    return;
-//                }
-//                if (Client.WEAPON_STATUS.getAimingProgress() <= 0.1f) {
-//                    GuiGraphics guiGraphics = event.getGuiGraphics();
-//                    RenderSystem.enableBlend();
-//                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//                    int centerX = (int) ((guiGraphics.guiWidth() - 1) / 2f);
-//                    int centerY = (int) ((guiGraphics.guiHeight() - 1) / 2f);
-//                    guiGraphics.blit(CROSSHAIR_TEXTURE, centerX, centerY, 0, 0, 2, 2, 2, 2);
-//                    RenderSystem.defaultBlendFunc();
-//                    RenderSystem.disableBlend();
-//                }
-            }
+        if (!VanillaGuiOverlay.CROSSHAIR.id().equals(event.getOverlay().id())) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || !(mc.player.getMainHandItem().getItem() instanceof GunItem)) {
+            return;
+        }
+        event.setCanceled(true);
+    }
+
+    /**
+     * Post-HUD drawing prevents an overlay canceled in Pre from swallowing
+     * the replacement reticle. Flush explicitly so the 2px dot reaches the
+     * screen after any other mod's buffered HUD decorations.
+     */
+    @SubscribeEvent
+    public static void onRenderHipfireDot(RenderGuiEvent.Post event) {
+        if (GcrHipfireDot.draw(event.getGuiGraphics(), event.getPartialTick())) {
+            event.getGuiGraphics().flush();
         }
     }
 

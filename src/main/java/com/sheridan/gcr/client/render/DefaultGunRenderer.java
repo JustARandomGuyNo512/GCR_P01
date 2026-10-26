@@ -127,6 +127,8 @@ public class DefaultGunRenderer implements IGunRenderer {
         GunPoseHandler.INSTANCE.handleFirstPersonTransform(firstPersonPoseStack, displayData, partialTicks);
         firstPersonPoseStack.last().pose().getTranslation(GUN_LOCAL_POS);
         HardCodeAnimationHandler.getInstance().applyTransformPost(firstPersonPoseStack, gun, partialTicks, player);
+        // Aftermatch-only visual motion: affects gun and both animated hands.
+        AftermatchWeaponMotion.INSTANCE.apply(firstPersonPoseStack, player, partialTicks);
 
         TEST_STACK.setIdentity();
 

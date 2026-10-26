@@ -201,6 +201,14 @@
   "gcr.wheel.cancel": "Скасувати",
   "tooltip.gcr.magazine_compatible": "Сумісна зброя: %s",
   "tooltip.gcr.magazine_hold_load": "Щоб зарядити магазин, затисніть R",
-  "tooltip.gcr.magazine_hold_unload": "Щоб розрядити магазин, затисніть ПКМ"
+  "tooltip.gcr.magazine_hold_unload": "Щоб розрядити магазин, затисніть ПКМ",
+  "tooltip.gcr.gun_reload_header": "Керування магазином і патронником",
+  "tooltip.gcr.gun_reload_quick": "Коротко утримуйте %s і відпустіть — перезарядження найповнішим сумісним магазином",
+  "tooltip.gcr.gun_reload_wheel": "Довго утримуйте %s — виберіть магазин у колесі та відпустіть для підтвердження",
+  "tooltip.gcr.gun_reload_remove": "Двічі натисніть %s — витягти встановлений магазин",
+  "tooltip.gcr.gun_reload_chamber": "Без магазина ще раз двічі натисніть %s — витягти патрон із патронника",
+  "tooltip.gcr.gun_reload_jam": "При заклинюванні натисніть %s один раз — усунути затримку",
+  "tooltip.gcr.gun_reload_loose_mag": "Магазин у руці: утримуйте %s для заряджання, %s — для розряджання",
+  "tooltip.gcr.compatible_weapons": "Сумісна зброя:",
+  "tooltip.gcr.attachment_compatible": "Підходить до моделей зброї:"
 }
-

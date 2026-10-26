@@ -177,5 +177,14 @@
   "gcr:akm_steel_mag": "AKM 冲压钢制弹匣",
   "gcr:ak_wooden_handguard_lower": "AKM 木制护木(下)",
   "gcr:ak_wooden_handguard_upper": "AKM 木制护木(上)",
-  "block.gcaa.vending_machine": "自动售货机"
+  "block.gcaa.vending_machine": "自动售货机",
+  "tooltip.gcr.gun_reload_header": "弹匣与弹膛操作",
+  "tooltip.gcr.gun_reload_quick": "短按住 %s 后松开：使用弹量最多的兼容弹匣换弹",
+  "tooltip.gcr.gun_reload_wheel": "长按 %s：打开弹匣轮盘；松开以确认",
+  "tooltip.gcr.gun_reload_remove": "双击 %s：取下已安装弹匣",
+  "tooltip.gcr.gun_reload_chamber": "未安装弹匣时再次双击 %s：退出弹膛中的子弹",
+  "tooltip.gcr.gun_reload_jam": "卡壳时按一次 %s：排除卡壳",
+  "tooltip.gcr.gun_reload_loose_mag": "手持弹匣：按住 %s 装弹，按住 %s 退弹",
+  "tooltip.gcr.compatible_weapons": "兼容武器：",
+  "tooltip.gcr.attachment_compatible": "适用武器型号："
 }

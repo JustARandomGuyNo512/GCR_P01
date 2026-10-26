@@ -19,6 +19,7 @@ import com.sheridan.gcr.client.render.fx.muzzleSmoke.slow.SlowSmokeTask;
 import com.sheridan.gcr.compat.IrisCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -126,6 +127,13 @@ public final class MuzzleFlashRenderer implements IMuzzleFlashRenderer{
             return;
         }
         if (context.entity == null) {
+            return;
+        }
+        // Water is handled by GcrBulletWaterEffects (bubbles, splashes).
+        // A submerged shooter must not produce terrestrial muzzle flame,
+        // instantaneous/lingering smoke or associated flash lighting.
+        // Apply before ANY first/third-person effect is queued.
+        if (context.entity.isEyeInFluid(FluidTags.WATER)) {
             return;
         }
         for (MuzzleEntry entry : entries) {

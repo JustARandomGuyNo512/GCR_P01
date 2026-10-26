@@ -3,6 +3,7 @@ package com.sheridan.gcr.network.c2s;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.GCRModules;
 import com.sheridan.gcr.items.GunItem;
+import com.sheridan.gcr.sound.ModSounds;
 import com.sheridan.gcr.items.MagazineItem;
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.builder.Builder;
@@ -25,6 +26,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -43,8 +45,8 @@ public final class PhysicalMagazinePacket implements IPacket<PhysicalMagazinePac
     public static final int START_UNJAM = 3;
     public static final int STOP_UNJAM = 4;
     public static final int UNLOAD_ROUND = 5;
-    public static final int ROUND_LOAD_TICKS = 24;
-    public static final int ROUND_UNLOAD_TICKS = 20;
+    public static final int ROUND_LOAD_TICKS = 16; // 0.8 seconds
+    public static final int ROUND_UNLOAD_TICKS = 10; // 0.5 seconds
     /** Manually chosen inventory slot, validated against an exact ItemStack snapshot. */
     public static final int SELECTED_INSERT = 6;
     public static final String JAM_START_KEY = "gcr_aftermatch_jam_start";
@@ -98,6 +100,8 @@ public final class PhysicalMagazinePacket implements IPacket<PhysicalMagazinePac
                     }
                     player.getPersistentData().putLong(LAST_LOAD_KEY, time);
                     player.getInventory().setChanged();
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                            ModSounds.MAG_ROUND_UNLOAD.get(), SoundSource.PLAYERS, 1.25f, 1.0f);
                     player.displayClientMessage(Component.translatable("tooltip.gcr.magazine_rounds",
                             magazine.getRounds(heldMagazine), magazine.capacity()), true);
                     return;
@@ -117,6 +121,8 @@ public final class PhysicalMagazinePacket implements IPacket<PhysicalMagazinePac
                     if (!player.isCreative()) rounds.shrink(1);
                     player.getPersistentData().putLong(LAST_LOAD_KEY, time);
                     player.getInventory().setChanged();
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                            ModSounds.MAG_ROUND_LOAD.get(), SoundSource.PLAYERS, 0.95f, 1.0f);
                     player.displayClientMessage(Component.translatable("tooltip.gcr.magazine_rounds",
                             magazine.getRounds(heldMagazine), magazine.capacity()), true);
                 }
@@ -221,35 +227,46 @@ public final class PhysicalMagazinePacket implements IPacket<PhysicalMagazinePac
                     insertedMag = item.getModule();
                     insertedAmmo = item.getRounds(candidate);
                 } else {
-                    // A quick reload favors the last *manually* chosen type.
-                    // Fallback must NOT overwrite that preference.
+                    // Prefer the manually selected magazine type, then choose
+                    // the fullest loaded compatible magazine within that type.
+                    // If unavailable, use the fullest of ALL compatible types.
+                    // Preserve inventory order on equal ammunition counts.
                     String preferred = held.hasTag()
                             ? held.getTag().getString(PREFERRED_MAG_KEY) : "";
-                    ItemStack firstLoaded = ItemStack.EMPTY;
-                    Mag firstLoadedMag = null;
-                    int firstLoadedRounds = 0;
+                    ItemStack fullest = ItemStack.EMPTY;
+                    Mag fullestMag = null;
+                    int fullestRounds = -1;
+                    ItemStack preferredFullest = ItemStack.EMPTY;
+                    Mag preferredFullestMag = null;
+                    int preferredRounds = -1;
                     for (ItemStack candidate : player.getInventory().items) {
-                        if (candidate.isEmpty() || !(candidate.getItem() instanceof MagazineItem item)) continue;
+                        if (candidate.isEmpty()
+                                || !(candidate.getItem() instanceof MagazineItem item)) continue;
                         Mag mag = item.getModule();
                         if (!magSlot.accepts(mag)) continue;
                         int rounds = item.getRounds(candidate);
                         if (rounds <= 0) continue;
-                        if (firstLoaded.isEmpty()) {
-                            firstLoaded = candidate;
-                            firstLoadedMag = mag;
-                            firstLoadedRounds = rounds;
+                        if (rounds > fullestRounds) {
+                            fullest = candidate;
+                            fullestMag = mag;
+                            fullestRounds = rounds;
                         }
-                        if (mag.getID().equals(preferred)) {
-                            consumedStack = candidate;
-                            insertedMag = mag;
-                            insertedAmmo = rounds;
-                            break;
+                        if (mag.getID().equals(preferred) && rounds > preferredRounds) {
+                            preferredFullest = candidate;
+                            preferredFullestMag = mag;
+                            preferredRounds = rounds;
                         }
                     }
-                    if (insertedMag == null) {
-                        consumedStack = firstLoaded;
-                        insertedMag = firstLoadedMag;
-                        insertedAmmo = firstLoadedRounds;
+                    if (preferredFullestMag != null) {
+                        consumedStack = preferredFullest;
+                        insertedMag = preferredFullestMag;
+                        insertedAmmo = preferredRounds;
+                    } else {
+                        // A stale remembered type must not override a valid
+                        // compatible magazine with more rounds.
+                        consumedStack = fullest;
+                        insertedMag = fullestMag;
+                        insertedAmmo = Math.max(0, fullestRounds);
                     }
                 }
                 // Empty magazines are excluded from both selection modes.

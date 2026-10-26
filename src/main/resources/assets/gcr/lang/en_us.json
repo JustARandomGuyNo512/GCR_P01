@@ -201,6 +201,14 @@
   "gcr.wheel.cancel": "Cancel",
   "tooltip.gcr.magazine_compatible": "Compatible weapons: %s",
   "tooltip.gcr.magazine_hold_load": "To load a magazine, hold R",
-  "tooltip.gcr.magazine_hold_unload": "To unload a magazine, hold RMB"
+  "tooltip.gcr.magazine_hold_unload": "To unload a magazine, hold RMB",
+  "tooltip.gcr.gun_reload_header": "Magazine and chamber controls",
+  "tooltip.gcr.gun_reload_quick": "Hold %s briefly, then release — reload using the fullest compatible magazine",
+  "tooltip.gcr.gun_reload_wheel": "Hold %s longer — select a magazine in the wheel; release to confirm",
+  "tooltip.gcr.gun_reload_remove": "Double-tap %s — remove the installed magazine",
+  "tooltip.gcr.gun_reload_chamber": "Double-tap %s again without a magazine — eject the chambered round",
+  "tooltip.gcr.gun_reload_jam": "If jammed, press %s once — clear the jam",
+  "tooltip.gcr.gun_reload_loose_mag": "Magazine in hand: hold %s to load rounds, hold %s to unload",
+  "tooltip.gcr.compatible_weapons": "Compatible weapons:",
+  "tooltip.gcr.attachment_compatible": "Compatible weapon models:"
 }
-
