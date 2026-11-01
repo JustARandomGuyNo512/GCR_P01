@@ -22,6 +22,7 @@ import com.sheridan.gcr.modularSys.slot.IRail;
 import com.sheridan.gcr.network.c2s.CommitModuleTreePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -110,6 +111,7 @@ public class GunModifyContext {
     private float pointerY;
     private final List<DragRect> dragRects = new ArrayList<>();
     private String hoveredDragId;
+    private SlotInstance hoveredSlot;
     private DragMode dragMode = DragMode.NONE;
     private String draggingKey;
     private float pressX;
@@ -285,6 +287,44 @@ public class GunModifyContext {
             }
         });
 
+        SlotInstance selectedEmpty = selectedNode == null ? selectedSlot : null;
+        if (hoveredSlot != null) {
+            drawSlotSpan(context.bufferSource, hoveredSlot, hoveredSlot == selectedEmpty);
+        }
+        if (selectedEmpty != null && selectedEmpty != hoveredSlot) {
+            drawSlotSpan(context.bufferSource, selectedEmpty, true);
+        }
+    }
+
+    /** Wireframe along an empty slot, the length of a rail or a short mark for a point slot. */
+    private void drawSlotSpan(MultiBufferSource bufferSource, SlotInstance slot, boolean selected) {
+        if (slot == null || slot.isHidden() || isSlotOccupied(slot)) {
+            return;
+        }
+        Matrix4f pose = slotRenderPos.get(slot);
+        if (pose == null) {
+            return;
+        }
+        float rear = 0.12f;
+        float far = -0.12f;
+        if (slot.getSlot() instanceof IRail rail) {
+            float pivot = rail.getNormalizedOriginOffest();
+            float length = rail.getLength();
+            rear = pivot * length;
+            far = -(1f - pivot) * length;
+        }
+        float y0 = 0f;
+        float y1 = 0.18f;
+        if (slot.getSlot().getDirection() == Direction.LOWER) {
+            y0 = -0.18f;
+            y1 = 0f;
+        }
+        AABB box = new AABB(-0.16, y0, Math.min(far, rear), 0.16, y1, Math.max(far, rear));
+        if (selected) {
+            VoxelShapeRenderer.renderBox(box, pose, bufferSource, 0f, 1f, 0f, 1f);
+        } else {
+            VoxelShapeRenderer.renderBox(box, pose, bufferSource, 0.85f, 0.83f, 0.78f, 1f);
+        }
     }
 
     private void drawQuad(VertexConsumer builder, Matrix4f matrix, float r, float g, float b, Direction direction) {
@@ -446,7 +486,9 @@ public class GunModifyContext {
         pointerX = mouseX;
         pointerY = mouseY;
         rebuildCallouts();
-        hoveredDragId = calloutAt(mouseX, mouseY) == null ? hitDragRect(mouseX, mouseY) : null;
+        StripCell underPointer = calloutAt(mouseX, mouseY);
+        hoveredDragId = underPointer == null ? hitDragRect(mouseX, mouseY) : null;
+        hoveredSlot = underPointer != null && underPointer.node == null ? underPointer.slot : null;
         renderNodeIcons(guiGraphics);
         renderCallouts(guiGraphics);
     }

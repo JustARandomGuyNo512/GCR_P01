@@ -36,6 +36,13 @@ public class VoxelShapeRenderer {
         render(voxel, pos, bufferSource, 0, 0, 1, 1);
     }
 
+    public static void renderBox(AABB box, Matrix4f pos, MultiBufferSource bufferSource, float r, float g, float b, float a) {
+        VertexConsumer buffer = bufferSource.getBuffer(RenderTypes.LINES);
+        PoseStack poseStack = new PoseStack();
+        poseStack.last().pose().set(pos);
+        LevelRenderer.renderLineBox(poseStack, buffer, box, r, g, b, a);
+    }
+
     public static void render(IVoxel voxel, Matrix4f pos, MultiBufferSource bufferSource, float r, float g, float b, float a) {
         List<AABB> innerShape = voxel.getInnerShape();
         if (innerShape.isEmpty()) {
