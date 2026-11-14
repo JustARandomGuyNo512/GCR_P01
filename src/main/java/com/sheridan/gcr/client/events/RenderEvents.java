@@ -150,6 +150,8 @@ public class RenderEvents {
     public static void onGetFov(ViewportEvent.ComputeFov event) {
         if (event.usedConfiguredFov()) {
             currentFov = event.getFOV();
+        } else {
+            event.setFOV(62.5f);
         }
     }
 

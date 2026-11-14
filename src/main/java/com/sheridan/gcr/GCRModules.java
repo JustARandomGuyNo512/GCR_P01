@@ -488,13 +488,13 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(0, 8.775F, -7.175875f, -23.037498F, 0.0F, 0.0F, 0.0F, 0.625F, 0.625F, 0.625F)
-                    .setTranslation(1, 0.0F, 1.3F, -0.1F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
-                    .setTranslation(2, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.15F, 0.15F, 0.15F)
-                    .setTranslation(3, 0.0F, 0.0F, 0.0F, 0.0F, 90.0F, 0.0F, 0.3F, 0.3F, 0.3F)
-                    .setTranslation(4, -1.6F, 0.8F, -10.5F, 0.0F, 270.0F, 0.0F, 0.15F, 0.15F, 0.15F)
-                    .setTranslation(5, -16.0F, -10.5F, 4.0F, -18.621124F, 40.83802F, 26.0F, 0.15F, 0.15F, 0.15F)
-                    .setAimingTranslation(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F),
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.674999f, -7.175875f, -23.037498f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
 
             new RecoilData(
                     new RecoilImpulse(
@@ -561,7 +561,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.875f, -7.375875f, -23.137499f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.775f, -7.275875f, -23.237499f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -642,7 +642,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.725f, -7.45625f, -22.8f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.424999f, -7.35625f, -22.599998f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -750,7 +750,7 @@ public final class GCRModules {
                     )
             ),
             new DisplayData()
-                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.6375f, -6.225f, -22.549999f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
                     .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
                     .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
@@ -818,14 +818,14 @@ public final class GCRModules {
                             "remove_stuck_empty_length", 0.75f
                     )
             ),
-	new DisplayData()
-    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.55f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
-    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
-    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
-    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
-    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
-    .setAimingTranslation(0, 0, 0, 0, 0, 0),
+            new DisplayData()
+                    .setTranslation(DisplayData.FIRST_PERSON, 8.7375f, -6.225f, -22.549999f, 0, 0, 0, 0.625f, 0.625f, 0.625f)
+                    .setTranslation(DisplayData.THIRD_PERSON, 0, 1.3f, -0.1f, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.GROUND, 0, 0, 0, 0, 0, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.FRAME, 0, 0, 0, 0, 90, 0, 0.3f, 0.3f, 0.3f)
+                    .setTranslation(DisplayData.GUN_MODIFY_SCREEN, -1.6f, 0.8f, -10.5f, 0, 270, 0, 0.15f, 0.15f, 0.15f)
+                    .setTranslation(DisplayData.SPRINTING, -16, -10.5f, 4, -18.621124f, 40.83802f, 26, 0.15f, 0.15f, 0.15f)
+                    .setAimingTranslation(0, 0, 0, 0, 0, 0),
             new RecoilData(
                     new RecoilImpulse(
                             7.5f, 11f,
