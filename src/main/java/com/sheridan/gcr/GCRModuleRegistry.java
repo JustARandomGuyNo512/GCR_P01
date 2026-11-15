@@ -9,9 +9,7 @@ import com.sheridan.gcr.modularSys.Direction;
 import com.sheridan.gcr.modularSys.EmptySlotProvider;
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.SlotProvider;
-import com.sheridan.gcr.modularSys.builder.Accessor;
 import com.sheridan.gcr.modularSys.builder.Unit;
-import com.sheridan.gcr.modularSys.builder.WorkSpace;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKFullAuto;
 import com.sheridan.gcr.modularSys.fire.closedBolt.AKSemi;
 import com.sheridan.gcr.modularSys.fire.closedBolt.ARFullAuto;
@@ -31,9 +29,9 @@ import java.util.Map;
 
 
 /** Gun and attachment module definitions. */
-public final class GCRModules {
+public final class GCRModuleRegistry {
 
-    private GCRModules() {
+    private GCRModuleRegistry() {
     }
 
     public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f, 1.0f,
@@ -655,7 +653,7 @@ public final class GCRModules {
                             9f, 13.5f,
                             7.5f, 7.5f,
                             20f, 22f,
-                            0.4f, 0.5f, 205.0f),
+                            0.4f, 0.5f, 180.0f),
                     new RecoilController(
                             360f, 41.2f,
                             155.0f, 15f,
@@ -762,7 +760,7 @@ public final class GCRModules {
                             5.3f, 10.5f,
                             5.5f, 5.5f,
                             16, 14f,
-                            0.15f, 0.6f,210.0f),
+                            0.15f, 0.6f,170.0f),
                     new RecoilController(
                             350f, 40f,
                             150.0f, 11f,
@@ -831,7 +829,7 @@ public final class GCRModules {
                             7.5f, 11f,
                             6f, 6f,
                             16f, 17f,
-                            0.25f, 0.56f,225.0f),
+                            0.25f, 0.56f,180.0f),
                     new RecoilController(
                             355f, 40.5f,
                             160.0f, 11.5f,
