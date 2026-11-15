@@ -151,7 +151,7 @@ public class RenderEvents {
         if (event.usedConfiguredFov()) {
             currentFov = event.getFOV();
         } else {
-            event.setFOV(62.5f);
+            event.setFOV(Client.GUN_RENDER_FOV);
         }
     }
 

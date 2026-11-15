@@ -125,7 +125,7 @@ public class FlashLightRenderer {
                     float fovScene = (float) RenderEvents.currentFov;
                     float scale = (float) (
                             Math.tan(Math.toRadians(fovScene * 0.5)) /
-                                    Math.tan(Math.toRadians(62.5f / 2f))
+                                    Math.tan(Math.toRadians(Client.GUN_RENDER_FOV / 2f))
                     );
                     dir.x *= scale;
                     dir.y *= scale;
