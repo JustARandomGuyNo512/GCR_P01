@@ -111270,7 +111270,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "MAG",
@@ -111882,7 +111882,7 @@
 				"properties": {},
 				"temp_data": {}
 			},
-			"origin": [0, -9.5, -12],
+			"origin": [0, -9.6, -11.3],
 			"rotation": [0, 0, 0],
 			"color": 0,
 			"children": [],

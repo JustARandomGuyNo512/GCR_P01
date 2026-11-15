@@ -174447,7 +174447,7 @@
 			"name": "mag_reload_empty",
 			"loop": "once",
 			"override": false,
-			"length": 3.81905,
+			"length": 3.9,
 			"snapping": 105,
 			"selected": true,
 			"group_name": "",
@@ -174469,7 +174469,7 @@
 								{
 									"x": "1",
 									"y": "1",
-									"z": "0.9"
+									"z": "1"
 								}
 							],
 							"uuid": "becc1ef1-cc42-d9e7-ce7e-b881b0ff6e4d",
@@ -176548,20 +176548,6 @@
 								{
 									"x": "0",
 									"y": "0",
-									"z": "4.1"
-								}
-							],
-							"uuid": "c30e2ccf-4f54-a621-c137-e7f2b539cad9",
-							"time": 2.79048,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "position",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
 									"z": "17"
 								}
 							],
@@ -176595,6 +176581,20 @@
 							],
 							"uuid": "54c3b160-bd0a-a543-de71-495a3f219d17",
 							"time": 2.9619,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "c30e2ccf-4f54-a621-c137-e7f2b539cad9",
+							"time": 2.79048,
 							"color": -1,
 							"interpolation": "linear"
 						}
@@ -176636,7 +176636,7 @@
 								{
 									"x": "0",
 									"y": "0",
-									"z": "2"
+									"z": "0"
 								}
 							],
 							"uuid": "f0cbc903-cdbf-5f1d-b99d-e0ab47a84ca6",
@@ -177643,36 +177643,6 @@
 							"time": 1.12381,
 							"color": -1,
 							"interpolation": "linear"
-						},
-						{
-							"channel": "scale",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "f365334f-5500-0bd0-c41e-77fd3747e8e8",
-							"time": 1.66667,
-							"color": -1,
-							"uniform": true,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "scale",
-							"data_points": [
-								{
-									"x": "1",
-									"y": "1",
-									"z": "1"
-								}
-							],
-							"uuid": "e0a83df1-4651-2e31-4a3e-d38a5d3b485e",
-							"time": 1.5619,
-							"color": -1,
-							"uniform": true,
-							"interpolation": "linear"
 						}
 					]
 				},
@@ -177921,7 +177891,7 @@
 							"data_points": [
 								{
 									"x": "16",
-									"y": "-23",
+									"y": "-25",
 									"z": "-8"
 								}
 							],
@@ -177935,7 +177905,7 @@
 							"data_points": [
 								{
 									"x": "16",
-									"y": "-23",
+									"y": "-25",
 									"z": "-8"
 								}
 							],

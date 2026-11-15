@@ -151,7 +151,9 @@ public class RenderEvents {
         if (event.usedConfiguredFov()) {
             currentFov = event.getFOV();
         } else {
-            event.setFOV(Client.GUN_RENDER_FOV);
+            if (DrawHolsterHandler.get().exceptedRenderingGun()) {
+                event.setFOV(Client.GUN_RENDER_FOV);
+            }
         }
     }
 
