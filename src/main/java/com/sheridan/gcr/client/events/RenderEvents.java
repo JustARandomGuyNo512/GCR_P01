@@ -150,6 +150,10 @@ public class RenderEvents {
     public static void onGetFov(ViewportEvent.ComputeFov event) {
         if (event.usedConfiguredFov()) {
             currentFov = event.getFOV();
+        } else {
+            if (DrawHolsterHandler.get().exceptedRenderingGun()) {
+                event.setFOV(Client.GUN_RENDER_FOV);
+            }
         }
     }
 

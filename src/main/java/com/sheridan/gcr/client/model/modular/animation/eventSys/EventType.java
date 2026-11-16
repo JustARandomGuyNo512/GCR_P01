@@ -33,6 +33,8 @@ public class EventType {
 
     public static final EventType DRAW = new EventType(false, "draw");
     public static final EventType HOLSTER = new EventType(false, "holster");
+    /** Plays the gun's {@code aim} clip. Sight alignment stays on the aim clock. */
+    public static final EventType AIM = new EventType(false, "aim");
 
 
     public boolean dispatchPerNodeInstance;

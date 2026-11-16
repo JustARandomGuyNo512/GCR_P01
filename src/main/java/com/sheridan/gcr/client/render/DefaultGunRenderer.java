@@ -170,6 +170,9 @@ public class DefaultGunRenderer implements IGunRenderer {
         String usingSightID = cachedFPContext.gun.getUsingSightID(cachedFPContext.itemStack);
         if (!Objects.equals(lastUsingSightID, usingSightID)) {
             GunPoseHandler.INSTANCE.calculateSightPose(usingSightID, cachedFPContext, () -> renderFirstPerson(cachedFPContext));
+            if (Client.WEAPON_STATUS.isAiming()) {
+                dispatchAnimationEvent(EventType.AIM);
+            }
         }
         lastUsingSightID = usingSightID;
 

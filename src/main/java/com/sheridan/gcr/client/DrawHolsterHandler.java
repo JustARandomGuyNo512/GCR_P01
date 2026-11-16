@@ -224,6 +224,9 @@ public class DrawHolsterHandler {
 
         return false;
     }
+    public boolean exceptedRenderingGun() {
+        return isGun(renderLockedStack, "render") || isGun(currentStack, "current");
+    }
 
     /**
      * 判断两把枪的 identityID 是否发生了“真实的”变化。

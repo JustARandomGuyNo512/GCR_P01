@@ -22,7 +22,7 @@ Any modified or redistributed version of the GCR software must comply with the G
 
 
 
-The contents of the \[`src/animation\_project`](https://github.com/JustARandomGuyNo512/GCR\_P01/tree/main/src/animation\_project) directory, including but not limited to \*\*3D models, model meshes, textures, animations, and other associated assets\*\*, are \*\*not original works created by the GCR author\*\*.
+The contents of the \[`src/animation\_project`](https://github.com/JustARandomGuyNo512/GCR_P01/tree/main/src/animation_project) directory, including but not limited to \*\*3D models, model meshes, textures, animations, and other associated assets\*\*, are \*\*not original works created by the GCR author\*\*.
 
 
 

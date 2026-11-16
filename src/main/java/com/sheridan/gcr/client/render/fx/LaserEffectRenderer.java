@@ -64,7 +64,7 @@ public class LaserEffectRenderer {
         float fovScene = (float) RenderEvents.currentFov;
         float scale = (float) (
                 Math.tan(Math.toRadians(fovScene * 0.5)) /
-                        Math.tan(Math.toRadians(35))
+                        Math.tan(Math.toRadians(Client.GUN_RENDER_FOV / 2f))
         );
 
         Matrix4f poseMatrix = laserSourcePose.pose();
