@@ -134,6 +134,75 @@ public class ClientEvents {
     
     
     
+    
+    public static void registerItemDecorations(net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent event) {
+        net.neoforged.neoforge.client.IItemDecorator decorator = (graphics, font, stack, xOffset, yOffset) -> {
+            if (MagLoadingHandler.isGuiLoading() && MagLoadingHandler.isTargetStack(stack)) {
+                float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+                float progress = MagLoadingHandler.getProgress(partialTick);
+                renderLoadingRing(graphics, xOffset + 8.0f, yOffset + 8.0f, progress);
+            }
+            return false;
+        };
+
+        for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            if (item instanceof com.sheridan.gcr.items.MagItem) {
+                event.register(item, decorator);
+            }
+        }
+    }
+
+    public static void renderLoadingRing(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 300.0f);
+
+        org.joml.Matrix4f matrix = graphics.pose().last().pose();
+        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
+
+        int segments = 48;
+        float innerR = 5.4f;
+        float outerR = 6.8f;
+        float z = 0.0f;
+
+        // 1. Subtle semi-transparent white circular track background
+        for (int i = 0; i < segments; i++) {
+            float a1 = (float) (i * 2.0 * Math.PI / segments);
+            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
+            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
+            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
+
+            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 45);
+        }
+
+        // 2. Elegant semi-transparent white loading arc (fills clockwise from 12 o'clock)
+        if (progress > 0.005f) {
+            float clamped = Math.min(1.0f, Math.max(0.0f, progress));
+            int arcSegments = Math.max(1, (int) Math.ceil(segments * clamped));
+            for (int i = 0; i < arcSegments; i++) {
+                float f1 = (float) i / segments;
+                float f2 = (float) (i + 1) / segments;
+                if (f1 > clamped) break;
+                if (f2 > clamped) f2 = clamped;
+
+                float a1 = (float) (-Math.PI / 2.0 + f1 * 2.0 * Math.PI);
+                float a2 = (float) (-Math.PI / 2.0 + f2 * 2.0 * Math.PI);
+                float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
+                float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
+
+                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 220);
+            }
+        }
+
+        graphics.flush();
+        graphics.pose().popPose();
+    }
+
     @SubscribeEvent
     public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
@@ -209,87 +278,5 @@ public class ClientEvents {
         if (MagLoadingHandler.isGuiLoading()) {
             MagLoadingHandler.stopLoading(true);
         }
-    }
-
-    @SubscribeEvent
-    public static void onScreenRenderPost(net.neoforged.neoforge.client.event.ScreenEvent.Render.Post event) {
-        if (!MagLoadingHandler.isGuiLoading()) {
-            return;
-        }
-
-        if (!(event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen)) {
-            return;
-        }
-
-        int slotIndex = MagLoadingHandler.getLoadingSlotIndex();
-        if (slotIndex < 0 || slotIndex >= screen.getMenu().slots.size()) {
-            return;
-        }
-
-        net.minecraft.world.inventory.Slot slot = screen.getMenu().slots.get(slotIndex);
-        if (slot == null || !(slot.getItem().getItem() instanceof com.sheridan.gcr.items.MagItem)) {
-            return;
-        }
-
-        float partialTick = event.getPartialTick();
-        float progress = MagLoadingHandler.getProgress(partialTick);
-        net.minecraft.client.gui.GuiGraphics graphics = event.getGuiGraphics();
-
-        // Compute absolute screen position
-        int absSlotX = screen.getGuiLeft() + slot.x;
-        int absSlotY = screen.getGuiTop() + slot.y;
-
-        renderCircularProgress(graphics, absSlotX + 8.0f, absSlotY + 8.0f, progress);
-    }
-
-    private static void renderCircularProgress(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 500.0f);
-
-        org.joml.Matrix4f matrix = graphics.pose().last().pose();
-        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
-
-        int segments = 48;
-        float innerR = 5.4f;
-        float outerR = 6.8f;
-        float z = 0.0f;
-
-        // 1. Subtle semi-transparent white circular track background
-        for (int i = 0; i < segments; i++) {
-            float a1 = (float) (i * 2.0 * Math.PI / segments);
-            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
-            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
-            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
-
-            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 45);
-        }
-
-        // 2. Elegant semi-transparent white loading arc (fills clockwise from 12 o'clock)
-        if (progress > 0.005f) {
-            float clamped = Math.min(1.0f, Math.max(0.0f, progress));
-            int arcSegments = Math.max(1, (int) Math.ceil(segments * clamped));
-            for (int i = 0; i < arcSegments; i++) {
-                float f1 = (float) i / segments;
-                float f2 = (float) (i + 1) / segments;
-                if (f1 > clamped) break;
-                if (f2 > clamped) f2 = clamped;
-
-                float a1 = (float) (-Math.PI / 2.0 + f1 * 2.0 * Math.PI);
-                float a2 = (float) (-Math.PI / 2.0 + f2 * 2.0 * Math.PI);
-                float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
-                float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
-
-                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 220);
-            }
-        }
-
-        graphics.flush();
-        graphics.pose().popPose();
     }
 }

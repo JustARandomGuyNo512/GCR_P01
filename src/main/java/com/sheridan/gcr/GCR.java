@@ -441,6 +441,7 @@ public class GCR {
 
         if (FMLLoader.getDist() == Dist.CLIENT) {
             modEventBus.addListener(ClientEvents::registerCustomVanillaShader);
+            modEventBus.addListener(ClientEvents::registerItemDecorations);
         }
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

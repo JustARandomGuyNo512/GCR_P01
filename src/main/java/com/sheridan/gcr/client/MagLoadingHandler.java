@@ -17,6 +17,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class MagLoadingHandler {
     private static boolean guiLoading = false;
     private static int loadingSlotIndex = -1;
+    private static ItemStack loadingMagStack = ItemStack.EMPTY;
     private static int currentTick = 0;
     public static final int CYCLE_TICKS = 12; // 0.6s per round
     private static String caliber = "";
@@ -33,6 +34,12 @@ public class MagLoadingHandler {
         return loadingSlotIndex;
     }
 
+    public static boolean isTargetStack(ItemStack stack) {
+        if (!guiLoading || stack == null || stack.isEmpty()) return false;
+        if (loadingMagStack == stack) return true;
+        return ItemStack.matches(loadingMagStack, stack);
+    }
+
     public static float getProgress(float partialTicks) {
         if (!guiLoading) return 0.0f;
         return ((currentTick % CYCLE_TICKS) + partialTicks) / (float) CYCLE_TICKS;
@@ -44,6 +51,7 @@ public class MagLoadingHandler {
         }
         guiLoading = true;
         loadingSlotIndex = slotIndex;
+        loadingMagStack = mag;
         currentTick = 0;
         caliber = (cal != null && !cal.isEmpty()) ? cal : magItem.getCaliber();
     }
@@ -52,6 +60,7 @@ public class MagLoadingHandler {
         if (!guiLoading) return;
         guiLoading = false;
         loadingSlotIndex = -1;
+        loadingMagStack = ItemStack.EMPTY;
         currentTick = 0;
         caliber = "";
         if (notifyServer) {
@@ -85,6 +94,7 @@ public class MagLoadingHandler {
         }
 
         ItemStack heldMag = slot.getItem();
+        loadingMagStack = heldMag;
         int ammoLeft = MagItem.getAmmoLeft(heldMag);
         int maxCap = magItem.getModule().getMaxCapacity();
 
