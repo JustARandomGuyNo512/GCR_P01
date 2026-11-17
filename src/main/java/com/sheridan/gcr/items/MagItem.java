@@ -101,18 +101,27 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            if (player.containerMenu != null && !player.containerMenu.getCarried().isEmpty()) {
-                player.getInventory().placeItemBackInInventory(player.containerMenu.getCarried());
+            // Return ammo to player inventory and clear cursor
+            access.set(ItemStack.EMPTY);
+            if (player.containerMenu != null) {
                 player.containerMenu.setCarried(ItemStack.EMPTY);
             }
+            ItemStack ammoToReturn = other.copy();
+            if (!player.getInventory().add(ammoToReturn)) {
+                player.drop(ammoToReturn, false);
+            }
 
+            // Equip magazine in selected hotbar slot
             int selectedHotbar = player.getInventory().selected;
             int containerSlot = slot.getContainerSlot();
-            if (containerSlot != selectedHotbar) {
-                ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
-                player.getInventory().setItem(selectedHotbar, stack.copy());
+            ItemStack magStack = stack.copy();
+            slot.set(ItemStack.EMPTY);
+
+            ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
+            if (!currentlyHeld.isEmpty()) {
                 slot.set(currentlyHeld);
             }
+            player.getInventory().setItem(selectedHotbar, magStack);
 
             player.closeContainer();
 
@@ -152,13 +161,21 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            if (player.containerMenu != null && !player.containerMenu.getCarried().isEmpty()) {
-                player.getInventory().placeItemBackInInventory(player.containerMenu.getCarried());
+            // stack is the magazine on cursor
+            if (player.containerMenu != null) {
                 player.containerMenu.setCarried(ItemStack.EMPTY);
             }
 
             int selectedHotbar = player.getInventory().selected;
-            player.getInventory().setItem(selectedHotbar, stack.copy());
+            ItemStack magStack = stack.copy();
+
+            ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
+            if (!currentlyHeld.isEmpty()) {
+                if (!player.getInventory().add(currentlyHeld)) {
+                    player.drop(currentlyHeld, false);
+                }
+            }
+            player.getInventory().setItem(selectedHotbar, magStack);
 
             player.closeContainer();
 

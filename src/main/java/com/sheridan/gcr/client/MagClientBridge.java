@@ -12,8 +12,7 @@ public class MagClientBridge {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {
-            if (player.containerMenu != null && !player.containerMenu.getCarried().isEmpty()) {
-                player.getInventory().placeItemBackInInventory(player.containerMenu.getCarried());
+            if (player.containerMenu != null) {
                 player.containerMenu.setCarried(ItemStack.EMPTY);
             }
             mc.setScreen(null);

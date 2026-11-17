@@ -1,13 +1,12 @@
 package com.sheridan.gcr.network.c2s;
 
 import com.sheridan.gcr.GCR;
+import com.sheridan.gcr.client.MagClientBridge;
 import com.sheridan.gcr.client.MagLoadingHandler;
 import com.sheridan.gcr.items.AmmoItem;
 import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.network.Codec;
 import com.sheridan.gcr.network.IPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -57,11 +56,7 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
     public void onClient(MagLoadPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (packet.action == ACTION_START) {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null) {
-                    Minecraft.getInstance().setScreen(null);
-                    MagLoadingHandler.startLoading(player.getMainHandItem(), packet.caliber);
-                }
+                MagClientBridge.startLoadingFromInventory(packet.caliber);
             } else if (packet.action == ACTION_STOP) {
                 MagLoadingHandler.stopLoading(false);
             }

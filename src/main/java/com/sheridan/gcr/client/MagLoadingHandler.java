@@ -20,6 +20,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class MagLoadingHandler {
     private static boolean loading = false;
     private static int currentTick = 0;
+    private static boolean keyReleased = false;
+    private static int initialGraceTicks = 0;
     public static final int CYCLE_TICKS = 12;
     private static ItemStack magStack = ItemStack.EMPTY;
     private static ItemStack ammoStack = ItemStack.EMPTY;
@@ -47,6 +49,8 @@ public class MagLoadingHandler {
         }
         loading = true;
         currentTick = 0;
+        keyReleased = false;
+        initialGraceTicks = 6; // Ignore mouse click for 6 ticks (~300ms)
         magStack = mag;
         caliber = (cal != null && !cal.isEmpty()) ? cal : magItem.getCaliber();
         AmmoItem ai = AmmoItem.getByCaliber(caliber);
@@ -57,6 +61,8 @@ public class MagLoadingHandler {
         if (!loading) return;
         loading = false;
         currentTick = 0;
+        keyReleased = false;
+        initialGraceTicks = 0;
         magStack = ItemStack.EMPTY;
         ammoStack = ItemStack.EMPTY;
         if (notifyServer) {
@@ -80,8 +86,22 @@ public class MagLoadingHandler {
         }
         magStack = held;
 
-        // Cancel on click, sprint or reload key
-        if (mc.options.keyAttack.isDown() || mc.options.keyUse.isDown() || KeyBinds.RELOAD.isDown() || player.isSprinting()) {
+        // Initial click release & grace period
+        if (initialGraceTicks > 0) {
+            initialGraceTicks--;
+        }
+        if (!mc.options.keyAttack.isDown() && !mc.options.keyUse.isDown()) {
+            keyReleased = true;
+        }
+
+        // Cancel on new click after initial click released, sprint or reload key
+        if (initialGraceTicks == 0 && keyReleased) {
+            if (mc.options.keyAttack.isDown() || mc.options.keyUse.isDown()) {
+                stopLoading(true);
+                return;
+            }
+        }
+        if (KeyBinds.RELOAD.isDown() || player.isSprinting()) {
             stopLoading(true);
             return;
         }
