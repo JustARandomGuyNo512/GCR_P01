@@ -37,7 +37,18 @@ public class MagLoadingHandler {
     public static boolean isTargetStack(ItemStack stack) {
         if (!guiLoading || stack == null || stack.isEmpty()) return false;
         if (loadingMagStack == stack) return true;
-        return ItemStack.matches(loadingMagStack, stack);
+        if (loadingMagStack.getItem() == stack.getItem() && ItemStack.isSameItemSameComponents(loadingMagStack, stack)) return true;
+        // Also check if stack is the item currently in loadingSlotIndex
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof AbstractContainerScreen<?> screen) {
+            if (loadingSlotIndex >= 0 && loadingSlotIndex < screen.getMenu().slots.size()) {
+                Slot slot = screen.getMenu().slots.get(loadingSlotIndex);
+                if (slot != null && slot.getItem() == stack) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static float getProgress(float partialTicks) {

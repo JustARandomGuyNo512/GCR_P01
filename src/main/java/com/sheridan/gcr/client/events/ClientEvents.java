@@ -129,18 +129,21 @@ public class ClientEvents {
         );
     }
 
+// Pixel coordinates (0..15) and normalized clockwise angles (0.0..1.0) for a 16x16 circular loading ring
+    private static final int[] RING_X = new int[] {6, 7, 8, 4, 5, 6, 7, 8, 9, 10, 3, 4, 5, 9, 10, 11, 2, 3, 4, 10, 11, 12, 2, 3, 11, 12, 1, 2, 12, 13, 1, 2, 12, 13, 1, 2, 12, 13, 2, 3, 11, 12, 2, 3, 4, 10, 11, 12, 3, 4, 5, 9, 10, 11, 4, 5, 6, 7, 8, 9, 10, 6, 7, 8};
+    private static final int[] RING_Y = new int[] {1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13};
+    private static final float[] RING_ANGLE = new float[] {0.9737f, 0.0f, 0.0263f, 0.914f, 0.9394f, 0.9686f, 0.0f, 0.0314f, 0.0606f, 0.086f, 0.875f, 0.8976f, 0.9262f, 0.0738f, 0.1024f, 0.125f, 0.836f, 0.8524f, 0.875f, 0.125f, 0.1476f, 0.164f, 0.8106f, 0.8238f, 0.1762f, 0.1894f, 0.7763f, 0.7814f, 0.2186f, 0.2237f, 0.75f, 0.75f, 0.25f, 0.25f, 0.7237f, 0.7186f, 0.2814f, 0.2763f, 0.6894f, 0.6762f, 0.3238f, 0.3106f, 0.664f, 0.6476f, 0.625f, 0.375f, 0.3524f, 0.336f, 0.625f, 0.6024f, 0.5738f, 0.4262f, 0.3976f, 0.375f, 0.586f, 0.5606f, 0.5314f, 0.5f, 0.4686f, 0.4394f, 0.414f, 0.5263f, 0.5f, 0.4737f};
 
-    
-    
-    
-    
-    
+    // Colors (ARGB)
+    private static final int COLOR_TRACK = (75 << 24) | 0xFFFFFF;  // 30% semi-transparent white
+    private static final int COLOR_ACTIVE = (235 << 24) | 0xFFFFFF; // 92% bright semi-transparent white
+
     public static void registerItemDecorations(net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent event) {
         net.neoforged.neoforge.client.IItemDecorator decorator = (graphics, font, stack, xOffset, yOffset) -> {
             if (MagLoadingHandler.isGuiLoading() && MagLoadingHandler.isTargetStack(stack)) {
                 float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
                 float progress = MagLoadingHandler.getProgress(partialTick);
-                renderLoadingRing(graphics, xOffset + 8.0f, yOffset + 8.0f, progress);
+                renderLoadingRingAt(graphics, xOffset, yOffset, progress);
             }
             return false;
         };
@@ -152,55 +155,42 @@ public class ClientEvents {
         }
     }
 
-    public static void renderLoadingRing(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 300.0f);
-
-        org.joml.Matrix4f matrix = graphics.pose().last().pose();
-        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
-
-        int segments = 48;
-        float innerR = 5.4f;
-        float outerR = 6.8f;
-        float z = 0.0f;
-
-        // 1. Subtle semi-transparent white circular track background
-        for (int i = 0; i < segments; i++) {
-            float a1 = (float) (i * 2.0 * Math.PI / segments);
-            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
-            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
-            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
-
-            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 45);
-            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 45);
+    @SubscribeEvent
+    public static void onContainerScreenForeground(net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground event) {
+        if (!MagLoadingHandler.isGuiLoading()) {
+            return;
         }
 
-        // 2. Elegant semi-transparent white loading arc (fills clockwise from 12 o'clock)
-        if (progress > 0.005f) {
-            float clamped = Math.min(1.0f, Math.max(0.0f, progress));
-            int arcSegments = Math.max(1, (int) Math.ceil(segments * clamped));
-            for (int i = 0; i < arcSegments; i++) {
-                float f1 = (float) i / segments;
-                float f2 = (float) (i + 1) / segments;
-                if (f1 > clamped) break;
-                if (f2 > clamped) f2 = clamped;
-
-                float a1 = (float) (-Math.PI / 2.0 + f1 * 2.0 * Math.PI);
-                float a2 = (float) (-Math.PI / 2.0 + f2 * 2.0 * Math.PI);
-                float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
-                float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
-
-                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 220);
-                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 220);
-            }
+        net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen = event.getContainerScreen();
+        int slotIndex = MagLoadingHandler.getLoadingSlotIndex();
+        if (slotIndex < 0 || slotIndex >= screen.getMenu().slots.size()) {
+            return;
         }
 
-        graphics.flush();
-        graphics.pose().popPose();
+        net.minecraft.world.inventory.Slot slot = screen.getMenu().slots.get(slotIndex);
+        if (slot == null || !(slot.getItem().getItem() instanceof com.sheridan.gcr.items.MagItem)) {
+            return;
+        }
+
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float progress = MagLoadingHandler.getProgress(partialTick);
+        renderLoadingRingAt(event.getGuiGraphics(), slot.x, slot.y, progress);
+    }
+
+    public static void renderLoadingRingAt(net.minecraft.client.gui.GuiGraphics graphics, int slotX, int slotY, float progress) {
+        float clamped = Math.min(1.0f, Math.max(0.0f, progress));
+        net.minecraft.client.renderer.RenderType overlayType = net.minecraft.client.renderer.RenderType.guiOverlay();
+
+        for (int i = 0; i < RING_X.length; i++) {
+            int px = slotX + RING_X[i];
+            int py = slotY + RING_Y[i];
+            float angle = RING_ANGLE[i];
+
+            boolean isActive = clamped > 0.005f && angle <= clamped;
+            int color = isActive ? COLOR_ACTIVE : COLOR_TRACK;
+
+            graphics.fill(overlayType, px, py, px + 1, py + 1, color);
+        }
     }
 
     @SubscribeEvent
