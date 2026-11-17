@@ -129,4 +129,46 @@ public class ClientEvents {
         );
     }
 
+
+    @SubscribeEvent
+    public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
+        if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
+            Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+            if (player == null) return;
+
+            net.minecraft.world.inventory.Slot slot = containerScreen.getSlotUnderMouse();
+            if (slot == null || !slot.hasItem()) return;
+
+            net.minecraft.world.item.ItemStack carried = containerScreen.getMenu().getCarried();
+            net.minecraft.world.item.ItemStack slotItem = slot.getItem();
+
+            if (carried.getItem() instanceof com.sheridan.gcr.items.AmmoItem ammoItem && slotItem.getItem() instanceof com.sheridan.gcr.items.MagItem magItem) {
+                if (magItem.acceptsAmmo(ammoItem)) {
+                    int currentAmmo = com.sheridan.gcr.items.MagItem.getAmmoLeft(slotItem);
+                    int maxCap = magItem.getModule().getMaxCapacity();
+                    if (currentAmmo >= maxCap) {
+                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gcr.overlay.mag_full").withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                        return;
+                    }
+
+                    event.setCanceled(true);
+                    com.sheridan.gcr.client.MagClientBridge.handleMagLoadingClick(containerScreen, slot, false, magItem.getCaliber());
+                }
+            } else if (carried.getItem() instanceof com.sheridan.gcr.items.MagItem magItem && slotItem.getItem() instanceof com.sheridan.gcr.items.AmmoItem ammoItem) {
+                if (magItem.acceptsAmmo(ammoItem)) {
+                    int currentAmmo = com.sheridan.gcr.items.MagItem.getAmmoLeft(carried);
+                    int maxCap = magItem.getModule().getMaxCapacity();
+                    if (currentAmmo >= maxCap) {
+                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gcr.overlay.mag_full").withStyle(net.minecraft.ChatFormatting.GREEN), true);
+                        return;
+                    }
+
+                    event.setCanceled(true);
+                    com.sheridan.gcr.client.MagClientBridge.handleMagLoadingClick(containerScreen, slot, true, magItem.getCaliber());
+                }
+            }
+        }
+    }
+
 }

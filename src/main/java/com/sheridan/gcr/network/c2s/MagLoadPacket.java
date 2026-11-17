@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -30,26 +31,37 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
     public static final int ACTION_START = 0;
     public static final int ACTION_LOAD_ROUND = 1;
     public static final int ACTION_STOP = 2;
+    public static final int ACTION_START_FROM_SLOT = 3;
 
     public int action;
     public String caliber;
+    public int slotIndex;
+    public boolean isCarriedMag;
 
     public MagLoadPacket() {
-        this(0, "");
+        this(0, "", -1, false);
     }
 
     public MagLoadPacket(int action, String caliber) {
+        this(action, caliber, -1, false);
+    }
+
+    public MagLoadPacket(int action, String caliber, int slotIndex, boolean isCarriedMag) {
         this.action = action;
         this.caliber = caliber != null ? caliber : "";
+        this.slotIndex = slotIndex;
+        this.isCarriedMag = isCarriedMag;
     }
 
     private void encode(FriendlyByteBuf buf) {
         buf.writeInt(action);
         buf.writeUtf(caliber);
+        buf.writeInt(slotIndex);
+        buf.writeBoolean(isCarriedMag);
     }
 
     private static MagLoadPacket decode(FriendlyByteBuf buf) {
-        return new MagLoadPacket(buf.readInt(), buf.readUtf());
+        return new MagLoadPacket(buf.readInt(), buf.readUtf(), buf.readInt(), buf.readBoolean());
     }
 
     @Override
@@ -67,6 +79,42 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
     public void onServer(MagLoadPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
+
+            if (packet.action == ACTION_START_FROM_SLOT) {
+                ItemStack carried = player.containerMenu.getCarried();
+                player.containerMenu.setCarried(ItemStack.EMPTY);
+                if (!carried.isEmpty()) {
+                    if (!player.getInventory().add(carried)) {
+                        player.drop(carried, false);
+                    }
+                }
+
+                int selectedHotbar = player.getInventory().selected;
+                ItemStack oldHeld = player.getInventory().getItem(selectedHotbar);
+
+                if (packet.isCarriedMag) {
+                    if (carried.getItem() instanceof MagItem) {
+                        if (!oldHeld.isEmpty()) {
+                            if (!player.getInventory().add(oldHeld)) {
+                                player.drop(oldHeld, false);
+                            }
+                        }
+                        player.getInventory().setItem(selectedHotbar, carried);
+                    }
+                } else if (packet.slotIndex >= 0 && packet.slotIndex < player.containerMenu.slots.size()) {
+                    Slot slot = player.containerMenu.slots.get(packet.slotIndex);
+                    if (slot != null && slot.getItem().getItem() instanceof MagItem) {
+                        ItemStack magStack = slot.getItem().copy();
+                        slot.set(oldHeld);
+                        player.getInventory().setItem(selectedHotbar, magStack);
+                    }
+                }
+
+                player.closeContainer();
+                player.inventoryMenu.broadcastChanges();
+                return;
+            }
+
             ItemStack held = player.getMainHandItem();
             if (!(held.getItem() instanceof MagItem magItem)) {
                 PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));

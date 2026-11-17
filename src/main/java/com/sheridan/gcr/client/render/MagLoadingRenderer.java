@@ -45,34 +45,34 @@ public class MagLoadingRenderer {
         int cycleTicks = MagLoadingHandler.CYCLE_TICKS;
         float progress = ((tick % cycleTicks) + partialTicks) / (float) cycleTicks;
 
-        // 1. RIGHT HAND & MAGAZINE
+        // 1. RIGHT ARM & MAGAZINE (Holding the magazine firmly in front of the chest)
         poseStack.pushPose();
 
-        float xOffset = 0.22f;
-        float yOffset = -0.36f;
-        float zOffset = -0.48f;
+        float rx = 0.20f;
+        float ry = -0.34f;
+        float rz = -0.46f;
 
-        // Subtle tactile bounce on insert (around progress 0.45 - 0.65)
+        // Tactile downward recoil pulse when cartridge snaps into feed lips (progress 0.55 - 0.75)
         float bounce = 0.0f;
-        if (progress >= 0.45f && progress <= 0.65f) {
-            float bT = (progress - 0.45f) / 0.20f;
-            bounce = (float) Math.sin(bT * Math.PI) * 0.025f;
+        if (progress >= 0.55f && progress <= 0.75f) {
+            float bT = (progress - 0.55f) / 0.20f;
+            bounce = (float) (Math.sin(bT * Math.PI) * Math.exp(-bT * 1.5)) * 0.032f;
         }
 
-        poseStack.translate(xOffset, yOffset - bounce, zOffset);
-        poseStack.mulPose(Axis.YP.rotationDegrees(12.0f));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-35.0f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(10.0f));
+        poseStack.translate(rx, ry - bounce, rz + bounce * 0.5f);
+        poseStack.mulPose(Axis.YP.rotationDegrees(8.0f));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-36.0f - bounce * 150.0f));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(12.0f));
 
-        // Render right player arm
+        // Render right arm
         playerRenderer.renderRightHand(poseStack, buffer, light, player);
 
-        // Attached magazine in right hand
+        // Render magazine gripped in right hand with feed lips angled toward left hand
         poseStack.pushPose();
-        poseStack.translate(-0.06f, 0.46f, -0.10f);
-        poseStack.mulPose(Axis.XP.rotationDegrees(95.0f));
-        poseStack.mulPose(Axis.YP.rotationDegrees(-15.0f));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(10.0f));
+        poseStack.translate(-0.06f, 0.44f, -0.11f);
+        poseStack.mulPose(Axis.XP.rotationDegrees(92.0f));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-18.0f));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(12.0f));
         poseStack.scale(0.85f, 0.85f, 0.85f);
 
         Minecraft.getInstance().getItemRenderer().renderStatic(
@@ -90,42 +90,44 @@ public class MagLoadingRenderer {
         poseStack.popPose();
         poseStack.popPose();
 
-        // 2. LEFT HAND & AMMO CARTRIDGE
+        // 2. LEFT ARM & AMMO CARTRIDGE (Picking up round, pushing into feed lips, snapping in, and resetting)
         poseStack.pushPose();
 
         float lx, ly, lz;
         float lRotX, lRotY, lRotZ;
 
-        if (progress < 0.5f) {
-            // Rising towards magazine feed lips
-            float u = progress / 0.5f;
-            float ease = (float) (0.5 - 0.5 * Math.cos(u * Math.PI));
-            lx = Mth.lerp(ease, -0.38f, -0.04f);
-            ly = Mth.lerp(ease, -0.68f, -0.30f);
-            lz = Mth.lerp(ease, -0.40f, -0.46f);
-            lRotX = Mth.lerp(ease, 10.0f, -38.0f);
-            lRotY = Mth.lerp(ease, -20.0f, 25.0f);
-            lRotZ = Mth.lerp(ease, 15.0f, -18.0f);
-        } else if (progress < 0.65f) {
-            // Pushing cartridge into magazine feed lips
-            float pushT = (progress - 0.5f) / 0.15f;
-            float push = (float) Math.sin(pushT * Math.PI) * 0.035f;
-            lx = -0.04f;
-            ly = -0.30f - push;
-            lz = -0.46f;
-            lRotX = -38.0f - push * 60.0f;
-            lRotY = 25.0f;
-            lRotZ = -18.0f;
+        if (progress < 0.45f) {
+            // Stage 1: Rising from pouch towards magazine feed lips
+            float u = progress / 0.45f;
+            float ease = 0.5f - 0.5f * (float) Math.cos(u * Math.PI);
+            lx = Mth.lerp(ease, -0.42f, -0.05f);
+            ly = Mth.lerp(ease, -0.72f, -0.28f);
+            lz = Mth.lerp(ease, -0.38f, -0.46f);
+            lRotX = Mth.lerp(ease, 15.0f, -42.0f);
+            lRotY = Mth.lerp(ease, -25.0f, 22.0f);
+            lRotZ = Mth.lerp(ease, 20.0f, -16.0f);
+        } else if (progress < 0.60f) {
+            // Stage 2: Thumb pressing downward and rearward against spring tension
+            float pT = (progress - 0.45f) / 0.15f;
+            float pushY = (float) Math.sin(pT * Math.PI * 0.5) * 0.038f;
+            float pushZ = pT * 0.015f;
+            lx = -0.05f + (pT * 0.01f);
+            ly = -0.28f - pushY;
+            lz = -0.46f + pushZ;
+            lRotX = -42.0f - pushY * 80.0f;
+            lRotY = 22.0f;
+            lRotZ = -16.0f;
         } else {
-            // Returning to fetch next round
-            float u = (progress - 0.65f) / 0.35f;
-            float ease = (float) (0.5 - 0.5 * Math.cos(u * Math.PI));
-            lx = Mth.lerp(ease, -0.04f, -0.38f);
-            ly = Mth.lerp(ease, -0.30f, -0.68f);
-            lz = Mth.lerp(ease, -0.46f, -0.40f);
-            lRotX = Mth.lerp(ease, -38.0f, 10.0f);
-            lRotY = Mth.lerp(ease, 25.0f, -20.0f);
-            lRotZ = Mth.lerp(ease, -18.0f, 15.0f);
+            // Stage 3 & 4: Cartridge snapped in, left hand pulling back downward for next round
+            float rT = (progress - 0.60f) / 0.40f;
+            float rEase = 0.5f - 0.5f * (float) Math.cos(rT * Math.PI);
+            float arcOut = (float) Math.sin(rT * Math.PI) * 0.04f;
+            lx = Mth.lerp(rEase, -0.04f, -0.42f) - arcOut;
+            ly = Mth.lerp(rEase, -0.31f, -0.72f);
+            lz = Mth.lerp(rEase, -0.445f, -0.38f);
+            lRotX = Mth.lerp(rEase, -45.0f, 15.0f);
+            lRotY = Mth.lerp(rEase, 22.0f, -25.0f);
+            lRotZ = Mth.lerp(rEase, -16.0f, 20.0f);
         }
 
         poseStack.translate(lx, ly, lz);
@@ -133,15 +135,16 @@ public class MagLoadingRenderer {
         poseStack.mulPose(Axis.XP.rotationDegrees(lRotX));
         poseStack.mulPose(Axis.ZP.rotationDegrees(lRotZ));
 
-        // Render left player arm
+        // Render left arm
         playerRenderer.renderLeftHand(poseStack, buffer, light, player);
 
-        // Render ammo cartridge in left fingers while not fully inserted
-        if (!ammoStack.isEmpty() && progress < 0.60f) {
+        // Render 3D cartridge held between thumb and index finger until fully seated at tick 9 (progress ~0.58)
+        if (!ammoStack.isEmpty() && progress < 0.58f) {
             poseStack.pushPose();
-            poseStack.translate(0.04f, 0.48f, -0.08f);
-            poseStack.mulPose(Axis.XP.rotationDegrees(85.0f));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-25.0f));
+            poseStack.translate(0.05f, 0.45f, -0.08f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(82.0f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-10.0f));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(-24.0f));
             poseStack.scale(0.55f, 0.55f, 0.55f);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(

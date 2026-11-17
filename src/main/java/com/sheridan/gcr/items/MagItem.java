@@ -1,19 +1,14 @@
 package com.sheridan.gcr.items;
 
+import com.sheridan.gcr.client.MagClientBridge;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.Mag;
 import com.sheridan.gcr.network.c2s.MagLoadPacket;
-import com.sheridan.gcr.client.MagClientBridge;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLEnvironment;
-
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -24,6 +19,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -101,7 +99,6 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            // Return ammo to player inventory and clear cursor
             access.set(ItemStack.EMPTY);
             if (player.containerMenu != null) {
                 player.containerMenu.setCarried(ItemStack.EMPTY);
@@ -111,16 +108,10 @@ public class MagItem extends ModuleItem<Mag> {
                 player.drop(ammoToReturn, false);
             }
 
-            // Equip magazine in selected hotbar slot
             int selectedHotbar = player.getInventory().selected;
-            int containerSlot = slot.getContainerSlot();
             ItemStack magStack = stack.copy();
-            slot.set(ItemStack.EMPTY);
-
             ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
-            if (!currentlyHeld.isEmpty()) {
-                slot.set(currentlyHeld);
-            }
+            slot.set(currentlyHeld);
             player.getInventory().setItem(selectedHotbar, magStack);
 
             player.closeContainer();
@@ -129,6 +120,7 @@ public class MagItem extends ModuleItem<Mag> {
                 MagClientBridge.startLoadingFromInventory(getCaliber());
             }
             if (player instanceof ServerPlayer serverPlayer) {
+                player.inventoryMenu.broadcastChanges();
                 PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
             }
 
@@ -161,14 +153,12 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            // stack is the magazine on cursor
             if (player.containerMenu != null) {
                 player.containerMenu.setCarried(ItemStack.EMPTY);
             }
 
             int selectedHotbar = player.getInventory().selected;
             ItemStack magStack = stack.copy();
-
             ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
             if (!currentlyHeld.isEmpty()) {
                 if (!player.getInventory().add(currentlyHeld)) {
@@ -183,6 +173,7 @@ public class MagItem extends ModuleItem<Mag> {
                 MagClientBridge.startLoadingFromInventory(getCaliber());
             }
             if (player instanceof ServerPlayer serverPlayer) {
+                player.inventoryMenu.broadcastChanges();
                 PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
             }
 

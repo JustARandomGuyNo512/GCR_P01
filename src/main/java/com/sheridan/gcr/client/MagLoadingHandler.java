@@ -20,9 +20,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class MagLoadingHandler {
     private static boolean loading = false;
     private static int currentTick = 0;
-    private static boolean keyReleased = false;
+    private static boolean mouseReleased = false;
     private static int initialGraceTicks = 0;
-    public static final int CYCLE_TICKS = 12;
+    public static final int CYCLE_TICKS = 15; // 0.75s per round
     private static ItemStack magStack = ItemStack.EMPTY;
     private static ItemStack ammoStack = ItemStack.EMPTY;
     private static String caliber = "";
@@ -49,8 +49,8 @@ public class MagLoadingHandler {
         }
         loading = true;
         currentTick = 0;
-        keyReleased = false;
-        initialGraceTicks = 6; // Ignore mouse click for 6 ticks (~300ms)
+        mouseReleased = false;
+        initialGraceTicks = 10; // Ignore mouse clicks for first 10 ticks (~500ms)
         magStack = mag;
         caliber = (cal != null && !cal.isEmpty()) ? cal : magItem.getCaliber();
         AmmoItem ai = AmmoItem.getByCaliber(caliber);
@@ -61,7 +61,7 @@ public class MagLoadingHandler {
         if (!loading) return;
         loading = false;
         currentTick = 0;
-        keyReleased = false;
+        mouseReleased = false;
         initialGraceTicks = 0;
         magStack = ItemStack.EMPTY;
         ammoStack = ItemStack.EMPTY;
@@ -86,20 +86,20 @@ public class MagLoadingHandler {
         }
         magStack = held;
 
-        // Initial click release & grace period
+        // Grace period and mouse release tracking
         if (initialGraceTicks > 0) {
             initialGraceTicks--;
-        }
-        if (!mc.options.keyAttack.isDown() && !mc.options.keyUse.isDown()) {
-            keyReleased = true;
+            mouseReleased = false;
+        } else {
+            if (!mc.options.keyAttack.isDown() && !mc.options.keyUse.isDown()) {
+                mouseReleased = true;
+            }
         }
 
-        // Cancel on new click after initial click released, sprint or reload key
-        if (initialGraceTicks == 0 && keyReleased) {
-            if (mc.options.keyAttack.isDown() || mc.options.keyUse.isDown()) {
-                stopLoading(true);
-                return;
-            }
+        // Cancel on new click only after initial release
+        if (mouseReleased && (mc.options.keyAttack.isDown() || mc.options.keyUse.isDown())) {
+            stopLoading(true);
+            return;
         }
         if (KeyBinds.RELOAD.isDown() || player.isSprinting()) {
             stopLoading(true);
@@ -135,8 +135,8 @@ public class MagLoadingHandler {
 
         currentTick++;
 
-        // Insertion at tick 6 of 12
-        if (currentTick % CYCLE_TICKS == 6) {
+        // Insertion at tick 9 of 15 (~60% into cycle)
+        if (currentTick % CYCLE_TICKS == 9) {
             PacketDistributor.sendToServer(new MagLoadPacket(MagLoadPacket.ACTION_LOAD_ROUND, caliber));
 
             MagItem.setAmmoLeft(held, ammoLeft + 1);
