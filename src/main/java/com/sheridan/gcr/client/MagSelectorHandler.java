@@ -7,6 +7,7 @@ import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -204,11 +205,11 @@ public class MagSelectorHandler {
             int startX = screenWidth / 2 + 50;
             int startY = (screenHeight - totalH) / 2;
 
-            graphics.drawString(font, "МАГАЗИНЫ", startX + 2, startY - 12, 0xFFAAAAAA, false);
+            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.title"), startX + 2, startY - 12, 0xFFAAAAAA, false);
             graphics.fill(startX, startY, startX + cardWidth, startY + totalH, 0xD0181212);
             graphics.renderOutline(startX, startY, cardWidth, totalH, 0x88FF4444);
-            graphics.drawString(font, "НЕТ ПОДХОДЯЩИХ", startX + 10, startY + 8, 0xFFFF6666, false);
-            graphics.drawString(font, "МАГАЗИНОВ", startX + 10, startY + 20, 0xFFAAAAAA, false);
+            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.no_mags_line1"), startX + 10, startY + 8, 0xFFFF6666, false);
+            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.no_mags_line2"), startX + 10, startY + 20, 0xFFAAAAAA, false);
             return;
         }
 
@@ -224,7 +225,7 @@ public class MagSelectorHandler {
         int startX = screenWidth / 2 + 50;
         int startY = (screenHeight - listHeight) / 2;
 
-        graphics.drawString(font, "МАГАЗИНЫ", startX + 2, startY - 13, 0xFFAAAAAA, false);
+        graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.title"), startX + 2, startY - 13, 0xFFAAAAAA, false);
 
         if (startIdx > 0) {
             graphics.drawCenteredString(font, "▲", startX + cardWidth / 2, startY - 9, 0xFFFFFFFF);
@@ -283,6 +284,6 @@ public class MagSelectorHandler {
         }
 
         int hintY = startY + listHeight + (startIdx + visibleCount < total ? 10 : 4);
-        graphics.drawString(font, "Отпустите R для смены", startX + 2, hintY, 0x88AAAAAA, false);
+        graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.release_hint"), startX + 2, hintY, 0x88AAAAAA, false);
     }
 }

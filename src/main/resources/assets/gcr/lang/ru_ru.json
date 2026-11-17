@@ -189,5 +189,9 @@
   "gcr.overlay.mag_full": "Магазин полон!",
   "gcr.overlay.no_ammo_for_mag": "Нет подходящих патронов!",
   "gcr.overlay.loading_mag": "Зарядка магазина: %s / %s",
-  "tooltip.btn.slot_blocked_mag": "Магазин меняется только перезарядкой/разрядкой в бою!"
+  "tooltip.btn.slot_blocked_mag": "Магазин меняется только перезарядкой/разрядкой в бою!",
+  "gui.gcr.mag_selector.title": "МАГАЗИНЫ",
+  "gui.gcr.mag_selector.no_mags_line1": "НЕТ ПОДХОДЯЩИХ",
+  "gui.gcr.mag_selector.no_mags_line2": "МАГАЗИНОВ",
+  "gui.gcr.mag_selector.release_hint": "Отпустите R для смены"
 }
