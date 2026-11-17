@@ -133,8 +133,7 @@ public class ClientEvents {
     
     
     
-    private static final net.minecraft.resources.ResourceLocation RING_BG = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("gcr", "textures/gui/progress_ring_bg.png");
-
+    
     @SubscribeEvent
     public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
@@ -247,35 +246,46 @@ public class ClientEvents {
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 500.0f);
 
-        // 1. Draw crisp dark ring texture background (18x18 centered on slot)
-        graphics.blit(RING_BG, (int)(cx - 9), (int)(cy - 9), 0.0f, 0.0f, 18, 18, 18, 18);
+        org.joml.Matrix4f matrix = graphics.pose().last().pose();
+        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
 
-        // 2. Draw cyan progress arc filling clockwise from top
-        if (progress > 0.01f) {
-            org.joml.Matrix4f matrix = graphics.pose().last().pose();
-            com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
+        int segments = 48;
+        float innerR = 5.4f;
+        float outerR = 6.8f;
+        float z = 0.0f;
 
-            int segments = 36;
-            float innerR = 4.8f;
-            float outerR = 7.8f;
-            float z = 5.0f;
+        // 1. Subtle semi-transparent white circular track background
+        for (int i = 0; i < segments; i++) {
+            float a1 = (float) (i * 2.0 * Math.PI / segments);
+            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
+            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
+            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
 
-            int arcSegments = Math.max(1, (int) Math.ceil(segments * Math.min(1.0f, progress)));
+            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 45);
+            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 45);
+        }
+
+        // 2. Elegant semi-transparent white loading arc (fills clockwise from 12 o'clock)
+        if (progress > 0.005f) {
+            float clamped = Math.min(1.0f, Math.max(0.0f, progress));
+            int arcSegments = Math.max(1, (int) Math.ceil(segments * clamped));
             for (int i = 0; i < arcSegments; i++) {
                 float f1 = (float) i / segments;
                 float f2 = (float) (i + 1) / segments;
-                if (f1 > progress) break;
-                if (f2 > progress) f2 = progress;
+                if (f1 > clamped) break;
+                if (f2 > clamped) f2 = clamped;
 
                 float a1 = (float) (-Math.PI / 2.0 + f1 * 2.0 * Math.PI);
                 float a2 = (float) (-Math.PI / 2.0 + f2 * 2.0 * Math.PI);
                 float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
                 float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
 
-                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(30, 215, 255, 255);
-                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(30, 215, 255, 255);
-                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(30, 215, 255, 255);
-                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(30, 215, 255, 255);
+                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(255, 255, 255, 220);
+                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(255, 255, 255, 220);
             }
         }
 
