@@ -132,6 +132,9 @@ public class ClientEvents {
 
     
     
+    
+    private static final net.minecraft.resources.ResourceLocation RING_BG = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("gcr", "textures/gui/progress_ring_bg.png");
+
     @SubscribeEvent
     public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
@@ -210,12 +213,15 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onContainerScreenForeground(net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground event) {
+    public static void onScreenRenderPost(net.neoforged.neoforge.client.event.ScreenEvent.Render.Post event) {
         if (!MagLoadingHandler.isGuiLoading()) {
             return;
         }
 
-        net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen = event.getContainerScreen();
+        if (!(event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen)) {
+            return;
+        }
+
         int slotIndex = MagLoadingHandler.getLoadingSlotIndex();
         if (slotIndex < 0 || slotIndex >= screen.getMenu().slots.size()) {
             return;
@@ -226,37 +232,34 @@ public class ClientEvents {
             return;
         }
 
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float partialTick = event.getPartialTick();
         float progress = MagLoadingHandler.getProgress(partialTick);
         net.minecraft.client.gui.GuiGraphics graphics = event.getGuiGraphics();
 
-        renderCircularProgress(graphics, slot.x + 8.0f, slot.y + 8.0f, progress);
+        // Compute absolute screen position
+        int absSlotX = screen.getGuiLeft() + slot.x;
+        int absSlotY = screen.getGuiTop() + slot.y;
+
+        renderCircularProgress(graphics, absSlotX + 8.0f, absSlotY + 8.0f, progress);
     }
 
     private static void renderCircularProgress(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
-        org.joml.Matrix4f matrix = graphics.pose().last().pose();
-        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 500.0f);
 
-        int segments = 32;
-        float innerR = 4.0f;
-        float outerR = 7.5f;
-        float z = 400.0f;
+        // 1. Draw crisp dark ring texture background (18x18 centered on slot)
+        graphics.blit(RING_BG, (int)(cx - 9), (int)(cy - 9), 0.0f, 0.0f, 18, 18, 18, 18);
 
-        // 1. Dark semi-transparent background ring
-        for (int i = 0; i < segments; i++) {
-            float a1 = (float) (i * 2.0 * Math.PI / segments);
-            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
-            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
-            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
-
-            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(10, 10, 15, 200);
-            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(10, 10, 15, 200);
-            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(10, 10, 15, 200);
-            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(10, 10, 15, 200);
-        }
-
-        // 2. Active cyan-blue progress ring (from 12 o'clock clockwise)
+        // 2. Draw cyan progress arc filling clockwise from top
         if (progress > 0.01f) {
+            org.joml.Matrix4f matrix = graphics.pose().last().pose();
+            com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
+
+            int segments = 36;
+            float innerR = 4.8f;
+            float outerR = 7.8f;
+            float z = 5.0f;
+
             int arcSegments = Math.max(1, (int) Math.ceil(segments * Math.min(1.0f, progress)));
             for (int i = 0; i < arcSegments; i++) {
                 float f1 = (float) i / segments;
@@ -269,13 +272,14 @@ public class ClientEvents {
                 float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
                 float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
 
-                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(51, 204, 255, 255);
-                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(51, 204, 255, 255);
-                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(51, 204, 255, 255);
-                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(51, 204, 255, 255);
+                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(30, 215, 255, 255);
+                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(30, 215, 255, 255);
+                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(30, 215, 255, 255);
+                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(30, 215, 255, 255);
             }
         }
 
         graphics.flush();
+        graphics.pose().popPose();
     }
 }
