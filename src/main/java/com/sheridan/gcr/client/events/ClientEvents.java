@@ -130,6 +130,7 @@ public class ClientEvents {
     }
 
 
+    
     @SubscribeEvent
     public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
@@ -139,6 +140,13 @@ public class ClientEvents {
 
             net.minecraft.world.inventory.Slot slot = containerScreen.getSlotUnderMouse();
             if (slot == null || !slot.hasItem()) return;
+
+            // If clicking the slot currently loading: stop loading
+            if (MagLoadingHandler.isGuiLoading() && MagLoadingHandler.getLoadingSlotIndex() == slot.index) {
+                event.setCanceled(true);
+                MagLoadingHandler.stopLoading(true);
+                return;
+            }
 
             net.minecraft.world.item.ItemStack carried = containerScreen.getMenu().getCarried();
             net.minecraft.world.item.ItemStack slotItem = slot.getItem();
@@ -153,7 +161,19 @@ public class ClientEvents {
                     }
 
                     event.setCanceled(true);
-                    com.sheridan.gcr.client.MagClientBridge.handleMagLoadingClick(containerScreen, slot, false, magItem.getCaliber());
+
+                    // Clear carried ammo back to player inventory
+                    net.minecraft.world.item.ItemStack ammoToReturn = carried.copy();
+                    containerScreen.getMenu().setCarried(net.minecraft.world.item.ItemStack.EMPTY);
+                    if (!player.getInventory().add(ammoToReturn)) {
+                        player.drop(ammoToReturn, false);
+                    }
+
+                    // Start GUI loading without closing inventory
+                    MagLoadingHandler.startGuiLoading(slot.index, magItem.getCaliber(), slotItem);
+                    net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                            new com.sheridan.gcr.network.c2s.MagLoadPacket(com.sheridan.gcr.network.c2s.MagLoadPacket.ACTION_START_GUI, magItem.getCaliber(), slot.index, false)
+                    );
                 }
             } else if (carried.getItem() instanceof com.sheridan.gcr.items.MagItem magItem && slotItem.getItem() instanceof com.sheridan.gcr.items.AmmoItem ammoItem) {
                 if (magItem.acceptsAmmo(ammoItem)) {
@@ -165,10 +185,93 @@ public class ClientEvents {
                     }
 
                     event.setCanceled(true);
-                    com.sheridan.gcr.client.MagClientBridge.handleMagLoadingClick(containerScreen, slot, true, magItem.getCaliber());
+
+                    net.minecraft.world.item.ItemStack magStack = carried.copy();
+                    net.minecraft.world.item.ItemStack ammoInSlot = slotItem.copy();
+                    containerScreen.getMenu().setCarried(net.minecraft.world.item.ItemStack.EMPTY);
+                    slot.set(magStack);
+                    if (!player.getInventory().add(ammoInSlot)) {
+                        player.drop(ammoInSlot, false);
+                    }
+
+                    MagLoadingHandler.startGuiLoading(slot.index, magItem.getCaliber(), magStack);
+                    net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                            new com.sheridan.gcr.network.c2s.MagLoadPacket(com.sheridan.gcr.network.c2s.MagLoadPacket.ACTION_START_GUI, magItem.getCaliber(), slot.index, true)
+                    );
                 }
             }
         }
     }
 
+    @SubscribeEvent
+    public static void onScreenClosing(net.neoforged.neoforge.client.event.ScreenEvent.Closing event) {
+        if (MagLoadingHandler.isGuiLoading()) {
+            MagLoadingHandler.stopLoading(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onContainerScreenForeground(net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground event) {
+        if (!MagLoadingHandler.isGuiLoading()) {
+            return;
+        }
+
+        net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen = event.getContainerScreen();
+        int slotIndex = MagLoadingHandler.getLoadingSlotIndex();
+        if (slotIndex < 0 || slotIndex >= screen.getMenu().slots.size()) {
+            return;
+        }
+
+        net.minecraft.world.inventory.Slot slot = screen.getMenu().slots.get(slotIndex);
+        if (slot == null || !(slot.getItem().getItem() instanceof com.sheridan.gcr.items.MagItem)) {
+            return;
+        }
+
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float progress = MagLoadingHandler.getProgress(partialTick);
+        net.minecraft.client.gui.GuiGraphics graphics = event.getGuiGraphics();
+
+        renderCircularProgress(graphics, slot.x + 8.0f, slot.y + 8.0f, progress);
+    }
+
+    private static void renderCircularProgress(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
+        org.joml.Matrix4f matrix = graphics.pose().last().pose();
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
+        com.mojang.blaze3d.systems.RenderSystem.setShader(net.minecraft.client.renderer.GameRenderer::getPositionColorShader);
+
+        com.mojang.blaze3d.vertex.Tesselator tesselator = com.mojang.blaze3d.vertex.Tesselator.getInstance();
+        int segments = 40;
+        float innerR = 4.5f;
+        float outerR = 7.0f;
+
+        // 1. Dark semi-transparent background ring
+        com.mojang.blaze3d.vertex.BufferBuilder bg = tesselator.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP, com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR);
+        for (int i = 0; i <= segments; i++) {
+            float angle = (float) (i * 2.0 * Math.PI / segments);
+            float cos = (float) Math.cos(angle);
+            float sin = (float) Math.sin(angle);
+            bg.addVertex(matrix, cx + cos * innerR, cy + sin * innerR, 0).setColor(0.0f, 0.0f, 0.0f, 0.70f);
+            bg.addVertex(matrix, cx + cos * outerR, cy + sin * outerR, 0).setColor(0.0f, 0.0f, 0.0f, 0.70f);
+        }
+        com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(bg.buildOrThrow());
+
+        // 2. Active cyan/blue progress arc (filling clockwise from top)
+        if (progress > 0.005f) {
+            com.mojang.blaze3d.vertex.BufferBuilder fg = tesselator.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP, com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR);
+            int arcSteps = Math.max(1, (int) Math.ceil(segments * progress));
+            for (int i = 0; i <= arcSteps; i++) {
+                float f = (float) i / segments;
+                if (f > progress) f = progress;
+                float angle = (float) (-Math.PI / 2.0 + f * 2.0 * Math.PI);
+                float cos = (float) Math.cos(angle);
+                float sin = (float) Math.sin(angle);
+                fg.addVertex(matrix, cx + cos * innerR, cy + sin * innerR, 0).setColor(0.2f, 0.85f, 1.0f, 0.95f);
+                fg.addVertex(matrix, cx + cos * outerR, cy + sin * outerR, 0).setColor(0.2f, 0.85f, 1.0f, 0.95f);
+            }
+            com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(fg.buildOrThrow());
+        }
+
+        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
+    }
 }

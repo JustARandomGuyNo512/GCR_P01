@@ -1,7 +1,6 @@
 package com.sheridan.gcr.network.c2s;
 
 import com.sheridan.gcr.GCR;
-import com.sheridan.gcr.client.MagClientBridge;
 import com.sheridan.gcr.client.MagLoadingHandler;
 import com.sheridan.gcr.items.AmmoItem;
 import com.sheridan.gcr.items.MagItem;
@@ -11,8 +10,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +29,8 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
     public static final int ACTION_LOAD_ROUND = 1;
     public static final int ACTION_STOP = 2;
     public static final int ACTION_START_FROM_SLOT = 3;
+    public static final int ACTION_START_GUI = 4;
+    public static final int ACTION_LOAD_ROUND_GUI = 5;
 
     public int action;
     public String caliber;
@@ -67,9 +66,7 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
     @Override
     public void onClient(MagLoadPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (packet.action == ACTION_START) {
-                MagClientBridge.startLoadingFromInventory(packet.caliber);
-            } else if (packet.action == ACTION_STOP) {
+            if (packet.action == ACTION_STOP) {
                 MagLoadingHandler.stopLoading(false);
             }
         });
@@ -80,49 +77,32 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
 
-            if (packet.action == ACTION_START_FROM_SLOT) {
+            if (packet.action == ACTION_START_GUI) {
                 ItemStack carried = player.containerMenu.getCarried();
-                player.containerMenu.setCarried(ItemStack.EMPTY);
                 if (!carried.isEmpty()) {
+                    player.containerMenu.setCarried(ItemStack.EMPTY);
                     if (!player.getInventory().add(carried)) {
                         player.drop(carried, false);
                     }
+                    player.containerMenu.broadcastChanges();
                 }
-
-                int selectedHotbar = player.getInventory().selected;
-                ItemStack oldHeld = player.getInventory().getItem(selectedHotbar);
-
-                if (packet.isCarriedMag) {
-                    if (carried.getItem() instanceof MagItem) {
-                        if (!oldHeld.isEmpty()) {
-                            if (!player.getInventory().add(oldHeld)) {
-                                player.drop(oldHeld, false);
-                            }
-                        }
-                        player.getInventory().setItem(selectedHotbar, carried);
-                    }
-                } else if (packet.slotIndex >= 0 && packet.slotIndex < player.containerMenu.slots.size()) {
-                    Slot slot = player.containerMenu.slots.get(packet.slotIndex);
-                    if (slot != null && slot.getItem().getItem() instanceof MagItem) {
-                        ItemStack magStack = slot.getItem().copy();
-                        slot.set(oldHeld);
-                        player.getInventory().setItem(selectedHotbar, magStack);
-                    }
-                }
-
-                player.closeContainer();
-                player.inventoryMenu.broadcastChanges();
                 return;
             }
 
-            ItemStack held = player.getMainHandItem();
-            if (!(held.getItem() instanceof MagItem magItem)) {
-                PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
-                return;
-            }
+            if (packet.action == ACTION_LOAD_ROUND_GUI) {
+                if (packet.slotIndex < 0 || packet.slotIndex >= player.containerMenu.slots.size()) {
+                    PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
+                    return;
+                }
 
-            if (packet.action == ACTION_LOAD_ROUND) {
-                int ammoLeft = MagItem.getAmmoLeft(held);
+                Slot slot = player.containerMenu.slots.get(packet.slotIndex);
+                if (slot == null || !(slot.getItem().getItem() instanceof MagItem magItem)) {
+                    PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
+                    return;
+                }
+
+                ItemStack magStack = slot.getItem();
+                int ammoLeft = MagItem.getAmmoLeft(magStack);
                 int maxCap = magItem.getModule().getMaxCapacity();
                 if (ammoLeft >= maxCap) {
                     PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
@@ -135,24 +115,21 @@ public class MagLoadPacket implements CustomPacketPayload, IPacket<MagLoadPacket
                     ItemStack s = inv.items.get(i);
                     if (s.getItem() instanceof AmmoItem ai && magItem.acceptsAmmo(ai)) {
                         s.shrink(1);
-                        MagItem.setAmmoLeft(held, ammoLeft + 1);
+                        MagItem.setAmmoLeft(magStack, ammoLeft + 1);
                         found = true;
                         break;
                     }
                 }
 
                 if (found) {
-                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 0.7f, 1.35f);
-                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.1f);
-
-                    if (MagItem.getAmmoLeft(held) >= maxCap) {
+                    player.containerMenu.broadcastChanges();
+                    if (MagItem.getAmmoLeft(magStack) >= maxCap) {
                         PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
                     }
                 } else {
                     PacketDistributor.sendToPlayer(player, new MagLoadPacket(ACTION_STOP, ""));
                 }
+                return;
             }
         });
     }

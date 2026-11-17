@@ -1,16 +1,15 @@
 package com.sheridan.gcr.client;
 
-import com.sheridan.gcr.client.KeyBinds;
 import com.sheridan.gcr.items.AmmoItem;
 import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.network.c2s.MagLoadPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -18,60 +17,52 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 @OnlyIn(Dist.CLIENT)
 public class MagLoadingHandler {
-    private static boolean loading = false;
+    private static boolean guiLoading = false;
+    private static int loadingSlotIndex = -1;
     private static int currentTick = 0;
-    private static boolean mouseReleased = false;
-    private static int initialGraceTicks = 0;
-    public static final int CYCLE_TICKS = 15; // 0.75s per round
-    private static ItemStack magStack = ItemStack.EMPTY;
-    private static ItemStack ammoStack = ItemStack.EMPTY;
+    public static final int CYCLE_TICKS = 12; // 0.6s per round
     private static String caliber = "";
 
+    public static boolean isGuiLoading() {
+        return guiLoading;
+    }
+
     public static boolean isLoading() {
-        return loading;
+        return guiLoading;
     }
 
-    public static int getCurrentTick() {
-        return currentTick;
+    public static int getLoadingSlotIndex() {
+        return loadingSlotIndex;
     }
 
-    public static ItemStack getMagStack() {
-        return magStack;
+    public static float getProgress(float partialTicks) {
+        if (!guiLoading) return 0.0f;
+        return ((currentTick % CYCLE_TICKS) + partialTicks) / (float) CYCLE_TICKS;
     }
 
-    public static ItemStack getAmmoStack() {
-        return ammoStack;
-    }
-
-    public static void startLoading(ItemStack mag, String cal) {
+    public static void startGuiLoading(int slotIndex, String cal, ItemStack mag) {
         if (mag == null || mag.isEmpty() || !(mag.getItem() instanceof MagItem magItem)) {
             return;
         }
-        loading = true;
+        guiLoading = true;
+        loadingSlotIndex = slotIndex;
         currentTick = 0;
-        mouseReleased = false;
-        initialGraceTicks = 10; // Ignore mouse clicks for first 10 ticks (~500ms)
-        magStack = mag;
         caliber = (cal != null && !cal.isEmpty()) ? cal : magItem.getCaliber();
-        AmmoItem ai = AmmoItem.getByCaliber(caliber);
-        ammoStack = ai != null ? new ItemStack(ai) : ItemStack.EMPTY;
     }
 
     public static void stopLoading(boolean notifyServer) {
-        if (!loading) return;
-        loading = false;
+        if (!guiLoading) return;
+        guiLoading = false;
+        loadingSlotIndex = -1;
         currentTick = 0;
-        mouseReleased = false;
-        initialGraceTicks = 0;
-        magStack = ItemStack.EMPTY;
-        ammoStack = ItemStack.EMPTY;
+        caliber = "";
         if (notifyServer) {
             PacketDistributor.sendToServer(new MagLoadPacket(MagLoadPacket.ACTION_STOP, ""));
         }
     }
 
     public static void tickClient(LocalPlayer player) {
-        if (!loading) return;
+        if (!guiLoading) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (player == null || !player.isAlive()) {
@@ -79,34 +70,24 @@ public class MagLoadingHandler {
             return;
         }
 
-        ItemStack held = player.getMainHandItem();
-        if (!(held.getItem() instanceof MagItem magItem)) {
-            stopLoading(true);
-            return;
-        }
-        magStack = held;
-
-        // Grace period and mouse release tracking
-        if (initialGraceTicks > 0) {
-            initialGraceTicks--;
-            mouseReleased = false;
-        } else {
-            if (!mc.options.keyAttack.isDown() && !mc.options.keyUse.isDown()) {
-                mouseReleased = true;
-            }
-        }
-
-        // Cancel on new click only after initial release
-        if (mouseReleased && (mc.options.keyAttack.isDown() || mc.options.keyUse.isDown())) {
-            stopLoading(true);
-            return;
-        }
-        if (KeyBinds.RELOAD.isDown() || player.isSprinting()) {
+        if (!(mc.screen instanceof AbstractContainerScreen<?> containerScreen)) {
             stopLoading(true);
             return;
         }
 
-        int ammoLeft = MagItem.getAmmoLeft(held);
+        if (loadingSlotIndex < 0 || loadingSlotIndex >= containerScreen.getMenu().slots.size()) {
+            stopLoading(true);
+            return;
+        }
+
+        Slot slot = containerScreen.getMenu().slots.get(loadingSlotIndex);
+        if (slot == null || !(slot.getItem().getItem() instanceof MagItem magItem)) {
+            stopLoading(true);
+            return;
+        }
+
+        ItemStack heldMag = slot.getItem();
+        int ammoLeft = MagItem.getAmmoLeft(heldMag);
         int maxCap = magItem.getModule().getMaxCapacity();
 
         if (ammoLeft >= maxCap) {
@@ -122,7 +103,6 @@ public class MagLoadingHandler {
             ItemStack s = inv.items.get(i);
             if (s.getItem() instanceof AmmoItem ai && magItem.acceptsAmmo(ai)) {
                 ammoSlot = i;
-                ammoStack = s.copy();
                 break;
             }
         }
@@ -135,17 +115,11 @@ public class MagLoadingHandler {
 
         currentTick++;
 
-        // Insertion at tick 9 of 15 (~60% into cycle)
-        if (currentTick % CYCLE_TICKS == 9) {
-            PacketDistributor.sendToServer(new MagLoadPacket(MagLoadPacket.ACTION_LOAD_ROUND, caliber));
+        // Insertion when tick % CYCLE_TICKS == 0
+        if (currentTick % CYCLE_TICKS == 0) {
+            PacketDistributor.sendToServer(new MagLoadPacket(MagLoadPacket.ACTION_LOAD_ROUND_GUI, caliber, loadingSlotIndex, false));
 
-            MagItem.setAmmoLeft(held, ammoLeft + 1);
-
-            player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ARMOR_EQUIP_IRON.value(), SoundSource.PLAYERS, 0.7f, 1.35f);
-            player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.1f);
-
+            MagItem.setAmmoLeft(heldMag, ammoLeft + 1);
             player.displayClientMessage(Component.translatable("gcr.overlay.loading_mag", (ammoLeft + 1), maxCap).withStyle(ChatFormatting.GOLD), true);
         }
     }
