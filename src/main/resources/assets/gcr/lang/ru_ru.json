@@ -185,5 +185,8 @@
   "tooltip.gcr.ammo.caliber": "Калибр: %s",
   "tooltip.gcr.mag.caliber": "Калибр: %s",
   "tooltip.gcr.mag.ammo": "Патроны: %s / %s",
-  "gcr.overlay.no_mag": "Нет подходящего магазина!"
+  "gcr.overlay.no_mag": "Нет подходящего магазина!",
+  "gcr.overlay.mag_full": "Магазин полон!",
+  "gcr.overlay.no_ammo_for_mag": "Нет подходящих патронов!",
+  "gcr.overlay.loading_mag": "Зарядка магазина: %s / %s"
 }

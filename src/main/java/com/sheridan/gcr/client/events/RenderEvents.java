@@ -3,6 +3,10 @@ package com.sheridan.gcr.client.events;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.MagLoadingHandler;
+import com.sheridan.gcr.client.render.MagLoadingRenderer;
+import net.minecraft.client.player.LocalPlayer;
+
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.Utils;
 import com.sheridan.gcr.client.DrawHolsterHandler;
@@ -84,6 +88,27 @@ public class RenderEvents {
 
     @SubscribeEvent
     public static void onRenderHand(RenderHandEvent event) {
+        if (MagLoadingHandler.isLoading()) {
+            if (event.getHand() == InteractionHand.OFF_HAND) {
+                event.setCanceled(true);
+                return;
+            }
+            if (event.getHand() == InteractionHand.MAIN_HAND) {
+                event.setCanceled(true);
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    MagLoadingRenderer.render(
+                            event.getPoseStack(),
+                            event.getMultiBufferSource(),
+                            event.getPackedLight(),
+                            event.getPartialTick(),
+                            player
+                    );
+                }
+                return;
+            }
+        }
+
         Client.FIRST_PERSON_PROJECTION_MAT.set(new Matrix4f(RenderSystem.getProjectionMatrix()));
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             if (Client.WEAPON_STATUS.isHoldingGun()) {

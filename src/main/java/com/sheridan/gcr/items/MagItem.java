@@ -2,6 +2,10 @@ package com.sheridan.gcr.items;
 
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.Mag;
+import com.sheridan.gcr.network.c2s.MagLoadPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -92,22 +96,22 @@ public class MagItem extends ModuleItem<Mag> {
             if (currentAmmo >= maxCap) {
                 return false;
             }
-            if (action == ClickAction.SECONDARY) {
-                setAmmoLeft(stack, currentAmmo + 1);
-                other.shrink(1);
-                player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.2f);
-                return true;
-            } else if (action == ClickAction.PRIMARY) {
-                int toAdd = Math.min(other.getCount(), maxCap - currentAmmo);
-                if (toAdd > 0) {
-                    setAmmoLeft(stack, currentAmmo + toAdd);
-                    other.shrink(toAdd);
-                    player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.0f);
-                    return true;
-                }
+
+            player.closeContainer();
+
+            int selectedHotbar = player.getInventory().selected;
+            int containerSlot = slot.getContainerSlot();
+            if (containerSlot != selectedHotbar) {
+                ItemStack currentlyHeld = player.getInventory().getItem(selectedHotbar);
+                player.getInventory().setItem(selectedHotbar, stack.copy());
+                slot.set(currentlyHeld);
             }
+
+            if (player instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
+            }
+
+            return true;
         }
 
         if (other.isEmpty() && action == ClickAction.SECONDARY && currentAmmo > 0) {
@@ -135,22 +139,17 @@ public class MagItem extends ModuleItem<Mag> {
             if (currentAmmo >= maxCap) {
                 return false;
             }
-            if (action == ClickAction.SECONDARY) {
-                setAmmoLeft(stack, currentAmmo + 1);
-                slotItem.shrink(1);
-                player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.2f);
-                return true;
-            } else if (action == ClickAction.PRIMARY) {
-                int toAdd = Math.min(slotItem.getCount(), maxCap - currentAmmo);
-                if (toAdd > 0) {
-                    setAmmoLeft(stack, currentAmmo + toAdd);
-                    slotItem.shrink(toAdd);
-                    player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1.0f);
-                    return true;
-                }
+
+            player.closeContainer();
+
+            int selectedHotbar = player.getInventory().selected;
+            player.getInventory().setItem(selectedHotbar, stack.copy());
+
+            if (player instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
             }
+
+            return true;
         }
 
         if (action == ClickAction.SECONDARY && currentAmmo > 0) {

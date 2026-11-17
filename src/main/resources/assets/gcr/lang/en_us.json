@@ -184,5 +184,8 @@
   "item.gcr.ammo_68x51": "6.8x51mm Fury Round",
   "tooltip.gcr.ammo.caliber": "Caliber: %s",
   "tooltip.gcr.mag.caliber": "Caliber: %s",
-  "tooltip.gcr.mag.ammo": "Ammo: %s / %s"
+  "tooltip.gcr.mag.ammo": "Ammo: %s / %s",
+  "gcr.overlay.mag_full": "Magazine full!",
+  "gcr.overlay.no_ammo_for_mag": "No ammo for this magazine!",
+  "gcr.overlay.loading_mag": "Loading magazine: %s / %s"
 }

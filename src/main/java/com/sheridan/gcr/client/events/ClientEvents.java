@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.events;
 
 
 import com.sheridan.gcr.Client;
+import com.sheridan.gcr.client.MagLoadingHandler;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
@@ -62,6 +63,7 @@ public class ClientEvents {
         try {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null) {
+                MagLoadingHandler.tickClient(player);
                 Client.WEAPON_STATUS.onTickEnd(player);
                 GunPoseHandler.INSTANCE.tick(player);
                 Client.getGunRenderer().tick(player);

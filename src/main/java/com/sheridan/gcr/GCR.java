@@ -596,6 +596,14 @@ public class GCR {
                             (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
                     )
             );
+                        registrar.playBidirectional(
+                    MagLoadPacket.TYPE,
+                    MagLoadPacket.STREAM_CODEC,
+                    new DirectionalPayloadHandler<>(
+                            (packet, iPayloadContext) -> packet.onClient(packet, iPayloadContext),
+                            (packet, iPayloadContext) -> packet.onServer(packet, iPayloadContext)
+                    )
+            );
             registrar.playBidirectional(
                     GunReloadPacket.TYPE,
                     GunReloadPacket.STREAM_CODEC,
