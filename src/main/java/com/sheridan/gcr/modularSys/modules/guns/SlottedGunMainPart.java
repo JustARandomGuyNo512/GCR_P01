@@ -438,7 +438,7 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             }
         }
 
-        if (newMagItem == null && !hasExistingMag) {
+        if (newMagItem == null) {
             return false;
         }
 
@@ -448,19 +448,28 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             WorkSpace workspace = (WorkSpace) builder.getWorkspace();
             Unit rootUnit = workspace.getRootUnit();
 
-            // 1. Remove old magazine if present
-            for (Unit unit : new ArrayList<>(workspace.getSequencedUnits())) {
+            Unit oldMagUnit = null;
+            for (Unit unit : workspace.getSequencedUnits()) {
                 Node node = workspace.getNode(unit);
                 if (node != null && "MAG".equalsIgnoreCase(node.getBelongsToSlotName())) {
-                    workspace.removeChild(unit);
+                    oldMagUnit = unit;
+                    break;
                 }
             }
 
-            // 2. Add new magazine if present
-            if (newMagItem != null) {
-                workspace.addChild(rootUnit, "MAG", newMagItem.getModule().getID());
-                newMagStack.shrink(1);
+            if (oldMagUnit != null) {
+                var replaceRes = workspace.replaceChild(oldMagUnit, newMagItem.getModule());
+                if (replaceRes.isEmpty()) {
+                    return false;
+                }
+            } else {
+                var addRes = workspace.addChild(rootUnit, "MAG", newMagItem.getModule().getID());
+                if (addRes.isEmpty()) {
+                    return false;
+                }
             }
+
+            newMagStack.shrink(1);
 
             builder.commit();
             IReadOnlyTree warehouse = builder.getWarehouse();
@@ -472,30 +481,28 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             ShadowNode shadowTree = warehouse.getShadowTree();
             StatesUpdateContext statesUpdateContext = new StatesUpdateContext(this, shadowTree, states);
             statesUpdateContext.autoExec();
-            setStatesTag(itemStack, states);
 
             // 4. Update ammo in chamber and magazine
-            if (newMagItem != null) {
-                String newMagNodeId = USING_AMMO_SOURCE.get(rootNodeTag(itemStack));
-                CompoundTag newMagStates = getNodeStatesTag(itemStack, newMagNodeId);
-                if (newMagStates != null) {
-                    if (getGunAmmoLeft(itemStack) <= 0 && newAmmo > 0) {
-                        setGunAmmoLeft(itemStack, 1);
-                        newAmmo -= 1;
-                    }
-                    IAmmoSource.AMMO_LEFT.set(newAmmo, newMagStates);
+            String newMagNodeId = USING_AMMO_SOURCE.get(states.getCompound(rootNodeId(itemStack)));
+            CompoundTag newMagStates = states.getCompound(newMagNodeId);
+            if (newMagStates != null) {
+                if (getGunAmmoLeft(itemStack) <= 0 && newAmmo > 0) {
+                    setGunAmmoLeft(itemStack, 1);
+                    newAmmo -= 1;
                 }
-                if (this instanceof AR ar) {
-                    ar.setBoltLocked(false, rootNodeTag(itemStack));
-                }
+                IAmmoSource.AMMO_LEFT.set(newAmmo, newMagStates);
             }
+            if (this instanceof AR ar) {
+                ar.setBoltLocked(false, states.getCompound(rootNodeId(itemStack)));
+            }
+            setStatesTag(itemStack, states);
 
             // 5. Recalculate properties
             CompoundTag properties = reCalculateProperties(warehouse);
             setPropertiesTag(itemStack, properties);
 
             // 6. Give old magazine back to player with remaining ammo
-            if (oldMagModuleId != null) {
+            if (oldMagUnit != null && oldMagModuleId != null) {
                 IModular oldModular = ModuleRegister.get(oldMagModuleId);
                 if (oldModular != null && oldModular.getBindItem() != null) {
                     ItemStack oldMagItem = new ItemStack(oldModular.getBindItem());
