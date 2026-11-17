@@ -1,5 +1,9 @@
 package com.sheridan.gcr.client.events;
 
+
+import com.sheridan.gcr.network.c2s.GunReloadPacket;
+import net.neoforged.neoforge.network.PacketDistributor;
+
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.client.ClassHotReloader;
@@ -84,6 +88,13 @@ public class ControllerEvents {
                     IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                     if (task != null) {
                         GunTaskHandler.INSTANCE.setTask(task);
+                    }
+                    return;
+                }
+                LocalPlayer localPlayer = Minecraft.getInstance().player;
+                if (localPlayer != null && localPlayer.isShiftKeyDown()) {
+                    if (gunModule.hasMagAttachment(gunModule.rootNodeTag(itemStack))) {
+                        PacketDistributor.sendToServer(new GunReloadPacket(-2));
                     }
                     return;
                 }

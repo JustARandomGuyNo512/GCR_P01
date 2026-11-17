@@ -532,7 +532,6 @@ public final class GCRModuleRegistry {
                 workspace.addChild(root, "HANDGUARD", CAR_15_HANDGUARD.getID());
                 workspace.addChild(root, "REAR_GRIP", A2_PISTOL_GRIP.getID());
                 workspace.addChild(root, "STOCK", M4_CARBINE_STOCK.getID());
-                workspace.addChild(root, "MAG", STANAG_MAG_30R.getID());
                 workspace.addChild(root, "SCOPE", A2_CARRY_HANDLE.getID());
             });
 
@@ -610,7 +609,6 @@ public final class GCRModuleRegistry {
                 });
                 workspace.addChild(root, "REAR_GRIP", SAKO_ARG_GRIP.getID());
                 workspace.addChild(root, "STOCK", CTR_STOCK.getID());
-                workspace.addChild(root, "MAG", PMAG_30R.getID());
                 workspace.addChild(root, "SCOPE", MAGPUL_MBUS_PRO_SIGHT_REAR.getID()).ifPresent(rearSight -> accessor.getBelongsTo(rearSight).ifPresent(slotInstance -> {
                     if (slotInstance.getSlot() instanceof Rail rail) {
                         rail.setChildPosition(rearSight, accessor, 0.075f);
@@ -693,7 +691,6 @@ public final class GCRModuleRegistry {
                 workspace.addChild(root, "STOCK", MCX_STOCK_TUBE.getID()).ifPresent(stockTube -> {
                     workspace.addChild(stockTube, "STOCK", MAGPUL_SL_M_STOCK.getID());
                 });
-                workspace.addChild(root, "MAG", SPEAR_MAG_20R.getID());
                 workspace.addChild(root, "SCOPE", KAC_FOLDING_SIGHT_REAR.getID()).ifPresent(rearSight -> accessor.getBelongsTo(rearSight).ifPresent(slotInstance -> {
                     if (slotInstance.getSlot() instanceof Rail rail) {
                         rail.setChildPosition(rearSight, accessor, 0.01f);
@@ -793,7 +790,6 @@ public final class GCRModuleRegistry {
                 workspace.addChild(root, "HANDGUARD_UPPER", AK_POLYMER_HANDGUARD_UPPER.getID());
                 workspace.addChild(root, "REAR_GRIP", AK_POLYMER_GRIP.getID());
                 workspace.addChild(root, "STOCK", STOCK_6P34.getID());
-                workspace.addChild(root, "MAG", MAG_6L23.getID());
                 workspace.addChild(root, "DUSTCOVER", DUSTCOVER_6P34.getID());
             });
 
@@ -862,7 +858,6 @@ public final class GCRModuleRegistry {
                 workspace.addChild(root, "HANDGUARD_UPPER", AK_WOODEN_HANDGUARD_UPPER.getID());
                 workspace.addChild(root, "REAR_GRIP", AK_BAKELITE_GRIP.getID());
                 workspace.addChild(root, "STOCK", AKM_STOCK.getID());
-                workspace.addChild(root, "MAG", AKM_STEEL_MAG.getID());
                 workspace.addChild(root, "DUSTCOVER", AK_RIBBED_DUSTCOVER.getID());
             });
 

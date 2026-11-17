@@ -392,15 +392,15 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
         reload(itemStack, player, -1);
     }
 
-    public boolean swapMagazine(ItemStack itemStack, Player player, int targetSlot) {
+        public boolean swapMagazine(ItemStack itemStack, Player player, int targetSlot) {
         String usingAmmoSourceId = USING_AMMO_SOURCE.get(rootNodeTag(itemStack));
         String thisId = rootNodeId(itemStack);
         boolean hasExistingMag = !Objects.equals(usingAmmoSourceId, thisId);
 
+        ListTag originalModules = getModulesTag(itemStack);
         String oldMagModuleId = null;
         int oldMagAmmoLeft = 0;
 
-        ListTag originalModules = getModulesTag(itemStack);
         for (int i = 0; i < originalModules.size(); i++) {
             CompoundTag nodeTag = originalModules.getCompound(i);
             if ("MAG".equalsIgnoreCase(nodeTag.getString(Unit.SLOT_NAME))) {
@@ -416,6 +416,64 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             }
         }
 
+        // 1. UNLOAD ONLY (Shift + R)
+        if (targetSlot == -2) {
+            if (!hasExistingMag || oldMagModuleId == null) {
+                return false;
+            }
+            try {
+                IBuilder builder = new Builder();
+                builder.initAndClear(originalModules);
+                WorkSpace workspace = (WorkSpace) builder.getWorkspace();
+
+                Unit oldUnit = null;
+                for (Unit unit : workspace.getSequencedUnits()) {
+                    Node node = workspace.getNode(unit);
+                    if (node != null && "MAG".equalsIgnoreCase(node.getBelongsToSlotName())) {
+                        oldUnit = unit;
+                        break;
+                    }
+                }
+                if (oldUnit != null) {
+                    workspace.removeChild(oldUnit);
+                }
+                builder.commit();
+                IReadOnlyTree warehouse = builder.getWarehouse();
+                ListTag finalModules = warehouse.write();
+                setModulesTag(itemStack, finalModules);
+
+                CompoundTag states = getStatesTag(itemStack);
+                ShadowNode shadowTree = warehouse.getShadowTree();
+                StatesUpdateContext statesUpdateContext = new StatesUpdateContext(this, shadowTree, states);
+                statesUpdateContext.autoExec();
+                setStatesTag(itemStack, states);
+
+                CompoundTag properties = reCalculateProperties(warehouse);
+                setPropertiesTag(itemStack, properties);
+
+                // Return old magazine to player
+                IModular oldModular = ModuleRegister.get(oldMagModuleId);
+                if (oldModular != null && oldModular.getBindItem() != null) {
+                    ItemStack oldMagItem = new ItemStack(oldModular.getBindItem());
+                    MagItem.setAmmoLeft(oldMagItem, oldMagAmmoLeft);
+                    if (!player.getInventory().add(oldMagItem)) {
+                        player.drop(oldMagItem, false);
+                    }
+                }
+
+                notifyDataChanged(itemStack);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new CommitModuleTreeResponsePacket(
+                            checkAndGetRaw(itemStack), "", true));
+                }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        // 2. NORMAL RELOAD / SWAP
         ItemStack newMagStack = ItemStack.EMPTY;
         MagItem newMagItem = null;
         int newAmmo = 0;
@@ -448,25 +506,24 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             WorkSpace workspace = (WorkSpace) builder.getWorkspace();
             Unit rootUnit = workspace.getRootUnit();
 
-            Unit oldMagUnit = null;
+            Unit oldUnit = null;
             for (Unit unit : workspace.getSequencedUnits()) {
                 Node node = workspace.getNode(unit);
                 if (node != null && "MAG".equalsIgnoreCase(node.getBelongsToSlotName())) {
-                    oldMagUnit = unit;
+                    oldUnit = unit;
                     break;
                 }
             }
 
-            if (oldMagUnit != null) {
-                var replaceRes = workspace.replaceChild(oldMagUnit, newMagItem.getModule());
-                if (replaceRes.isEmpty()) {
-                    return false;
-                }
-            } else {
-                var addRes = workspace.addChild(rootUnit, "MAG", newMagItem.getModule().getID());
-                if (addRes.isEmpty()) {
-                    return false;
-                }
+            // Remove old mag if present
+            if (oldUnit != null) {
+                workspace.removeChild(oldUnit);
+            }
+
+            // Add new magazine
+            var addRes = workspace.addChild(rootUnit, "MAG", newMagItem.getModule().getID());
+            if (addRes.isEmpty()) {
+                return false;
             }
 
             newMagStack.shrink(1);
@@ -476,13 +533,13 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             ListTag finalModules = warehouse.write();
             setModulesTag(itemStack, finalModules);
 
-            // 3. Update states
+            // Update states
             CompoundTag states = getStatesTag(itemStack);
             ShadowNode shadowTree = warehouse.getShadowTree();
             StatesUpdateContext statesUpdateContext = new StatesUpdateContext(this, shadowTree, states);
             statesUpdateContext.autoExec();
 
-            // 4. Update ammo in chamber and magazine
+            // Update ammo in chamber and magazine
             String newMagNodeId = USING_AMMO_SOURCE.get(states.getCompound(rootNodeId(itemStack)));
             CompoundTag newMagStates = states.getCompound(newMagNodeId);
             if (newMagStates != null) {
@@ -497,12 +554,12 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             }
             setStatesTag(itemStack, states);
 
-            // 5. Recalculate properties
+            // Recalculate properties
             CompoundTag properties = reCalculateProperties(warehouse);
             setPropertiesTag(itemStack, properties);
 
-            // 6. Give old magazine back to player with remaining ammo
-            if (oldMagUnit != null && oldMagModuleId != null) {
+            // Give old magazine back ONLY if there was an old magazine
+            if (oldUnit != null && oldMagModuleId != null) {
                 IModular oldModular = ModuleRegister.get(oldMagModuleId);
                 if (oldModular != null && oldModular.getBindItem() != null) {
                     ItemStack oldMagItem = new ItemStack(oldModular.getBindItem());
@@ -524,5 +581,4 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             return false;
         }
     }
-
 }

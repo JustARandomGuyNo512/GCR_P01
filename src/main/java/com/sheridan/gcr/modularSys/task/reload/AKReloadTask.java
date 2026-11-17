@@ -43,9 +43,6 @@ public class AKReloadTask extends GunTask<AK> {
         targetSlot = player != null ? SlottedGunMainPart.findBestCompatibleMagazineSlot(player, gun) : -1;
 
         if (targetSlot < 0) {
-            if (player != null) {
-                player.sendSystemMessage(Component.translatable(hasMagAttachment ? "gcr.overlay.no_mag" : "gcr.overlay.require_mag").withColor(Color.RED.getRGB()));
-            }
             length = 0;
             return;
         }
