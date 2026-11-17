@@ -3,11 +3,9 @@ package com.sheridan.gcr.client;
 import com.sheridan.gcr.items.AmmoItem;
 import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.network.c2s.MagLoadPacket;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +89,6 @@ public class MagLoadingHandler {
         int maxCap = magItem.getModule().getMaxCapacity();
 
         if (ammoLeft >= maxCap) {
-            player.displayClientMessage(Component.translatable("gcr.overlay.mag_full").withStyle(ChatFormatting.GREEN), true);
             stopLoading(true);
             return;
         }
@@ -108,7 +105,6 @@ public class MagLoadingHandler {
         }
 
         if (ammoSlot < 0) {
-            player.displayClientMessage(Component.translatable("gcr.overlay.no_ammo_for_mag").withStyle(ChatFormatting.RED), true);
             stopLoading(true);
             return;
         }
@@ -118,9 +114,7 @@ public class MagLoadingHandler {
         // Insertion when tick % CYCLE_TICKS == 0
         if (currentTick % CYCLE_TICKS == 0) {
             PacketDistributor.sendToServer(new MagLoadPacket(MagLoadPacket.ACTION_LOAD_ROUND_GUI, caliber, loadingSlotIndex, false));
-
             MagItem.setAmmoLeft(heldMag, ammoLeft + 1);
-            player.displayClientMessage(Component.translatable("gcr.overlay.loading_mag", (ammoLeft + 1), maxCap).withStyle(ChatFormatting.GOLD), true);
         }
     }
 }

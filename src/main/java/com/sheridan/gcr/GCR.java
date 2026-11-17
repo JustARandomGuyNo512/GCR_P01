@@ -151,13 +151,13 @@ public class GCR {
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
             ITEMS.register(GCRModuleRegistry.M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.M4_PROFILE_FSB_BARREL));
     public static final DeferredItem<Item> AMMO_556x45_ITEM =
-            ITEMS.register("ammo_556x45", () -> new AmmoItem("5.56x45", 60));
+            ITEMS.register("ammo_556x45", () -> new AmmoItem("5.56x45", 90));
     public static final DeferredItem<Item> AMMO_545x39_ITEM =
-            ITEMS.register("ammo_545x39", () -> new AmmoItem("5.45x39", 60));
+            ITEMS.register("ammo_545x39", () -> new AmmoItem("5.45x39", 90));
     public static final DeferredItem<Item> AMMO_762x39_ITEM =
-            ITEMS.register("ammo_762x39", () -> new AmmoItem("7.62x39", 60));
+            ITEMS.register("ammo_762x39", () -> new AmmoItem("7.62x39", 90));
     public static final DeferredItem<Item> AMMO_68x51_ITEM =
-            ITEMS.register("ammo_68x51", () -> new AmmoItem("6.8x51", 60));
+            ITEMS.register("ammo_68x51", () -> new AmmoItem("6.8x51", 90));
 
     public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
             ITEMS.register(GCRModuleRegistry.STANAG_MAG_30R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.STANAG_MAG_30R));

@@ -131,6 +131,7 @@ public class ClientEvents {
 
 
     
+    
     @SubscribeEvent
     public static void onScreenMouseClicked(net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed.Pre event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
@@ -156,7 +157,6 @@ public class ClientEvents {
                     int currentAmmo = com.sheridan.gcr.items.MagItem.getAmmoLeft(slotItem);
                     int maxCap = magItem.getModule().getMaxCapacity();
                     if (currentAmmo >= maxCap) {
-                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gcr.overlay.mag_full").withStyle(net.minecraft.ChatFormatting.GREEN), true);
                         return;
                     }
 
@@ -180,7 +180,6 @@ public class ClientEvents {
                     int currentAmmo = com.sheridan.gcr.items.MagItem.getAmmoLeft(carried);
                     int maxCap = magItem.getModule().getMaxCapacity();
                     if (currentAmmo >= maxCap) {
-                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gcr.overlay.mag_full").withStyle(net.minecraft.ChatFormatting.GREEN), true);
                         return;
                     }
 
@@ -236,42 +235,47 @@ public class ClientEvents {
 
     private static void renderCircularProgress(net.minecraft.client.gui.GuiGraphics graphics, float cx, float cy, float progress) {
         org.joml.Matrix4f matrix = graphics.pose().last().pose();
-        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
-        com.mojang.blaze3d.systems.RenderSystem.setShader(net.minecraft.client.renderer.GameRenderer::getPositionColorShader);
+        com.mojang.blaze3d.vertex.VertexConsumer consumer = graphics.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.guiOverlay());
 
-        com.mojang.blaze3d.vertex.Tesselator tesselator = com.mojang.blaze3d.vertex.Tesselator.getInstance();
-        int segments = 40;
-        float innerR = 4.5f;
-        float outerR = 7.0f;
+        int segments = 32;
+        float innerR = 4.0f;
+        float outerR = 7.5f;
+        float z = 400.0f;
 
         // 1. Dark semi-transparent background ring
-        com.mojang.blaze3d.vertex.BufferBuilder bg = tesselator.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP, com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR);
-        for (int i = 0; i <= segments; i++) {
-            float angle = (float) (i * 2.0 * Math.PI / segments);
-            float cos = (float) Math.cos(angle);
-            float sin = (float) Math.sin(angle);
-            bg.addVertex(matrix, cx + cos * innerR, cy + sin * innerR, 0).setColor(0.0f, 0.0f, 0.0f, 0.70f);
-            bg.addVertex(matrix, cx + cos * outerR, cy + sin * outerR, 0).setColor(0.0f, 0.0f, 0.0f, 0.70f);
-        }
-        com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(bg.buildOrThrow());
+        for (int i = 0; i < segments; i++) {
+            float a1 = (float) (i * 2.0 * Math.PI / segments);
+            float a2 = (float) ((i + 1) * 2.0 * Math.PI / segments);
+            float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
+            float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
 
-        // 2. Active cyan/blue progress arc (filling clockwise from top)
-        if (progress > 0.005f) {
-            com.mojang.blaze3d.vertex.BufferBuilder fg = tesselator.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP, com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR);
-            int arcSteps = Math.max(1, (int) Math.ceil(segments * progress));
-            for (int i = 0; i <= arcSteps; i++) {
-                float f = (float) i / segments;
-                if (f > progress) f = progress;
-                float angle = (float) (-Math.PI / 2.0 + f * 2.0 * Math.PI);
-                float cos = (float) Math.cos(angle);
-                float sin = (float) Math.sin(angle);
-                fg.addVertex(matrix, cx + cos * innerR, cy + sin * innerR, 0).setColor(0.2f, 0.85f, 1.0f, 0.95f);
-                fg.addVertex(matrix, cx + cos * outerR, cy + sin * outerR, 0).setColor(0.2f, 0.85f, 1.0f, 0.95f);
+            consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(10, 10, 15, 200);
+            consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(10, 10, 15, 200);
+            consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(10, 10, 15, 200);
+            consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(10, 10, 15, 200);
+        }
+
+        // 2. Active cyan-blue progress ring (from 12 o'clock clockwise)
+        if (progress > 0.01f) {
+            int arcSegments = Math.max(1, (int) Math.ceil(segments * Math.min(1.0f, progress)));
+            for (int i = 0; i < arcSegments; i++) {
+                float f1 = (float) i / segments;
+                float f2 = (float) (i + 1) / segments;
+                if (f1 > progress) break;
+                if (f2 > progress) f2 = progress;
+
+                float a1 = (float) (-Math.PI / 2.0 + f1 * 2.0 * Math.PI);
+                float a2 = (float) (-Math.PI / 2.0 + f2 * 2.0 * Math.PI);
+                float cos1 = (float) Math.cos(a1), sin1 = (float) Math.sin(a1);
+                float cos2 = (float) Math.cos(a2), sin2 = (float) Math.sin(a2);
+
+                consumer.addVertex(matrix, cx + cos1 * innerR, cy + sin1 * innerR, z).setColor(51, 204, 255, 255);
+                consumer.addVertex(matrix, cx + cos1 * outerR, cy + sin1 * outerR, z).setColor(51, 204, 255, 255);
+                consumer.addVertex(matrix, cx + cos2 * outerR, cy + sin2 * outerR, z).setColor(51, 204, 255, 255);
+                consumer.addVertex(matrix, cx + cos2 * innerR, cy + sin2 * innerR, z).setColor(51, 204, 255, 255);
             }
-            com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(fg.buildOrThrow());
         }
 
-        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
+        graphics.flush();
     }
 }
