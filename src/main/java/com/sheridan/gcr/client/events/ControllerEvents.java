@@ -93,7 +93,7 @@ public class ControllerEvents {
                 }
                 LocalPlayer localPlayer = Minecraft.getInstance().player;
                 if (localPlayer != null && localPlayer.isShiftKeyDown()) {
-                    if (gunModule.hasMagAttachment(gunModule.rootNodeTag(itemStack))) {
+                    if (gunModule.hasMagAttachment(gunModule.rootNodeTag(itemStack)) || (gunModule instanceof ISlottedGun slottedGun && slottedGun.getGunAmmoLeft(itemStack) > 0)) {
                         PacketDistributor.sendToServer(new GunReloadPacket(-2));
                     }
                     return;

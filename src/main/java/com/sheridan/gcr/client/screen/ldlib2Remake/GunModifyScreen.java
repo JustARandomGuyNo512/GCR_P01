@@ -196,6 +196,10 @@ public class GunModifyScreen extends Screen {
             Node selectedNode = context.getSelectedNode();
             if (selectedNode != null && selectedNode.getBelongsTo() != null) {
                 SlotInstance belongsTo = selectedNode.getBelongsTo();
+                if ("MAG".equalsIgnoreCase(belongsTo.getSlot().getName())) {
+                    GunModifyUI.btnRemoveModule.disable("tooltip.btn.slot_blocked_mag");
+                    GunModifyUI.btnReplaceModule.disable("tooltip.btn.slot_blocked_mag");
+                } else {
                 if (belongsTo.allow(OperationType.REMOVE)) {
                     GunModifyUI.btnRemoveModule.enable("tooltip.btn.remove_module");
                 } else {
@@ -216,6 +220,7 @@ public class GunModifyScreen extends Screen {
                     }
                 } else {
                     GunModifyUI.btnReplaceModule.disable("tooltip.btn.opt_not_allow");
+                }
                 }
             } else {
                 GunModifyUI.btnReplaceModule.setVisible(false);

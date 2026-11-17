@@ -187,5 +187,6 @@
   "tooltip.gcr.mag.ammo": "Ammo: %s / %s",
   "gcr.overlay.mag_full": "Magazine full!",
   "gcr.overlay.no_ammo_for_mag": "No ammo for this magazine!",
-  "gcr.overlay.loading_mag": "Loading magazine: %s / %s"
+  "gcr.overlay.loading_mag": "Loading magazine: %s / %s",
+  "tooltip.btn.slot_blocked_mag": "Magazine can only be changed via Reload/Unload in battle!"
 }

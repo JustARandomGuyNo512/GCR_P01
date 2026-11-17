@@ -419,6 +419,36 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
         // 1. UNLOAD ONLY (Shift + R)
         if (targetSlot == -2) {
             if (!hasExistingMag || oldMagModuleId == null) {
+                // If no mag attached, eject chambered round (Flowchart 1: Eject chambered round)
+                int chamberRound = getGunAmmoLeft(itemStack);
+                if (chamberRound > 0) {
+                    setGunAmmoLeft(itemStack, 0);
+                    // Determine caliber from gun ID
+                    String gunPath = getID().toLowerCase();
+                    String caliber = "5.56x45";
+                    if (gunPath.contains("ak74") || gunPath.contains("ak24") || gunPath.contains("6p34")) {
+                        caliber = "5.45x39";
+                    } else if (gunPath.contains("akm") || gunPath.contains("akmn")) {
+                        caliber = "7.62x39";
+                    } else if (gunPath.contains("spear")) {
+                        caliber = "6.8x51";
+                    }
+                    com.sheridan.gcr.items.AmmoItem ammoItem = com.sheridan.gcr.items.AmmoItem.getByCaliber(caliber);
+                    if (ammoItem != null) {
+                        ItemStack roundStack = new ItemStack(ammoItem, 1);
+                        if (!player.getInventory().add(roundStack)) {
+                            player.drop(roundStack, false);
+                        }
+                    }
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                            net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, 1.4f);
+                    notifyDataChanged(itemStack);
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        PacketDistributor.sendToPlayer(serverPlayer, new CommitModuleTreeResponsePacket(
+                                checkAndGetRaw(itemStack), "", true));
+                    }
+                    return true;
+                }
                 return false;
             }
             try {
