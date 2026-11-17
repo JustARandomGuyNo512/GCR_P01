@@ -345,7 +345,7 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
     protected boolean shouldReload(ItemStack itemStack) {
         IAmmoSource magAttachment = getMagAttachment(itemStack);
         if (magAttachment == null) {
-            return getGunAmmoLeft(itemStack) < 1;
+            return true;
         } else {
             int ammoLeft = getAmmoLeft(itemStack);
             return ammoLeft < magAttachment.getMaxCapacity() + 1;

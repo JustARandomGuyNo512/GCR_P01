@@ -5,6 +5,18 @@ import com.sheridan.gcr.client.animation.IAnimated;
 import com.sheridan.gcr.client.animation.IAnimationSequence;
 import com.sheridan.gcr.client.render.ModuleRenderContext;
 import com.sheridan.gcr.client.render.ModuleRenderNode;
+import com.sheridan.gcr.client.model.modular.IModularModel;
+import com.sheridan.gcr.client.model.modular.ModuleModelRegister;
+import com.sheridan.gcr.items.MagItem;
+import com.sheridan.gcr.modularSys.IModular;
+import com.sheridan.gcr.modularSys.task.GunTaskHandler;
+import com.sheridan.gcr.modularSys.task.IGunTask;
+import com.sheridan.gcr.modularSys.task.reload.AKReloadTask;
+import com.sheridan.gcr.modularSys.task.reload.ARReloadTask;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -46,11 +58,37 @@ public class ShadowNodeRender extends Command{
         if (sequence.getCurrentAnimatingProgress() >= startProgress) {
             ModuleRenderNode moduleRenderNode = context.currentRenderNode();
             List<ModuleRenderNode> moduleRenderNodes = moduleRenderNode.slots.get(refBoneName);
-            if (moduleRenderNodes == null || moduleRenderNodes.isEmpty()) {
+            ModuleRenderNode shadowRefNode = null;
+            if (moduleRenderNodes != null && !moduleRenderNodes.isEmpty()) {
+                shadowRefNode = moduleRenderNodes.getFirst();
+            } else if ("MAG".equalsIgnoreCase(refBoneName)) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null && GunTaskHandler.INSTANCE.hasTask()) {
+                    IGunTask<?> task = GunTaskHandler.INSTANCE.getTask();
+                    int targetSlot = -1;
+                    if (task instanceof ARReloadTask arTask) {
+                        targetSlot = arTask.targetSlot;
+                    } else if (task instanceof AKReloadTask akTask) {
+                        targetSlot = akTask.targetSlot;
+                    }
+                    if (targetSlot >= 0 && targetSlot < player.getInventory().items.size()) {
+                        ItemStack magStack = player.getInventory().items.get(targetSlot);
+                        if (magStack.getItem() instanceof MagItem magItem) {
+                            IModular modular = magItem.getModule();
+                            IModularModel model = ModuleModelRegister.get(modular);
+                            if (model != null) {
+                                shadowRefNode = new ModuleRenderNode(model, "shadow_mag", modular.getID(), false);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (shadowRefNode == null) {
                 return;
             }
-            if (tempEntry.shadowNode == null || (sequence.getStartTime() != lastStartTime || lastSequence != sequence)) {//copy status if enabled
-                ModuleRenderNode shadowRefNode = moduleRenderNodes.getFirst();
+
+            if (tempEntry.shadowNode == null || (sequence.getStartTime() != lastStartTime || lastSequence != sequence)) {
                 tempEntry.shadowNode = shadowRefNode.copySelfOnly(copyNodeStatus);
                 lastStartTime = sequence.getStartTime();
                 lastSequence = sequence;

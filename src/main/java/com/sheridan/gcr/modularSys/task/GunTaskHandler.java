@@ -18,6 +18,10 @@ public class GunTaskHandler {
         return task != null;
     }
 
+    public IGunTask<?> getTask() {
+        return task;
+    }
+
     public boolean blockShoot() {
         return  task != null && task.blockShoot();
     }

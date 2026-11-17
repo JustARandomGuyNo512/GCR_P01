@@ -3,6 +3,10 @@ package com.sheridan.gcr.items;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
 import com.sheridan.gcr.modularSys.modules.Mag;
 import com.sheridan.gcr.network.c2s.MagLoadPacket;
+import com.sheridan.gcr.client.MagClientBridge;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -97,7 +101,10 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            player.closeContainer();
+            if (player.containerMenu != null && !player.containerMenu.getCarried().isEmpty()) {
+                player.getInventory().placeItemBackInInventory(player.containerMenu.getCarried());
+                player.containerMenu.setCarried(ItemStack.EMPTY);
+            }
 
             int selectedHotbar = player.getInventory().selected;
             int containerSlot = slot.getContainerSlot();
@@ -107,6 +114,11 @@ public class MagItem extends ModuleItem<Mag> {
                 slot.set(currentlyHeld);
             }
 
+            player.closeContainer();
+
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                MagClientBridge.startLoadingFromInventory(getCaliber());
+            }
             if (player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
             }
@@ -140,11 +152,19 @@ public class MagItem extends ModuleItem<Mag> {
                 return false;
             }
 
-            player.closeContainer();
+            if (player.containerMenu != null && !player.containerMenu.getCarried().isEmpty()) {
+                player.getInventory().placeItemBackInInventory(player.containerMenu.getCarried());
+                player.containerMenu.setCarried(ItemStack.EMPTY);
+            }
 
             int selectedHotbar = player.getInventory().selected;
             player.getInventory().setItem(selectedHotbar, stack.copy());
 
+            player.closeContainer();
+
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                MagClientBridge.startLoadingFromInventory(getCaliber());
+            }
             if (player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new MagLoadPacket(MagLoadPacket.ACTION_START, getCaliber()));
             }
