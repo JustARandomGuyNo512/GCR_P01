@@ -27,6 +27,10 @@ import com.sheridan.gcr.data.PlayerStatusEvents;
 import com.sheridan.gcr.entity.ModEntities;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
+import com.sheridan.gcr.items.AmmoItem;
+import com.sheridan.gcr.items.MagItem;
+import com.sheridan.gcr.modularSys.modules.Mag;
+
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.ISlotProviderModular;
 import com.sheridan.gcr.modularSys.ModuleRegister;
@@ -146,28 +150,37 @@ public class GCR {
 
     public static final DeferredItem<Item> M4_PROFILE_FSB_BARREL_ITEM =
             ITEMS.register(GCRModuleRegistry.M4_PROFILE_FSB_BARREL.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.M4_PROFILE_FSB_BARREL));
+    public static final DeferredItem<Item> AMMO_556x45_ITEM =
+            ITEMS.register("ammo_556x45", () -> new AmmoItem("5.56x45", 60));
+    public static final DeferredItem<Item> AMMO_545x39_ITEM =
+            ITEMS.register("ammo_545x39", () -> new AmmoItem("5.45x39", 60));
+    public static final DeferredItem<Item> AMMO_762x39_ITEM =
+            ITEMS.register("ammo_762x39", () -> new AmmoItem("7.62x39", 60));
+    public static final DeferredItem<Item> AMMO_68x51_ITEM =
+            ITEMS.register("ammo_68x51", () -> new AmmoItem("6.8x51", 60));
+
     public static final DeferredItem<Item> STANAG_MAG_30R_ITEM =
-            ITEMS.register(GCRModuleRegistry.STANAG_MAG_30R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.STANAG_MAG_30R));
+            ITEMS.register(GCRModuleRegistry.STANAG_MAG_30R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.STANAG_MAG_30R));
     public static final DeferredItem<Item> PMAG_40R_ITEM =
-            ITEMS.register(GCRModuleRegistry.PMAG_40R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.PMAG_40R));
+            ITEMS.register(GCRModuleRegistry.PMAG_40R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.PMAG_40R));
     public static final DeferredItem<Item> SUREFIRE_MAG_60R_ITEM =
-            ITEMS.register(GCRModuleRegistry.SUREFIRE_MAG_60R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.SUREFIRE_MAG_60R));
+            ITEMS.register(GCRModuleRegistry.SUREFIRE_MAG_60R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.SUREFIRE_MAG_60R));
     public static final DeferredItem<Item> USGI_MAG_20R_ITEM =
-            ITEMS.register(GCRModuleRegistry.USGI_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.USGI_MAG_20R));
+            ITEMS.register(GCRModuleRegistry.USGI_MAG_20R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.USGI_MAG_20R));
     public static final DeferredItem<Item> PMAG_30R_ITEM =
-            ITEMS.register(GCRModuleRegistry.PMAG_30R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.PMAG_30R));
+            ITEMS.register(GCRModuleRegistry.PMAG_30R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.PMAG_30R));
 
 
     public static final DeferredItem<Item> MAG_6L18_ITEM =
-            ITEMS.register(GCRModuleRegistry.MAG_6L18.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.MAG_6L18));
+            ITEMS.register(GCRModuleRegistry.MAG_6L18.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.MAG_6L18));
     public static final DeferredItem<Item> MAG_6L23_ITEM =
-            ITEMS.register(GCRModuleRegistry.MAG_6L23.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.MAG_6L23));
+            ITEMS.register(GCRModuleRegistry.MAG_6L23.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.MAG_6L23));
     public static final DeferredItem<Item> MAG_6L31_ITEM =
-            ITEMS.register(GCRModuleRegistry.MAG_6L31.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.MAG_6L31));
+            ITEMS.register(GCRModuleRegistry.MAG_6L31.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.MAG_6L31));
     public static final DeferredItem<Item> SPEAR_MAG_20R_ITEM =
-            ITEMS.register(GCRModuleRegistry.SPEAR_MAG_20R.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.SPEAR_MAG_20R));
+            ITEMS.register(GCRModuleRegistry.SPEAR_MAG_20R.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.SPEAR_MAG_20R));
     public static final DeferredItem<Item> AKM_STEEL_MAG_ITEM =
-            ITEMS.register(GCRModuleRegistry.AKM_STEEL_MAG.getSimpleID(), () -> new ModuleItem<>(GCRModuleRegistry.AKM_STEEL_MAG));
+            ITEMS.register(GCRModuleRegistry.AKM_STEEL_MAG.getSimpleID(), () -> new MagItem((Mag) GCRModuleRegistry.AKM_STEEL_MAG));
 
 
     public static final DeferredItem<Item> M4_CARBINE_STOCK_ITEM =
@@ -324,6 +337,10 @@ public class GCR {
                                 output.accept(AK24A_BARREL_ITEM.get());
                                 output.accept(AK24B_BARREL_ITEM.get());
                                 output.accept(SIG_FURY_BARREL_ITEM.get());
+                                output.accept(AMMO_556x45_ITEM.get());
+                                output.accept(AMMO_545x39_ITEM.get());
+                                output.accept(AMMO_762x39_ITEM.get());
+                                output.accept(AMMO_68x51_ITEM.get());
                                 output.accept(STANAG_MAG_30R_ITEM.get());
                                 output.accept(PMAG_40R_ITEM.get());
                                 output.accept(PMAG_30R_ITEM.get());

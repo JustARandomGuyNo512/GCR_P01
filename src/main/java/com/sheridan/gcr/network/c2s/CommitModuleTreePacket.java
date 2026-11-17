@@ -3,6 +3,9 @@ package com.sheridan.gcr.network.c2s;
 import com.sheridan.gcr.GCR;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.ModuleItem;
+import com.sheridan.gcr.items.MagItem;
+import com.sheridan.gcr.modularSys.modules.IAmmoSource;
+import com.sheridan.gcr.modularSys.modules.Mag;
 import com.sheridan.gcr.modularSys.IModular;
 import com.sheridan.gcr.modularSys.ModuleRegister;
 import com.sheridan.gcr.modularSys.builder.*;
@@ -87,13 +90,23 @@ public class CommitModuleTreePacket implements CustomPacketPayload, IPacket<Comm
                     List<CompoundTag> dec = diff.getRight();//减少的
 
                     Map<ModuleItem<?>, Integer> preTakeoff = new HashMap<>();
+                    List<ItemStack> returnedStacks = new ArrayList<>();
                     for (CompoundTag tag : dec) {
                         IModular module = ModuleRegister.get(tag.getString("module"));
                         if (module != null && module.getBindItem() != null) {
                             preTakeoff.put(module.getBindItem(), preTakeoff.getOrDefault(module.getBindItem(), 0) + 1);
+                            if (module instanceof Mag) {
+                                String nodeId = tag.getString(Unit.IN_TIME_ID);
+                                CompoundTag nodeStates = gun.getNodeStatesTag(mainHandItem, nodeId);
+                                int ammoLeft = nodeStates != null ? IAmmoSource.AMMO_LEFT.get(nodeStates) : 0;
+                                ItemStack returnedMag = new ItemStack(module.getBindItem());
+                                MagItem.setAmmoLeft(returnedMag, ammoLeft);
+                                returnedStacks.add(returnedMag);
+                            }
                         }
                     }
                     NonNullList<ItemStack> items = player.getInventory().items;
+                    Map<String, Integer> installedMagAmmo = new HashMap<>();
                     Set<Integer> removeSlotIndex = new HashSet<>();
                     for (CompoundTag newModule : inc) {
                         String moduleId = newModule.getString("module");
@@ -116,10 +129,15 @@ public class CommitModuleTreePacket implements CustomPacketPayload, IPacket<Comm
                                         Objects.equals(moduleItem.getModule().getID(), moduleId)) {
                                     found = true;
                                     removeSlotIndex.add(i);
+                                    if (itemStack.getItem() instanceof MagItem) {
+                                        int carriedAmmo = MagItem.getAmmoLeft(itemStack);
+                                        installedMagAmmo.put(newModule.getString(Unit.IN_TIME_ID), carriedAmmo);
+                                    }
                                     break;
                                 }
                             }
                         }
+
                         if (!found && !player.isCreative()) {
                             msg = Component.translatable("packet.set_module_tree.item_unmatched").getString();
                             msg = msg
@@ -134,12 +152,21 @@ public class CommitModuleTreePacket implements CustomPacketPayload, IPacket<Comm
                     }
                     for (Map.Entry<ModuleItem<?>, Integer> entry : preTakeoff.entrySet()) {
                         ModuleItem<?> moduleItem = entry.getKey();
+                        if (moduleItem instanceof MagItem) {
+                            continue; // Handled via returnedStacks to preserve ammo
+                        }
                         for (int i = 0; i < entry.getValue(); i++) {
-                            boolean add = player.getInventory().add(new ItemStack(moduleItem));
-                            if (!add) {
-                                ItemEntity entity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), new ItemStack(moduleItem));
+                            ItemStack returnStack = new ItemStack(moduleItem);
+                            if (!player.getInventory().add(returnStack)) {
+                                ItemEntity entity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), returnStack);
                                 player.level().addFreshEntity(entity);
                             }
+                        }
+                    }
+                    for (ItemStack returnedMag : returnedStacks) {
+                        if (!player.getInventory().add(returnedMag)) {
+                            ItemEntity entity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), returnedMag);
+                            player.level().addFreshEntity(entity);
                         }
                     }
                     gun.setModulesTag(mainHandItem, finalModules);
@@ -148,6 +175,12 @@ public class CommitModuleTreePacket implements CustomPacketPayload, IPacket<Comm
                     ShadowNode shadowTree = warehouse.getShadowTree();
                     StatesUpdateContext statesUpdateContext = new StatesUpdateContext(gun, shadowTree, lastStates);
                     statesUpdateContext.autoExec();
+                    for (Map.Entry<String, Integer> entry : installedMagAmmo.entrySet()) {
+                        CompoundTag nodeStates = lastStates.getCompound(entry.getKey());
+                        if (nodeStates != null) {
+                            IAmmoSource.AMMO_LEFT.set(entry.getValue(), nodeStates);
+                        }
+                    }
                     gun.setStatesTag(mainHandItem, lastStates);
 
                     CompoundTag properties = gun.reCalculateProperties(warehouse);

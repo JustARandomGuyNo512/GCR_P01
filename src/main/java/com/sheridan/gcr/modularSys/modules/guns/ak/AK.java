@@ -24,18 +24,7 @@ public class AK  extends SlottedGunMainPart implements AKView {
 
     @Override
     public void reload(ItemStack itemStack, Player player) {
-        IAmmoSource mag = getMagAttachment(itemStack);
-        if (mag != null) {
-            CompoundTag states = getAmmoSourceTag(itemStack);
-            int ammoLeft = mag.getAmmoLeft(states);
-            mag.setAmmoLeft(mag.getMaxCapacity(), states);
-            if (ammoLeft < 1) {
-                setGunAmmoLeft(itemStack, 1);
-                mag.setAmmoLeft(mag.getAmmoLeft(states) - 1, states);
-            }
-        } else {
-            setGunAmmoLeft(itemStack, 1);
-        }
+        super.reload(itemStack, player);
     }
 
     @Override

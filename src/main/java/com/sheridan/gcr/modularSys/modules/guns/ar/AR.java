@@ -41,20 +41,7 @@ public class AR extends SlottedGunMainPart implements ARView {
 
     @Override
     public void reload(ItemStack itemStack, Player player) {
-        IAmmoSource mag = getMagAttachment(itemStack);
-        if (mag != null) {
-            CompoundTag states = getAmmoSourceTag(itemStack);
-            int ammoLeft = mag.getAmmoLeft(states);
-            mag.setAmmoLeft(mag.getMaxCapacity(), states);
-            if (ammoLeft < 1) {
-                setGunAmmoLeft(itemStack, 1);
-                mag.setAmmoLeft(mag.getAmmoLeft(states) - 1, states);
-            }
-            setBoltLocked(false, rootNodeTag(itemStack));
-        } else {
-            setGunAmmoLeft(itemStack, 1);
-            setBoltLocked(false, rootNodeTag(itemStack));
-        }
+        super.reload(itemStack, player);
     }
 
     @Override

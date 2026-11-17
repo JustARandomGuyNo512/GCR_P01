@@ -7,7 +7,9 @@ import com.sheridan.gcr.client.animation.AnimationDef;
 import com.sheridan.gcr.client.animation.AnimationRegister;
 import com.sheridan.gcr.client.animation.command.MaskMagAmmo;
 import com.sheridan.gcr.client.model.modular.animation.eventSys.EventType;
+import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.modularSys.modules.IAmmoSource;
+import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
 import com.sheridan.gcr.modularSys.modules.guns.ak.AK;
 import com.sheridan.gcr.modularSys.task.GunTask;
 import com.sheridan.gcr.modularSys.task.IGunTask;
@@ -31,13 +33,16 @@ public class AKReloadTask extends GunTask<AK> {
     private String animationName;
     private IAmmoSource magAttachment;
     public int sendPacketDelay;
+    public int targetSlot = -1;
 
     public AKReloadTask(ItemStack itemStack, AK gun) {
         super(itemStack, gun);
         CompoundTag states = gun.rootNodeTag(itemStack);
         boolean hasMagAttachment = gun.hasMagAttachment(states);
-        if (!hasMagAttachment) {
-            LocalPlayer player = Minecraft.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
+        targetSlot = player != null ? SlottedGunMainPart.findBestCompatibleMagazineSlot(player, gun) : -1;
+
+        if (!hasMagAttachment && targetSlot < 0) {
             if (player != null) {
                 player.sendSystemMessage(Component.translatable("gcr.overlay.require_mag").withColor(Color.RED.getRGB()));
             }
@@ -82,7 +87,7 @@ public class AKReloadTask extends GunTask<AK> {
     public void onTick(Player player) {
         super.onTick(player);
         if (tick == sendPacketDelay) {
-            PacketDistributor.sendToServer(new GunReloadPacket());
+            PacketDistributor.sendToServer(new GunReloadPacket(targetSlot));
         }
     }
 
@@ -108,6 +113,13 @@ public class AKReloadTask extends GunTask<AK> {
     }
 
     protected int getPredictedAmmoCount() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && targetSlot >= 0 && targetSlot < player.getInventory().items.size()) {
+            ItemStack stack = player.getInventory().items.get(targetSlot);
+            if (stack.getItem() instanceof MagItem) {
+                return MagItem.getAmmoLeft(stack);
+            }
+        }
         return magAttachment == null ? 1 : magAttachment.getMaxCapacity();
     }
 

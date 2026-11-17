@@ -1,5 +1,29 @@
 package com.sheridan.gcr.modularSys.modules.guns;
 
+import com.sheridan.gcr.items.MagItem;
+import com.sheridan.gcr.modularSys.IModular;
+import com.sheridan.gcr.modularSys.ISlotProviderModular;
+import com.sheridan.gcr.modularSys.ModuleRegister;
+import com.sheridan.gcr.modularSys.builder.Builder;
+import com.sheridan.gcr.modularSys.builder.IBuilder;
+import com.sheridan.gcr.modularSys.builder.IReadOnlyTree;
+import com.sheridan.gcr.modularSys.builder.IWorkSpace;
+import com.sheridan.gcr.modularSys.builder.Node;
+import com.sheridan.gcr.modularSys.builder.ShadowNode;
+import com.sheridan.gcr.modularSys.modules.StatesUpdateContext;
+import com.sheridan.gcr.modularSys.builder.Unit;
+import com.sheridan.gcr.modularSys.builder.WorkSpace;
+import com.sheridan.gcr.modularSys.modules.IAmmoSource;
+import com.sheridan.gcr.modularSys.modules.guns.IGun;
+import com.sheridan.gcr.modularSys.modules.guns.ar.AR;
+import com.sheridan.gcr.modularSys.slot.ISlot;
+import com.sheridan.gcr.network.s2c.CommitModuleTreeResponsePacket;
+import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+
 import com.google.gson.JsonObject;
 import com.sheridan.gcr.client.recoil.RecoilData;
 import com.sheridan.gcr.items.DisplayData;
@@ -327,4 +351,171 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             return ammoLeft < magAttachment.getMaxCapacity() + 1;
         }
     }
+
+    public static boolean isMagCompatible(IGun gun, IModular mag) {
+        if (gun instanceof ISlotProviderModular provider) {
+            for (ISlot slot : provider.getSlotProvider().getSlots()) {
+                if ("MAG".equalsIgnoreCase(slot.getName()) && slot.accepts(mag)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static int findBestCompatibleMagazineSlot(Player player, IGun gun) {
+        int bestSlot = -1;
+        int maxAmmo = -1;
+        NonNullList<ItemStack> items = player.getInventory().items;
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
+            if (stack.getItem() instanceof MagItem magItem) {
+                if (isMagCompatible(gun, magItem.getModule())) {
+                    int ammo = MagItem.getAmmoLeft(stack);
+                    if (ammo > maxAmmo) {
+                        maxAmmo = ammo;
+                        bestSlot = i;
+                    }
+                }
+            }
+        }
+        return bestSlot;
+    }
+
+    @Override
+    public void reload(ItemStack itemStack, Player player, int targetSlot) {
+        swapMagazine(itemStack, player, targetSlot);
+    }
+
+    @Override
+    public void reload(ItemStack itemStack, Player player) {
+        reload(itemStack, player, -1);
+    }
+
+    public boolean swapMagazine(ItemStack itemStack, Player player, int targetSlot) {
+        String usingAmmoSourceId = USING_AMMO_SOURCE.get(rootNodeTag(itemStack));
+        String thisId = rootNodeId(itemStack);
+        boolean hasExistingMag = !Objects.equals(usingAmmoSourceId, thisId);
+
+        String oldMagModuleId = null;
+        int oldMagAmmoLeft = 0;
+
+        ListTag originalModules = getModulesTag(itemStack);
+        for (int i = 0; i < originalModules.size(); i++) {
+            CompoundTag nodeTag = originalModules.getCompound(i);
+            if ("MAG".equalsIgnoreCase(nodeTag.getString(Unit.SLOT_NAME))) {
+                oldMagModuleId = nodeTag.getString(Unit.MODULE_ID);
+                break;
+            }
+        }
+
+        if (hasExistingMag) {
+            CompoundTag magStates = getNodeStatesTag(itemStack, usingAmmoSourceId);
+            if (magStates != null) {
+                oldMagAmmoLeft = IAmmoSource.AMMO_LEFT.get(magStates);
+            }
+        }
+
+        ItemStack newMagStack = ItemStack.EMPTY;
+        MagItem newMagItem = null;
+        int newAmmo = 0;
+
+        if (targetSlot >= 0 && targetSlot < player.getInventory().items.size()) {
+            ItemStack candidate = player.getInventory().items.get(targetSlot);
+            if (candidate.getItem() instanceof MagItem mag && isMagCompatible(this, mag.getModule())) {
+                newMagStack = candidate;
+                newMagItem = mag;
+                newAmmo = MagItem.getAmmoLeft(candidate);
+            }
+        }
+
+        if (newMagItem == null) {
+            int autoSlot = findBestCompatibleMagazineSlot(player, this);
+            if (autoSlot >= 0) {
+                newMagStack = player.getInventory().items.get(autoSlot);
+                newMagItem = (MagItem) newMagStack.getItem();
+                newAmmo = MagItem.getAmmoLeft(newMagStack);
+            }
+        }
+
+        if (newMagItem == null && !hasExistingMag) {
+            return false;
+        }
+
+        try {
+            IBuilder builder = new Builder();
+            builder.initAndClear(originalModules);
+            WorkSpace workspace = (WorkSpace) builder.getWorkspace();
+            Unit rootUnit = workspace.getRootUnit();
+
+            // 1. Remove old magazine if present
+            for (Unit unit : new ArrayList<>(workspace.getSequencedUnits())) {
+                Node node = workspace.getNode(unit);
+                if (node != null && "MAG".equalsIgnoreCase(node.getBelongsToSlotName())) {
+                    workspace.removeChild(unit);
+                }
+            }
+
+            // 2. Add new magazine if present
+            if (newMagItem != null) {
+                workspace.addChild(rootUnit, "MAG", newMagItem.getModule().getID());
+                newMagStack.shrink(1);
+            }
+
+            builder.commit();
+            IReadOnlyTree warehouse = builder.getWarehouse();
+            ListTag finalModules = warehouse.write();
+            setModulesTag(itemStack, finalModules);
+
+            // 3. Update states
+            CompoundTag states = getStatesTag(itemStack);
+            ShadowNode shadowTree = warehouse.getShadowTree();
+            StatesUpdateContext statesUpdateContext = new StatesUpdateContext(this, shadowTree, states);
+            statesUpdateContext.autoExec();
+            setStatesTag(itemStack, states);
+
+            // 4. Update ammo in chamber and magazine
+            if (newMagItem != null) {
+                String newMagNodeId = USING_AMMO_SOURCE.get(rootNodeTag(itemStack));
+                CompoundTag newMagStates = getNodeStatesTag(itemStack, newMagNodeId);
+                if (newMagStates != null) {
+                    if (getGunAmmoLeft(itemStack) <= 0 && newAmmo > 0) {
+                        setGunAmmoLeft(itemStack, 1);
+                        newAmmo -= 1;
+                    }
+                    IAmmoSource.AMMO_LEFT.set(newAmmo, newMagStates);
+                }
+                if (this instanceof AR ar) {
+                    ar.setBoltLocked(false, rootNodeTag(itemStack));
+                }
+            }
+
+            // 5. Recalculate properties
+            CompoundTag properties = reCalculateProperties(warehouse);
+            setPropertiesTag(itemStack, properties);
+
+            // 6. Give old magazine back to player with remaining ammo
+            if (oldMagModuleId != null) {
+                IModular oldModular = ModuleRegister.get(oldMagModuleId);
+                if (oldModular != null && oldModular.getBindItem() != null) {
+                    ItemStack oldMagItem = new ItemStack(oldModular.getBindItem());
+                    MagItem.setAmmoLeft(oldMagItem, oldMagAmmoLeft);
+                    if (!player.getInventory().add(oldMagItem)) {
+                        player.drop(oldMagItem, false);
+                    }
+                }
+            }
+
+            notifyDataChanged(itemStack);
+            if (player instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new CommitModuleTreeResponsePacket(
+                        checkAndGetRaw(itemStack), "", true));
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

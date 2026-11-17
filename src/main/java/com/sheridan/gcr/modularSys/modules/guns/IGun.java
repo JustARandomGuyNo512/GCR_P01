@@ -90,6 +90,10 @@ public interface IGun extends IModular, IAmmoSource, IGunView, IStateModular {
 
     void reload(ItemStack itemStack, Player player);
 
+    default void reload(ItemStack itemStack, Player player, int targetSlot) {
+        reload(itemStack, player);
+    }
+
     void serverInitData(ItemStack itemStack);
 
     CompoundTag checkAndGet(ItemStack itemStack);

@@ -19,12 +19,22 @@ public class GunReloadPacket implements CustomPacketPayload, IPacket<GunReloadPa
             GunReloadPacket::decode,
             (buf, p) -> p.encode(buf));
 
-    private void encode(FriendlyByteBuf buf) {
+    public int targetSlot;
 
+    public GunReloadPacket() {
+        this(-1);
+    }
+
+    public GunReloadPacket(int targetSlot) {
+        this.targetSlot = targetSlot;
+    }
+
+    private void encode(FriendlyByteBuf buf) {
+        buf.writeInt(targetSlot);
     }
 
     private static GunReloadPacket decode(FriendlyByteBuf buf) {
-        return new GunReloadPacket();
+        return new GunReloadPacket(buf.readInt());
     }
 
     @Override
@@ -38,7 +48,7 @@ public class GunReloadPacket implements CustomPacketPayload, IPacket<GunReloadPa
             ServerPlayer player = (ServerPlayer) context.player();
             ItemStack heldItem = player.getMainHandItem();
             if (heldItem.getItem() instanceof GunItem gunItem) {
-                gunItem.getGun().reload(heldItem, player);
+                gunItem.getGun().reload(heldItem, player, packet.targetSlot);
                 gunItem.getGun().notifyDataChanged(heldItem);
             }
         });
@@ -49,4 +59,3 @@ public class GunReloadPacket implements CustomPacketPayload, IPacket<GunReloadPa
         return TYPE;
     }
 }
-

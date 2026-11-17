@@ -1,11 +1,9 @@
 {
   "itemGroup.gcr.gun": "Guns",
   "itemGroup.gcr.attachment": "Attachments",
-
   "gcr.modular.operation_res.occupied": "Slot is occupied.",
   "gcr.modular.operation_res.illegal": "Operation not allowed.",
   "gcr.modular.operation_res.un_accepted": "Slot cannot accept the operation.",
-
   "tooltip.btn.slots_visible": "Show module slots icon: ",
   "tooltip.btn.nodes_visible": "Show module icon: ",
   "tooltip.btn.install": "Install",
@@ -22,19 +20,15 @@
   "tooltip.btn.fold": "Hide modules",
   "tooltip.btn.unfold": "Show modules",
   "tooltip.btn.clear": "Clear search",
-
   "tooltip.tab.suitable_attachments": "Applicable attachments:",
   "tooltip.input.search_attachments": "Search for attachment:",
-
   "tooltip.btn.remove_module": "Remove module",
   "tooltip.btn.opt_not_allow": "Slot does not allow this operation.",
-
   "tooltip.btn.same_module": "Same module",
   "tooltip.btn.replace_to": "Replace",
   "tooltip.btn.slot_not_support": "Unsupported slot",
   "tooltip.btn.no_module": "No selection",
   "tooltip.btn.unmodified": "No changes",
-
   "slot.barrel": "Barrel",
   "slot.muzzle": "Muzzle",
   "slot.stock": "Stock",
@@ -44,10 +38,8 @@
   "slot.handguard": "Handguard",
   "slot.rear_grip": "Rear Grip",
   "slot.under_barrel": "Underbarrel",
-
   "gcr.validation.collision": "Not enough space between modules",
   "gcr.validation.out_of_boundary": "Module position out of bounds",
-
   "keys.categories.gcr": "Guns Craft: Reforged",
   "key.gcr.open_display_adjust_screen": "Open gun display data adjust screen",
   "key.gcr.check_mag": "Check Mag",
@@ -60,29 +52,23 @@
   "key.gcr.turn_flashlight": "Toggle Flashlight",
   "key.gcr.check_sub_weapon": "Check Secondary Weapon",
   "key.gcr.use_grenade_launcher": "Use Grenade Launcher",
-
   "validate.result.common": "[$level] $msg",
   "validate.result.unique": "Only one [$name] can be installed on this gun.",
   "validate.result.collision": "Module: $name1 collides with module: $name2",
   "validate.result.out_of_boundary": "Module :$name location out of bounds",
   "validate.result.conflict": "Module: $name1 conflicts with module: $name2",
   "validate.result.requires": "$name requires specific attachments. Compatible: $list",
-
   "screen.need_update": "Wait for the server's response. If there's no response for a long time, press 'Esc' to exit the interface.",
-
   "packet.set_module_tree.item_unmatched": "The node with ID: $id needs module: $moduleId, but no matching item was found!",
   "packet.set_module_tree.exception": "An exception occurred upon server data verification.",
   "packet.set_module_tree.fixed": "Server detected error upon data verification and pruned data according to the server rules.",
   "packet.set_module_tree.module_not_exist": "The module with ID: $id does not exist.",
-
   "gcr.overlay.bad_network": "Bad Network! Ping: $p",
-
   "tooltip.prop.modifier": "$amount% $name",
   "tooltip.prop.modifier_holding": "While Held: $amount% $name",
   "tooltip.prop.magnification": "Magnification: $min - $max",
   "tooltip.util.flashlight": "Press $key to toggle flashlight",
   "tooltip.util.gun_modify": "Press $key to open weapon modification tool",
-
   "gcr:prop.base.weight": "Weight",
   "gcr:prop.base.rpm": "RPM",
   "gcr:prop.base.recoil_control": "Recoil Control",
@@ -95,7 +81,6 @@
   "gcr:prop.base.base_damage": "Base Damage",
   "gcr:prop.base.stuck_rate": "Jam Rate",
   "gcr:prop.base.max_stuck_rate": "Max Jam Rate",
-
   "gcr.ani.mag_ammo_left_empty": "Empty! Damn it!",
   "gcr.ani.mag_ammo_left_few": "Almost empty",
   "gcr.ani.mag_ammo_left_quarter": "About 25% remaining",
@@ -106,21 +91,16 @@
   "gcr.ani.gp25_loaded": "Seems it's loaded",
   "gcr.overlay.stuck": "Jam",
   "gcr.overlay.require_mag": "Need a mag!",
-
   "gcr.message.gun_data_reset": "An unrecoverable error occurred while updating weapon data. The server has reset this weapon's data and returned $count module(s).",
   "gcr.message.gun_data_pruned": "Some modules on this weapon are no longer valid after the data update. The server removed them and returned $count module(s).",
-
   "death.attack.custom_explosion": "KABOOM!!!",
   "death.attack.bullet": "%1$s was killed by %2$s using %3$s",
-
   "gcr:m4a1": "M4A1",
   "gcr:ak74m": "AK74M",
   "gcr:ak24": "AK24",
   "gcr:mcx_spear": "MCX Spear",
   "gcr:akmn": "AKMN",
-
   "gcr:unknown_gun": "Unknown Gun",
-
   "gcr:acog": "ACOG Scope",
   "gcr:vortex_razor_hd": "Vortex Razor HD Scope",
   "gcr:eotech_exps3": "EOTech EXPS3 Holographic Sight",
@@ -197,6 +177,12 @@
   "gcr:akm_steel_mag": "AKM Steel Mag",
   "gcr:ak_wooden_handguard_lower": "AKM Wooden Handguard (Lower)",
   "gcr:ak_wooden_handguard_upper": "AKM Wooden Handguard (Upper)",
-
-  "block.gcaa.vending_machine": "Vending Machine"
+  "block.gcaa.vending_machine": "Vending Machine",
+  "item.gcr.ammo_556x45": "5.56x45mm NATO Round",
+  "item.gcr.ammo_545x39": "5.45x39mm 7N6 Round",
+  "item.gcr.ammo_762x39": "7.62x39mm PS Round",
+  "item.gcr.ammo_68x51": "6.8x51mm Fury Round",
+  "tooltip.gcr.ammo.caliber": "Caliber: %s",
+  "tooltip.gcr.mag.caliber": "Caliber: %s",
+  "tooltip.gcr.mag.ammo": "Ammo: %s / %s"
 }
