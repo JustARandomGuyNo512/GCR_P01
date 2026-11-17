@@ -42,8 +42,13 @@ public class AK  extends SlottedGunMainPart implements AKView {
     }
 
     @Override
+    protected IGunTask<?> getReloadTask(ItemStack itemStack, int targetSlot) {
+        return new AKReloadTask(itemStack, this, targetSlot);
+    }
+
+    @Override
     protected IGunTask<?> getReloadTask(ItemStack itemStack) {
-        return new AKReloadTask(itemStack, this);
+        return getReloadTask(itemStack, -1);
     }
 
     @Override

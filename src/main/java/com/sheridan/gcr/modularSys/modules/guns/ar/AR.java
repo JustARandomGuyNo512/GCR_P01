@@ -26,8 +26,13 @@ public class AR extends SlottedGunMainPart implements ARView {
     }
 
     @Override
+    protected IGunTask<?> getReloadTask(ItemStack itemStack, int targetSlot) {
+        return new ARReloadTask(itemStack, this, targetSlot);
+    }
+
+    @Override
     protected IGunTask<?> getReloadTask(ItemStack itemStack) {
-        return new ARReloadTask(itemStack, this);
+        return getReloadTask(itemStack, -1);
     }
 
     @Override

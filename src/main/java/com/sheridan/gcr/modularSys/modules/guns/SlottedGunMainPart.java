@@ -108,10 +108,17 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
             return new SwitchUsingSightTask(itemStack, this);
         }
         if (type == IGunTask.TaskType.RELOAD) {
-            if (!shouldReload(itemStack)) {
+            int targetSlot = -1;
+            if (args != null && args.containsKey("targetSlot")) {
+                Object obj = args.get("targetSlot");
+                if (obj instanceof Integer i) {
+                    targetSlot = i;
+                }
+            }
+            if (targetSlot == -1 && !shouldReload(itemStack)) {
                 return null;
             }
-            return getReloadTask(itemStack);//new ARReloadTask(itemStack, this);
+            return getReloadTask(itemStack, targetSlot);
         }
         if (type == IGunTask.TaskType.REMOVE_STUCK && isStuck(itemStack)) {
             return getRemoveStuckTask(itemStack);//new ARRemoveStuckTask(itemStack, this);
@@ -119,7 +126,11 @@ public abstract class SlottedGunMainPart extends Gun implements ISlotProviderMod
         return super.getTask(itemStack, type, args);
     }
 
-    protected abstract IGunTask<?> getReloadTask(ItemStack itemStack);
+    protected IGunTask<?> getReloadTask(ItemStack itemStack) {
+        return getReloadTask(itemStack, -1);
+    }
+
+    protected abstract IGunTask<?> getReloadTask(ItemStack itemStack, int targetSlot);
 
     protected abstract IGunTask<?> getRemoveStuckTask(ItemStack itemStack);
 

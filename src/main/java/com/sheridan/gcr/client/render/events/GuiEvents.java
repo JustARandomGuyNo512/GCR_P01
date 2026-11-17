@@ -1,12 +1,13 @@
 package com.sheridan.gcr.client.render.events;
 
+import com.sheridan.gcr.client.MagSelectorHandler;
 import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-
 
 public class GuiEvents {
     @SubscribeEvent
@@ -19,5 +20,10 @@ public class GuiEvents {
                 event.setCanceled(true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onRenderGuiPost(RenderGuiEvent.Post event) {
+        MagSelectorHandler.renderHUD(event.getGuiGraphics(), Minecraft.getInstance().font);
     }
 }

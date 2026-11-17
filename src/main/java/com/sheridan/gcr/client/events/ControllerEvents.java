@@ -10,6 +10,7 @@ import com.sheridan.gcr.client.ClassHotReloader;
 import com.sheridan.gcr.client.ClientWeaponLooper;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.KeyBinds;
+import com.sheridan.gcr.client.MagSelectorHandler;
 import com.sheridan.gcr.client.SprintingHandler;
 import com.sheridan.gcr.client.screen.DebugDisplayDataAdjustScreen;
 import com.sheridan.gcr.client.screen.ldlib2Remake.GunModifyUI;
@@ -64,6 +65,13 @@ public class ControllerEvents {
         if (DrawHolsterHandler.get().getEquipProgress() < 1 || Minecraft.getInstance().screen != null) {
             return;
         }
+        if (event.getAction() == 0) {
+            if (KeyBinds.RELOAD.matches(event.getKey(), event.getScanCode())) {
+                LocalPlayer localPlayer = Minecraft.getInstance().player;
+                MagSelectorHandler.onReloadKeyReleased(localPlayer, gunModule, itemStack);
+            }
+            return;
+        }
         if (event.getAction() == 1) {
             if (KeyBinds.CHECK_MAG.isDown() && !SprintingHandler.INSTANCE.isSprinting()) {
                 IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.CHECKING, Map.of("type", CheckingTask.CHECK_MAG));
@@ -83,7 +91,7 @@ public class ControllerEvents {
                     GunTaskHandler.INSTANCE.setTask(task);
                 }
             }
-            if (KeyBinds.RELOAD.isDown()) {
+            if (KeyBinds.RELOAD.matches(event.getKey(), event.getScanCode())) {
                 if (ClientGunStuckCache.get().isStuck(itemStack, gunModule)) {
                     IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.REMOVE_STUCK, Map.of());
                     if (task != null) {
@@ -98,10 +106,7 @@ public class ControllerEvents {
                     }
                     return;
                 }
-                IGunTask<?> task = gunModule.getTask(itemStack, IGunTask.TaskType.RELOAD, Map.of());
-                if (task != null) {
-                    GunTaskHandler.INSTANCE.setTask(task);
-                }
+                MagSelectorHandler.onReloadKeyPressed(localPlayer, gunModule, itemStack);
             }
             if (KeyBinds.SWITCH_EFFECTIVE_SIGHT.isDown()) {
                 if (gunModule instanceof ISlottedGun) {
@@ -154,6 +159,12 @@ public class ControllerEvents {
 
     @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+        if (MagSelectorHandler.isActive()) {
+            if (MagSelectorHandler.onMouseScroll(event.getScrollDeltaY())) {
+                event.setCanceled(true);
+                return;
+            }
+        }
         if (shouldHandleMouseEvent() && Client.WEAPON_STATUS.isHoldingGun()) {
             ItemStack itemStack = Client.WEAPON_STATUS.getItemStack();
             IGun gun = Client.WEAPON_STATUS.getGun();

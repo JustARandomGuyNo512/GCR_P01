@@ -3,6 +3,7 @@ package com.sheridan.gcr.client.events;
 
 import com.sheridan.gcr.Client;
 import com.sheridan.gcr.client.MagLoadingHandler;
+import com.sheridan.gcr.client.MagSelectorHandler;
 import com.sheridan.gcr.client.DrawHolsterHandler;
 import com.sheridan.gcr.client.GunEffect;
 import com.sheridan.gcr.client.GunEffectManager;
@@ -50,6 +51,7 @@ public class ClientEvents {
                 Client.WEAPON_STATUS.onTickStart(player);
                 SprintingHandler.INSTANCE.tick(player);
                 GunTaskHandler.INSTANCE.tick(player);
+                MagSelectorHandler.onClientTick(player);
             }
         } catch (Throwable t) {
             // 本 tick 提前失败：立刻归还，不能让异常把锁带走

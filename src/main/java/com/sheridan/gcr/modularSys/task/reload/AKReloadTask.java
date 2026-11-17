@@ -36,13 +36,20 @@ public class AKReloadTask extends GunTask<AK> {
     public int targetSlot = -1;
 
     public AKReloadTask(ItemStack itemStack, AK gun) {
+        this(itemStack, gun, -1);
+    }
+
+    public AKReloadTask(ItemStack itemStack, AK gun, int targetSlot) {
         super(itemStack, gun);
         CompoundTag states = gun.rootNodeTag(itemStack);
         boolean hasMagAttachment = gun.hasMagAttachment(states);
         LocalPlayer player = Minecraft.getInstance().player;
-        targetSlot = player != null ? SlottedGunMainPart.findBestCompatibleMagazineSlot(player, gun) : -1;
-
         if (targetSlot < 0) {
+            targetSlot = player != null ? SlottedGunMainPart.findBestCompatibleMagazineSlot(player, gun) : -1;
+        }
+        this.targetSlot = targetSlot;
+
+        if (this.targetSlot < 0) {
             length = 0;
             return;
         }
