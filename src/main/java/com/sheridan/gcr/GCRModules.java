@@ -29,9 +29,9 @@ import java.util.Map;
 
 
 /** Gun and attachment module definitions. */
-public final class GCRModuleRegistry {
+public final class GCRModules {
 
-    private GCRModuleRegistry() {
+    private GCRModules() {
     }
 
     public static final IModular M4_PROFILE_FSB_BARREL = new ARBarrel(RL( "m4_profile_fsb_barrel"), 1.0f, 0.1f, 1.0f,

@@ -2,6 +2,7 @@ package com.sheridan.gcr.client.recoil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sheridan.gcr.client.model.modular.IGunModel;
+import com.sheridan.gcr.client.recoil.test.DemoRecoilUpdater;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -14,7 +15,8 @@ public class RecoilHandler {
     private RecoilHandler() {}
 
     static {
-        INSTANCE.setRecoilUpdater(new RecoilUpdater());
+        //INSTANCE.setRecoilUpdater(new RecoilUpdater());
+        INSTANCE.setRecoilUpdater(new DemoRecoilUpdater());
     }
 
     public void update(float delta) {

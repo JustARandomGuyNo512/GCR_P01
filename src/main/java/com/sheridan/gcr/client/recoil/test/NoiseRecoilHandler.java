@@ -19,6 +19,8 @@ public final class NoiseRecoilHandler {
     private static final float DEFAULT_HOLD_TIME = 0.12f;
     private static final float DEFAULT_RECOVER_TIME = 0.35f;
     private static final float ACTIVITY_EPSILON = 1.0e-3f;
+    private static final long GLOBAL_SEED = 0x51A7F00DCAFEBABEL;
+    private static final long LOCAL_SEED = 0x2C1B3E4D5A5A1234L;
 
     private final NoiseRotationSpring global;
     private final NoiseRotationSpring local;
@@ -56,6 +58,29 @@ public final class NoiseRecoilHandler {
         this.local = local;
         this.holdTime = holdTime;
         this.recoverTime = recoverTime;
+    }
+
+    /** 用 {@link NoiseRecoilData} 构造；DemoRecoilUpdater 走这个入口。 */
+    public static NoiseRecoilHandler fromData(NoiseRecoilData data) {
+        if (data == null) {
+            throw new IllegalArgumentException("data must not be null");
+        }
+        return new NoiseRecoilHandler(
+                createSpring(data.global(), GLOBAL_SEED),
+                createSpring(data.local(), LOCAL_SEED),
+                data.holdTime(),
+                data.recoverTime());
+    }
+
+    private static NoiseRotationSpring createSpring(NoiseRecoilData.Layer layer, long seed) {
+        return new NoiseRotationSpring(
+                layer.pitchRange(),
+                layer.yawRange(),
+                layer.noiseHz(),
+                layer.noiseAlpha(),
+                layer.omega(),
+                layer.zeta(),
+                seed);
     }
 
     /** 每一发开火调用一次：随机层保持满幅，并重新开始计算停火时间。 */
