@@ -178,8 +178,10 @@
   "gcr:ak_wooden_handguard_lower": "AKM 木制护木(下)",
   "gcr:ak_wooden_handguard_upper": "AKM 木制护木(上)",
   "block.gcaa.vending_machine": "自动售货机",
-  "gui.gcr.mag_selector.title": "弹匣",
+  "gui.gcr.mag_selector.title": "选择弹匣",
   "gui.gcr.mag_selector.no_mags_line1": "无兼容",
   "gui.gcr.mag_selector.no_mags_line2": "弹匣",
-  "gui.gcr.mag_selector.release_hint": "松开 R 键装填"
+  "gui.gcr.mag_selector.release_hint": "松开 R 键装填",
+  "gui.gcr.mag_selector.no_mags": "无兼容弹匣",
+  "gui.gcr.mag_selector.hint": "滚轮: 选择  •  松开 R: 装填"
 }

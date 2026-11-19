@@ -192,5 +192,7 @@
   "gui.gcr.mag_selector.title": "MAGAZINES",
   "gui.gcr.mag_selector.no_mags_line1": "NO COMPATIBLE",
   "gui.gcr.mag_selector.no_mags_line2": "MAGAZINES",
-  "gui.gcr.mag_selector.release_hint": "Release R to reload"
+  "gui.gcr.mag_selector.release_hint": "Release R to reload",
+  "gui.gcr.mag_selector.no_mags": "NO COMPATIBLE MAGAZINES",
+  "gui.gcr.mag_selector.hint": "Mouse Wheel: Select  •  Release R: Reload"
 }

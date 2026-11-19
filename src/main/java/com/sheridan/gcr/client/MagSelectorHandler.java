@@ -7,12 +7,12 @@ import com.sheridan.gcr.modularSys.modules.guns.SlottedGunMainPart;
 import com.sheridan.gcr.modularSys.task.GunTaskHandler;
 import com.sheridan.gcr.modularSys.task.IGunTask;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class MagSelectorHandler {
     private static boolean rPressed = false;
     private static int holdTicks = 0;
-    public static final int HOLD_THRESHOLD = 5;
+    public static final int HOLD_THRESHOLD = 5; // ~250ms hold
     private static boolean active = false;
     private static int selectedIndex = 0;
     public static final List<MagEntry> compatibleMags = new ArrayList<>();
@@ -39,14 +39,16 @@ public class MagSelectorHandler {
         public final int ammo;
         public final int maxCapacity;
         public final String name;
+        public final String caliber;
 
-        public MagEntry(int slot, ItemStack stack, MagItem item, int ammo, int maxCapacity, String name) {
+        public MagEntry(int slot, ItemStack stack, MagItem item, int ammo, int maxCapacity, String name, String caliber) {
             this.slot = slot;
             this.stack = stack;
             this.item = item;
             this.ammo = ammo;
             this.maxCapacity = maxCapacity;
             this.name = name;
+            this.caliber = caliber;
         }
     }
 
@@ -67,10 +69,12 @@ public class MagSelectorHandler {
                     int ammo = MagItem.getAmmoLeft(stack);
                     int maxCap = magItem.getModule().getMaxCapacity();
                     String name = stack.getHoverName().getString();
-                    compatibleMags.add(new MagEntry(i, stack, magItem, ammo, maxCap, name));
+                    String caliber = magItem.getCaliber();
+                    compatibleMags.add(new MagEntry(i, stack, magItem, ammo, maxCap, name, caliber));
                 }
             }
         }
+        // Sort by ammo count descending (fullest magazines first)
         compatibleMags.sort((a, b) -> Integer.compare(b.ammo, a.ammo));
         selectedIndex = 0;
     }
@@ -80,16 +84,11 @@ public class MagSelectorHandler {
             return false;
         }
         int prev = selectedIndex;
+        int size = compatibleMags.size();
         if (deltaY > 0) {
-            selectedIndex--;
-            if (selectedIndex < 0) {
-                selectedIndex = compatibleMags.size() - 1;
-            }
+            selectedIndex = (selectedIndex - 1 + size) % size;
         } else if (deltaY < 0) {
-            selectedIndex++;
-            if (selectedIndex >= compatibleMags.size()) {
-                selectedIndex = 0;
-            }
+            selectedIndex = (selectedIndex + 1) % size;
         }
         if (prev != selectedIndex) {
             playClickSound();
@@ -193,97 +192,141 @@ public class MagSelectorHandler {
 
         int screenWidth = graphics.guiWidth();
         int screenHeight = graphics.guiHeight();
-
-        int cardWidth = 148;
-        int cardHeight = 26;
-        int cardMargin = 4;
-        int maxVisible = 5;
+        int cx = screenWidth / 2;
+        int cy = screenHeight / 2;
 
         int total = compatibleMags.size();
-        if (total == 0) {
-            int totalH = 36;
-            int startX = screenWidth / 2 + 50;
-            int startY = (screenHeight - totalH) / 2;
 
-            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.title"), startX + 2, startY - 12, 0xFFAAAAAA, false);
-            graphics.fill(startX, startY, startX + cardWidth, startY + totalH, 0xD0181212);
-            graphics.renderOutline(startX, startY, cardWidth, totalH, 0x88FF4444);
-            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.no_mags_line1"), startX + 10, startY + 8, 0xFFFF6666, false);
-            graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.no_mags_line2"), startX + 10, startY + 20, 0xFFAAAAAA, false);
+        // 1. Top Title Header
+        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.title"), cx, cy - 88, 0xFFEEEEEE);
+
+        if (total == 0) {
+            // Empty State: Sleek warning plate
+            int cardW = 140;
+            int cardH = 34;
+            graphics.fill(cx - cardW / 2, cy - cardH / 2, cx + cardW / 2, cy + cardH / 2, 0xD0181212);
+            graphics.renderOutline(cx - cardW / 2, cy - cardH / 2, cardW, cardH, 0x88FF4444);
+            graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.no_mags"), cx, cy - 4, 0xFFFF6666);
             return;
         }
 
-        int startIdx = 0;
-        if (total > maxVisible) {
-            startIdx = selectedIndex - maxVisible / 2;
-            if (startIdx < 0) startIdx = 0;
-            if (startIdx + maxVisible > total) startIdx = total - maxVisible;
+        // Clamp selectedIndex
+        if (selectedIndex < 0) selectedIndex = 0;
+        if (selectedIndex >= total) selectedIndex = total - 1;
+        MagEntry selectedEntry = compatibleMags.get(selectedIndex);
+
+        // 2. Orbit Radius calculation
+        int orbitR = total <= 6 ? 62 : (total <= 10 ? 70 : 78);
+
+        // 3. Render Center Hub
+        int hubW = 46;
+        int hubH = 46;
+        int hubX = cx - hubW / 2;
+        int hubY = cy - hubH / 2;
+
+        // Chamfered center plate
+        graphics.fill(hubX + 2, hubY, hubX + hubW - 2, hubY + hubH, 0xDD0E141D);
+        graphics.fill(hubX, hubY + 2, hubX + hubW, hubY + hubH - 2, 0xDD0E141D);
+        graphics.renderOutline(hubX + 1, hubY + 1, hubW - 2, hubH - 2, 0x77556677);
+
+        // Circular ammo gauge around the center hub
+        int ammoColor = getAmmoColor(selectedEntry.ammo, selectedEntry.maxCapacity);
+        float fillPct = selectedEntry.maxCapacity > 0 ? (float) selectedEntry.ammo / selectedEntry.maxCapacity : 0f;
+        int gaugeR = 26;
+        for (int a = 0; a < 360; a += 6) {
+            double rad = Math.toRadians(a - 90);
+            int rx = cx + (int) Math.round(gaugeR * Math.cos(rad));
+            int ry = cy + (int) Math.round(gaugeR * Math.sin(rad));
+            int dotColor = (a / 360.0f <= fillPct) ? ammoColor : 0x33445566;
+            graphics.fill(rx, ry, rx + 1, ry + 1, dotColor);
         }
-        int visibleCount = Math.min(total, maxVisible);
-        int listHeight = visibleCount * (cardHeight + cardMargin) - cardMargin;
 
-        int startX = screenWidth / 2 + 50;
-        int startY = (screenHeight - listHeight) / 2;
+        // Center Text: Ammo / Capacity
+        String ammoText = String.valueOf(selectedEntry.ammo);
+        graphics.drawCenteredString(font, ammoText, cx, cy - 11, ammoColor);
+        graphics.fill(cx - 12, cy, cx + 12, cy + 1, 0x55FFFFFF);
+        String capText = "/" + selectedEntry.maxCapacity;
+        graphics.drawCenteredString(font, capText, cx, cy + 3, 0xFFAAAAAA);
 
-        graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.title"), startX + 2, startY - 13, 0xFFAAAAAA, false);
+        // 4. Render Radial Slots
+        for (int i = 0; i < total; i++) {
+            MagEntry entry = compatibleMags.get(i);
+            boolean isSelected = (i == selectedIndex);
 
-        if (startIdx > 0) {
-            graphics.drawCenteredString(font, "▲", startX + cardWidth / 2, startY - 9, 0xFFFFFFFF);
-        }
-
-        for (int vi = 0; vi < visibleCount; vi++) {
-            int index = startIdx + vi;
-            MagEntry entry = compatibleMags.get(index);
-            boolean isSelected = (index == selectedIndex);
-
-            int cy = startY + vi * (cardHeight + cardMargin);
+            double angle = -Math.PI / 2.0 + (2.0 * Math.PI * i / total);
+            int sx = cx + (int) Math.round(orbitR * Math.cos(angle));
+            int sy = cy + (int) Math.round(orbitR * Math.sin(angle));
 
             if (isSelected) {
-                graphics.fill(startX, cy, startX + cardWidth, cy + cardHeight, 0xDD222832);
-                graphics.renderOutline(startX, cy, cardWidth, cardHeight, 0xFFFFFFFF);
-                graphics.fill(startX, cy, startX + 3, cy + cardHeight, 0xFF55FF55);
+                // Connecting dots from center hub towards selected slot
+                for (double t = 0.52; t <= 0.76; t += 0.12) {
+                    int dx = (int) Math.round(cx + t * (sx - cx));
+                    int dy = (int) Math.round(cy + t * (sy - cy));
+                    graphics.fill(dx - 1, dy - 1, dx + 2, dy + 2, 0xFF55FF55);
+                }
+
+                // Selected Slot (Larger 32x32, highlighted)
+                int cardSize = 32;
+                int cardX = sx - cardSize / 2;
+                int cardY = sy - cardSize / 2;
+
+                graphics.fill(cardX + 2, cardY, cardX + cardSize - 2, cardY + cardSize, 0xEE1E2838);
+                graphics.fill(cardX, cardY + 2, cardX + cardSize, cardY + cardSize - 2, 0xEE1E2838);
+                graphics.renderOutline(cardX + 1, cardY + 1, cardSize - 2, cardSize - 2, 0xFF55FF55);
+
+                graphics.renderItem(entry.stack, sx - 8, sy - 8);
+
+                // Ammo badge pill
+                String slotAmmoStr = String.valueOf(entry.ammo);
+                int strW = font.width(slotAmmoStr);
+                int badgeW = Math.max(14, strW + 6);
+                int badgeH = 9;
+                int badgeY = sy + (Math.sin(angle) < -0.3 ? -22 : 15);
+                int badgeX = sx - badgeW / 2;
+
+                graphics.fill(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH, 0xEE000000);
+                graphics.renderOutline(badgeX, badgeY, badgeW, badgeH, 0x8855FF55);
+                graphics.drawCenteredString(font, slotAmmoStr, sx, badgeY + 1, ammoColor);
+
             } else {
-                graphics.fill(startX, cy, startX + cardWidth, cy + cardHeight, 0x99101418);
-                graphics.renderOutline(startX, cy, cardWidth, cardHeight, 0x44888888);
-            }
+                // Unselected Slot (Standard 24x24)
+                int cardSize = 24;
+                int cardX = sx - cardSize / 2;
+                int cardY = sy - cardSize / 2;
 
-            graphics.renderItem(entry.stack, startX + 6, cy + 5);
+                graphics.fill(cardX + 2, cardY, cardX + cardSize - 2, cardY + cardSize, 0xAA10151C);
+                graphics.fill(cardX, cardY + 2, cardX + cardSize, cardY + cardSize - 2, 0xAA10151C);
+                graphics.renderOutline(cardX + 1, cardY + 1, cardSize - 2, cardSize - 2, 0x44607080);
 
-            String name = font.plainSubstrByWidth(entry.name, cardWidth - 32);
-            int nameColor = isSelected ? 0xFFFFFFFF : 0xFFCCCCCC;
-            graphics.drawString(font, name, startX + 26, cy + 4, nameColor, false);
+                graphics.renderItem(entry.stack, sx - 8, sy - 8);
 
-            String ammoStr = entry.ammo + "/" + entry.maxCapacity;
-            int ammoColor;
-            if (entry.ammo == 0) {
-                ammoColor = 0xFFAAAAAA;
-            } else if (entry.ammo >= entry.maxCapacity) {
-                ammoColor = 0xFF55FF55;
-            } else if (entry.ammo > entry.maxCapacity / 2) {
-                ammoColor = 0xFFFFFF55;
-            } else {
-                ammoColor = 0xFFFF7744;
-            }
-            graphics.drawString(font, ammoStr, startX + 26, cy + 14, ammoColor, false);
-
-            int barW = 48;
-            int barH = 3;
-            int barX = startX + cardWidth - barW - 6;
-            int barY = cy + 16;
-            graphics.fill(barX, barY, barX + barW, barY + barH, 0x88000000);
-            int fillW = entry.maxCapacity > 0 ? (int) ((float) entry.ammo / entry.maxCapacity * barW) : 0;
-            fillW = Math.max(0, Math.min(barW, fillW));
-            if (fillW > 0) {
-                graphics.fill(barX, barY, barX + fillW, barY + barH, ammoColor);
+                // Subtle ammo text
+                String slotAmmoStr = String.valueOf(entry.ammo);
+                int textY = sy + (Math.sin(angle) < -0.3 ? -18 : 13);
+                graphics.drawCenteredString(font, slotAmmoStr, sx, textY, 0x88AAAAAA);
             }
         }
 
-        if (startIdx + visibleCount < total) {
-            int downY = startY + listHeight + 1;
-            graphics.drawCenteredString(font, "▼", startX + cardWidth / 2, downY, 0xFFFFFFFF);
+        // 5. Selected Magazine Info (Below the wheel)
+        String fullName = font.plainSubstrByWidth(selectedEntry.name, 180);
+        graphics.drawCenteredString(font, fullName, cx, cy + 42, 0xFFFFFFFF);
+        if (selectedEntry.caliber != null && !selectedEntry.caliber.isEmpty()) {
+            graphics.drawCenteredString(font, selectedEntry.caliber, cx, cy + 52, 0xFF88AAFF);
         }
 
-        int hintY = startY + listHeight + (startIdx + visibleCount < total ? 10 : 4);
-        graphics.drawString(font, Component.translatable("gui.gcr.mag_selector.release_hint"), startX + 2, hintY, 0x88AAAAAA, false);
+        // 6. Bottom Hint
+        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.hint"), cx, cy + 86, 0x88AAAAAA);
+    }
+
+    private static int getAmmoColor(int ammo, int maxCapacity) {
+        if (ammo <= 0) {
+            return 0xFFAAAAAA;
+        } else if (ammo >= maxCapacity) {
+            return 0xFF55FF55;
+        } else if (ammo > maxCapacity / 2) {
+            return 0xFFFFFF55;
+        } else {
+            return 0xFFFF7744;
+        }
     }
 }
