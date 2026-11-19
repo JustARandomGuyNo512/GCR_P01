@@ -1,6 +1,6 @@
 package com.sheridan.gcr.client;
 
-import com.sheridan.gcr.client.render.SdfShader;
+import com.sheridan.gcr.client.render.SdfGuiRenderer;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
@@ -203,10 +203,7 @@ public class MagSelectorHandler {
 
         if (total == 0) {
             // Empty State: Smooth rounded warning card
-            SdfShader.begin(graphics.pose());
-            SdfShader.drawRoundedRect(cx - 75.0f, cy - 18.0f, 150.0f, 36.0f, 8.0f, 0xD0181212, 0x88FF4444, 1.5f);
-            SdfShader.end();
-
+            SdfGuiRenderer.drawRoundedRect(graphics, cx - 75.0f, cy - 18.0f, 150.0f, 36.0f, 8.0f, 0xD0181212, 0x88FF4444, 1.5f);
             graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.no_mags"), (int) cx, (int) cy - 4, 0xFFFF6666);
             return;
         }
@@ -230,25 +227,23 @@ public class MagSelectorHandler {
             slotY[i] = cy + (float) (orbitR * Math.sin(slotAngle[i]));
         }
 
-        // 2. Render SDF Canvas (Ultra-smooth rounded discs, rings, pills, arcs)
-        SdfShader.begin(graphics.pose());
-
-        // A. Subtle dark halo / backdrop ring behind entire wheel
-        SdfShader.drawRing(cx, cy, orbitR, 38.0f, 0x55080C12);
+        // 2. Render Smooth SDF Vectors (Halo, Track, Center Hub, Arc, Slots)
+        // A. Subtle dark halo backdrop ring behind entire wheel
+        SdfGuiRenderer.drawRing(graphics, cx, cy, orbitR, 38.0f, 0x55080C12);
 
         // B. Thin circular guide track
-        SdfShader.drawRing(cx, cy, orbitR, 1.0f, 0x2A607890);
+        SdfGuiRenderer.drawRing(graphics, cx, cy, orbitR, 1.5f, 0x33607890);
 
         // C. Center Hub: Smooth Circular Disc
-        SdfShader.drawCircle(cx, cy, 26.0f, 0xEE0B1017, 0x88486078, 1.5f);
+        SdfGuiRenderer.drawCircle(graphics, cx, cy, 26.0f, 0xEE0B1017, 0x88486078, 1.5f);
 
         // D. Center Circular Ammo Gauge (SDF Arc)
         if (fillPct > 0.005f) {
             float startRad = (float) (-Math.PI / 2.0);
             float endRad = (float) (startRad + 2.0 * Math.PI * fillPct);
-            SdfShader.drawArc(cx, cy, 30.0f, 2.5f, startRad, endRad, ammoColor);
+            SdfGuiRenderer.drawArc(graphics, cx, cy, 30.0f, 2.5f, startRad, endRad, ammoColor);
         } else {
-            SdfShader.drawRing(cx, cy, 30.0f, 1.0f, 0x33445566);
+            SdfGuiRenderer.drawRing(graphics, cx, cy, 30.0f, 1.0f, 0x33445566);
         }
 
         // E. Radial Slots (Smooth Circular Plates)
@@ -261,10 +256,10 @@ public class MagSelectorHandler {
                 // Connecting indicator pip between center and selected slot
                 float midX = cx + 0.62f * (sx - cx);
                 float midY = cy + 0.62f * (sy - cy);
-                SdfShader.drawCircle(midX, midY, 2.5f, 0xFF55FF55, 0, 0f);
+                SdfGuiRenderer.drawCircle(graphics, midX, midY, 2.5f, 0xFF55FF55, 0, 0f);
 
                 // Highlighted Slot Disc (Slightly larger, glowing green border)
-                SdfShader.drawCircle(sx, sy, 18.0f, 0xF0182536, 0xFF55FF55, 2.0f);
+                SdfGuiRenderer.drawCircle(graphics, sx, sy, 18.0f, 0xF0182536, 0xFF55FF55, 2.0f);
 
                 // Selected Ammo Badge Pill
                 String ammoStr = String.valueOf(selectedEntry.ammo);
@@ -273,16 +268,14 @@ public class MagSelectorHandler {
                 float badgeH = 10.0f;
                 float badgeY = sy + (Math.sin(slotAngle[i]) < -0.3 ? -24.0f : 16.0f);
                 float badgeX = sx - badgeW / 2.0f;
-                SdfShader.drawRoundedRect(badgeX, badgeY, badgeW, badgeH, 4.5f, 0xEE000000, 0xAA55FF55, 1.0f);
+                SdfGuiRenderer.drawRoundedRect(graphics, badgeX, badgeY, badgeW, badgeH, 4.5f, 0xEE000000, 0xAA55FF55, 1.0f);
             } else {
                 // Unselected Slot Disc (Smooth circular dark plate)
-                SdfShader.drawCircle(sx, sy, 14.0f, 0xCC0E141C, 0x445A6E84, 1.0f);
+                SdfGuiRenderer.drawCircle(graphics, sx, sy, 14.0f, 0xCC0E141C, 0x445A6E84, 1.0f);
             }
         }
 
-        SdfShader.end();
-
-        // 3. Render Items and Text on top of SDF Canvas
+        // 3. Render Items and Text on top
         for (int i = 0; i < total; i++) {
             MagEntry entry = compatibleMags.get(i);
             int sx = Math.round(slotX[i]);
