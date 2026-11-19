@@ -93,6 +93,7 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
                                    float particleTicks, IGunModel model) {
         // Demo：不在渲染层改 pose。随机旋转通过 getPitch()/getYaw() 和 getCameraSpeed() 暴露；
         // 真正的相机 / 枪模合成等接入时再决定。
+        
     }
 
     @Override

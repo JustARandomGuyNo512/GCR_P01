@@ -94949,17 +94949,39 @@
 		},
 		{
 			"name": "camera",
-			"position": [-15, 11.5, 37],
-			"rotation": [0, 0, 0],
-			"fov": 70,
-			"aspect_ratio": [16, 9],
-			"linked_preview": "",
-			"camera_linked": false,
-			"visibility": false,
-			"export": true,
+			"box_uv": true,
+			"render_order": "default",
 			"locked": false,
+			"export": true,
 			"scope": 0,
-			"type": "camera",
+			"allow_mirror_modeling": true,
+			"from": [0, 0, 0],
+			"to": [2, 2, 2],
+			"autouv": 0,
+			"color": 0,
+			"visibility": false,
+			"origin": [0, 0, 0],
+			"faces": {
+				"north": {
+					"uv": [2, 2, 4, 4]
+				},
+				"east": {
+					"uv": [0, 2, 2, 4]
+				},
+				"south": {
+					"uv": [6, 2, 8, 4]
+				},
+				"west": {
+					"uv": [4, 2, 6, 4]
+				},
+				"up": {
+					"uv": [4, 2, 2, 0]
+				},
+				"down": {
+					"uv": [6, 0, 4, 2]
+				}
+			},
+			"type": "cube",
 			"uuid": "1b27b8b8-d666-74e3-5347-d312a514efa2"
 		},
 		{
@@ -147090,7 +147112,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": false
+			"primary_selected": true
 		},
 		{
 			"name": "mag_release",
@@ -147550,7 +147572,7 @@
 			"mirror_uv": false,
 			"autouv": 0,
 			"isOpen": true,
-			"primary_selected": true
+			"primary_selected": false
 		},
 		{
 			"name": "L_MALE",
@@ -149137,12 +149159,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -149863,12 +149879,6 @@
 				"d8d17b68-d6da-7e20-85d1-667b222c600a": {
 					"name": "camera",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				}
@@ -151375,12 +151385,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -152964,12 +152968,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -153507,12 +153505,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -153974,12 +153966,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -154807,12 +154793,6 @@
 							"interpolation": "linear"
 						}
 					]
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
 				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
@@ -157237,12 +157217,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -158102,12 +158076,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -158936,12 +158904,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -161274,12 +161236,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -163724,12 +163680,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -166289,12 +166239,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -166394,7 +166338,7 @@
 			"override": false,
 			"length": 3.73636,
 			"snapping": 110,
-			"selected": true,
+			"selected": false,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -169478,12 +169422,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -172814,12 +172752,6 @@
 							"interpolation": "catmullrom"
 						}
 					]
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
 				}
 			}
 		},
@@ -172830,7 +172762,7 @@
 			"override": false,
 			"length": 4.12727,
 			"snapping": 110,
-			"selected": false,
+			"selected": true,
 			"group_name": "",
 			"scope": 0,
 			"anim_time_update": "",
@@ -174312,51 +174244,7 @@
 					"name": "bolt_release",
 					"type": "bone",
 					"rotation_global": false,
-					"quaternion_interpolation": false,
-					"keyframes": [
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "12.5"
-								}
-							],
-							"uuid": "3ba443af-c277-3abb-5095-6b1d336bd034",
-							"time": 0,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "0"
-								}
-							],
-							"uuid": "6652a431-6c1d-dff3-9064-08d10cbb21e9",
-							"time": 3.34545,
-							"color": -1,
-							"interpolation": "linear"
-						},
-						{
-							"channel": "rotation",
-							"data_points": [
-								{
-									"x": "0",
-									"y": "0",
-									"z": "12.5"
-								}
-							],
-							"uuid": "7a515f83-045c-f0e9-36ca-4fd536dd010d",
-							"time": 3.30909,
-							"color": -1,
-							"interpolation": "linear"
-						}
-					]
+					"quaternion_interpolation": false
 				},
 				"927fd724-87e2-b1dc-6dac-964da7a0f0a2": {
 					"name": "mag_release",
@@ -176322,12 +176210,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
@@ -179655,12 +179537,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -181539,12 +181415,6 @@
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
 				"496d3b65-34bf-098a-d353-b6eac015813b": {
 					"name": "root3",
 					"type": "bone",
@@ -182880,12 +182750,6 @@
 				"6d05215c-551e-6a6f-ed15-d956e86a6403": {
 					"name": "ammo4",
 					"type": "bone",
-					"rotation_global": false,
-					"quaternion_interpolation": false
-				},
-				"1b27b8b8-d666-74e3-5347-d312a514efa2": {
-					"name": "camera",
-					"type": "camera",
 					"rotation_global": false,
 					"quaternion_interpolation": false
 				},
