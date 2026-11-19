@@ -1,5 +1,6 @@
 package com.sheridan.gcr.client;
 
+import com.sheridan.gcr.client.render.SdfShader;
 import com.sheridan.gcr.items.GunItem;
 import com.sheridan.gcr.items.MagItem;
 import com.sheridan.gcr.modularSys.modules.guns.IGun;
@@ -192,21 +193,21 @@ public class MagSelectorHandler {
 
         int screenWidth = graphics.guiWidth();
         int screenHeight = graphics.guiHeight();
-        int cx = screenWidth / 2;
-        int cy = screenHeight / 2;
+        float cx = screenWidth / 2.0f;
+        float cy = screenHeight / 2.0f;
 
         int total = compatibleMags.size();
 
         // 1. Top Title Header
-        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.title"), cx, cy - 88, 0xFFEEEEEE);
+        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.title"), (int) cx, (int) cy - 90, 0xFFEEEEEE);
 
         if (total == 0) {
-            // Empty State: Sleek warning plate
-            int cardW = 140;
-            int cardH = 34;
-            graphics.fill(cx - cardW / 2, cy - cardH / 2, cx + cardW / 2, cy + cardH / 2, 0xD0181212);
-            graphics.renderOutline(cx - cardW / 2, cy - cardH / 2, cardW, cardH, 0x88FF4444);
-            graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.no_mags"), cx, cy - 4, 0xFFFF6666);
+            // Empty State: Smooth rounded warning card
+            SdfShader.begin(graphics.pose());
+            SdfShader.drawRoundedRect(cx - 75.0f, cy - 18.0f, 150.0f, 36.0f, 8.0f, 0xD0181212, 0x88FF4444, 1.5f);
+            SdfShader.end();
+
+            graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.no_mags"), (int) cx, (int) cy - 4, 0xFFFF6666);
             return;
         }
 
@@ -215,107 +216,109 @@ public class MagSelectorHandler {
         if (selectedIndex >= total) selectedIndex = total - 1;
         MagEntry selectedEntry = compatibleMags.get(selectedIndex);
 
-        // 2. Orbit Radius calculation
-        int orbitR = total <= 6 ? 62 : (total <= 10 ? 70 : 78);
-
-        // 3. Render Center Hub
-        int hubW = 46;
-        int hubH = 46;
-        int hubX = cx - hubW / 2;
-        int hubY = cy - hubH / 2;
-
-        // Chamfered center plate
-        graphics.fill(hubX + 2, hubY, hubX + hubW - 2, hubY + hubH, 0xDD0E141D);
-        graphics.fill(hubX, hubY + 2, hubX + hubW, hubY + hubH - 2, 0xDD0E141D);
-        graphics.renderOutline(hubX + 1, hubY + 1, hubW - 2, hubH - 2, 0x77556677);
-
-        // Circular ammo gauge around the center hub
+        float orbitR = total <= 6 ? 64.0f : (total <= 10 ? 72.0f : 80.0f);
         int ammoColor = getAmmoColor(selectedEntry.ammo, selectedEntry.maxCapacity);
         float fillPct = selectedEntry.maxCapacity > 0 ? (float) selectedEntry.ammo / selectedEntry.maxCapacity : 0f;
-        int gaugeR = 26;
-        for (int a = 0; a < 360; a += 6) {
-            double rad = Math.toRadians(a - 90);
-            int rx = cx + (int) Math.round(gaugeR * Math.cos(rad));
-            int ry = cy + (int) Math.round(gaugeR * Math.sin(rad));
-            int dotColor = (a / 360.0f <= fillPct) ? ammoColor : 0x33445566;
-            graphics.fill(rx, ry, rx + 1, ry + 1, dotColor);
+
+        // Slot positions
+        float[] slotX = new float[total];
+        float[] slotY = new float[total];
+        double[] slotAngle = new double[total];
+        for (int i = 0; i < total; i++) {
+            slotAngle[i] = -Math.PI / 2.0 + (2.0 * Math.PI * i / total);
+            slotX[i] = cx + (float) (orbitR * Math.cos(slotAngle[i]));
+            slotY[i] = cy + (float) (orbitR * Math.sin(slotAngle[i]));
         }
 
-        // Center Text: Ammo / Capacity
-        String ammoText = String.valueOf(selectedEntry.ammo);
-        graphics.drawCenteredString(font, ammoText, cx, cy - 11, ammoColor);
-        graphics.fill(cx - 12, cy, cx + 12, cy + 1, 0x55FFFFFF);
-        String capText = "/" + selectedEntry.maxCapacity;
-        graphics.drawCenteredString(font, capText, cx, cy + 3, 0xFFAAAAAA);
+        // 2. Render SDF Canvas (Ultra-smooth rounded discs, rings, pills, arcs)
+        SdfShader.begin(graphics.pose());
 
-        // 4. Render Radial Slots
+        // A. Subtle dark halo / backdrop ring behind entire wheel
+        SdfShader.drawRing(cx, cy, orbitR, 38.0f, 0x55080C12);
+
+        // B. Thin circular guide track
+        SdfShader.drawRing(cx, cy, orbitR, 1.0f, 0x2A607890);
+
+        // C. Center Hub: Smooth Circular Disc
+        SdfShader.drawCircle(cx, cy, 26.0f, 0xEE0B1017, 0x88486078, 1.5f);
+
+        // D. Center Circular Ammo Gauge (SDF Arc)
+        if (fillPct > 0.005f) {
+            float startRad = (float) (-Math.PI / 2.0);
+            float endRad = (float) (startRad + 2.0 * Math.PI * fillPct);
+            SdfShader.drawArc(cx, cy, 30.0f, 2.5f, startRad, endRad, ammoColor);
+        } else {
+            SdfShader.drawRing(cx, cy, 30.0f, 1.0f, 0x33445566);
+        }
+
+        // E. Radial Slots (Smooth Circular Plates)
         for (int i = 0; i < total; i++) {
-            MagEntry entry = compatibleMags.get(i);
+            float sx = slotX[i];
+            float sy = slotY[i];
             boolean isSelected = (i == selectedIndex);
 
-            double angle = -Math.PI / 2.0 + (2.0 * Math.PI * i / total);
-            int sx = cx + (int) Math.round(orbitR * Math.cos(angle));
-            int sy = cy + (int) Math.round(orbitR * Math.sin(angle));
-
             if (isSelected) {
-                // Connecting dots from center hub towards selected slot
-                for (double t = 0.52; t <= 0.76; t += 0.12) {
-                    int dx = (int) Math.round(cx + t * (sx - cx));
-                    int dy = (int) Math.round(cy + t * (sy - cy));
-                    graphics.fill(dx - 1, dy - 1, dx + 2, dy + 2, 0xFF55FF55);
-                }
+                // Connecting indicator pip between center and selected slot
+                float midX = cx + 0.62f * (sx - cx);
+                float midY = cy + 0.62f * (sy - cy);
+                SdfShader.drawCircle(midX, midY, 2.5f, 0xFF55FF55, 0, 0f);
 
-                // Selected Slot (Larger 32x32, highlighted)
-                int cardSize = 32;
-                int cardX = sx - cardSize / 2;
-                int cardY = sy - cardSize / 2;
+                // Highlighted Slot Disc (Slightly larger, glowing green border)
+                SdfShader.drawCircle(sx, sy, 18.0f, 0xF0182536, 0xFF55FF55, 2.0f);
 
-                graphics.fill(cardX + 2, cardY, cardX + cardSize - 2, cardY + cardSize, 0xEE1E2838);
-                graphics.fill(cardX, cardY + 2, cardX + cardSize, cardY + cardSize - 2, 0xEE1E2838);
-                graphics.renderOutline(cardX + 1, cardY + 1, cardSize - 2, cardSize - 2, 0xFF55FF55);
-
-                graphics.renderItem(entry.stack, sx - 8, sy - 8);
-
-                // Ammo badge pill
-                String slotAmmoStr = String.valueOf(entry.ammo);
-                int strW = font.width(slotAmmoStr);
-                int badgeW = Math.max(14, strW + 6);
-                int badgeH = 9;
-                int badgeY = sy + (Math.sin(angle) < -0.3 ? -22 : 15);
-                int badgeX = sx - badgeW / 2;
-
-                graphics.fill(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH, 0xEE000000);
-                graphics.renderOutline(badgeX, badgeY, badgeW, badgeH, 0x8855FF55);
-                graphics.drawCenteredString(font, slotAmmoStr, sx, badgeY + 1, ammoColor);
-
+                // Selected Ammo Badge Pill
+                String ammoStr = String.valueOf(selectedEntry.ammo);
+                int strW = font.width(ammoStr);
+                float badgeW = Math.max(16.0f, strW + 8.0f);
+                float badgeH = 10.0f;
+                float badgeY = sy + (Math.sin(slotAngle[i]) < -0.3 ? -24.0f : 16.0f);
+                float badgeX = sx - badgeW / 2.0f;
+                SdfShader.drawRoundedRect(badgeX, badgeY, badgeW, badgeH, 4.5f, 0xEE000000, 0xAA55FF55, 1.0f);
             } else {
-                // Unselected Slot (Standard 24x24)
-                int cardSize = 24;
-                int cardX = sx - cardSize / 2;
-                int cardY = sy - cardSize / 2;
+                // Unselected Slot Disc (Smooth circular dark plate)
+                SdfShader.drawCircle(sx, sy, 14.0f, 0xCC0E141C, 0x445A6E84, 1.0f);
+            }
+        }
 
-                graphics.fill(cardX + 2, cardY, cardX + cardSize - 2, cardY + cardSize, 0xAA10151C);
-                graphics.fill(cardX, cardY + 2, cardX + cardSize, cardY + cardSize - 2, 0xAA10151C);
-                graphics.renderOutline(cardX + 1, cardY + 1, cardSize - 2, cardSize - 2, 0x44607080);
+        SdfShader.end();
 
-                graphics.renderItem(entry.stack, sx - 8, sy - 8);
+        // 3. Render Items and Text on top of SDF Canvas
+        for (int i = 0; i < total; i++) {
+            MagEntry entry = compatibleMags.get(i);
+            int sx = Math.round(slotX[i]);
+            int sy = Math.round(slotY[i]);
+            boolean isSelected = (i == selectedIndex);
 
-                // Subtle ammo text
-                String slotAmmoStr = String.valueOf(entry.ammo);
-                int textY = sy + (Math.sin(angle) < -0.3 ? -18 : 13);
+            // Item Icon
+            graphics.renderItem(entry.stack, sx - 8, sy - 8);
+
+            // Ammo number
+            String slotAmmoStr = String.valueOf(entry.ammo);
+            if (isSelected) {
+                int badgeY = Math.round(sy + (Math.sin(slotAngle[i]) < -0.3 ? -24.0f : 16.0f));
+                graphics.drawCenteredString(font, slotAmmoStr, sx, badgeY + 1, ammoColor);
+            } else {
+                int textY = Math.round(sy + (Math.sin(slotAngle[i]) < -0.3 ? -20.0f : 14.0f));
                 graphics.drawCenteredString(font, slotAmmoStr, sx, textY, 0x88AAAAAA);
             }
         }
 
-        // 5. Selected Magazine Info (Below the wheel)
-        String fullName = font.plainSubstrByWidth(selectedEntry.name, 180);
-        graphics.drawCenteredString(font, fullName, cx, cy + 42, 0xFFFFFFFF);
+        // Center Hub Numbers: Large Ammo / Capacity
+        String ammoText = String.valueOf(selectedEntry.ammo);
+        graphics.drawCenteredString(font, ammoText, (int) cx, (int) cy - 11, ammoColor);
+        graphics.fill((int) cx - 12, (int) cy, (int) cx + 12, (int) cy + 1, 0x55FFFFFF);
+        String capText = "/" + selectedEntry.maxCapacity;
+        graphics.drawCenteredString(font, capText, (int) cx, (int) cy + 3, 0xFFAAAAAA);
+
+        // Selected Magazine Info Card (Below the wheel)
+        String fullName = font.plainSubstrByWidth(selectedEntry.name, 190);
+        graphics.drawCenteredString(font, fullName, (int) cx, (int) cy + 44, 0xFFFFFFFF);
         if (selectedEntry.caliber != null && !selectedEntry.caliber.isEmpty()) {
-            graphics.drawCenteredString(font, selectedEntry.caliber, cx, cy + 52, 0xFF88AAFF);
+            graphics.drawCenteredString(font, selectedEntry.caliber, (int) cx, (int) cy + 54, 0xFF88AAFF);
         }
 
-        // 6. Bottom Hint
-        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.hint"), cx, cy + 86, 0x88AAAAAA);
+        // Bottom Hint
+        graphics.drawCenteredString(font, Component.translatable("gui.gcr.mag_selector.hint"), (int) cx, (int) cy + 86, 0x88AAAAAA);
     }
 
     private static int getAmmoColor(int ammo, int maxCapacity) {

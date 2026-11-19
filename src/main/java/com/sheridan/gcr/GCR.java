@@ -747,6 +747,7 @@ public class GCR {
             RenderSystem.recordRenderCall(IrisGunPostShader::init);
             RenderSystem.recordRenderCall(DepthCopyShader::init);
             RenderSystem.recordRenderCall(LaserGlowShader::init);
+            RenderSystem.recordRenderCall(com.sheridan.gcr.client.render.SdfShader::init);
         }
 
         @SubscribeEvent
