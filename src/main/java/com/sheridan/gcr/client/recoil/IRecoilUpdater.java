@@ -22,4 +22,14 @@ public interface IRecoilUpdater {
     float distFromLastShoot();
 
     Vector2f getCameraSpeed();
+
+    /**
+     * 调试用：返回可以按行显示在屏幕上的状态文本，{@code "\n"} 分隔。
+     *
+     * <p>默认没有调试信息；具体的 updater 可以覆盖。放在接口上（而不是只放在 demo 实现类上）
+     * 是为了热重载后依然能通过接口调用到子类加载器里的新实现。</p>
+     */
+    default String getDebugInfo() {
+        return "";
+    }
 }

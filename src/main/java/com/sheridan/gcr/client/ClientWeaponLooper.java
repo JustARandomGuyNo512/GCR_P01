@@ -42,6 +42,9 @@ import java.util.concurrent.locks.LockSupport;
  *   <li>下一发的截止时刻 = <b>上一发的计划时刻</b> + 间隔，而不是「现在 + 间隔」。
  *       单次唤醒抖动因此不会累积，长期平均射速严格等于理论射速；只有落后超过一整个间隔
  *       （卡顿 / GC）时才丢掉补不回来的那几发、把节拍重新对齐到现在，不会停顿之后连着喷一串。</li>
+ *   <li><b>冷却与扳机状态解耦</b>：{@link #nextFireNanos} 是「下一次允许开火」的绝对时刻，
+ *       松开 / 重新按下扳机都不会让它归零。单发/点射模式每次击发后都会清掉扳机状态，一旦冷却
+ *       跟着清零，「单发 + 连点器」就能突破枪械 RPM 上限。</li>
  *   <li>等待分两段：先 {@code parkNanos} 睡到临近截止时刻，最后 {@link #spinNanos} 自旋收尾。
  *       Windows 上 park 的唤醒精度只有毫秒级，自旋窗口按实测偏差自适应，既不空转烧 CPU，
  *       也不会把唤醒误差传导到开火时刻上。</li>
@@ -92,7 +95,11 @@ public final class ClientWeaponLooper implements Runnable {
     /** 当前武器线程，供 {@link #wake()} 唤醒。 */
     private static volatile Thread worker;
 
-    /** 下一发的计划开火时刻（{@link System#nanoTime()} 时间轴）；{@code < 0} 表示不在射击时间轴里。 */
+    /**
+     * 下一发的计划开火时刻（{@link System#nanoTime()} 时间轴，同时也就是「下一次允许开火」的冷却线）。
+     *
+     * <p>{@code < 0} 只表示这一局还没开过火；一旦开过火就一直保留，不随扳机松开而清零。</p>
+     */
     private long nextFireNanos = -1L;
     /** 本次等待是否需要精确到点：正常射击节奏需要，被拒绝后的重试不需要（自旋不划算）。 */
     private boolean firePrecise;
@@ -168,13 +175,14 @@ public final class ClientWeaponLooper implements Runnable {
     /**
      * 推进开火时间轴。
      *
-     * <p>不满足 {@link #fireWanted()} 时把时间轴清空，这样重新按下扳机的那一发是立刻打出去的，
-     * 而不是接着上一条时间轴慢慢等。</p>
+     * <p><b>冷却（{@link #nextFireNanos}）和扳机状态是两件事，不能互相清零。</b>松开扳机只应该让
+     * 开火暂停，冷却必须继续走；单发/点射模式每次击发后都会 {@code stopFire()} 把扳机状态清掉，
+     * 所以这里一旦清空冷却，「单发模式 + 连点器」就会每点一下都从 now 重新开始，实际射速能远远
+     * 超过枪械 RPM 上限（连发模式因为扳机一直按着才没暴露）。</p>
      */
     private void updateFire(long now) {
         if (!fireWanted()) {
-            nextFireNanos = -1L;
-            firePrecise = false;
+            // 只是暂停开火：时间轴保持不动，下次按下扳机时仍然要吃满剩余的冷却
             return;
         }
 
@@ -312,7 +320,8 @@ public final class ClientWeaponLooper implements Runnable {
     /** 下一个必须醒来的绝对时刻（可能已经过去，此时立刻返回上一层干活）。 */
     private long nextDeadline(long now) {
         long deadline = Math.min(nextRecoilNanos, nextAnimationNanos);
-        if (nextFireNanos >= 0L) {
+        // 只有确实要开火时才为开火时刻提前醒来；冷却还在走但扳机没按着时不必打断自己
+        if (nextFireNanos >= 0L && fireWanted()) {
             long fireWake = firePrecise ? nextFireNanos - spinNanos : nextFireNanos;
             if (fireWake < deadline) {
                 deadline = fireWake;

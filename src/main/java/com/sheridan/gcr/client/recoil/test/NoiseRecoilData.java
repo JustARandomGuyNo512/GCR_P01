@@ -39,8 +39,8 @@ public record NoiseRecoilData(
     /** Demo 默认值：global 大而慢，local 小而快。 */
     public static NoiseRecoilData defaults() {
         return new NoiseRecoilData(
-                new Layer(1.5f, 1.25f, 0.6f, 0.55f, 9f, 0.9f),
-                new Layer(0.22f, 0.26f, 3.8f, 0.8f, 34f, 0.8f),
+                new Layer(4f, 4f, 1f, 0.55f, 10f, 0.9f),
+                new Layer(2.5f, 2.5f, 5f, 0.8f, 45f, 0.8f),
                 0.12f, 0.35f);
     }
 

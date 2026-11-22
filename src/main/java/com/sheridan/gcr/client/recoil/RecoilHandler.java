@@ -9,7 +9,11 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RecoilHandler {
-    private IRecoilUpdater recoilUpdater;
+    /**
+     * 武器线程（100Hz update / onShoot）和客户端主线程（渲染、热重载）都会读它，
+     * 所以必须是 volatile：热重载在主线程换实例后，武器线程要能立刻看到新对象。
+     */
+    private volatile IRecoilUpdater recoilUpdater;
     public static final RecoilHandler INSTANCE = new RecoilHandler();
 
     private RecoilHandler() {}
