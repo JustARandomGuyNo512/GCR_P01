@@ -53,23 +53,7 @@ public class MagItem extends ModuleItem<Mag> {
 
     @Override
     public boolean isBarVisible(@NotNull ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public int getBarWidth(@NotNull ItemStack stack) {
-        int ammo = getAmmoLeft(stack);
-        int max = getModule().getMaxCapacity();
-        if (max <= 0) return 0;
-        return Math.round(13.0f * (float) ammo / (float) max);
-    }
-
-    @Override
-    public int getBarColor(@NotNull ItemStack stack) {
-        int ammo = getAmmoLeft(stack);
-        int max = getModule().getMaxCapacity();
-        float f = max <= 0 ? 0.0f : Math.max(0.0f, (float) ammo / (float) max);
-        return Mth.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
+        return false;
     }
 
     @Override
