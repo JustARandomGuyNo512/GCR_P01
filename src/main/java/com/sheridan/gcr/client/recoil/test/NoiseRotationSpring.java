@@ -15,6 +15,9 @@ import com.sheridan.gcr.client.recoil.SmoothNoise1D;
  * 乘在 target 上（handler 用它做开火 / 停火的淡入淡出），不会直接改输出，
  * 所以 activity 归零时弹簧会平滑回到 0。{@code noiseAlpha} 则是对噪声本身再做一层
  * EMA 平滑：1 为原始噪声，越小目标越“黏”、高频细节越少。</p>
+ *
+ * <p>两个轴都用 {@link Spring1D#updateLimited(float)} 推进：靠近目标时速度会被剩余误差
+ * 限制住，因此不会带着旧动量越过很近的 target 再折返（见该方法的能量解释）。</p>
  */
 public final class NoiseRotationSpring {
     /** yaw 的相位偏移，避免 pitch / yaw 同步摆动。 */
@@ -100,8 +103,8 @@ public final class NoiseRotationSpring {
 
         pitchSpring.setTarget(pitchTarget);
         yawSpring.setTarget(yawTarget);
-        pitchSpring.update(dt);
-        yawSpring.update(dt);
+        pitchSpring.updateLimited(dt);
+        yawSpring.updateLimited(dt);
     }
 
     /**

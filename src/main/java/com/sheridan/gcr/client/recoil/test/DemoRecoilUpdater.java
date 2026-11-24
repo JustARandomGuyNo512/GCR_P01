@@ -67,8 +67,8 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
 
     public static NoiseRecoilData defaults() {
         return new NoiseRecoilData(
-                new NoiseRecoilData.Layer(4f, 4f, 1f, 0.6f, 10f, 0.9f),
-                new NoiseRecoilData.Layer(1f, 1f, 12.5f, 0.8f, 35f, 0.7f),
+                new NoiseRecoilData.Layer(4, 4, 1.8f, 0.65f, 11f, 0.9f),
+                new NoiseRecoilData.Layer(1.2f, 1.2f, 13f, 0.8f, 90f, 0.85f),
                 0.12f, 0.35f);
     }
 
@@ -101,13 +101,15 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
     /**
      * 把这一帧的两层弹簧状态打包成不可变快照，发布给渲染线程。
      *
-     * <p>除了渲染插值要用的角度，还带上角速度和 activity，让调试面板可以在渲染线程上
+     * <p>除了渲染插值要用的角度，还带上 target、角速度和 activity，让调试面板可以在渲染线程上
      * 安全地显示“逻辑数值”，不用跨线程直接读 handler。</p>
      */
     private void publishSnapshot() {
         RecoilSnapshot sample = new RecoilSnapshot(
                 handler.getGlobalPitch(), handler.getGlobalYaw(),
                 handler.getLocalPitch(), handler.getLocalYaw(),
+                handler.getGlobalSpring().getPitchTarget(), handler.getGlobalSpring().getYawTarget(),
+                handler.getLocalSpring().getPitchTarget(), handler.getLocalSpring().getYawTarget(),
                 handler.getPitchVelocity(), handler.getYawVelocity(),
                 handler.getActivity());
         synchronized (stateLock) {
@@ -220,10 +222,12 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
     /** 一帧的物理状态快照（角度：度，角速度：度/秒）。物理线程写、渲染线程读。 */
     private record RecoilSnapshot(float globalPitch, float globalYaw,
                                   float localPitch, float localYaw,
+                                  float globalPitchTarget, float globalYawTarget,
+                                  float localPitchTarget, float localYawTarget,
                                   float pitchVelocity, float yawVelocity,
                                   float activity) {
         private static final RecoilSnapshot ZERO =
-                new RecoilSnapshot(0f, 0f, 0f, 0f, 0f, 0f, 0f);
+                new RecoilSnapshot(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
     }
 
     /**
@@ -375,6 +379,10 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
         sb.append(String.format(Locale.ROOT,
                 "logic   G p %+7.3f y %+7.3f  L p %+7.3f y %+7.3f\n",
                 logic.globalPitch(), logic.globalYaw(), logic.localPitch(), logic.localYaw()));
+        sb.append(String.format(Locale.ROOT,
+                "target  G p %+7.3f y %+7.3f  L p %+7.3f y %+7.3f\n",
+                logic.globalPitchTarget(), logic.globalYawTarget(),
+                logic.localPitchTarget(), logic.localYawTarget()));
         sb.append(String.format(Locale.ROOT,
                 "        T p %+7.3f y %+7.3f  v p %+7.2f y %+7.2f\n",
                 logic.globalPitch() + logic.localPitch(),

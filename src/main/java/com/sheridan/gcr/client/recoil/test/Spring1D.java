@@ -101,8 +101,39 @@ public final class Spring1D {
      * “dt 越小越准”的问题，也不需要在 100Hz 里塞 substep。</p>
      */
     public void update(float dt) {
+        step(dt, false);
+    }
+
+    /**
+     * 和 {@link #update(float)} 相同的解析解，但推进前会限制“正在靠近目标”的速度。
+     *
+     * <p>能量意义下 {@code v² = stiffness * error²} 是刚好在目标处停住的临界速度
+     * （动能 = 当前位移对应的势能）；靠近时把速度压到这个值以内，弹簧在任何阻尼比下都
+     * 不会越过目标再折返。误差越小上限越小，所以目标很近时不会带着旧动量猛地摆过去；
+     * 误差大时上限自动放大。远离目标或显式冲量不受影响。这个限制只依赖 omega 和当前差值，
+     * 没有额外的调参常数。</p>
+     *
+     * <p>后坐力的噪声层用这个入口；“普通弹簧”仍走 {@link #update(float)}，
+     * 保持原来的阶跃/冲量响应，方便和旧实现做 A/B。</p>
+     */
+    public void updateLimited(float dt) {
+        step(dt, true);
+    }
+
+    private void step(float dt, boolean limitClosingSpeed) {
         if (!(dt > 0f) || !Float.isFinite(dt)) {
             return;
+        }
+
+        if (limitClosingSpeed) {
+            float error = target - position;
+            boolean closing = (error > 0f && velocity > 0f) || (error < 0f && velocity < 0f);
+            if (closing) {
+                float speedLimit = (float) Math.sqrt(stiffness) * Math.abs(error);
+                if (Math.abs(velocity) > speedLimit) {
+                    velocity = Math.copySign(speedLimit, velocity);
+                }
+            }
         }
 
         final double k = stiffness;

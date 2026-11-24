@@ -104,7 +104,7 @@ public final class GCRModules {
     public static final IModular MAG_6L18 = new Mag(RL( "6l18"), 0.28f, 45).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L23 = new Mag(RL( "6l23"), 0.2f, 30).addTags("mag", "ak", "5.45x39");
     public static final IModular MAG_6L31 = new Mag(RL( "6l31"), 0.3f, 60).addTags("mag", "ak", "5.45x39");
-    public static final IModular AKM_STEEL_MAG = new Mag(RL( "akm_steel_mag"), 0.33f, 30).addTags("mag", "ak", "7.62x39");
+    public static final IModular AKM_STEEL_MAG = new Mag(RL( "akm_steel_mag"), 0.33f, 3000000).addTags("mag", "ak", "7.62x39");
 
     public static final IModular SPEAR_MAG_20R = new Mag(RL( "spear_mag_20r"), 0.20f, 20).addTags("mag", "mcx_spear", "6.8x51");
 
@@ -802,7 +802,8 @@ public final class GCRModules {
             RL( "common/pivot_maps/akmn.pivot.geo.json"),
 
             new BaseProperties(600, 2.2f, 0.235f, 3.1f,
-                    0.0003f, 0.08f,
+                    //0.0003f, 0.08f,
+                    0,0,
                     1.3f, 4.5f,
                     30f,
                     0.004f,
