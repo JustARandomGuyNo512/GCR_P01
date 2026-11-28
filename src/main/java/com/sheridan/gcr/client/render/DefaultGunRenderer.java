@@ -375,7 +375,7 @@ public class DefaultGunRenderer implements IGunRenderer {
             LivingEntity entity = context.entity;
             int blockLight = entity.isOnFire() ? 15 :
                     entity.level().getBrightness(LightLayer.BLOCK, BlockPos.containing(entity.getEyePosition(particleTick)));
-            int lightInc = Client.WEAPON_STATUS.isSuppressed ? 3 : 5;
+            int lightInc = Client.WEAPON_STATUS.isSuppressed ? 3 : 4;
             context.light = LightTexture.pack((int) Math.min(15, blockLight + Math.min(lightInc, v * 200)), entity.level().getBrightness(LightLayer.SKY,
                     BlockPos.containing(entity.getEyePosition(particleTick))));
         }

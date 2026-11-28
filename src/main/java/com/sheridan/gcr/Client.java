@@ -153,6 +153,10 @@ public class Client {
     public static long handleClientShoot(ItemStack stack, IGun gun, Player player) {
         try {
             LOCK.lock();
+            // 武器线程可能刚等过冷却或主线程的锁，入锁后重新检查扳机和本次要操作的物品。
+            if (!LEFT_BUTTON_PRESSED.get() || CANCEL_WEAPON_LOOPER.get() || stack != player.getMainHandItem()) {
+                return 0L;
+            }
             if (DrawHolsterHandler.get().getEquipProgress() < 1f) {
                 return 0L;
             }
@@ -161,10 +165,14 @@ public class Client {
                 IFireMode.stopFire();
                 return 0L;
             }
+            // 用本次击发的枪和模式读取射速。状态镜像要到客户端 tick 才更新。
+            long interval = IFireMode.rpmToIntervalNanos(fireMode.modifyRpm(gun.getRpm(stack)));
+            if (interval <= 0L) {
+                IFireMode.stopFire();
+                return 0L;
+            }
             IFireMode.FireControl fireControl = fireMode.clientIntentToFire(player, stack, gun);
             if (fireControl == IFireMode.FireControl.ALLOW_FIRE) {
-                // 间隔取「开火之前」的枪械状态：这一发本身可能打空弹匣、卡壳或触发换弹，改掉射速
-                long interval = WEAPON_STATUS.getFireIntervalNanos();
                 try {
                     fireMode.triggerClientShoot(player, stack, gun);
                 } catch (Exception ignored) {}

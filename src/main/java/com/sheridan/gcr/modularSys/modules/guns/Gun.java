@@ -145,18 +145,20 @@ public class Gun extends Module implements IGun, ISight, IArmHandlerModular {
         float yaw = shooter.getYRot();
         float pitch = shooter.getXRot();
 
-        pitch += packet.gunKickPitch;
-        yaw += packet.gunKickYaw;
-
         float spread = getSpread(itemStack);
+        double localPitch = Math.toRadians(packet.gunKickPitch + (random.nextGaussian() - 0.5f) * spread);
+        double localYaw = Math.toRadians(packet.gunKickYaw + (random.nextGaussian() - 0.5f) * spread);
 
-        float randPitch = (float) ((random.nextGaussian() - 0.5f) * spread);
-        float randYaw = (float) ((random.nextGaussian() - 0.5f) * spread);
-
-        pitch += randPitch;
-        yaw += randYaw;
-
-        Vec3 dir = Vec3.directionFromRotation(pitch, yaw).normalize();
+        // 后坐偏移和散布都使用瞄准方向的局部坐标，垂直瞄准时横向偏移仍然有效。
+        Vec3 forward = Vec3.directionFromRotation(pitch, yaw).normalize();
+        Vec3 heading = Vec3.directionFromRotation(0, yaw);
+        Vec3 right = new Vec3(-heading.z, 0, heading.x).normalize();
+        Vec3 down = forward.cross(right).normalize();
+        double cosPitch = Math.cos(localPitch);
+        Vec3 dir = forward.scale(Math.cos(localYaw) * cosPitch)
+                .add(right.scale(Math.sin(localYaw) * cosPitch))
+                .add(down.scale(Math.sin(localPitch)))
+                .normalize();
         Vec3 pos = shooter.getEyePosition();
         // 初速走枪械属性（bullet_velocity，格 / tick），不再写死在代码里：
         // 换枪管、换弹种（以及以后任何改写该属性的配件）都会自动作用到弹道上。

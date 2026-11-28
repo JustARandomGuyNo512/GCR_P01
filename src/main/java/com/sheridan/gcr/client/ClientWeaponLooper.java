@@ -38,10 +38,9 @@ import java.util.concurrent.locks.LockSupport;
  * <h2>现在的做法</h2>
  * <ul>
  *   <li>间隔从 RPM 直接换算成纳秒（{@link com.sheridan.gcr.modularSys.fire.IFireMode#rpmToIntervalNanos(int)}），
- *       700 RPM 就是 85 714 285ns，不再经过整数步进。</li>
- *   <li>下一发的截止时刻 = <b>上一发的计划时刻</b> + 间隔，而不是「现在 + 间隔」。
- *       单次唤醒抖动因此不会累积，长期平均射速严格等于理论射速；只有落后超过一整个间隔
- *       （卡顿 / GC）时才丢掉补不回来的那几发、把节拍重新对齐到现在，不会停顿之后连着喷一串。</li>
+ *       700 RPM 就是 85 714 286ns，不再经过 5ms 的整数步进。</li>
+ *   <li>下一发的截止时刻 = <b>上一发的实际处理完成时刻</b> + 间隔。
+ *       松开扳机后的空闲时间、线程调度延迟和等锁时间都不能拿来抵扣射击冷却。</li>
  *   <li><b>冷却与扳机状态解耦</b>：{@link #nextFireNanos} 是「下一次允许开火」的绝对时刻，
  *       松开 / 重新按下扳机都不会让它归零。单发/点射模式每次击发后都会清掉扳机状态，一旦冷却
  *       跟着清零，「单发 + 连点器」就能突破枪械 RPM 上限。</li>
@@ -95,12 +94,8 @@ public final class ClientWeaponLooper implements Runnable {
     /** 当前武器线程，供 {@link #wake()} 唤醒。 */
     private static volatile Thread worker;
 
-    /**
-     * 下一发的计划开火时刻（{@link System#nanoTime()} 时间轴，同时也就是「下一次允许开火」的冷却线）。
-     *
-     * <p>{@code < 0} 只表示这一局还没开过火；一旦开过火就一直保留，不随扳机松开而清零。</p>
-     */
-    private long nextFireNanos = -1L;
+    /** 下一次允许开火的时刻，扳机松开时保留。只由武器线程更新。 */
+    private long nextFireNanos;
     /** 本次等待是否需要精确到点：正常射击节奏需要，被拒绝后的重试不需要（自旋不划算）。 */
     private boolean firePrecise;
     private long nextRecoilNanos;
@@ -133,6 +128,7 @@ public final class ClientWeaponLooper implements Runnable {
         worker = self;
 
         long now = System.nanoTime();
+        nextFireNanos = now;
         nextRecoilNanos = now;
         nextAnimationNanos = now;
 
@@ -186,11 +182,6 @@ public final class ClientWeaponLooper implements Runnable {
             return;
         }
 
-        if (nextFireNanos < 0L) {
-            nextFireNanos = now;
-            firePrecise = true;
-        }
-
         long remaining = nextFireNanos - now;
 
         if (remaining > (firePrecise ? spinNanos : 0L)) {
@@ -216,41 +207,12 @@ public final class ClientWeaponLooper implements Runnable {
                 && !Client.WEAPON_STATUS.isFireBlocked();
     }
 
-    /**
-     * 打这一发，并排好下一发的截止时刻。
-     *
-     * <p>误差不累积的关键在这里：下一发以 {@code planned}（本发的计划时刻）为基准，
-     * 而不是以 {@code now}（本发的实际时刻）为基准。哪怕这一次晚了 1ms，下一发就会相应地早 1ms，
-     * 时间轴整体不会漂移。</p>
-     */
+    /** 打这一发，从实际完成时刻开始计算冷却或重试等待。 */
     private void fireOnce() {
-        long planned = nextFireNanos;
         long interval = attemptShoot();
         long shootEnd = System.nanoTime();
-        if (interval <= 0L) {
-            // 本次没有真正开火。
-            // 从任务结束时刻开始计算重试等待，避免 attemptShoot 本身的耗时
-            // 让重试时间缩短。
-            nextFireNanos = shootEnd + RETRY_WAIT_NANOS;
-            firePrecise = false;
-            return;
-        }
-        // 正常情况下：
-        //
-        //   下一发 = 上一发计划时刻 + 射击间隔
-        //
-        // 因此 attemptShoot() 的执行耗时不会累计到射击周期中。
-        long next = planned + interval;
-
-        // 如果 attemptShoot() 本身执行太久，以至于已经超过了下一发
-        // 的计划时刻，则丢掉已经无法按时补回的这一发，从任务结束时刻
-        // 重新建立完整的射击周期。
-        if (next <= shootEnd) {
-            next = shootEnd + interval;
-        }
-
-        nextFireNanos = next;
-        firePrecise = true;
+        firePrecise = interval > 0L;
+        nextFireNanos = shootEnd + (firePrecise ? interval : RETRY_WAIT_NANOS);
     }
 
 
@@ -309,7 +271,7 @@ public final class ClientWeaponLooper implements Runnable {
     /**
      * 周期任务的截止时刻推进：下一次 = 上一次计划 + 周期。
      *
-     * <p>和开火一样以计划时刻为基准，长时间运行也不会漂；落后太多时直接对齐到现在，
+     * <p>以计划时刻为基准，长时间运行也不会漂；落后太多时直接对齐到现在，
      * 免得一觉醒来要连补几十帧。</p>
      */
     private static long advanceDeadline(long plannedNanos, long periodNanos, long now) {
@@ -321,7 +283,7 @@ public final class ClientWeaponLooper implements Runnable {
     private long nextDeadline(long now) {
         long deadline = Math.min(nextRecoilNanos, nextAnimationNanos);
         // 只有确实要开火时才为开火时刻提前醒来；冷却还在走但扳机没按着时不必打断自己
-        if (nextFireNanos >= 0L && fireWanted()) {
+        if (fireWanted()) {
             long fireWake = firePrecise ? nextFireNanos - spinNanos : nextFireNanos;
             if (fireWake < deadline) {
                 deadline = fireWake;

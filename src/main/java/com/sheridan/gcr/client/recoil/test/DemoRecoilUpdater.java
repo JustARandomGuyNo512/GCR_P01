@@ -551,8 +551,7 @@ public final class DemoRecoilUpdater implements IRecoilUpdater {
     }
 
     /**
-     * 这一发在玩家 yaw 上的偏移（度），会由 {@code Gun.serverShoot} 直接加到
-     * {@code shooter.getYRot()} 上。
+     * 这一发的横向后坐偏移（度），由 {@code Gun.serverShoot} 在瞄准方向的局部坐标中应用。
      *
      * <p>注意符号：枪模 pose 绕 +Y 轴用正角度旋转，而玩家 yaw 增大在方向上正好相反；
      * 所以视觉上的 {@code +yaw} 对应世界 yaw 的 <b>负</b>方向。这里必须取反，
