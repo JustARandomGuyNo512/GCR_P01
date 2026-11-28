@@ -46,7 +46,9 @@ public final class DemoRecoilUpdaterMain {
         NoiseRecoilData wide = new NoiseRecoilData(
                 new NoiseRecoilData.Layer(3.0f, 2.5f, 0.6f, 0.55f, 9f, 0.9f),
                 NoiseRecoilData.defaults().local(),
-                0.12f, 0.35f);
+                0.12f, 0.35f,
+                VisualShakeProfile.defaults(),
+                RecoilHeatProfile.defaults());
         DemoRecoilUpdater custom = new DemoRecoilUpdater(wide);
         DemoRecoilUpdater baseline = new DemoRecoilUpdater();
         float dataDiff = runPair(custom, baseline);

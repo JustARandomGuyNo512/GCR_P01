@@ -6,10 +6,12 @@ package com.sheridan.gcr.client.recoil.test;
  * <p>和旧 {@code RecoilData} 的 {@code RecoilImpulse + RecoilController} 不同，
  * 这里不再用冲量 / 刚度 / 阻尼描述“枪怎么动”；每层只有：</p>
  * <ul>
- *   <li>{@code pitchRange / yawRange}：这层最多能摆到多少度；</li>
+ *   <li>{@code pitchRange / yawRange}：单层实际输出的半幅上界（度），满 activity 时靠标定接近该幅度；</li>
  *   <li>{@code noiseHz}：噪声推进速度，决定“变相”多快；</li>
  *   <li>{@code noiseAlpha}：噪声目标的 EMA 平滑系数，1 为原始噪声，越小越黏；</li>
  *   <li>{@code omega / zeta}：弹簧跟随的快慢和阻尼，主要影响过程手感；ζ&lt;1 时会有少量超调。</li>
+ *   <li>{@code visualShake}：旧 VisualRecoilMix 在渲染层的响应参数（相位 / 基频 / 时间窗等）。</li>
+ *   <li>{@code recoilHeat}：持续射击时的热度累积 / 回落参数。</li>
  * </ul>
  *
  * <p>两层叠加：global 大范围慢漂移，local 小范围快抖动。具体的弹簧实现见
@@ -19,7 +21,9 @@ public record NoiseRecoilData(
         Layer global,
         Layer local,
         float holdTime,
-        float recoverTime
+        float recoverTime,
+        VisualShakeProfile visualShake,
+        RecoilHeatProfile recoilHeat
 ) {
     public NoiseRecoilData {
         if (global == null) {
@@ -27,6 +31,12 @@ public record NoiseRecoilData(
         }
         if (local == null) {
             throw new IllegalArgumentException("local must not be null");
+        }
+        if (visualShake == null) {
+            throw new IllegalArgumentException("visualShake must not be null");
+        }
+        if (recoilHeat == null) {
+            throw new IllegalArgumentException("recoilHeat must not be null");
         }
         if (!(holdTime >= 0f) || !Float.isFinite(holdTime)) {
             throw new IllegalArgumentException("holdTime must be finite and >= 0: " + holdTime);
@@ -41,14 +51,16 @@ public record NoiseRecoilData(
         return new NoiseRecoilData(
                 new Layer(4f, 4f, 1f, 0.55f, 10f, 0.9f),
                 new Layer(2.5f, 2.5f, 5f, 0.8f, 45f, 0.8f),
-                0.12f, 0.35f);
+                0.12f, 0.35f,
+                VisualShakeProfile.defaults(),
+                RecoilHeatProfile.defaults());
     }
 
     /**
      * 单层随机旋转参数。
      *
-     * @param pitchRange 俯仰方向的最大目标幅度（度）
-     * @param yawRange   偏航方向的最大目标幅度（度）
+     * @param pitchRange 俯仰输出的半幅上界（度）
+     * @param yawRange   偏航输出的半幅上界（度）
      * @param noiseHz    噪声推进速度（Hz）；越大目标变化越快
      * @param noiseAlpha 噪声目标 EMA 系数（0~1，按 100Hz 归一化）；1 为原始噪声，
      *                   0 表示完全冻结在首次采样值（通常不用）
